@@ -38,70 +38,67 @@ class LBFGS(base_attack):
         return True
 
 def optimize(model, input, label, target_label, bounds, epsilon, maxiter, class_num):
-        x_t = input
-        x0 = input[0].numpy()
-        min_, max_ = bounds
+    x_t = input
+    x0 = input[0].numpy()
+    min_, max_ = bounds
         
         
-        target_dist = torch.tensor(target_label)
-        target_dist = target_dist.unsqueeze_(0).long()
+    target_dist = torch.tensor(target_label)
+    target_dist = target_dist.unsqueeze_(0).long()
        
 
-        # store the shape for later and operate on the flattened input
+    # store the shape for later and operate on the flattened input
         
-        shape = x0.shape
-        dtype = x0.dtype
-        x0 = x0.flatten().astype(np.float64)
+    shape = x0.shape
+    dtype = x0.dtype
+    x0 = x0.flatten().astype(np.float64)
 
-        n = len(x0)
-        bounds = [(min_, max_)] * n
+    n = len(x0)
+    bounds = [(min_, max_)] * n
 
-        def distance(x,y):
-            # calculate the distance
-            x = torch.from_numpy(x).double()
-            y = torch.from_numpy(y).double()
+    def distance(x,y):
+        # calculate the distance
+        x = torch.from_numpy(x).double()
+        y = torch.from_numpy(y).double()
 
-            dist_squ = torch.norm(x - y)
-            return dist_squ **2
+        dist_squ = torch.norm(x - y)
+        return dist_squ **2
 
-        def loss(x, c):
-            #calculate the target function 
-            v1 = distance(x0,x)
+    def loss(x, c):
+        #calculate the target function 
+        v1 = distance(x0,x)
             
-            x = x.astype(dtype)
-            x = x.reshape(shape)
-            x = torch.tensor(x)
-            x = x.unsqueeze_(0).float()
+        x = torch.tensor(x.astype(dtype).reshape(shape))
+        x = x.unsqueeze_(0).float()
 
-            predict = model(x)
-
-            v2 = F.nll_loss(predict, target_dist)
+        predict = model(x)
+        v2 = F.nll_loss(predict, target_dist)
             
-            v = c * v1 + v2
-            #print(v)
-            return np.float64(v)
+        v = c * v1 + v2
+        #print(v)
+        return np.float64(v)
 
-        def pending_attack(target_model, adv_exp, target_label):
-            # pending if the attack success
-            adv_exp = adv_exp.reshape(shape).astype(dtype)
-            adv_exp = torch.from_numpy(adv_exp)
-            adv_exp = adv_exp.unsqueeze_(0).float()
+    def pending_attack(target_model, adv_exp, target_label):
+        # pending if the attack success
+        adv_exp = adv_exp.reshape(shape).astype(dtype)
+        adv_exp = torch.from_numpy(adv_exp)
+        adv_exp = adv_exp.unsqueeze_(0).float()
 
-            predict1 = target_model(adv_exp)
-            label = predict1.argmax(dim=1, keepdim=True)
-            if label == target_label:
-                return True
-            else:
-                return False
+        predict1 = target_model(adv_exp)
+        label = predict1.argmax(dim=1, keepdim=True)
+        if label == target_label:
+            return True
+        else:
+            return False
 
-        def lbfgs_b(c):
+    def lbfgs_b(c):
 
-            #initial the variables
-            approx_grad_eps = (max_ - min_) / 100
-            print('in lbfgs_b:', 'c =', c)
+        #initial the variables
+        approx_grad_eps = (max_ - min_) / 100
+        print('in lbfgs_b:', 'c =', c)
 
-            #start optimization
-            optimize_output, f, d = so.fmin_l_bfgs_b(
+        #start optimization
+        optimize_output, f, d = so.fmin_l_bfgs_b(
                 loss,
                 x0,
                 args=(c,),
@@ -112,64 +109,64 @@ def optimize(model, input, label, target_label, bounds, epsilon, maxiter, class_
                 factr = 1e10,  #optimization accuracy
                 maxls = 5,      
                 epsilon = approx_grad_eps)
-            print('finish optimization')
+        print('finish optimization')
           
-            # LBFGS-B does not always exactly respect the boundaries
-            if np.amax(optimize_output) > max_ or np.amin(optimize_output) < min_:   # pragma: no coverage
-                logging.info('Input out of bounds (min, max = {}, {}). Performing manual clip.'.format(
+        # LBFGS-B does not always exactly respect the boundaries
+        if np.amax(optimize_output) > max_ or np.amin(optimize_output) < min_:   # pragma: no coverage
+            logging.info('Input out of bounds (min, max = {}, {}). Performing manual clip.'.format(
                     np.amin(optimize_output), np.amax(optimize_output)))
                 
-                optimize_output = np.clip(optimize_output, min_, max_)
+            optimize_output = np.clip(optimize_output, min_, max_)
 
-            #optimize_output = optimize_output.reshape(shape).astype(dtype)
-            #test_input = torch.from_numpy(optimize_output)
-            #print(test_input)
-            #test_input = test_input.unsqueeze_(0).float()
-            is_adversarial = pending_attack(target_model = model, adv_exp = optimize_output, target_label = target_label)
-            return optimize_output, is_adversarial
+        #optimize_output = optimize_output.reshape(shape).astype(dtype)
+        #test_input = torch.from_numpy(optimize_output)
+        #print(test_input)
+        #test_input = test_input.unsqueeze_(0).float()
+        is_adversarial = pending_attack(target_model = model, adv_exp = optimize_output, target_label = target_label)
+        return optimize_output, is_adversarial
 
-        #x_new, isadv = lbfgs_b(0)
+    #x_new, isadv = lbfgs_b(0)
 
 
-        # finding initial c
-        c = epsilon
-        print('finding initial c:')
+    # finding initial c
+    c = epsilon
+    print('finding initial c:')
 
-        for i in range(30):
-            c = 2 * c
-            x_new, is_adversarial = lbfgs_b(c)
-            if is_adversarial == False:
-                break
+    for i in range(30):
+        c = 2 * c
+        x_new, is_adversarial = lbfgs_b(c)
+        if is_adversarial == False:
+            break
         
-        print('start binary search:')
-        if is_adversarial == True:  # pragma: no cover
-            print('Could not find an adversarial; maybe the model returns wrong gradients')
-            return
+    print('start binary search:')
+    if is_adversarial == True:  # pragma: no cover
+        print('Could not find an adversarial; maybe the model returns wrong gradients')
+        return
         
-        print('c_high:',c)
+    print('c_high:',c)
 
-        # binary search
-        c_low = 0
-        c_high = c
-        while c_high - c_low >= epsilon:
-            print(c_high,' ',c_low)
-            c_half = (c_low + c_high) / 2
-            x_new, is_adversarial = lbfgs_b(c_half)
+    # binary search
+    c_low = 0
+    c_high = c
+    while c_high - c_low >= epsilon:
+        print(c_high,' ',c_low)
+        c_half = (c_low + c_high) / 2
+        x_new, is_adversarial = lbfgs_b(c_half)
           
-            if is_adversarial:
-                c_low = c_half
-            else:
-                c_high = c_half
+        if is_adversarial:
+            c_low = c_half
+        else:
+            c_high = c_half
         
-        x_new, is_adversarial = lbfgs_b(c_low)
-        dis = distance(x_new, x0)
-        mintargetfunc = loss(x_new, c_low)
+    x_new, is_adversarial = lbfgs_b(c_low)
+    dis = distance(x_new, x0)
+    mintargetfunc = loss(x_new, c_low)
 
-        x_new = x_new.astype(dtype)
-        x_new = x_new.reshape(shape)
-        x_new = torch.from_numpy(x_new)
+    x_new = x_new.astype(dtype)
+    x_new = x_new.reshape(shape)
+    x_new = torch.from_numpy(x_new)
         
-        return x_new, dis, mintargetfunc, c_low
+    return x_new, dis, mintargetfunc, c_low
 
 
 
