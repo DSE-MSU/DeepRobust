@@ -16,14 +16,14 @@ class FGM(base_attack):
         super(FGM, self).__init__(model, device)
 
 
-    def generate(self, input, label, **kwargs):
+    def generate(self, image, label, **kwargs):
 
         ## check and parse parameters for attack
-        assert self.check_type_device(input, label)
+        assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
 
         return fgm(self.model,
-                   self.input,
+                   self.image,
                    self.label,
                    self.epsilon,
                    self.order,
@@ -44,15 +44,15 @@ class FGM(base_attack):
 
 
 
-def fgm(model, input, label, epsilon, order, clip_min, clip_max):
+def fgm(model, image, label, epsilon, order, clip_min, clip_max):
 
-    output = model(input)
+    output = model(image)
     loss = F.nll_loss(output, label)
 
     loss.backward()
-    gradient = input.grad
-    gradient = np.array(gradient.cpu().detach())
-    input = np.array(input.cpu().detach())
+    gradient = image.grad
+    gradient = np.array(gradient.cuda().detach())
+    image = np.array(image.cpu().detach())
 
     if order == np.inf:
         d = epsilon * np.sign(gradient)
@@ -61,7 +61,7 @@ def fgm(model, input, label, epsilon, order, clip_min, clip_max):
     else:
         raise ValueError('Other p norms may need other algorithms')
 
-    x_adv = input + d
+    x_adv = image + d
 
     if clip_max == None and clip_min == None:
         clip_max = np.inf

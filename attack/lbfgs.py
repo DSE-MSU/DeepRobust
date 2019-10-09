@@ -12,11 +12,11 @@ class LBFGS(base_attack):
         super(LBFGS, self).__init__(model, device)
         self.target_label = target_label
 
-    def generate(self, input, label, **kwargs):
-        assert self.check_type_device(input, label)
+    def generate(self, image, label, **kwargs):
+        assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         return optimize(self.model, 
-                        self.input, 
+                        self.image, 
                         self.label, 
                         self.target_label, 
                         self.bounds, 
@@ -37,9 +37,9 @@ class LBFGS(base_attack):
         self.bounds = (clip_min, clip_max)
         return True
 
-def optimize(model, input, label, target_label, bounds, epsilon, maxiter, class_num):
-    x_t = input
-    x0 = input[0].numpy()
+def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_num):
+    x_t = image
+    x0 = image[0].numpy()
     min_, max_ = bounds
         
         
@@ -167,6 +167,8 @@ def optimize(model, input, label, target_label, bounds, epsilon, maxiter, class_
     x_new = torch.from_numpy(x_new)
         
     return x_new, dis, mintargetfunc, c_low
+
+
 
 
 
