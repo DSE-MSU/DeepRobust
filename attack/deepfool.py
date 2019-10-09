@@ -4,8 +4,44 @@ import torch as torch
 import copy
 from torch.autograd.gradcheck import zero_gradients
 
+from attack import base_attack
 
-def deepfool(image, net, num_classes=10, overshoot=0.02, max_iter=50):
+
+class DeepFool(base_attack):
+    def __init__(self, model, device = 'cuda' ):
+        super(DeepFool, self).__init__(model, device)
+
+    def generate(self, image, **kwargs):
+
+        #check type device
+        is_cuda = torch.cuda.is_available()
+
+        if is_cuda:
+            print("Using GPU")
+            image = image.cuda()
+            self.model = self.model.cuda()
+        else:
+            print("Using CPU")
+
+        assert self.parse_params(**kwargs)
+        
+        return deepfool(self.model,
+                        image,
+                        self.num_classes,
+                        self.overshoot,
+                        self.max_iter,
+                        is_cuda)
+    
+    def parse_params(self,
+                     num_classes = 10,
+                     overshoot = 0.02,
+                     max_iter = 50):
+        self.num_classes = num_classes
+        self.overshoot = overshoot
+        self.max_iter = max_iter
+        return True
+
+def deepfool(net, image, num_classes, overshoot, max_iter, is_cuda):
 
     """
        :param image: Image of size HxWx3
@@ -15,15 +51,6 @@ def deepfool(image, net, num_classes=10, overshoot=0.02, max_iter=50):
        :param max_iter: maximum number of iterations for deepfool (default = 50)
        :return: minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
     """
-    is_cuda = torch.cuda.is_available()
-
-    if is_cuda:
-        print("Using GPU")
-        image = image.cuda()
-        net = net.cuda()
-    else:
-        print("Using CPU")
-
 
     f_image = net.forward(Variable(image[None, :, :, :], requires_grad=True)).data.cpu().numpy().flatten()
     I = (np.array(f_image)).flatten().argsort()[::-1]

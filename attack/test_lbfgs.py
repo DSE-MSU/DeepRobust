@@ -9,9 +9,9 @@ from PIL import Image
 from fgsm import FGM
 from CNNmodel import Net
 
-model = Net()
-print("Hello")
 
+#load model 
+model = Net()
 model.load_state_dict(torch.load("mnist_cnn.pt", map_location = torch.device('cpu')))
 model.eval()
 
@@ -50,5 +50,6 @@ import matplotlib.pyplot as plt
 
 plt.imshow(AdvExArray[0,0]*255,cmap='gray',vmin=0,vmax=255)
 plt.savefig('advexample.png')
+
 
 
