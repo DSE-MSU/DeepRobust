@@ -4,10 +4,9 @@ import torch as torch
 import copy
 from torch.autograd.gradcheck import zero_gradients
 
-from attack import base_attack
+import attack.base_attack as ba
 
-
-class DeepFool(base_attack):
+class DeepFool(ba.BaseAttack):
     def __init__(self, model, device = 'cuda' ):
         super(DeepFool, self).__init__(model, device)
 

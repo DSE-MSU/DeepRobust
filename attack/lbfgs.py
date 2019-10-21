@@ -4,9 +4,9 @@ import scipy.optimize as so
 import numpy as np
 import torch.nn.functional as F #233
 
-from attack import base_attack
+import attack.base_attack as ba
  
-class LBFGS(base_attack):
+class LBFGS(ba.BaseAttack):
 
     def __init__(self, model, target_label, device = 'cuda' ):  
         super(LBFGS, self).__init__(model, device)
