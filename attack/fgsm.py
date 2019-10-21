@@ -6,10 +6,10 @@ import torch.optim as optim
 import numpy as np
 from numpy import linalg as LA
 
-from attack import base_attack
+import attack.base_attack as ba
 
 
-class FGM(base_attack):
+class FGM(ba.BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 
