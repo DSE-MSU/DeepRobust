@@ -1,40 +1,64 @@
 import numpy as np
+import torch
+import torch.nn as nn
+from torch.autograd import Variable
+import torch.optim as optim
+import torch.nn.functional as F
+import attack.base_attack as ba
 
-from attack import base_attack
+class PGD(ba.BaseAttack):
 
-class LinfPGDAttack(object):
-    def __init__(self, model=None, epsilon=0.3, k=40, a=0.01, 
-        random_start=True):
-        self.model = model
+    def __init__(self, model, device = 'cuda'):
+
+        super(PGD, self).__init__(model, device)
+
+
+    def generate(self, image, label, **kwargs):
+
+        ## check and parse parameters for attack
+        label = label.type(torch.FloatTensor)
+
+        assert self.check_type_device(image, label)
+        assert self.parse_params(**kwargs)
+
+        return pgd_attack(self.model,
+                   self.image,
+                   self.label,
+                   self.epsilon,
+                   self.num_steps,
+                   self.step_size) 
+                   ##default parameter for mnist data set.
+
+    def parse_params(self,
+                     epsilon = 0.3,
+                     num_steps = 40,
+                     step_size = 0.01):
         self.epsilon = epsilon
-        self.k = k
-        self.a = a
-        self.rand = random_start
-        self.loss_fn = nn.CrossEntropyLoss()
+        self.num_steps = num_steps
+        self.step_size = step_size
+        return True
 
-    def perturb(self, X_nat, y):
-        """
-        Given examples (X_nat, y), returns adversarial
-        examples within epsilon of X_nat in l_infinity norm.
-        """
-        if self.rand:
-            X = X_nat + np.random.uniform(-self.epsilon, self.epsilon,
-                X_nat.shape).astype('float32')
-        else:
-            X = np.copy(X_nat)
+def pgd_attack(model,
+                  X,
+                  y,
+                  epsilon,
+                  num_steps,
+                  step_size):
+    out = model(X)
+    err = (out.data.max(1)[1] != y.data).float().sum()
+    X_pgd = Variable(X.data, requires_grad=True)
 
-        for i in range(self.k):
-            X_var = to_var(torch.from_numpy(X), requires_grad=True)
-            y_var = to_var(torch.LongTensor(y))
+    for _ in range(num_steps):
+        opt = optim.SGD([X_pgd], lr=1e-3)
+        opt.zero_grad()
 
-            scores = self.model(X_var)
-            loss = self.loss_fn(scores, y_var)
-            loss.backward()
-            grad = X_var.grad.data.cpu().numpy()
-
-            X += self.a * np.sign(grad)
-
-            X = np.clip(X, X_nat - self.epsilon, X_nat + self.epsilon)
-            X = np.clip(X, 0, 1) # ensure valid pixel range
-
-        return X
+        with torch.enable_grad():
+            loss = nn.CrossEntropyLoss()(model(X_pgd), y)
+        loss.backward()
+        
+        eta = step_size * X_pgd.grad.data.sign()
+        X_pgd = Variable(X_pgd.data + eta, requires_grad=True)
+        eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
+        X_pgd = Variable(X.data + eta, requires_grad=True)
+        X_pgd = Variable(torch.clamp(X_pgd, 0, 1.0), requires_grad=True)
+    return X_pgd
