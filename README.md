@@ -1,2 +1,2 @@
 # adv-learning
-a repository of attack methods and deffences methods with pytorch.
+A repository of attack methods and deffences methods with pytorch.
