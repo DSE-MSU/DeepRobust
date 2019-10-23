@@ -1,16 +1,19 @@
-from __future__ import print_function
-import argparse
 import torch
 import torch.nn as nn
-import torch.nn.functional as F #233
 import torch.optim as optim
 from torchvision import datasets, transforms
+import torch.nn.functional as F
+
 import numpy as np
 from PIL import Image
 
-class Net(nn.Module):
+import models
+import models.CNNmodel.Net
+from attack import fgsm
+
+class pgdNet(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
+        super(pgdNet, self).__init__()
         ##define two convolutional layers
         self.conv1 = nn.Conv2d(1, 20, 5, 1)
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
@@ -28,13 +31,17 @@ class Net(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-
-def train(model, device, train_loader, optimizer, epoch):
+def train(model, orignial_model, device, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
+        
         data, target = data.to(device), target.to(device)
+        adversary = PGD(orignial_model)
+        AdvExArray = adversary.generate(data, target)
+
         optimizer.zero_grad()
-        output = model(data)
+
+        output = model(AdvExArray)
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
@@ -66,4 +73,37 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
 
 
+if __name__ =='__main__':
+    ori_model = Net()
+    print("Hello")
+    ori_model.load_state_dict(torch.load("mnist_cnn.pt"))
+    ori_model.eval()
+    
+    torch.manual_seed(100)
+    device = torch.device("cuda")
+
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('../data', train=True, download=True,
+                     transform=transforms.Compose([transforms.ToTensor()])),
+        batch_size=64,
+        shuffle=True)
+
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('../data', train=False,
+                    transform=transforms.Compose([transforms.ToTensor()])),
+        batch_size=1000,
+        shuffle=True)
+
+    model = pgdNet().to(device)
+    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+
+    save_model = True
+    for epoch in range(1, 5 + 1):     ## 5 batches
+        #print('1',epoch)
+        print(epoch)
+        train(model, ori_model, device, train_loader, optimizer, epoch)
+        test(model, device, test_loader)
+
+        if (save_model):
+            torch.save(model.state_dict(), "mnist_pgdtraining_1.pt")
 

@@ -13,7 +13,6 @@ class PGD(ba.BaseAttack):
 
         super(PGD, self).__init__(model, device)
 
-
     def generate(self, image, label, **kwargs):
 
         ## check and parse parameters for attack
