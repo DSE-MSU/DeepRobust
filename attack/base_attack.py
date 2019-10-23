@@ -18,7 +18,6 @@ class BaseAttack(object):
     def parse_params(self, **kwargs):
         return True
 
-
     def check_type_device(self, image, label):
 
         ################## devices
