@@ -8,7 +8,7 @@ from torchvision import datasets, transforms
 import numpy as np
 from PIL import Image
 
-class CNN_Net(nn.Module):
+class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         ##define two convolutional layers
