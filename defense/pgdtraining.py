@@ -6,9 +6,11 @@ import torch.nn.functional as F
 
 import numpy as np
 from PIL import Image
+import sys
+sys.path.append("..")
+import netmodels.CNNmodel
 
-import models
-import models.CNNmodel.Net
+from netmodels import CNNmodel
 from attack import pgd
 
 class pgdNet(nn.Module):
@@ -36,7 +38,7 @@ def train(model, orignial_model, device, train_loader, optimizer, epoch):
     for batch_idx, (data, target) in enumerate(train_loader):
         
         data, target = data.to(device), target.to(device)
-        adversary = PGD(orignial_model)
+        adversary = pgd.PGD(orignial_model)
         AdvExArray = adversary.generate(data, target)
 
         optimizer.zero_grad()
@@ -74,9 +76,9 @@ def test(model, device, test_loader):
 
 
 if __name__ =='__main__':
-    ori_model = Net()
+    ori_model = CNNmodel.Net()
     print("Hello")
-    ori_model.load_state_dict(torch.load("mnist_cnn.pt"))
+    ori_model.load_state_dict(torch.load("../save_models/mnist_cnn.pt"))
     ori_model.eval()
     
     torch.manual_seed(100)
@@ -95,7 +97,7 @@ if __name__ =='__main__':
         shuffle=True)
 
     model = pgdNet().to(device)
-    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
 
     save_model = True
     for epoch in range(1, 5 + 1):     ## 5 batches
@@ -105,5 +107,5 @@ if __name__ =='__main__':
         test(model, device, test_loader)
 
         if (save_model):
-            torch.save(model.state_dict(), "mnist_pgdtraining_1.pt")
+            torch.save(model.state_dict(), "../save_models/mnist_pgdtraining.pt")
 

@@ -7,7 +7,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 import attack
-from CNNmodel import Net
+from netmodels.CNNmodel import Net
 
 def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwargs):
     test_loss = 0
@@ -33,7 +33,7 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwarg
 
     test_loss /= len(test_loader.dataset)
 
-    print('\Attack Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('Attack Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, batch_num * batch_size,
         100. * correct / (batch_num * batch_size)))
 
@@ -45,6 +45,9 @@ def parameter_parser():
     parser.add_argument("--attack_method", 
                         default = 'PGD_attack', 
                         help = "choose a attack algorithm.")
+    parser.add_argument("--attack_model", 
+                        default = 'mnist_cnn.pt',
+                        help = "choose a attack model.")
     parser.add_argument("--epsilon", type = float, default = 0.3)
     parser.add_argument("--batch_num", type = int, default = 10)
     parser.add_argument("--batch_size", type = int, default = 1000)
@@ -62,7 +65,7 @@ if __name__ == "__main__":
     args = parameter_parser() # read argument and creat an argparse object
     model = Net()
     print("Load network.")
-    model.load_state_dict(torch.load("mnist_cnn.pt"))
+    model.load_state_dict(torch.load("./save_models/"+args.attack_model))
     model.eval()
 
     if(args.attack_method == "PGD_attack"):
