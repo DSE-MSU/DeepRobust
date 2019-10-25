@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.autograd import Variable
 import numpy as np
 from numpy import linalg as LA
 
@@ -15,8 +16,8 @@ class FGM(ba.BaseAttack):
 
         super(FGM, self).__init__(model, device)
 
-
     def generate(self, image, label, **kwargs):
+        label = label.type(torch.FloatTensor)
 
         ## check and parse parameters for attack
         assert self.check_type_device(image, label)
@@ -31,7 +32,7 @@ class FGM(ba.BaseAttack):
                    self.clip_max)
 
     def parse_params(self,
-                     epsilon = 0.1,
+                     epsilon = 0.2,
                      order = np.inf,
                      clip_max = None,
                      clip_min = None):
@@ -42,33 +43,35 @@ class FGM(ba.BaseAttack):
         return True
 
 
-
-
 def fgm(model, image, label, epsilon, order, clip_min, clip_max):
 
-    output = model(image)
-    loss = F.nll_loss(output, label)
+    X_fgsm = Variable(image.data, requires_grad = True)
+    #print(image.data)
+    
+    opt = optim.SGD([X_fgsm], lr=1e-3)
+    opt.zero_grad()
 
+    with torch.enable_grad():
+        loss = nn.CrossEntropyLoss()(model(X_fgsm), label)
     loss.backward()
-    gradient = image.grad
-    gradient = np.array(gradient.cuda().detach())
-    image = np.array(image.cpu().detach())
 
+    #print(X_fgsm)
+    #print(X_fgsm.grad)
     if order == np.inf:
-        d = epsilon * np.sign(gradient)
+        d = epsilon * X_fgsm.grad.data.sign()
     elif order ==2:
-        d = epsilon * gradient/LA.norm(gradient)
+        d = epsilon * gradient.data()/LA.norm(gradient.data())
     else:
         raise ValueError('Other p norms may need other algorithms')
 
-    x_adv = image + d
+    x_adv = X_fgsm + d
 
     if clip_max == None and clip_min == None:
         clip_max = np.inf
         clip_min = -np.inf
 
-    x_adv = np.clip(x_adv, a_min=clip_min, a_max=clip_max)
+    x_adv = Variable(torch.clamp(x_adv,clip_min, clip_max))
 
-    return (x_adv)
+    return x_adv
 
 
