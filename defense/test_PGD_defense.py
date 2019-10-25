@@ -1,4 +1,3 @@
-from fgsm import FGM
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,17 +6,19 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
-from pgd import PGD
-from CNNmodel import Net
+import sys
+sys.path.append("..")
+from attack import pgd
+from netmodels.CNNmodel import Net
 
 model = Net()
 print("Load orignial model...")
-model.load_state_dict(torch.load("mnist_cnn.pt"))
+model.load_state_dict(torch.load("../save_models/mnist_cnn.pt"))
 model.eval()
 
 defensemodel = Net()
 print("Load pgdtraining model...")
-defensemodel.load_state_dict(torch.load("mnist_pgdtraining.pt"))
+defensemodel.load_state_dict(torch.load("../save_models/mnist_pgdtraining.pt"))
 defensemodel.eval()
 
 xx = datasets.MNIST('../data').data[3333]
@@ -31,7 +32,7 @@ yy = yy.unsqueeze_(0).float()
 predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
 
-adversary = PGD(model)
+adversary = pgd.PGD(model)
 AdvExArray = adversary.generate(xx,yy, epsilon = 0.3)
 
 predict1 = model(AdvExArray)
