@@ -64,9 +64,10 @@ if __name__ == "__main__":
     # read arguments
     args = parameter_parser() # read argument and creat an argparse object
     model = Net()
-    print("Load network.")
+
     model.load_state_dict(torch.load("./save_models/"+args.attack_model))
     model.eval()
+    print("Load network.")
 
     #load datasets
     test_loader = torch.utils.data.DataLoader(
@@ -74,6 +75,7 @@ if __name__ == "__main__":
                       transform = transforms.Compose([transforms.ToTensor()])),
                       batch_size = args.batch_size,
                       shuffle = True)
+    print("Load Dataset")
     
     if(args.attack_method == "PGD_attack"):
         attack_method = attack.pgd.PGD(model)
