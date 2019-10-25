@@ -7,11 +7,11 @@ from torchvision import datasets,models,transforms
 from PIL import Image
 
 from attack import pgd
-import models.CNNmodel.Net
+from netmodels.CNNmodel import Net
 
 model = Net()
-print("Hello")
-model.load_state_dict(torch.load("mnist_cnn.pt"))
+print("Load network")
+model.load_state_dict(torch.load("./save_models/mnist_cnn.pt"))
 model.eval()
 
 xx = datasets.MNIST('../data',train = False).data[1000:1001]
@@ -38,7 +38,7 @@ print(predict0.cpu().eq(predict1.cpu().view_as(predict0)).sum().item())
 AdvExArray = AdvExArray.cpu().detach().numpy()
 
 import matplotlib.pyplot as plt
-plt.imshow(AdvExArray[1,0]*255, cmap='gray', vmin = 0, vmax = 255)
+plt.imshow(AdvExArray[0,0]*255, cmap='gray', vmin = 0, vmax = 255)
 plt.savefig('advexample_pgd.png')
 
 

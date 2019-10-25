@@ -46,7 +46,10 @@ def pgd_attack(model,
                   step_size):
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
+    
     X_pgd = Variable(X.data, requires_grad=True)
+    X_random = torch.Tensor(X_pgd.shape).uniform_(-epsilon, epsilon).to(X_pgd.device)
+    X_pgd = Variable(torch.clamp(X_pgd + X_random, 0, 1.0), requires_grad=True)
 
     for _ in range(num_steps):
         opt = optim.SGD([X_pgd], lr=1e-3)
@@ -55,7 +58,6 @@ def pgd_attack(model,
         with torch.enable_grad():
             loss = nn.CrossEntropyLoss()(model(X_pgd), y)
         loss.backward()
-        
         eta = step_size * X_pgd.grad.data.sign()
         X_pgd = Variable(X_pgd.data + eta, requires_grad=True)
         eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
