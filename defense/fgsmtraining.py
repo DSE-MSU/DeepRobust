@@ -7,13 +7,14 @@ import torch.nn.functional as F
 import numpy as np
 from PIL import Image
 
-import models
-import models.CNNmodel.Net
-from attack import fgsm
+import sys
+sys.path.append("..")
+from netmodels import CNNmodel
+import attack
 
-class pgdNet(nn.Module):
+class fgsmNet(nn.Module):
     def __init__(self):
-        super(pgdNet, self).__init__()
+        super(fgsmNet, self).__init__()
         ##define two convolutional layers
         self.conv1 = nn.Conv2d(1, 20, 5, 1)
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
@@ -31,15 +32,15 @@ class pgdNet(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-def train(model, orignial_model, device, train_loader, optimizer, epoch):
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         
-        data, target = data.to(device), target.to(device)
-        adversary = PGD(orignial_model)
-        AdvExArray = adversary.generate(data, target)
-
         optimizer.zero_grad()
+        
+        data, target = data.to(device), target.to(device)
+        adversary = attack.fgsm.FGM(model)
+        AdvExArray = adversary.generate(data, target)
 
         output = model(AdvExArray)
         loss = F.nll_loss(output, target)
@@ -74,10 +75,10 @@ def test(model, device, test_loader):
 
 
 if __name__ =='__main__':
-    ori_model = Net()
-    print("Hello")
-    ori_model.load_state_dict(torch.load("mnist_cnn.pt"))
-    ori_model.eval()
+    # model = CNNmodel.Net()
+    # print("Load network")
+    # model.load_state_dict(torch.load("../save_models/mnist_cnn.pt"))
+    # model.eval()
     
     torch.manual_seed(100)
     device = torch.device("cuda")
@@ -94,16 +95,16 @@ if __name__ =='__main__':
         batch_size=1000,
         shuffle=True)
 
-    model = pgdNet().to(device)
-    optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+    model = CNNmodel.Net().to(device)
+    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
 
     save_model = True
-    for epoch in range(1, 5 + 1):     ## 5 batches
+    for epoch in range(1, 100 + 1):     ## 5 batches
         #print('1',epoch)
         print(epoch)
-        train(model, ori_model, device, train_loader, optimizer, epoch)
+        train(model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
 
         if (save_model):
-            torch.save(model.state_dict(), "mnist_pgdtraining_1.pt")
+            torch.save(model.state_dict(), "../save_models/mnist_fgsmtraining.pt")
 

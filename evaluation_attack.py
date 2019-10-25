@@ -19,7 +19,8 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwarg
         for count, (data, target) in enumerate(test_loader):
             if count > batch_num:
                 break
-            
+            print('batch:{}'.format(count))
+
             data, target = data.to(device), target.to(device)
             adv_example = attackmethod.generate(data, target, **kwargs)
             
@@ -59,7 +60,6 @@ def parameter_parser():
     return parser.parse_args()
 
 
-
 if __name__ == "__main__":
     # read arguments
     args = parameter_parser() # read argument and creat an argparse object
@@ -68,17 +68,18 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load("./save_models/"+args.attack_model))
     model.eval()
 
-    if(args.attack_method == "PGD_attack"):
-        attack_method = attack.pgd.PGD(model)
-
-        #load datasets
-        test_loader = torch.utils.data.DataLoader(
+    #load datasets
+    test_loader = torch.utils.data.DataLoader(
                       datasets.MNIST('../data', train=False,
                       transform = transforms.Compose([transforms.ToTensor()])),
                       batch_size = args.batch_size,
                       shuffle = True)
-        
-        #run attack on the train set
-        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader) 
+    
+    if(args.attack_method == "PGD_attack"):
+        attack_method = attack.pgd.PGD(model)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
 
+    if(args.attack_method == "FGSM_attack"):
+        attack_method = attack.fgsm.FGM(model)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
 

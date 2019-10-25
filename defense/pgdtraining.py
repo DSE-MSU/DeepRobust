@@ -33,26 +33,33 @@ class pgdNet(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-def train(model, orignial_model, device, train_loader, optimizer, epoch):
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
+    correct = 0
+    bs = train_loader.batch_size
+    
     for batch_idx, (data, target) in enumerate(train_loader):
         
-        data, target = data.to(device), target.to(device)
-        adversary = pgd.PGD(orignial_model)
-        AdvExArray = adversary.generate(data, target)
-
         optimizer.zero_grad()
+        data, target = data.to(device), target.to(device)
+        adversary = pgd.PGD(model)
+        AdvExArray = adversary.generate(data, target, epsilon = 0.3, num_steps = 40)
 
         output = model(AdvExArray)
         loss = F.nll_loss(output, target)
         loss.backward()
+
         optimizer.step()
+        
+        pred = output.argmax(dim = 1, keepdim = True)
+        correct += pred.eq(target.view_as(pred)).sum().item()
 
         #print every 10 
         if batch_idx % 10 == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                       100. * batch_idx / len(train_loader), loss.item()))
+                       100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(10*bs)))
+            correct = 0
 
 
 def test(model, device, test_loader):
@@ -65,7 +72,7 @@ def test(model, device, test_loader):
             data, target = data.to(device), target.to(device)
             output = model(data)
             test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
@@ -76,10 +83,10 @@ def test(model, device, test_loader):
 
 
 if __name__ =='__main__':
-    ori_model = CNNmodel.Net()
-    print("Hello")
-    ori_model.load_state_dict(torch.load("../save_models/mnist_cnn.pt"))
-    ori_model.eval()
+    # model = CNNmodel.Net()
+    # print("Load network")
+    # model.load_state_dict(torch.load("../save_models/mnist_cnn.pt"))
+    # model.eval()
     
     torch.manual_seed(100)
     device = torch.device("cuda")
@@ -87,7 +94,7 @@ if __name__ =='__main__':
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('../data', train=True, download=True,
                      transform=transforms.Compose([transforms.ToTensor()])),
-        batch_size=64,
+        batch_size=100,
         shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
@@ -96,14 +103,13 @@ if __name__ =='__main__':
         batch_size=1000,
         shuffle=True)
 
-    model = pgdNet().to(device)
+    model = CNNmodel.Net().to(device)
     optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
 
     save_model = True
-    for epoch in range(1, 5 + 1):     ## 5 batches
-        #print('1',epoch)
+    for epoch in range(1, 100 + 1):     ## 5 batches
         print(epoch)
-        train(model, ori_model, device, train_loader, optimizer, epoch)
+        train(model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
 
         if (save_model):
