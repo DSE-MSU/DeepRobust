@@ -1,8 +1,8 @@
-# Attack Methods
-1.LBFGS attack
-2.PGD attack
-3.FGSM attack
-4.DeepFool attack
+# Attack Methods  
+  -LBFGS attack
+  -PGD attack
+  -FGSM attack
+  -DeepFool attack
 
 # Defense Methods
 1.PGD training
