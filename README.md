@@ -10,7 +10,7 @@
 | Defense Methods | Defense Type | Apply Domain | Link |
 |-----------------|--------------|--------------|------|
 | FGSM training | Adverserial Training | Image Classification | [Towards Deep Learning Models Resistant to Adversarial Attacks](https://arxiv.org/pdf/1706.06083.pdf) |
-| PGD training | Adverserial Training | Image Classification | [Intriguing Properties of Neural Networks(https://arxiv.org/pdf/1312.6199.pdf?not-changed) |
+| PGD training | Adverserial Training | Image Classification | [Intriguing Properties of Neural Networks](https://arxiv.org/pdf/1312.6199.pdf?not-changed)|
 | YOPO | Adverserial Training | Image Classification | [You Only Propagate Once: Accelerating Adversarial Training via Maximal Principle](https://arxiv.org/pdf/1905.00877.pdf) |
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
 
