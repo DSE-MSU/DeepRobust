@@ -7,10 +7,6 @@
 | DeepFool attack | White-Box | Image Classification | [DeepFool: a simple and accurate method to fool deep neural network](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Moosavi-Dezfooli_DeepFool_A_Simple_CVPR_2016_paper.pdf) |
 
 # Defense Methods
-- PGD training
-- FGSM training
-- YOPO
-- TRADES
 | Defense Methods | Defense Type | Apply Domain | Link |
 |-----------------|--------------|--------------|------|
 | FGSM training | Adverserial Training | Image Classification | [Towards Deep Learning Models Resistant to Adversarial Attacks
