@@ -14,5 +14,14 @@
 | YOPO | Adverserial Training | Image Classification | [You Only Propagate Once: Accelerating Adversarial Training via Maximal Principle](https://arxiv.org/pdf/1905.00877.pdf) |
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
 
+# Support Datasets
+- MNIST
+- CIFAR-10
+- ImageNet
+
+# Support Networks
+- SampleCNN
+- ResNet
+
 # Our Review for Adverserial Attacks and Defenses
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
