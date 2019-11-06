@@ -70,18 +70,36 @@ if __name__ == "__main__":
     print("Load network.")
 
     #load datasets
-    test_loader = torch.utils.data.DataLoader(
-                      datasets.MNIST('../data', train=False,
-                      transform = transforms.Compose([transforms.ToTensor()])),
-                      batch_size = args.batch_size,
-                      shuffle = True)
-    print("Load Dataset")
+    if(args.attack_method == "MNIST"):
+        test_loader = torch.utils.data.DataLoader(
+                        datasets.MNIST('../data', train=False,
+                        transform = transforms.Compose([transforms.ToTensor()])),
+                        batch_size = args.batch_size,
+                        shuffle = True)
+        print("Load MNIST Dataset")
+    
+    elif(args.attack_method == "CIFAR"):
+        test_loader = torch.utils.data.DataLoader(
+                        datasets.CIFAR10('../data', train=False,
+                        transform = transforms.Compose([transforms.ToTensor()])),
+                        batch_size = args.batch_size,
+                        shuffle = True)
+        classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+        print("Load CIFAR10 Dataset")
+
+    elif(args.attack_method == "ImageNet"):
+        test_loader = torch.utils.data.DataLoader(
+                        datasets.CIFAR10('../data', train=False,
+                        transform = transforms.Compose([transforms.ToTensor()])),
+                        batch_size = args.batch_size,
+                        shuffle = True)
+        print("Load ImageNet Dataset")      
+
     
     if(args.attack_method == "PGD_attack"):
         attack_method = attack.pgd.PGD(model)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
-
-    if(args.attack_method == "FGSM_attack"):
+    elif(args.attack_method == "FGSM_attack"):
         attack_method = attack.fgsm.FGM(model)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
 
