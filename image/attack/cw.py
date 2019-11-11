@@ -35,15 +35,16 @@ def to_model_space(x):
 class CarliniWagner(base.BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
+        super()
         self.model = model
         self.device = device
     
     def generate(self, image, label, **kwargs):
 
         assert self.parse_params(**kwargs)
-        return cw(self.model, image, label)
+        return cw(self.model, self.image, self.label, )
 
-    def parse_params(epsilon = 1.0, ord_ = 2, T = 2, alpha = 0.9, min_prob = 0, clip):
+    def parse_params(confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
         self.epsilon = epsilon
         self.ord_ = ord_
         self.T = T
@@ -51,4 +52,6 @@ class CarliniWagner(base.BaseAttack):
         self.clip = clip
         return True
 
-    def cw(self, )
+def cw(self, model, image, label, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+
+    self. 
