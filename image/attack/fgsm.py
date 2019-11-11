@@ -7,10 +7,10 @@ from torch.autograd import Variable
 import numpy as np
 from numpy import linalg as LA
 
-import attack.base_attack as ba
+import attack.base_attack as base
 
 
-class FGM(ba.BaseAttack):
+class FGM(base.BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 
