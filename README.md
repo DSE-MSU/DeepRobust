@@ -1,6 +1,16 @@
 # Our Review for Adverserial Attacks and Defenses
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
+```
+@article{xu2019adversarial,
+  title={Adversarial attacks and defenses in images, graphs and text: A review},
+  author={Xu, Han and Ma, Yao and Liu, Haochen and Deb, Debayan and Liu, Hui and Tang, Jiliang and Jain, Anil},
+  journal={arXiv preprint arXiv:1909.08072},
+  year={2019}
+}
+```
+
+
 # Attack Methods  
 |   Attack Methods   | Attack Type | Apply Domain | Links |
 |--------------------|-------------|--------------|------|
