@@ -5,9 +5,9 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.nn.functional as F
 
-import attack.base_attack as ba
+import attack.base_attack as base
 
-class PGD(ba.BaseAttack):
+class PGD(base.BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 
