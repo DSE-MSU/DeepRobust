@@ -1,8 +1,9 @@
 # RobustTorch
-For more detile of attack and defense, You can read this paper.
+For more details about attacks and defenses, You can read this paper.
+
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
-We would be glad if you find our work useful and cite this paper.
+We would be glad if you find our work useful and cite the paper.
 
 ```
 @article{xu2019adversarial,
@@ -39,5 +40,3 @@ We would be glad if you find our work useful and cite this paper.
 - SampleCNN
 - ResNet
 
-# Our Review for Adverserial Attacks and Defenses
-[Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
