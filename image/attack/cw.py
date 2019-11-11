@@ -44,7 +44,7 @@ class CarliniWagner(base.BaseAttack):
         assert self.parse_params(**kwargs)
         return cw(self.model, self.image, self.label, )
 
-    def parse_params(confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+    def parse_params(confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate, abort_early):
         self.epsilon = epsilon
         self.ord_ = ord_
         self.T = T
@@ -52,6 +52,37 @@ class CarliniWagner(base.BaseAttack):
         self.clip = clip
         return True
 
-def cw(self, model, image, label, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+    def to_attack_space(x):
+        # map from [min_, max_] to [-1, +1]
+        # x'=(x- 0.5 * (max+min) / 0.5 * (max-min))
+        a = (self.clip_min + self.clip_max) / 2
+        b = (self.clip_max - self.clip_min) / 2
+        x = (x - a) / b
 
-    self. 
+        # from [-1, +1] to approx. (-1, +1)
+        x = x * 0.999999
+
+        # from (-1, +1) to (-inf, +inf)
+        return np.arctanh(x)
+
+    def to_model_space(x):
+        """Transforms an input from the attack space
+        to the model space. This transformation and
+        the returned gradient are elementwise."""
+
+        # from (-inf, +inf) to (-1, +1)
+        x = np.tanh(x)
+
+        grad = 1 - np.square(x)
+
+        # map from (-1, +1) to (min_, max_)
+        a = (self.clip_min + self.clip_max) / 2
+        b = (self.clip_max - self.clip_min) / 2
+        x = x * b + a
+
+        grad = grad * b
+        return x, grad
+
+    def cw(self, model, image, label, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+
+    
