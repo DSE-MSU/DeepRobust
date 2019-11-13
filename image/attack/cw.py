@@ -85,6 +85,7 @@ class CarliniWagner(base.BaseAttack):
         return x, grad
 
     def cw(self, model, image, label, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+<<<<<<< HEAD
         
         #change the input image
         img_tanh = to_attack_space(image)
@@ -227,4 +228,7 @@ class AdamOptimizer:
 
         return -learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
     
+=======
+
+>>>>>>> a1798b13d14ad1b03ede62a7407e03f42242fa4d
     
