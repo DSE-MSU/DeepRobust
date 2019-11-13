@@ -27,6 +27,16 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
+    
+    def get_logits(self, x)
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = x.view(-1, 4* 4 * 50)
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
 
 
 def train(model, device, train_loader, optimizer, epoch):
