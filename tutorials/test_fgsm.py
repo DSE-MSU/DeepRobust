@@ -6,7 +6,7 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 from attack import fgsm
-from netmodels import CNNmodel
+from DeepRobust.image.netmodels.CNNmodel import Net
 
 model = CNNmodel.Net()
 print("Load network")
