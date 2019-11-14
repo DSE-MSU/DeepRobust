@@ -7,7 +7,7 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 from fgsm import FGM
-from CNNmodel import Net
+from DeepRobust.image.netmodels.CNNmodel import Net
 
 
 #load model 

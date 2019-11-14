@@ -11,8 +11,10 @@ from torch.autograd import Variable
 import math
 import torchvision.models as models
 from PIL import Image
-from deepfool import DeepFool
 import os
+
+from DeepRobust.image.attack.deepfool import DeepFool
+
 
 #load pretrained model
 net = models.resnet34(pretrained=True)
