@@ -5,9 +5,9 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.nn.functional as F
 
-import attack.base_attack as base
+from DeepRobust.image.attack.base_attack import BaseAttack
 
-class PGD(base.BaseAttack):
+class PGD(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 
