@@ -7,7 +7,7 @@ from torchvision import datasets,models,transforms
 from PIL import Image
 
 from attack import pgd
-from netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNNmodel import Net
 
 model = Net()
 print("Load network")
