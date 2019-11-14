@@ -7,10 +7,9 @@ from torch.autograd import Variable
 import numpy as np
 from numpy import linalg as LA
 
-import attack.base_attack as base
+from DeepRobust.image.attack.base_attack import BaseAttack
 
-
-class FGM(base.BaseAttack):
+class FGM(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 

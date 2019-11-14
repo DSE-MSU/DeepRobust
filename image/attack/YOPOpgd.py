@@ -5,9 +5,9 @@ from torch.autograd import Variable
 import torch.optim as optim
 import torch.nn.functional as F
 
-import attack.base_attack as base
+from DeepRobust.image.attack.base_attack import BaseAttack
 
-class FASTPGD(base.BaseAttack):
+class FASTPGD(BaseAttack):
     # ImageNet pre-trained mean and std
     # _mean = torch.tensor(np.array([0.485, 0.456, 0.406]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis])
     # _std = torch.tensor(np.array([0.229, 0.224, 0.225]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis])
