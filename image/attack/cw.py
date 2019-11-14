@@ -1,7 +1,9 @@
-import pytorch as torch
+import torch
 from torch import optim
 
-import attack.base_attack as base
+import logging
+
+from DeepRobust.image.attack.base_attack import BaseAttack
 
 def to_attack_space(x):
     # map from [min_, max_] to [-1, +1]
@@ -33,7 +35,7 @@ def to_model_space(x):
     grad = grad * b
     return x, grad
 
-class CarliniWagner(base.BaseAttack):
+class CarliniWagner(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
         super()
@@ -108,9 +110,10 @@ class CarliniWagner(base.BaseAttack):
 
             for iteration in range(max_iterations):
                 img_adv, adv_grid = to_model_space(img_tanh + perturbation)
-                logits = model.
+                output = model.get_logits(img_adv)
+                is_adversarial = pending_attack(img_adv)
                 loss, loss_grad = self.loss_function(
-                    c, a, img_adv, logits, img_ori, confidence, clip_min, clip_max 
+                    c, a, img_adv, output, img_ori, confidence, clip_min, clip_max 
                 )
                 
                 gradient = adv_grid * loss_grid
@@ -129,6 +132,8 @@ class CarliniWagner(base.BaseAttack):
                 c *= 10
             else:
                 c = (c_high + c_low) / 2
+
+        return img_adv
 
     @classmethod
     def loss_function(
@@ -176,10 +181,19 @@ class CarliniWagner(base.BaseAttack):
         is passed as `exclude`."""
         other_logits = logits - onehot_like(logits, exclude, value=np.inf)
         return np.argmax(other_logits)
+    
+    def pending_attack(target_model, adv_exp, target_label):
+        # pending if the attack success
+        adv_exp = adv_exp.reshape(shape).astype(dtype)
+        adv_exp = torch.from_numpy(adv_exp)
+        adv_exp = adv_exp.unsqueeze_(0).float()
 
-
-
-
+        predict1 = target_model(adv_exp)
+        label = predict1.argmax(dim=1, keepdim=True)
+        if label == target_label:
+            return True
+        else:
+            return False
 
 class AdamOptimizer:
     """Basic Adam optimizer implementation that can minimize w.r.t.

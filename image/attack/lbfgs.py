@@ -4,9 +4,9 @@ import scipy.optimize as so
 import numpy as np
 import torch.nn.functional as F #233
 
-import attack.base_attack as base
+from DeepRobust.image.attack.base_attack import BaseAttack
  
-class LBFGS(base.BaseAttack):
+class LBFGS(BaseAttack):
 
     def __init__(self, model, target_label, device = 'cuda' ):  
         super(LBFGS, self).__init__(model, device)
@@ -167,9 +167,6 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
     x_new = torch.from_numpy(x_new)
         
     return x_new, dis, mintargetfunc, c_low
-
-
-
 
 
 
