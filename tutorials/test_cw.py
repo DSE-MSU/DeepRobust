@@ -1,4 +1,4 @@
-from image.attack import cw
+from DeepRobust.image.attack.cw import CarliniWagner
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,7 +8,6 @@ from torchvision import datasets,models,transforms
 from PIL import Image
 from netmodels import CNNmodel
 import CNNmodel.net as Net
-
 
 #load model 
 model = Net()
