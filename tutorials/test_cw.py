@@ -19,7 +19,7 @@ xx = xx.unsqueeze_(0).float()/255
 xx = xx.unsqueeze_(0).float()
 
 ## Set Targetå
-yy = datasets.MNIST('../data').targets[8888]
+yy = datasets.MNIST('../image/data').targets[8888]
 yy = yy.float()
 
 cw_params = {
