@@ -1,4 +1,4 @@
-# RobustTorch
+# DeepRobust
 For more details about attacks and defenses, you can read this paper.
 
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
