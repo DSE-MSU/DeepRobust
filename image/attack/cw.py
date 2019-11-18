@@ -1,61 +1,59 @@
 import torch
 from torch import optim
-
+import numpy as np
 import logging
 
 from DeepRobust.image.attack.base_attack import BaseAttack
-
-def to_attack_space(x):
-    # map from [min_, max_] to [-1, +1]
-    a = (min_ + max_) / 2
-    b = (max_ - min_) / 2
-    x = (x - a) / b
-
-    # from [-1, +1] to approx. (-1, +1)
-    x = x * 0.999999
-
-    # from (-1, +1) to (-inf, +inf)
-    return np.arctanh(x)
-
-def to_model_space(x):
-    """Transforms an input from the attack space
-    to the model space. This transformation and
-    the returned gradient are elementwise."""
-
-    # from (-inf, +inf) to (-1, +1)
-    x = np.tanh(x)
-
-    grad = 1 - np.square(x)
-
-    # map from (-1, +1) to (min_, max_)
-    a = (min_ + max_) / 2
-    b = (max_ - min_) / 2
-    x = x * b + a
-
-    grad = grad * b
-    return x, grad
+from DeepRobust.image.utils import onehot_like
 
 class CarliniWagner(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
-        super()
+        super(CarliniWagner, self).__init__(model, device)
         self.model = model
         self.device = device
     
     def generate(self, image, label, **kwargs):
-
+        assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
-        return cw(self.model, self.image, self.label, )
+        return self.cw(self.model, 
+                  self.image, 
+                  self.label,
+                  self.target,
+                  self.confidence,
+                  self.clip_min,
+                  self.clip_min,
+                  self.max_iterations,
+                  self.initial_const,
+                  self.binary_search_steps,
+                  self.learning_rate
+                  )
 
-    def parse_params(confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate, abort_early):
-        self.epsilon = epsilon
-        self.ord_ = ord_
-        self.T = T
-        self.alpha = alpha
-        self.clip = clip
+    def parse_params(self,
+                     target,
+                     classnum,
+                     confidence, 
+                     clip_max, 
+                     clip_min, 
+                     max_iterations, 
+                     initial_const, 
+                     binary_search_steps, 
+                     learning_rate, 
+                     abort_early):
+
+        self.target = target
+        self.classnum = classnum
+        self.confidence = confidence
+        self.clip_max = clip_max
+        self.clip_min = clip_min
+        self.max_iterations = max_iterations
+        self.initial_const = initial_const
+        self.binary_search_steps = binary_search_steps
+        self.learning_rate = learning_rate
+        self.abort_early = abort_early
         return True
 
-    def to_attack_space(x):
+    def to_attack_space(self, x):
         # map from [min_, max_] to [-1, +1]
         # x'=(x- 0.5 * (max+min) / 0.5 * (max-min))
         a = (self.clip_min + self.clip_max) / 2
@@ -68,7 +66,7 @@ class CarliniWagner(BaseAttack):
         # from (-1, +1) to (-inf, +inf)
         return np.arctanh(x)
 
-    def to_model_space(x):
+    def to_model_space(self, x):
         """Transforms an input from the attack space
         to the model space. This transformation and
         the returned gradient are elementwise."""
@@ -86,11 +84,12 @@ class CarliniWagner(BaseAttack):
         grad = grad * b
         return x, grad
 
-    def cw(self, model, image, label, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
+    def cw(self, model, image, label, target, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
         
         #change the input image
-        img_tanh = to_attack_space(image)
-        img_ori ,_ = to_model_space(img_tanh)
+        img_tanh = self.to_attack_space(image.cpu())
+        img_ori ,_ = self.to_model_space(img_tanh)
+        img_ori = img_ori.to(self.device)
 
         #do binary search
         c = initial_const
@@ -103,17 +102,19 @@ class CarliniWagner(BaseAttack):
             #initialize perturbation
             perturbation = np.zeros_like(img_tanh)
 
-            optimizer = AdamOptimizer(advexample.shape)
+            optimizer = AdamOptimizer(img_tanh.shape)
             
             is_adversarial = False
             loss = np.inf
 
             for iteration in range(max_iterations):
-                img_adv, adv_grid = to_model_space(img_tanh + perturbation)
+                img_adv, adv_grid = self.to_model_space(img_tanh + torch.from_numpy(perturbation))
+                img_adv = img_adv.to(self.device)
+                adv_grid = adv_grid.to(self.device)
                 output = model.get_logits(img_adv)
-                is_adversarial = pending_attack(img_adv)
+                is_adversarial = self.pending_f(img_adv)
                 loss, loss_grad = self.loss_function(
-                    c, a, img_adv, output, img_ori, confidence, clip_min, clip_max 
+                    img_adv, c, self.target, img_ori, self.confidence, self.clip_min, self.clip_max 
                 )
                 
                 gradient = adv_grid * loss_grid
@@ -135,69 +136,75 @@ class CarliniWagner(BaseAttack):
 
         return img_adv
 
-    @classmethod
     def loss_function(
-        cls, const, a, x, logits, reconstructed_original, confidence, min_, max_
+        self, w, const, target, reconstructed_original, confidence, min_, max_
     ):
         """Returns the loss and the gradient of the loss w.r.t. x,
         assuming that logits = model(x)."""
 
-        targeted = a.target_class is not None
-        if targeted:
-            c_minimize = cls.best_other_class(logits, a.target_class)
-            c_maximize = a.target_class
-        else:
-            c_minimize = a.original_class
-            c_maximize = cls.best_other_class(logits, a.original_class)
+        ## get the output of model before softmax
+        w.requires_grad = True
+        logits = self.model.get_logits(self.to_model_space(w)).to(self.device)
 
-        is_adv_loss = logits[c_minimize] - logits[c_maximize]
+        ## find the largest class except the target class
+        targetlabel_mask = (torch.from_numpy(onehot_like(np.zeros(self.classnum), target))).double()
+        secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).double().to(self.device)
+        
+        secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy())
+
+        # print(logits)
+        # print(secondlargest)
+        # print(target)
+        # print(targetlabel_mask)
+        # print(secondlargest_mask)
+        # print((logits.double() * secondlargest_mask).cpu().detach().numpy())
+        
+        is_adv_loss = logits[0][secondlargest] - logits[0][target]
 
         # is_adv is True as soon as the is_adv_loss goes below 0
         # but sometimes we want additional confidence
         is_adv_loss += confidence
+
+
+        if is_adv_loss == 0:
+            is_adv_loss_grad = 0
+        else:
+            is_adv_loss.backward()
+            is_adv_loss_grad = w.grad
+
         is_adv_loss = max(0, is_adv_loss)
 
         s = max_ - min_
-        squared_l2_distance = np.sum((x - reconstructed_original) ** 2) / s ** 2
+        squared_l2_distance = np.sum( ((self.to_model_space(w) - reconstructed_original) ** 2).cpu().numpy() ) / s ** 2
         total_loss = squared_l2_distance + const * is_adv_loss
 
-        # calculate the gradient of total_loss w.r.t. x
-        logits_diff_grad = np.zeros_like(logits)
-        logits_diff_grad[c_minimize] = 1
-        logits_diff_grad[c_maximize] = -1
-        is_adv_loss_grad = yield from a.backward_one(logits_diff_grad, x)
-        assert is_adv_loss >= 0
-        if is_adv_loss == 0:
-            is_adv_loss_grad = 0
 
-        squared_l2_distance_grad = (2 / s ** 2) * (x - reconstructed_original)
-
+        squared_l2_distance_grad = (2 / s ** 2) * (self.to_model_space(w) - reconstructed_original)
+        
+        print(is_adv_loss_grad)
         total_loss_grad = squared_l2_distance_grad + const * is_adv_loss_grad
         return total_loss, total_loss_grad
-
-    @staticmethod
-    def best_other_class(logits, exclude):
-        """Returns the index of the largest logit, ignoring the class that
-        is passed as `exclude`."""
-        other_logits = logits - onehot_like(logits, exclude, value=np.inf)
-        return np.argmax(other_logits)
     
-    def pending_attack(target_model, adv_exp, target_label):
-        # pending if the attack success
-        adv_exp = adv_exp.reshape(shape).astype(dtype)
-        adv_exp = torch.from_numpy(adv_exp)
-        adv_exp = adv_exp.unsqueeze_(0).float()
+    def pending_f(self, x_p):
+        """Pending is the loss function is less than 0
+        """
+        targetlabel_mask = torch.from_numpy(onehot_like(np.zeros(self.classnum), self.target))
+        secondlargest_mask = torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask
+        targetlabel_mask = targetlabel_mask.to(self.device)
+        secondlargest_mask = secondlargest_mask.to(self.device)
+        
+        Zx_i = np.max((self.model.get_logits(x_p).double().to(self.device) * secondlargest_mask).cpu().detach().numpy())
+        Zx_t = np.max((self.model.get_logits(x_p).double().to(self.device) * targetlabel_mask).cpu().detach().numpy())
 
-        predict1 = target_model(adv_exp)
-        label = predict1.argmax(dim=1, keepdim=True)
-        if label == target_label:
+        if ( Zx_i - Zx_t  < - self.confidence):
             return True
         else:
             return False
 
+
 class AdamOptimizer:
     """Basic Adam optimizer implementation that can minimize w.r.t.
-    a single variable.
+    a single variable. 
     Parameters
     ----------
     shape : tuple
