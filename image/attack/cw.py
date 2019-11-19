@@ -91,35 +91,43 @@ class CarliniWagner(BaseAttack):
         img_ori ,_ = self.to_model_space(img_tanh)
         img_ori = img_ori.to(self.device)
 
-        #do binary search
+        #binary search initialization
         c = initial_const
         c_low = 0
         c_high = np.inf
+        found_adv = False
+        last_loss = np.inf
 
         for step in range(max_iterations):
-            print("starting optimization.")
 
             #initialize perturbation
-            perturbation = np.zeros_like(img_tanh)
+            perturbation = torch.from_numpy(np.zeros_like(img_tanh))
 
             optimizer = AdamOptimizer(img_tanh.shape)
             
             is_adversarial = False
-            loss = np.inf
 
             for iteration in range(max_iterations):
-                img_adv, adv_grid = self.to_model_space(img_tanh + torch.from_numpy(perturbation))
+
+                # adversary example
+                img_adv, adv_grid = self.to_model_space(img_tanh + perturbation)
                 img_adv = img_adv.to(self.device)
-                adv_grid = adv_grid.to(self.device)
+                img_adv.requires_grad = True
+                
+                #output of the layer before softmax
                 output = model.get_logits(img_adv)
+
+                #pending success
                 is_adversarial = self.pending_f(img_adv)
+
+                #calculate loss function and gradient of loss funcition on x
                 loss, loss_grad = self.loss_function(
                     img_adv, c, self.target, img_ori, self.confidence, self.clip_min, self.clip_max 
                 )
                 
-                gradient = adv_grid * loss_grid
-                perturbation += optimizer(gradient, learning_rate)
-
+                #calculate gradient of loss function on w
+                gradient = adv_grid.to(self.device) * loss_grad.to(self.device)
+                perturbation = perturbation + torch.from_numpy(optimizer(gradient.cpu().detach().numpy(), learning_rate)).float()
                 if is_adversarial:
                     found_adv = True
             
@@ -129,26 +137,35 @@ class CarliniWagner(BaseAttack):
             else:
                 c_low = c
 
-            if upper_bound == np.inf:
+            if c_high == np.inf:
                 c *= 10
             else:
                 c = (c_high + c_low) / 2
-
+        
+            print("optimization itaration:{:.1f},loss:{:.4f}".format(step,loss))
+    
+            #abort early
+            if(self.abort_early == True and (step % 10) == 0 and step > 15) :
+                print(loss, last_loss)
+                if not (loss <= 0.999 * last_loss):
+                    break
+                last_loss = loss
+        
         return img_adv
 
     def loss_function(
-        self, w, const, target, reconstructed_original, confidence, min_, max_
+        self, x_p, const, target, reconstructed_original, confidence, min_, max_
     ):
         """Returns the loss and the gradient of the loss w.r.t. x,
         assuming that logits = model(x)."""
 
         ## get the output of model before softmax
-        w.requires_grad = True
-        logits = self.model.get_logits(self.to_model_space(w)).to(self.device)
+        x_p.requires_grad = True
+        logits = self.model.get_logits(x_p).to(self.device)
 
         ## find the largest class except the target class
         targetlabel_mask = (torch.from_numpy(onehot_like(np.zeros(self.classnum), target))).double()
-        secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).double().to(self.device)
+        secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).to(self.device)
         
         secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy())
 
@@ -165,23 +182,22 @@ class CarliniWagner(BaseAttack):
         # but sometimes we want additional confidence
         is_adv_loss += confidence
 
-
         if is_adv_loss == 0:
             is_adv_loss_grad = 0
         else:
             is_adv_loss.backward()
-            is_adv_loss_grad = w.grad
+            is_adv_loss_grad = x_p.grad
 
         is_adv_loss = max(0, is_adv_loss)
 
         s = max_ - min_
-        squared_l2_distance = np.sum( ((self.to_model_space(w) - reconstructed_original) ** 2).cpu().numpy() ) / s ** 2
+        squared_l2_distance = np.sum( ((x_p - reconstructed_original) ** 2).cpu().detach().numpy() ) / s ** 2
         total_loss = squared_l2_distance + const * is_adv_loss
 
 
-        squared_l2_distance_grad = (2 / s ** 2) * (self.to_model_space(w) - reconstructed_original)
+        squared_l2_distance_grad = (2 / s ** 2) * (x_p - reconstructed_original)
         
-        print(is_adv_loss_grad)
+        #print(is_adv_loss_grad)
         total_loss_grad = squared_l2_distance_grad + const * is_adv_loss_grad
         return total_loss, total_loss_grad
     
