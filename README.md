@@ -14,6 +14,10 @@ We would be glad if you find our work useful and cite the paper.
 }
 ```
 
+# Requirements
+* `numpy`
+* `pytorch`
+* `matplotlib`
 
 # Attack Methods  
 |   Attack Methods   | Attack Type | Apply Domain | Links |
