@@ -36,6 +36,7 @@ We would be glad if you find our work useful and cite the paper.
 | FGSM attack | White-Box | Image Classification | [Explaining and Harnessing Adversarial Examples](https://arxiv.org/pdf/1412.6572.pdf) |
 | PGD attack | White-Box | Image Classification | [Towards Deep Learning Models Resistant to Adversarial Attacks](https://arxiv.org/pdf/1706.06083.pdf) |
 | DeepFool attack | White-Box | Image Classification | [DeepFool: a simple and accurate method to fool deep neural network](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Moosavi-Dezfooli_DeepFool_A_Simple_CVPR_2016_paper.pdf) |
+| CW attack | White-Box | Image Classification | [Towards Evaluating the Robustness of Neural Networks](https://arxiv.org/pdf/1608.04644.pdf) |
 | Nattack | Black-Box | Image Classification | [NATTACK: Learning the Distributions of Adversarial Examples for an Improved Black-Box Attack on Deep Neural Networks](https://arxiv.org/pdf/1905.00441.pdf) |
 
 # Defense Methods
