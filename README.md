@@ -15,8 +15,9 @@ We would be glad if you find our work useful and cite the paper.
 ```
 
 # Requirements
+* `python3`
 * `numpy`
-* `pytorch`
+* `pytorch v1.2.0`
 * `matplotlib`
 
 # Support Datasets
