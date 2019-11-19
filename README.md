@@ -19,6 +19,15 @@ We would be glad if you find our work useful and cite the paper.
 * `pytorch`
 * `matplotlib`
 
+# Support Datasets
+- MNIST
+- CIFAR-10
+- ImageNet
+
+# Support Networks
+- SampleCNN
+- ResNet
+
 # Attack Methods  
 |   Attack Methods   | Attack Type | Apply Domain | Links |
 |--------------------|-------------|--------------|------|
@@ -35,12 +44,4 @@ We would be glad if you find our work useful and cite the paper.
 | YOPO | Adverserial Training | Image Classification | [You Only Propagate Once: Accelerating Adversarial Training via Maximal Principle](https://arxiv.org/pdf/1905.00877.pdf) |
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
 
-# Support Datasets
-- MNIST
-- CIFAR-10
-- ImageNet
-
-# Support Networks
-- SampleCNN
-- ResNet
 
