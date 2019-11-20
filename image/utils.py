@@ -6,6 +6,10 @@ import numpy as np
 import os
 
 def create_train_dataset(batch_size = 128, root = '../data'):
+    """
+    Create different training dataset
+    """
+
     transform_train = transforms.Compose([
     transforms.ToTensor(),
     ])
@@ -53,9 +57,10 @@ def load_checkpoint(file_name, net = None, optimizer = None, lr_scheduler = None
         print("=> no checkpoint found at '{}'".format(file_name))
 
 def make_symlink(source, link_name):
-    '''
+    """
     Note: overwriting enabled!
-    '''
+    """
+
     if os.path.exists(link_name):
         print("Link name already exist! Removing '{}' and overwriting".format(link_name))
         os.remove(link_name)
@@ -87,3 +92,41 @@ def onehot_like(a, index, value=1):
     x = np.zeros_like(a)
     x[index] = value
     return x
+
+def reduce_sum(x, keepdim=True):
+    # silly PyTorch, when will you get proper reducing sums/means?
+    for a in reversed(range(1, x.dim())):
+        x = x.sum(a, keepdim=keepdim)
+    return x
+
+def arctanh(x, eps=1e-6):
+    """
+    Calculate arctanh(x)
+    """
+    x *= (1. - eps)
+    return (np.log((1 + x) / (1 - x))) * 0.5
+
+def l2r_dist(x, y, keepdim=True, eps=1e-8):
+    d = (x - y)**2
+    d = reduce_sum(d, keepdim=keepdim)
+    d += eps  # to prevent infinite gradient at 0
+    return d.sqrt()
+
+
+def l2_dist(x, y, keepdim=True):
+    d = (x - y)**2
+    return reduce_sum(d, keepdim=keepdim)
+
+
+def l1_dist(x, y, keepdim=True):
+    d = torch.abs(x - y)
+    return reduce_sum(d, keepdim=keepdim)
+
+
+def l2_norm(x, keepdim=True):
+    norm = reduce_sum(x*x, keepdim=keepdim)
+    return norm.sqrt()
+
+
+def l1_norm(x, keepdim=True):
+    return reduce_sum(x.abs(), keepdim=keepdim)
