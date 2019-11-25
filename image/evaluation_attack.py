@@ -6,8 +6,7 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 
-import attack
-from netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNNmodel import Net
 
 def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwargs):
     test_loss = 0
@@ -49,6 +48,9 @@ def parameter_parser():
     parser.add_argument("--attack_model", 
                         default = 'mnist_cnn.pt',
                         help = "choose a attack model.")
+    parser.add_argument("--dataset", 
+                        default = 'MNIST',
+                        help = "choose a dataset.")                    
     parser.add_argument("--epsilon", type = float, default = 0.3)
     parser.add_argument("--batch_num", type = int, default = 10)
     parser.add_argument("--batch_size", type = int, default = 1000)
@@ -65,12 +67,12 @@ if __name__ == "__main__":
     args = parameter_parser() # read argument and creat an argparse object
     model = Net()
 
-    model.load_state_dict(torch.load("./save_models/"+args.attack_model))
+    model.load_state_dict(torch.load("DeepRobust/image/save_models/"+args.attack_model))
     model.eval()
     print("Load network.")
 
     #load datasets
-    if(args.attack_method == "MNIST"):
+    if(args.dataset == "MNIST"):
         test_loader = torch.utils.data.DataLoader(
                         datasets.MNIST('../data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
@@ -78,7 +80,7 @@ if __name__ == "__main__":
                         shuffle = True)
         print("Load MNIST Dataset")
     
-    elif(args.attack_method == "CIFAR"):
+    elif(args.dataset == "CIFAR"):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('../data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
@@ -87,7 +89,7 @@ if __name__ == "__main__":
         classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
         print("Load CIFAR10 Dataset")
 
-    elif(args.attack_method == "ImageNet"):
+    elif(args.dataset == "ImageNet"):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('../data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
@@ -97,9 +99,11 @@ if __name__ == "__main__":
 
     
     if(args.attack_method == "PGD_attack"):
-        attack_method = attack.pgd.PGD(model)
+        from DeepRobust.image.attack.pgd import PGD
+        attack_method = PGD(model)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
     elif(args.attack_method == "FGSM_attack"):
-        attack_method = attack.fgsm.FGM(model)
+        from DeepRobust.image.attack.fgsm import FGM
+        attack_method = FGM(model)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
 
