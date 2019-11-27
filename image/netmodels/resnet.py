@@ -86,9 +86,9 @@ class Bottleneck(nn.Module):
         return out
 
 
-class ResNet(nn.Module):
+class Net(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
-        super(ResNet, self).__init__()
+        super(Net, self).__init__()
         self.in_planes = 64
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
@@ -120,27 +120,41 @@ class ResNet(nn.Module):
 
 
 def ResNet18():
-    return ResNet(BasicBlock, [2,2,2,2])
+    return Net(BasicBlock, [2,2,2,2])
 
 def ResNet34():
-    return ResNet(BasicBlock, [3,4,6,3])
+    return Net(BasicBlock, [3,4,6,3])
 
 def ResNet50():
-    return ResNet(Bottleneck, [3,4,6,3])
+    return Net(Bottleneck, [3,4,6,3])
 
 def ResNet101():
-    return ResNet(Bottleneck, [3,4,23,3])
+    return Net(Bottleneck, [3,4,23,3])
 
 def ResNet152():
-    return ResNet(Bottleneck, [3,8,36,3])
+    return Net(Bottleneck, [3,8,36,3])
 
 
-def test():
-    net = ResNet18()
-    y = net(torch.randn(1,3,32,32))
-    print(y.size())
+def test(model, device, test_loader):
+    model.eval()
 
-def train(model, device, train_loader, optimizer, epoch, lr_scheduler):
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
+
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
 
     # lr = util.adjust_learning_rate(optimizer, epoch, args) # don't need it if we use Adam
