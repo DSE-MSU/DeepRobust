@@ -1,3 +1,6 @@
+"""
+Reference: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+"""
 import torch
 import torch.nn as nn
 from torch.nn.modules.loss import _Loss
