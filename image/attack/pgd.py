@@ -25,6 +25,8 @@ class PGD(BaseAttack):
                    self.image,
                    self.label,
                    self.epsilon,
+                   self.clip_max,
+                   self.clip_min,
                    self.num_steps,
                    self.step_size) 
                    ##default parameter for mnist data set.
@@ -32,16 +34,23 @@ class PGD(BaseAttack):
     def parse_params(self,
                      epsilon = 0.3,
                      num_steps = 40,
-                     step_size = 0.01):
+                     step_size = 0.01,
+                     clip_max = 1.0,
+                     clip_min = 0.0
+                     ):
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
+        self.clip_max = clip_max
+        self.clip_min = clip_min
         return True
 
 def pgd_attack(model,
                   X,
                   y,
                   epsilon,
+                  clip_max,
+                  clip_min,
                   num_steps,
                   step_size):
     out = model(X)
@@ -62,5 +71,5 @@ def pgd_attack(model,
         X_pgd = Variable(X_pgd.data + eta, requires_grad=True)
         eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
         X_pgd = Variable(X.data + eta, requires_grad=True)
-        X_pgd = Variable(torch.clamp(X_pgd, 0, 1.0), requires_grad=True)
+        X_pgd = Variable(torch.clamp(X_pgd, clip_min, clip_max), requires_grad=True)
     return X_pgd
