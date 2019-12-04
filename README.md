@@ -46,5 +46,6 @@ We would be glad if you find our work useful and cite the paper.
 | PGD training | Adverserial Training | Image Classification | [Intriguing Properties of Neural Networks](https://arxiv.org/pdf/1312.6199.pdf?not-changed)|
 | YOPO | Adverserial Training | Image Classification | [You Only Propagate Once: Accelerating Adversarial Training via Maximal Principle](https://arxiv.org/pdf/1905.00877.pdf) |
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
+| Thermometer Encoding | Gradient Masking | Image Classification | [Thermometer Encoding:One Hot Way To Resist Adversarial Examples](https://openreview.net/pdf?id=S18Su--CW) |
 
 
