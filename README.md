@@ -18,7 +18,9 @@ We would be glad if you find our work useful and cite the paper.
 * `python3`
 * `numpy`
 * `pytorch v1.2.0`
+* `torchvision v0.4.0`
 * `matplotlib`
+
 
 # Support Datasets
 - MNIST
