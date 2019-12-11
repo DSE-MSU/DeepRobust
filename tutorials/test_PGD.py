@@ -32,7 +32,6 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 xx, yy = next(iter(test_loader))
 xx = xx.to('cuda').float()
 
-
 predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
 
