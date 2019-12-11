@@ -1,14 +1,14 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F 
+import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
 from DeepRobust.image.attack.pgd import PGD
 import DeepRobust.image.netmodels.resnet as resnet
-import DeepRobust.image.netmodels.CNNmodel as CNNmodel
+import DeepRobust.image.netmodels.CNN as CNN
 import matplotlib.pyplot as plt
 
 
@@ -48,9 +48,9 @@ print('predict_adv',classes[predict1])
 
 mean = np.array([0.2023000, 0.1994000, 0.2012000])
 std = np.array([0.4914000, 0.4822000, 0.4465000])
-x_show = xx.cpu().numpy().swapaxes(1,3).swapaxes(1,2)[0] 
+x_show = xx.cpu().numpy().swapaxes(1,3).swapaxes(1,2)[0]
 # print('xx:', x_show)
-x_show = x_show * mean + std 
+x_show = x_show * mean + std
 plt.imshow(x_show, vmin = 0, vmax = 255)
 plt.savefig('DeepRobust/image/adversary_examples/cifar_advexample_orig.png')
 # print('x_show', x_show)
@@ -70,4 +70,4 @@ plt.imshow(AdvExArray, vmin = 0, vmax = 255)
 plt.savefig('DeepRobust/image/adversary_examples/cifar_advexample_pgd.png')
 
 
-        
+
