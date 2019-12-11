@@ -7,11 +7,10 @@ from torchvision import datasets,models,transforms
 from PIL import Image
 
 from DeepRobust.image.attack.fgsm import FGM
-from DeepRobust.image.netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNN import Net
 
 import ipdb
 
-ipdb.set_trace()
 model = Net()
 
 print("Load network")

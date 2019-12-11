@@ -9,14 +9,14 @@ from PIL import Image
 import logging
 
 from DeepRobust.image.attack.cw import CarliniWagner
-from DeepRobust.image.netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNN import Net
 
 # print log
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 logger.info("Start test cw attack")
 
-# load model 
+# load model
 model = Net()
 model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_cnn.pt", map_location = torch.device('cuda')))
 model.eval()
