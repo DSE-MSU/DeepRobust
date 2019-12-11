@@ -9,13 +9,15 @@ import numpy as np
 from PIL import Image
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channel1 = 1, out_channel1 = 20, out_channel2 = 50):
         super(Net, self).__init__()
+
         ##define two convolutional layers
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
-        self.conv2 = nn.Conv2d(20, 50, 5, 1)
+        self.conv1 = nn.Conv2d(in_channel1, out_channel1, 5, 1)
+        self.conv2 = nn.Conv2d(out_channel1, out_channel2, 5, 1)
+
         ##define two linear layers
-        self.fc1 = nn.Linear(4 * 4 *50, 500)
+        self.fc1 = nn.Linear(4 * 4 * 50, 500)
         self.fc2 = nn.Linear(500, 10)
 
     def forward(self, x):
@@ -27,8 +29,8 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
-    
-    def get_logits(self, x)
+
+    def get_logits(self, x):
         x = F.relu(self.conv1(x))
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
@@ -49,7 +51,7 @@ def train(model, device, train_loader, optimizer, epoch):
         loss.backward()
         optimizer.step()
 
-        #print every 10 
+        #print every 10
         if batch_idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
