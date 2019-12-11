@@ -7,10 +7,10 @@ from torchvision import datasets,models,transforms
 from PIL import Image
 
 from DeepRobust.image.attack.lbfgs import LBFGS
-from DeepRobust.image.netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNN import Net
 
 
-#load model 
+#load model
 model = Net()
 model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_cnn.pt", map_location = torch.device('cpu')))
 model.eval()
