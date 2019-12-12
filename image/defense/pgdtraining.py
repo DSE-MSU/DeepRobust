@@ -61,7 +61,7 @@ def test(model, device, test_loader):
             adversary = PGD(model)
             data_adv = adversary.generate(data, pred.flatten(), epsilon = 0.3, num_steps = 40)
             output_adv = model(data_adv)
-            test_loss2 += F.nll_loss(output_adv, target), reduction='sum').item()  # sum up batch loss
+            test_loss2 += F.nll_loss(output_adv, target, reduction='sum').item()  # sum up batch loss
             pred2 = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
             correct2 += pred2.eq(target.view_as(pred2)).sum().item()
             
