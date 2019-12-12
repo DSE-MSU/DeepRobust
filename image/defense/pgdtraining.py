@@ -91,5 +91,5 @@ if __name__ =='__main__':
         test(model, device, test_loader)
 
         if (save_model):
-            torch.save(model.state_dict(), "../save_models/mnist_pgdtraining.pt")
+            torch.save(model.state_dict(), "DeepRobust/image/save_models/mnist_pgdtraining.pt")
 
