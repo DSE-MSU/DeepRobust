@@ -70,16 +70,16 @@ if __name__ =='__main__':
     device = torch.device("cuda")
 
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=True, download=True,
+        datasets.MNIST('DeepRobust/image/defense/data', train=True, download=True,
                      transform=transforms.Compose([transforms.ToTensor()])),
         batch_size=100,
-        shuffle=True)
+        shuffle=True)  ## han
 
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('../data', train=False,
+        datasets.MNIST('DeepRobust/image/defense/data', train=False,
                     transform=transforms.Compose([transforms.ToTensor()])),
         batch_size=1000,
-        shuffle=True)
+        shuffle=True)  ## han
 
     model = Net().to(device)
     optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
