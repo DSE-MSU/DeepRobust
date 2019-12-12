@@ -61,18 +61,18 @@ def test(model, device, test_loader):
             adversary = PGD(model)
             data_adv = adversary.generate(data, pred, epsilon = 0.3, num_steps = 40)
             output_adv = model(data_adv)
-            test_loss2 += F.nll_loss(output_adv, target, reduction='sum').item()  # sum up batch loss
+            test_loss2 += F.nll_loss(output_adv, pred.flatten(), reduction='sum').item()  # sum up batch loss
             pred2 = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
-            correct2 += pred.eq(target.view_as(pred2)).sum().item()
+            correct2 += pred2.eq(target.view_as(pred2)).sum().item()
             
     test_loss /= len(test_loader.dataset)
     test_loss2 /= len(test_loader.dataset)
 
-    print('\nTest set: Average loss: {:.3f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('\nTest set: Clean loss: {:.3f}, Clean Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     
-    print('\nTest set: Average Adv loss: {:.3f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('\nTest set: Adv loss: {:.3f}, Adv Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss2, correct2, len(test_loader.dataset),
         100. * correct2 / len(test_loader.dataset)))
 
@@ -99,7 +99,7 @@ if __name__ =='__main__':
         shuffle=True)  ## han
 
     model = Net().to(device)
-    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
+    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.1)
 
     save_model = True
     for epoch in range(1, 100 + 1):     ## 5 batches
