@@ -48,16 +48,31 @@ def test(model, device, test_loader):
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
+            
+            # print clean accuracy
             output = model(data)
             test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
-
+            
+            # print adversarial accuracy
+            adversary = PGD(model)
+            data_adv = adversary.generate(data, pred, epsilon = 0.3, num_steps = 40)
+            output_adv = model(data_adv)
+            test_loss2 += F.nll_loss(output-adv, target, reduction='sum').item()  # sum up batch loss
+            pred2 = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
+            correct2 += pred.eq(target.view_as(pred2)).sum().item()
+            
     test_loss /= len(test_loader.dataset)
+    test_loss2 /= len(test_loader.dataset)
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('\nTest set: Average loss: {:.3f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    
+    print('\nTest set: Average Adv loss: {:.3f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss2, correct2, len(test_loader.dataset),
+        100. * correct2 / len(test_loader.dataset)))
 
 
 if __name__ =='__main__':
