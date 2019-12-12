@@ -1,3 +1,6 @@
+from DeepRobust.image.defense.config import config, args
+
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -98,7 +101,7 @@ if __name__ =='__main__':
 
     model = Net().to(device)
     optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.1)
-
+  
     save_model = True
     for epoch in range(1, 100 + 1):     ## 5 batches
         print(epoch, flush = True)  ## han
@@ -106,5 +109,10 @@ if __name__ =='__main__':
         test(model, device, test_loader)
 
         if (save_model):
-            torch.save(model.state_dict(), "DeepRobust/image/save_models/mnist_pgdtraining.pt")  ## han
-
+            if os.path.isdir('./' + args.save_dir):
+                torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
+                print("model saved in " + './' + args.save_dir)
+            else:
+                print("make new  directory for " + './' + args.save_dir)
+                os.mkdir('./' + args.save_dir)
+                torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
