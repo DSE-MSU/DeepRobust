@@ -11,7 +11,9 @@ from PIL import Image
 class Net(nn.Module):
     def __init__(self, in_channel1 = 1, out_channel1 = 32, out_channel2 = 64):
         super(Net, self).__init__()
-
+        
+        self.out_channel2 = out_channel2
+        
         ##define two convolutional layers
         self.conv1 = nn.Conv2d(in_channel1, out_channel1, 5, 1)
         self.conv2 = nn.Conv2d(out_channel1, out_channel2, 5, 1)
@@ -25,7 +27,7 @@ class Net(nn.Module):
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, 7* 7 * output_channel2)
+        x = x.view(-1, 7* 7 * self.out_channel2)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
