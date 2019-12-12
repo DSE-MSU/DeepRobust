@@ -86,7 +86,7 @@ if __name__ =='__main__':
 
     save_model = True
     for epoch in range(1, 100 + 1):     ## 5 batches
-        print(epoch)
+        print(epoch, flush = True)  ## han
         train(model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
 
