@@ -45,6 +45,8 @@ def test(model, device, test_loader):
 
     test_loss = 0
     correct = 0
+    test_loss2 = 0
+    correct2 = 0
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -59,7 +61,7 @@ def test(model, device, test_loader):
             adversary = PGD(model)
             data_adv = adversary.generate(data, pred, epsilon = 0.3, num_steps = 40)
             output_adv = model(data_adv)
-            test_loss2 += F.nll_loss(output-adv, target, reduction='sum').item()  # sum up batch loss
+            test_loss2 += F.nll_loss(output_adv, target, reduction='sum').item()  # sum up batch loss
             pred2 = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
             correct2 += pred.eq(target.view_as(pred2)).sum().item()
             
