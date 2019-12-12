@@ -9,8 +9,6 @@ from PIL import Image
 from DeepRobust.image.attack.pgd import PGD
 from DeepRobust.image.netmodels.CNN import Net
 
-from DeepRobust.image.attack.pgd import PGD
-
 def train(model, device, train_loader, optimizer, epoch):
     model.train()
     correct = 0
