@@ -28,7 +28,7 @@ We would be glad if you find our work useful and cite the paper.
 - ImageNet
 
 # Support Networks
-- SampleCNN
+- SimpleCNN
 - ResNet
 
 # Attack Methods  
