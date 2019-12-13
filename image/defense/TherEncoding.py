@@ -28,9 +28,11 @@ def train(model, device, train_loader, optimizer, epoch):
         encoding = torch.flatten(encoding, start_dim = 3)
         encoding = encoding.permute(0, 3, 1, 2)
 
-        print(encoding.size())
+        #print(encoding.size())
+
+        #ipdb.set_trace()
         output = model(encoding)
-        print(output)
+
         loss = F.nll_loss(output, target)
         loss.backward()
 
@@ -39,6 +41,7 @@ def train(model, device, train_loader, optimizer, epoch):
         pred = output.argmax(dim = 1, keepdim = True)
         correct += pred.eq(target.view_as(pred)).sum().item()
 
+        print(pred,target)
         #print every 10
         if batch_idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
@@ -46,6 +49,35 @@ def train(model, device, train_loader, optimizer, epoch):
                        100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(10*bs)))
             correct = 0
         a = input()
+
+def test(model, device, test_loader):
+    logger.info('Start test')
+    model.eval()
+    correct = 0
+    bs = test_loader.batch_size
+
+    for batch_idx, (data, target) in enumerate(test_loader):
+
+        data, target = data.to(device), target.to(device)
+
+        encoding = Thermometer(data, LEVELS)
+        encoding = encoding.permute(0, 2, 3, 1, 4)
+        encoding = torch.flatten(encoding, start_dim = 3)
+        encoding = encoding.permute(0, 3, 1, 2)
+
+        output = model(encoding)
+
+        pred = output.argmax(dim = 1, keepdim = True)
+
+        print(output)
+        print(target, pred)
+        loss = F.nll_loss(output, target)
+
+        correct += pred.eq(target.view_as(pred)).sum().item()
+        a = input()
+    print('TEST Train Epoch: {} \tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
+          epoch, 100. * batch_idx / len(test_loader), loss.item(), 100 * correct/(len(test_loader))))
+
 
 def Thermometer(x, levels, flattened = False):
     """
@@ -68,7 +100,7 @@ def one_hot(x, levels):
     x = x.unsqueeze_(4)
     x = torch.ceil(x * (LEVELS-1)).long()
     onehot = torch.zeros(batch_size, channel, H, W, levels).float().to('cuda').scatter_(4, x, 1)
-    print(onehot)
+    #print(onehot)
 
     return onehot
 
@@ -118,22 +150,21 @@ if __name__ =='__main__':
 
     #ipdb.set_trace()
 
-    print(train_loader)
-    print(train_loader.data.size())
+    #TODO: change the channel according to the dataset.
     channel = 1
-    model = Net(in_channel1 = channel * LEVELS, out_channel2 = 30).to(device)
+    model = Net(in_channel1 = channel * LEVELS).to(device)
 
-    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.5)
+    optimizer = optim.SGD(model.parameters(), lr = 0.0001, momentum = 0.2)
     logger.info('Load model.')
 
     save_model = True
-    for epoch in range(1, 100 + 1):     ## 5 batches
+    for epoch in range(1, 50 + 1):     ## 5 batches
         print('Running epoch ', epoch)
 
         train(model, device, train_loader, optimizer, epoch)
         test(model, device, test_loader)
 
-        # if (save_model):
-        #     torch.save(model.state_dict(), "../save_models/thermometer_encoding.pt")
+        if (save_model):
+            torch.save(model.state_dict(), "DeepRobust/image/save_models/thermometer_encoding.pt")
 
 
