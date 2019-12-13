@@ -10,6 +10,17 @@ from DeepRobust.image.netmodels.CNN import Net
 import logging
 import ipdb
 
+
+class ther_attack(pgd_attack):
+    """
+    PGD attacks in response to thermometer encoding models
+    """
+
+def adv_train():
+    """
+    adversarial training for thermomoter encoding
+    """
+
 def train(model, device, train_loader, optimizer, epoch):
     logger.info('trainging')
     model.train()
