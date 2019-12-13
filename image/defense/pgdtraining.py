@@ -113,6 +113,6 @@ if __name__ =='__main__':
                 torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
                 print("model saved in " + './' + args.save_dir)
             else:
-                print("make new  directory for " + './' + args.save_dir)
+                print("make new directory and save model in " + './' + args.save_dir)
                 os.mkdir('./' + args.save_dir)
                 torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
