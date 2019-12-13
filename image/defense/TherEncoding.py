@@ -50,35 +50,35 @@ def train(model, device, train_loader, optimizer, epoch):
             correct = 0
         a = input()
 
+
 def test(model, device, test_loader):
-    logger.info('Start test')
     model.eval()
+
+    test_loss = 0
     correct = 0
-    bs = test_loader.batch_size
 
-    for batch_idx, (data, target) in enumerate(test_loader):
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
 
-        data, target = data.to(device), target.to(device)
+            encoding = Thermometer(data, LEVELS)
+            encoding = encoding.permute(0, 2, 3, 1, 4)
+            encoding = torch.flatten(encoding, start_dim=3)
+            encoding = encoding.permute(0, 3, 1, 2)
 
-        encoding = Thermometer(data, LEVELS)
-        encoding = encoding.permute(0, 2, 3, 1, 4)
-        encoding = torch.flatten(encoding, start_dim = 3)
-        encoding = encoding.permute(0, 3, 1, 2)
+            # print clean accuracy
+            output = model(encoding)
+            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
 
-        output = model(encoding)
+    test_loss /= len(test_loader.dataset)
 
-        pred = output.argmax(dim = 1, keepdim = True)
+    print('\nTest set: Clean loss: {:.3f}, Clean Accuracy: {}/{} ({:.0f}%)\n'.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
 
-        print(output)
-        print(target, pred)
-        loss = F.nll_loss(output, target)
-
-        correct += pred.eq(target.view_as(pred)).sum().item()
-        a = input()
-    print('TEST Train Epoch: {} \tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
-          epoch, 100. * batch_idx / len(test_loader), loss.item(), 100 * correct/(len(test_loader))))
-
-
+    
 def Thermometer(x, levels, flattened = False):
     """
 
