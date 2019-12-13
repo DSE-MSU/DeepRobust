@@ -100,7 +100,7 @@ if __name__ =='__main__':
         shuffle=True)  ## han
 
     model = Net().to(device)
-    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.1)
+    optimizer = optim.SGD(model.parameters(), lr=0.0005, momentum=0.1)
   
     save_model = True
     for epoch in range(1, 100 + 1):     ## 5 batches
