@@ -10,8 +10,6 @@ from DeepRobust.image.netmodels.CNN import Net
 import logging
 import ipdb
 
-LEVELS = 10
-
 def train(model, device, train_loader, optimizer, epoch):
     logger.info('trainging')
     model.train()
@@ -151,9 +149,10 @@ if __name__ =='__main__':
     #ipdb.set_trace()
 
     #TODO: change the channel according to the dataset.
+    LEVELS = 10
     channel = 1
-    model = Net(in_channel1 = channel * LEVELS).to(device)
-
+    
+    model = Net(in_channel1 = channel * LEVELS, out_channel1= 32 * LEVELS, out_channel2= 64 * LEVELS).to(device)
     optimizer = optim.SGD(model.parameters(), lr = 0.0001, momentum = 0.2)
     logger.info('Load model.')
 
