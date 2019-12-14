@@ -116,10 +116,10 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
                 print(np.abs(predict).max())
                 print('l2real: '+ str(l2real.max()))
                 print(predict)
-
+                
                 #pending attack
                 if (target_or_not == False):
-                    if (np.argmax(output) != label) and (np.abs(realclipdist).max() <= epsilon):
+                    if (np.argmax(predict) != targets) and (np.abs(realclipdist).max() <= epsilon):
                         succImages += 1
                         success = True
                         print('clipimage succImages: '+str(succImages)+'  totalImages: '+str(totalImages))
