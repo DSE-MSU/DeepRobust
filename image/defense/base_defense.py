@@ -1,4 +1,4 @@
-form abc import ABCMeta
+from abc import ABCMeta
 import torch
 
 class BaseDefense(object):
@@ -11,8 +11,8 @@ class BaseDefense(object):
 
     def parse_params(self, **kwargs):
         return True
-        
-    def generate():
+
+    def generate(self, **kwargs):
         return True
     
     def train(self, train_loader, optimizer, epoch):
@@ -43,21 +43,15 @@ class BaseDefense(object):
             correct = 0
 
     def test(self, test_loader):
-
+        return True
     def adv_data(self, model, data, target, **kwargs):
         return True
 
-    def loss(output, target):
+    def loss(self, output, target):
         return True
 
-    def generate():
+    def generate(self):
         return True
     
-    def save_model():
+    def save_model(self):
         return True 
-
-    def print_accuracy():
-
-         print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
-                   epoch, batch_idx * len(data), len(loader.dataset),
-                          100. * batch_idx / len(loader), loss.item(), 100 * correct/(10*bs)))
