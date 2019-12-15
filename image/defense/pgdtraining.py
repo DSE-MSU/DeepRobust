@@ -13,7 +13,7 @@ from DeepRobust.image.attack.pgd import PGD
 from DeepRobust.image.netmodels.CNN import Net
 from DeepRobust.image.defense.base_defense import BaseDefense
 
-class pgdtraining(BaseDefense):
+class PGDtraining(BaseDefense):
     def __init__(self, model, device):
         self.model = model
         self.device = device
@@ -27,7 +27,7 @@ class pgdtraining(BaseDefense):
         torch.manual_seed(100)
         device = torch.device(self.device)
 
-        model = Net().to(self.device)
+        model = model.to(self.device)
         optimizer = optim.SGD(model.parameters(), lr, momentum=0.1)
     
         save_model = True
@@ -37,31 +37,35 @@ class pgdtraining(BaseDefense):
             test(model, device, test_loader)
 
             if (save_model):
-                if os.path.isdir('./' + args.save_dir):
-                    torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
-                    print("model saved in " + './' + args.save_dir)
+                if os.path.isdir('./' + self.save_dir):
+                    torch.save(model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+                    print("model saved in " + './' + save_dir)
                 else:
-                    print("make new directory and save model in " + './' + args.save_dir)
-                    os.mkdir('./' + args.save_dir)
-                    torch.save(model.state_dict(), './' + args.save_dir +"/mnist_pgdtraining.pt")  ## han
-        
+                    print("make new directory and save model in " + './' + self.save_dir)
+                    os.mkdir('./' + self.save_dir)
+                    torch.save(model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+
+        return self.model    
+    
     def parse_params(self, 
                     train_loader,
                     test_loader,
+                    save_dir,
                     lr = 0.0005,
-                    momentum = 0.5):
-    """
-    Set parameters for pgd training.
-    """
+                    momentum = 0.1):
+        # """
+        # Set parameters for pgd training.
+        # """
         self.train_loader = train_loader
         self.test_loader = test_loader
+        self.save_dir = save_dir
         self.lr = lr
         self.momentum = momentum
 
     def train(self, device, train_loader, optimizer, epoch):
-    """
-    Training process.
-    """
+        """
+        Training process.
+        """
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
@@ -90,10 +94,11 @@ class pgdtraining(BaseDefense):
             correct = 0
         
 
-    def test(model, device, test_loader):
-    """
-    Testing process.
-    """
+    def test(self, model, device, test_loader):
+        """
+        Testing process.
+    
+        """
         model.eval()
 
         test_loss = 0
@@ -128,19 +133,21 @@ class pgdtraining(BaseDefense):
         print('\nTest set: Adv loss: {:.3f}, Adv Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss2, correct2, len(test_loader.dataset),
             100. * correct2 / len(test_loader.dataset)))
-
+            
     def adv_data(self, epsilon, num_steps):
-    """
-    Generate input(adversarial) data for training.
-    """
+        # """
+        # Generate input(adversarial) data for training.
+        
+        # """
         adversary = PGD(model)
         data_adv = adversary.generate(data, pred.flatten(), epsilon = 0.3, num_steps = 40)
         return data_adv
 
     def calculate_loss(self, output, target):
-    """
-    Calculate loss for training.
-    """
+        """
+        Calculate loss for training.
+        """
+        
         loss = F.nll_loss(output, target)
         return loss
     
