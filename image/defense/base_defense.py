@@ -12,8 +12,10 @@ class BaseDefense(object):
     def parse_params(self, **kwargs):
         return True
 
-    def generate(self, **kwargs):
-        return True
+    def generate(self, train_loader, test_loader, **kwargs):
+        self.train_loader = train_loader
+        self.test_loader = test_loader
+        return 
     
     def train(self, train_loader, optimizer, epoch):
         model.train()
