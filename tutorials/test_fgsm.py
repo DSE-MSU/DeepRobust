@@ -8,13 +8,14 @@ from PIL import Image
 
 from DeepRobust.image.attack.fgsm import FGM
 from DeepRobust.image.netmodels.CNN import Net
+from DeepRobust.image.config import attack_params
 
 import ipdb
 
 model = Net()
 
 print("Load network")
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_cnn.pt"))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt"))
 model.eval()
 
 xx = datasets.MNIST('DeepRobust/image/data', download = False).data[999:1000].to('cuda')
@@ -24,15 +25,9 @@ print(xx.size())
 ## Set Targetå
 yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[999:1000].to('cuda')
 
-fgsm_params = {
-    'epsilon': 0.2,
-    'order': np.inf,
-    'clip_max': None,
-    'clip_min': None
-}
 
 F1 = FGM(model, device = "cuda")       ### or cuda
-AdvExArray = F1.generate(xx, yy, **fgsm_params)
+AdvExArray = F1.generate(xx, yy, **attack_params['FGSM_MNIST'])
 
 predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
