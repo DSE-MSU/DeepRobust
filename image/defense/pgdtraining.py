@@ -50,6 +50,8 @@ class PGDtraining(BaseDefense):
     def parse_params(self, 
                      save_dir,
                      save_model = True,
+                     epsilon = 0.3,
+                     num_steps = 40,
                      lr = 0.001,
                      momentum = 0.1):
         # """
@@ -57,6 +59,8 @@ class PGDtraining(BaseDefense):
         # """
         self.save_model = True
         self.save_dir = save_dir
+        self.epsilon = epsilon
+        self.num_steps = num_steps
         self.lr = lr
         self.momentum = momentum
 
@@ -74,7 +78,7 @@ class PGDtraining(BaseDefense):
             
             data, target = data.to(device), target.to(device)
 
-            data_adv, output = self.adv_data(data, target)
+            data_adv, output = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
 
             loss = self.calculate_loss(output, target)
             
@@ -114,7 +118,7 @@ class PGDtraining(BaseDefense):
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 
                 # print adversarial accuracy
-                data_adv, output_adv = self.adv_data(data, target)
+                data_adv, output_adv = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
 
                 test_loss_adv += self.calculate_loss(output_adv, target, redmode = 'sum').item()  # sum up batch loss
                 pred_adv = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
