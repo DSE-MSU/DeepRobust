@@ -3,13 +3,10 @@ from DeepRobust.image.attack.pgd import PGD
 import torch
 from torchvision import datasets, transforms
 from DeepRobust.image.netmodels.CNN import Net
-
+from DeepRobust.image.defense.config import defense_params
 import ipdb
 
-ipdb.set_trace()
-
 model = Net()
-ipdb.set_trace()
 
 defense = PGDtraining(model, 'cuda')
 
@@ -28,12 +25,7 @@ test_loader = torch.utils.data.DataLoader(
 dir = "DeepRobust/image/save_models/"
 
 
-pgd_params = {
-    'save_dir': dir,
-    'save_model': True
-}
-
-defense.generate(train_loader, test_loader, **pgd_params)
+defense.generate(train_loader, test_loader, **defense_params["PGDtraining_MNIST"])
 
 # model = Net()
 # print("Load orignial model...")
@@ -50,7 +42,7 @@ xx = xx.unsqueeze_(0).float()/255
 xx = xx.unsqueeze_(0).float()
 
 ## Set Targetå
-yy = datasets.MNIST('DeepRobust/iamge/data', download=True).targets[3333]
+yy = datasets.MNIST('DeepRobust/image/data', download=True).targets[3333]
 yy = yy.unsqueeze_(0).float()
 
 predict0 = defensemodel(xx)
