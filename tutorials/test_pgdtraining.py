@@ -4,7 +4,13 @@ import torch
 from torchvision import datasets, transforms
 from DeepRobust.image.netmodels.CNN import Net
 
+import ipdb
+
+ipdb.set_trace()
+
 model = Net()
+ipdb.set_trace()
+
 defense = PGDtraining(model, 'cuda')
 
 train_loader = torch.utils.data.DataLoader(
@@ -18,16 +24,16 @@ test_loader = torch.utils.data.DataLoader(
             transform=transforms.Compose([transforms.ToTensor()])),
             batch_size=1000,
             shuffle=True)  ## han
+
 dir = "DeepRobust/image/save_models/"
 
+
 pgd_params = {
-    'train_loader': train_loader,
-    'test_loader': test_loader,
     'save_dir': dir,
+    'save_model': True
 }
 
-
-model = defense.generate(train_loader, pgd_params)
+defense.generate(train_loader, test_loader, **pgd_params)
 
 # model = Net()
 # print("Load orignial model...")
