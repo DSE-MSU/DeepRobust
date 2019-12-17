@@ -15,8 +15,8 @@ def train(model, data, device, maxepoch):
     train_loader, test_loader = feed_dataset(data, 'DeepRobust/image/data')
 
     if (model == 'CNN'):
-        import DeepRobust.image.netmodels.CNNmodel as MODEL
-        from DeepRobust.image.netmodels.CNNmodel import Net
+        import DeepRobust.image.netmodels.CNN as MODEL
+        from DeepRobust.image.netmodels.CNN import Net
         train_net = Net().to(device)
 
     elif (model == 'ResNet18'):
