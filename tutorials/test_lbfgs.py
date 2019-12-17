@@ -12,7 +12,7 @@ from DeepRobust.image.config import attack_params
 
 #load model
 model = Net()
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_cnn.pt", map_location = torch.device('cpu')))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/MNIST_CNN_epoch_10.pt", map_location = torch.device('cpu')))
 model.eval()
 
 xx = datasets.MNIST('DeepRobust/image/data', download = True).data[8888]
