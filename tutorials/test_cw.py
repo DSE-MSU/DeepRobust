@@ -10,6 +10,7 @@ import logging
 
 from DeepRobust.image.attack.cw import CarliniWagner
 from DeepRobust.image.netmodels.CNN import Net
+from DeepRobust.image.config import attack_params
 
 # print log
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -18,7 +19,7 @@ logger.info("Start test cw attack")
 
 # load model
 model = Net()
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_cnn.pt", map_location = torch.device('cuda')))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt", map_location = torch.device('cuda')))
 model.eval()
 
 xx = datasets.MNIST('DeepRobust/image/data', download = False).data[8888]
@@ -29,19 +30,9 @@ xx = xx.unsqueeze_(0).float().to('cuda')
 yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[8888]
 yy = yy.float()
 
-cw_params = {
-    'confidence': 1e-4,
-    'clip_max': 1,
-    'clip_min': 0,
-    'max_iterations': 1000,
-    'initial_const': 1e-2,
-    'binary_search_steps': 5,
-    'learning_rate': 5e-3,
-    'abort_early': True,
-}
 
 attack = CarliniWagner(model, device='cuda')
-AdvExArray = attack.generate(xx, yy, target = 1, classnum = 10, **cw_params)
+AdvExArray = attack.generate(xx, yy, target = 1, classnum = 10, **attack_params['CW_MNIST'])
 Adv = AdvExArray.clone()
 
 # test the result

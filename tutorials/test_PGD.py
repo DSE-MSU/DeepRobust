@@ -9,6 +9,7 @@ from PIL import Image
 from DeepRobust.image.attack.pgd import PGD
 import DeepRobust.image.netmodels.resnet as resnet
 import DeepRobust.image.netmodels.CNN as CNN
+from DeepRobust.image.config import attack_params
 import matplotlib.pyplot as plt
 
 
@@ -36,7 +37,7 @@ predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
 
 adversary = PGD(model)
-AdvExArray = adversary.generate(xx, yy, epsilon = 0.1, clip_max = (1 - 0.4914) / 0.2023, clip_min = (0-0.4914) / 0.2023 ).float()
+AdvExArray = adversary.generate(xx, yy, **attack_params[PGD_MNIST]).float()
 
 predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)

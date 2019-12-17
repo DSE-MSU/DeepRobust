@@ -8,7 +8,7 @@ from PIL import Image
 
 from DeepRobust.image.attack.lbfgs import LBFGS
 from DeepRobust.image.netmodels.CNN import Net
-
+from DeepRobust.image.config import attack_params
 
 #load model
 model = Net()
@@ -23,16 +23,9 @@ xx = xx.unsqueeze_(0).float()
 yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[8888]
 yy = yy.float()
 
-lbfgs_params = {
-    'epsilon': 1e-4,
-    'maxiter': 20,
-    'clip_max': 1,
-    'clip_min': 0,
-    'class_num': 10
-}
 
 attack = LBFGS(model, 8, device='cpu')
-AdvExArray, dis, loss, valueofc= attack.generate(xx, yy, **lbfgs_params)
+AdvExArray, dis, loss, valueofc= attack.generate(xx, yy, **attack_params['LBFGS_MNIST'])
 AdvExArray = AdvExArray.unsqueeze_(0).float()
 
 #test the result
