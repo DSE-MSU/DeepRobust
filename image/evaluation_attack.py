@@ -74,7 +74,7 @@ if __name__ == "__main__":
     #load datasets
     if(args.dataset == "MNIST"):
         test_loader = torch.utils.data.DataLoader(
-                        datasets.MNIST('../data', train=False,
+                        datasets.MNIST('DeepRobust/image/data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     
     elif(args.dataset == "CIFAR"):
         test_loader = torch.utils.data.DataLoader(
-                        datasets.CIFAR10('../data', train=False,
+                        datasets.CIFAR10('DeepRobust/image/data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     elif(args.dataset == "ImageNet"):
         test_loader = torch.utils.data.DataLoader(
-                        datasets.CIFAR10('../data', train=False,
+                        datasets.CIFAR10('DeepRobust/image/data', train=False,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
