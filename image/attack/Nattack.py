@@ -6,6 +6,7 @@ import logging
 from DeepRobust.image.attack.base_attack import BaseAttack
 from DeepRobust.image.utils import onehot_like, arctanh
 
+import ipdb
 
 class NATTACK(BaseAttack):
 
@@ -55,19 +56,18 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
     
     #initialization
     boxmul = (clip_max - clip_min) / 2.
-    boxplus = (clip_max + clip_max) / 2.
+    boxplus = (clip_max + clip_min) / 2.
     totalImages = 0
 
     for i, (inputs, targets) in enumerate(loader):
         success = False
-
+        ipdb.set_trace()
         print(inputs.size())
         c = inputs.size(1)
         l = inputs.size(2)
         w = inputs.size(3)
         modify = torch.from_numpy(np.random.randn(1,c, l, w) * 0.001).float()
         
-        ##### thermometer encoding
         predict = model.forward(inputs)
 
         if  predict.argmax(dim = 1, keepdim = True) != targets:
@@ -105,7 +105,7 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
                 realclipdist = np.clip(realdist, -epsilon, epsilon)
                 realclipinput = realclipdist + (np.tanh(newimg) * boxmul + boxplus)
                 
-                l2real =  np.sum((realclipinput - (np.tanh(newimg) * boxmul + boxplus))**2)**0.5
+                l2real = np.sum((realclipinput - (np.tanh(newimg) * boxmul + boxplus))**2)**0.5
                 #l2real =  np.abs(realclipinput - inputs.numpy())
                 
                 info = 'inputs.shape__' + str(inputs.shape)
