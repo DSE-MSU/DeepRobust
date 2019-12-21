@@ -55,7 +55,8 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
     
     #initialization
     totalImages = 0
-
+    faillist = []
+    successlist = []
     for i, (inputs, targets) in enumerate(loader):
         success = False
 
@@ -81,11 +82,9 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
             Nsample = torch.from_numpy(np.random.randn(population, c, l, w)).float()
 
             modify_try = modify.repeat(population,1,1,1) + sigma * Nsample
-            logger.debug('modify_try shape__'+str(modify_try.shape))
             
             # calculate g0(z)
             g0_z = arctanh((inputs * 2) - 1)
-            print(inputs)
 
             # initialize g(z)
             gz = np.tanh(g0_z + modify_try) * 1 / 2 + 1 / 2
@@ -99,9 +98,8 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
                 # calculate dist in miu space
                 realdist = realinputimg - (np.tanh(g0_z) * 1/2 + 1/2)
 
-                realclipdist = np.clip(realdist, -epsilon, epsilon)
+                realclipdist = np.clip(realdist, -epsilon, epsilon).float()
                 realclipinput = realclipdist + (np.tanh(g0_z) * 1/2 + 1/2)
-                print('size', ((realclipinput - (np.tanh(g0_z) * 1 / 2 + 1 / 2))**2).size())
                 # l2real =  np.sum((realclipinput - (np.tanh(g0_z) * 1 / 2 + 1 / 2))**2)**0.5
                 #l2real =  np.abs(realclipinput - inputs.numpy())
                 
@@ -109,8 +107,6 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
                 logging.debug(info)
                 predict = model.forward(realclipinput)
                 #outputsreal = sess.run(real_logits, feed_dict={input_xs: realclipinput.transpose(0,2,3,1)})
-                print(predict)
-                print(predict.argmax(dim = 1, keepdim = True))
                 # print('l2real: '+ str(l2real.max()))
                 
                 #pending attack
@@ -135,6 +131,8 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
             target_onehot[0][targets]=1.
 
             #outputs = sess.run(real_logits, feed_dict={input_xs: clipinput.transpose(0,2,3,1)})
+
+            clipinput = clipinput.float()
             outputs = model.forward(clipinput)
             target_onehot = target_onehot.repeat(population,0)
 
@@ -152,9 +150,7 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
 
             A = (Reward - np.mean(Reward)) / (np.std(Reward)+1e-7)
 
-            print(modify.size())
-
-            modify = modify + torch.from_numpy((learning_rate/(population*sigma)) * ((np.dot(Nsample.reshape(population,-1).T, learning_rate)).reshape(1, 1,28,28)))
+            modify = modify + torch.from_numpy((learning_rate/(population*sigma)) * ((np.dot(Nsample.reshape(population,-1).T, A)).reshape(1, 1,28,28)))
         
         if not success:
             faillist.append(i)
