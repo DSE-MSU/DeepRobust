@@ -6,7 +6,6 @@ import logging
 from DeepRobust.image.attack.base_attack import BaseAttack
 from DeepRobust.image.utils import onehot_like, arctanh
 
-import ipdb
 
 class NATTACK(BaseAttack):
 
@@ -55,19 +54,18 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
     logger.info('Start attack.')
     
     #initialization
-    boxmul = (clip_max - clip_min) / 2.
-    boxplus = (clip_max + clip_min) / 2.
     totalImages = 0
 
     for i, (inputs, targets) in enumerate(loader):
         success = False
-        ipdb.set_trace()
+
         print(inputs.size())
         c = inputs.size(1)
         l = inputs.size(2)
         w = inputs.size(3)
         modify = torch.from_numpy(np.random.randn(1,c, l, w) * 0.001).float()
         
+        ##### thermometer encoding
         predict = model.forward(inputs)
 
         if  predict.argmax(dim = 1, keepdim = True) != targets:
@@ -86,40 +84,38 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
             logger.debug('modify_try shape__'+str(modify_try.shape))
             
             # calculate g0(z)
-            newimg = arctanh((inputs-boxplus) / boxmul)
+            g0_z = arctanh((inputs * 2) - 1)
+            print(inputs)
 
             # initialize g(z)
-            logger.debug('newimg type__' + str(newimg.type()) + '__')
-            logger.debug('modify_try type__' + str(modify_try.type()) + '__')
-
-            inputimg = np.tanh(newimg + modify_try) * boxmul + boxplus
+            gz = np.tanh(g0_z + modify_try) * 1 / 2 + 1 / 2
 
             #pending whether attack is successfull every 10 iterations.
             if runstep % 10 == 0:
                 # calculate g(z)
-                realinputimg = np.tanh(newimg + modify) * boxmul + boxplus
-
+                realinputimg = np.tanh(g0_z + modify) * 1 / 2 + 1 / 2
+                # print(g0_z)
+                # print(modify)
                 # calculate dist in miu space
-                realdist = realinputimg - (np.tanh(newimg) * boxmul + boxplus)
+                realdist = realinputimg - (np.tanh(g0_z) * 1/2 + 1/2)
 
                 realclipdist = np.clip(realdist, -epsilon, epsilon)
-                realclipinput = realclipdist + (np.tanh(newimg) * boxmul + boxplus)
-                
-                l2real = np.sum((realclipinput - (np.tanh(newimg) * boxmul + boxplus))**2)**0.5
+                realclipinput = realclipdist + (np.tanh(g0_z) * 1/2 + 1/2)
+                print('size', ((realclipinput - (np.tanh(g0_z) * 1 / 2 + 1 / 2))**2).size())
+                # l2real =  np.sum((realclipinput - (np.tanh(g0_z) * 1 / 2 + 1 / 2))**2)**0.5
                 #l2real =  np.abs(realclipinput - inputs.numpy())
                 
                 info = 'inputs.shape__' + str(inputs.shape)
                 logging.debug(info)
                 predict = model.forward(realclipinput)
                 #outputsreal = sess.run(real_logits, feed_dict={input_xs: realclipinput.transpose(0,2,3,1)})
-
-                print(np.abs(predict).max())
-                print('l2real: '+ str(l2real.max()))
                 print(predict)
+                print(predict.argmax(dim = 1, keepdim = True))
+                # print('l2real: '+ str(l2real.max()))
                 
                 #pending attack
                 if (target_or_not == False):
-                    if (np.argmax(predict) != targets) and (np.abs(realclipdist).max() <= epsilon):
+                    if (predict.argmax(dim = 1, keepdim = True) != targets) and (np.abs(realclipdist).max() <= epsilon):
                         succImages += 1
                         success = True
                         print('clipimage succImages: '+str(succImages)+'  totalImages: '+str(totalImages))
@@ -130,9 +126,9 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
                         return
 
             # calculate distance
-            dist = inputimg - (np.tanh(newimg) * boxmul + boxplus)
+            dist = gz - (np.tanh(g0_z) * 1 / 2 + 1 / 2)
             clipdist = np.clip(dist, -epsilon, epsilon)
-            clipinput = (clipdist + (np.tanh(newimg) * boxmul + boxplus)).reshape(npop,3,32,32)
+            clipinput = (clipdist + (np.tanh(g0_z) * 1 / 2 + 1 / 2)).reshape(population,1,28,28)
             
             target_onehot = np.zeros((1,classnum))
 
@@ -140,10 +136,11 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
 
             #outputs = sess.run(real_logits, feed_dict={input_xs: clipinput.transpose(0,2,3,1)})
             outputs = model.forward(clipinput)
-            target_onehot = target_onehot.repeat(npop,0)
+            target_onehot = target_onehot.repeat(population,0)
 
-            real = np.log((target_onehot * outputs).sum(1)+1e-30)
-            other = np.log(((1. - target_onehot) * outputs - target_onehot * 10000.).max(1)[0] + 1e-30)
+
+            real = np.log((target_onehot * outputs.detach().numpy()).sum(1)+1e-30)
+            other = np.log(((1. - target_onehot) * outputs.detach().numpy() - target_onehot * 10000.).max(1)[0] + 1e-30)
 
             loss1 = np.clip(real - other, 0.,1000)
 
@@ -155,8 +152,10 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
 
             A = (Reward - np.mean(Reward)) / (np.std(Reward)+1e-7)
 
-            
-            modify = modify + (alpha/(npop*sigma)) * ((np.dot(Nsample.reshape(npop,-1).T, A)).reshape(3,32,32))
+            print(modify.size())
+
+            modify = modify + torch.from_numpy((learning_rate/(population*sigma)) * ((np.dot(Nsample.reshape(population,-1).T, learning_rate)).reshape(1, 1,28,28)))
+        
         if not success:
             faillist.append(i)
             print('failed:',faillist)
