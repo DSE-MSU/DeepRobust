@@ -7,6 +7,7 @@ from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from DeepRobust.graph import utils
 
+
 class GraphConvolution(Module):
     """
     Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
