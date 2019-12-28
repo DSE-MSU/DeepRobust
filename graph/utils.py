@@ -110,8 +110,9 @@ def load_data(dataset="cora", val_size=0.1, test_size=0.1):
 
 
 def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=False, sparse=False):
+
     if preprocess_adj == 'GCN':
-        adj_norm = normalize_adj(adj + sp.eye(adj.shape[0]))
+        adj_norm = normalize_adj(adj)
 
     if preprocess_feature:
         features = normalize_f(features)
@@ -130,6 +131,7 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
 
 def normalize_feature(mx):
     """Row-normalize sparse matrix"""
+    mx = mx.lil()
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -139,6 +141,8 @@ def normalize_feature(mx):
 
 def normalize_adj(mx):
     """Row-normalize sparse matrix"""
+    mx = mx.tolil()
+    mx = mx + sp.eye(mx.shape[0])
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1/2).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -150,7 +154,7 @@ def normalize_adj(mx):
 def normalize_adj_tensor(adj, sparse=False):
     if sparse:
         adj = to_scipy(adj)
-        mx = normalize_adj(adj.tolil())
+        mx = normalize_adj(adj)
         return sparse_mx_to_torch_sparse_tensor(mx).cuda()
     else:
         mx = adj + torch.eye(adj.shape[0]).cuda()

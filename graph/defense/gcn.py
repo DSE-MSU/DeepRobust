@@ -78,7 +78,7 @@ class GCN(nn.Module):
 
         optimizer = optim.Adam(self.parameters(), lr=0.01, weight_decay=5e-4)
 
-        print('=== training surrogate model ===')
+        print('=== training gcn model ===')
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward(x, adj_norm)
