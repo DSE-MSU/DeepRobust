@@ -23,8 +23,9 @@ class RND(BaseAttack):
 
     def attack(self, adj, labels, idx_train, target_node, n_perturbations):
         """
-        randomly sample nodes u whose lable is different from v and
-        add the edge u,v to the graph structure
+        Randomly sample nodes u whose lable is different from v and
+        add the edge u,v to the graph structure. This baseline only
+        has access to true class labels in training set
         """
         # adj: sp.csr_matrix
 
