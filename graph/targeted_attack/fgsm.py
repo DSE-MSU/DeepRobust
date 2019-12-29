@@ -1,3 +1,8 @@
+'''
+    FGSM is mentioned in Zugner's paper,
+    Adversarial Attacks on Neural Networks for Graph Data, KDD'19
+'''
+
 import torch
 from DeepRobust.graph.targeted_attack import BaseAttack
 from torch.nn.parameter import Parameter
@@ -22,7 +27,6 @@ class FGSM(BaseAttack):
         # adj: sp.csr_matrix
         self.surrogate.eval()
         modified_adj = deepcopy(adj).to_dense()
-
         print(f'number of pertubations: {n_perturbations}')
         for i in range(n_perturbations):
             modified_row = modified_adj[target_node] + self.adj_changes

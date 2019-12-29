@@ -25,10 +25,14 @@ class GraphConvolution(Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        stdv = 1. / math.sqrt(self.weight.size(1))
-        self.weight.data.uniform_(-stdv, stdv)
+        self.weight.data.fill_(1)
         if self.bias is not None:
-            self.bias.data.uniform_(-stdv, stdv)
+            self.bias.data.fill_(1)
+
+        # stdv = 1. / math.sqrt(self.weight.size(1))
+        # self.weight.data.uniform_(-stdv, stdv)
+        # if self.bias is not None:
+        #     self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
         support = torch.mm(input, self.weight)
@@ -48,10 +52,14 @@ class GCN(nn.Module):
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, with_relu=True, with_bias=True):
         super(GCN, self).__init__()
 
+        self.nfeat = nfeat
+        self.hidden_sizes = [nhid]
+        self.nclass = nclass
         self.gc1 = GraphConvolution(nfeat, nhid, with_bias=with_bias)
         self.gc2 = GraphConvolution(nhid, nclass, with_bias=with_bias)
         self.dropout = dropout
         self.with_relu = with_relu
+        self.output = None
 
     def forward(self, x, adj):
         if self.with_relu:
@@ -77,7 +85,8 @@ class GCN(nn.Module):
         except:
             adj_norm = utils.normalize_adj_tensor(adj)
 
-        optimizer = optim.Adam(self.parameters(), lr=0.01, weight_decay=5e-4)
+        # optimizer = optim.Adam(self.parameters(), lr=0.01, weight_decay=5e-4)
+        optimizer = optim.Adam(self.parameters(), lr=0.01, weight_decay=0)
 
         print('=== training gcn model ===')
         for i in range(train_iters):
@@ -86,4 +95,10 @@ class GCN(nn.Module):
             loss_train = F.nll_loss(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
+
+
+        import ipdb
+        ipdb.set_trace()
+
+        self.output = output
 
