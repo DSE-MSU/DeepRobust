@@ -11,6 +11,11 @@ class BaseAttack(Module):
         self.attack_features = attack_features
         self.device = device
 
+        if model is not None:
+            self.nclass = model.nclass
+            self.nfeat = model.nfeat
+            self.hidden_sizes = model.hidden_sizes
+
     def attack(self):
         pass
 

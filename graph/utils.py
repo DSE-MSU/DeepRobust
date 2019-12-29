@@ -49,6 +49,7 @@ def load_npz(file_name, is_sparse=True):
 def get_adj(dataset, require_lcc=True):
     print('reading %s...' % dataset)
     _A_obs, _X_obs, _z_obs = load_npz(r'/mnt/home/jinwei2/Projects/observe-attacks/data/%s.npz' % dataset)
+
     _A_obs = _A_obs + _A_obs.T
     _A_obs[_A_obs > 1] = 1
 
