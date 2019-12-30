@@ -5,11 +5,12 @@ import torch.optim as optim
 from DeepRobust.graph.defense import GCN
 from DeepRobust.graph.global_attack import MetaApprox, Metattack
 from DeepRobust.graph.utils import *
+from DeepRobust.graph.data import Dataset
 
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '5'
 
 
 parser = argparse.ArgumentParser()
@@ -39,16 +40,16 @@ np.random.seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-adj, features, labels = load_data(dataset=args.dataset)
+data = Dataset(root='/tmp/', name=args.dataset)
+adj, features, labels = data.adj, data.features, data.labels
 nclass = max(labels) + 1
 
 # shuffle
-_N = adj.shape[0]
 val_size = 0.1
 test_size = 0.8
 train_size = 1 - test_size - val_size
 
-idx = np.arange(_N)
+idx = np.arange(adj.shape[0])
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
@@ -56,7 +57,6 @@ perturbations = int(args.ptb_rate * (adj.sum()//2))
 nfeat = features.shape[1]
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
-
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,

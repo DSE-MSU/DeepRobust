@@ -5,6 +5,7 @@ import torch.optim as optim
 from DeepRobust.graph.defense import GCN
 from DeepRobust.graph.global_attack import DICE
 from DeepRobust.graph.utils import *
+from DeepRobust.graph.data import Dataset
 
 import argparse
 import numpy as np
@@ -43,7 +44,9 @@ np.random.seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-adj, features, labels = load_data(dataset=args.dataset)
+data = Dataset(root='/tmp/', name=args.dataset)
+adj, features, labels = data.adj, data.features, data.labels
+
 nclass = max(labels) + 1
 
 # shuffle
