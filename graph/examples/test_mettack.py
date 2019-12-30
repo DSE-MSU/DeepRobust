@@ -68,7 +68,6 @@ labels = labels.to(device)
 surrogate = surrogate.to(device)
 surrogate.fit(features, adj, labels, idx_train)
 
-
 # Setup Attack Model
 if 'Self' in args.model:
     lambda_ = 0
