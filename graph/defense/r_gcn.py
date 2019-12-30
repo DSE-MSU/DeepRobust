@@ -5,7 +5,6 @@
         https://github.com/thumanlab/nrlweb/tree/master/static/assets/download
 '''
 
-import torch.nn as nn
 import torch.nn.functional as F
 import math
 import torch
@@ -13,7 +12,7 @@ from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from torch.distributions.multivariate_normal import MultivariateNormal
 
-class GaussianConvolution(nn.Module):
+class GaussianConvolution(Module):
 
     def __init__(self, in_features, out_features):
         super(GaussianConvolution, self).__init__()
@@ -55,9 +54,9 @@ class GaussianConvolution(nn.Module):
                + str(self.out_features) + ')'
 
 
-class RGCN(nn.Module):
+class RGCN(Module):
 
-    def __init__(self, adj, nfeat, nhid, nclass, is_cuda, gamma=1.0, beta1=5e-4, beta2=5e-4, dropout=0.6):
+    def __init__(self, nnodes, nfeat, nhid, nclass, gamma=1.0, beta1=5e-4, beta2=5e-4, dropout=0.6, device='cpu'):
         super(RGCN, self).__init__()
 
         # adj_norm = normalize(adj)
@@ -74,13 +73,10 @@ class RGCN(nn.Module):
 
         self.dropout = dropout
         # self.gaussian = MultivariateNormal(torch.zeros(self.nclass), torch.eye(self.nclass))
-        self.gaussian = MultivariateNormal(torch.zeros(len(adj), self.nclass),
-                torch.diag_embed(torch.ones(len(adj), self.nclass)))
+        self.gaussian = MultivariateNormal(torch.zeros(nnodes, self.nclass),
+                torch.diag_embed(torch.ones(nnodes, self.nclass)))
         self.miu1 = None
         self.sigma1 = None
-        self.is_cuda = is_cuda
-        self.adj_norm1 = self._normalize_adj(adj, power=-1/2)
-        self.adj_norm2 = self._normalize_adj(adj, power=-1)
 
     def forward(self, features, adj):
         alpha = 1
@@ -99,22 +95,35 @@ class RGCN(nn.Module):
         # miu, sigma = self.gc3(miu, sigma, self.adj_norm1, self.adj_norm2, self.gamma)
         # miu, sigma = F.elu(miu), F.relu(sigma)
 
-        if self.is_cuda:
-            return F.log_softmax(miu + self.gaussian.sample().cuda() * torch.sqrt(sigma))
+        return F.log_softmax(miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma))
 
-        return F.log_softmax(miu + self.gaussian.sample() * torch.sqrt(sigma))
+    def fit_(self, features, adj, labels, idx_train):
+        self.adj_norm1 = self._normalize_adj(adj, power=-1/2)
+        self.adj_norm2 = self._normalize_adj(adj, power=-1)
+        print('=== training rgcn model ===')
+        for i in range(train_iters):
+            output = model(features, adj)
+            loss_train = model.loss(output[idx_train], labels[idx_train])
+            acc_train = accuracy(output[idx_train], labels[idx_train])
+            loss_train.backward()
+            optimizer.step()
+
+    def test(self, features, adj, idx_test):
+        output = self.forward(features, adj)
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
+        acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
+        print("Test set results:",
+              "loss= {:.4f}".format(loss_test.item()),
+              "accuracy= {:.4f}".format(acc_test.item()))
 
     def loss(self, input, labels):
         loss = F.nll_loss(input, labels)
 
-        zeros = torch.zeros(len(self.miu1), self.nhid)
-        ones = torch.ones(len(self.miu1), self.nhid)
-        if self.is_cuda:
-            zeros = zeros.cuda()
-            ones = ones.cuda()
+        zeros = torch.zeros(len(self.miu1), self.nhid).to(self.device)
+        ones = torch.ones(len(self.miu1), self.nhid).to(self.device)
 
         gaussian1 = MultivariateNormal(self.miu1, torch.diag_embed(self.sigma1 + 1e-8))
-        gaussian2 = MultivariateNormal(zeros, torch.diag_embed(ones).cuda())
+        gaussian2 = MultivariateNormal(zeros, torch.diag_embed(ones).to(self.device))
         kl_loss = torch.distributions.kl_divergence(gaussian1, gaussian2).sum()
 
         norm2 = torch.norm(self.gc1.weight_miu, 2).pow(2) + \
@@ -125,11 +134,7 @@ class RGCN(nn.Module):
     def _normalize_adj(self, adj, power=-1/2):
 
         """Row-normalize sparse matrix"""
-
-        if self.is_cuda:
-            A = adj + torch.eye(len(adj)).cuda()
-        else:
-            A = adj + torch.eye(len(adj))
+        A = adj + torch.eye(len(adj)).to(device)
         D_power = (A.sum(1)).pow(power)
         D_power[torch.isinf(D_power)] = 0.
         D_power = torch.diag(D_power)
