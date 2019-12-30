@@ -5,7 +5,7 @@ import torch.optim as optim
 from DeepRobust.graph.defense import GCN
 from DeepRobust.graph.targeted_attack import Nettack
 from DeepRobust.graph.utils import *
-
+from DeepRobust.graph.data import Dataset
 import argparse
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '7'
@@ -25,7 +25,8 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-adj, features, labels = load_data(dataset=args.dataset)
+data = Dataset(root='/tmp/', name=args.dataset)
+adj, features, labels = data.adj, data.features, data.labels
 
 val_size = 0.1
 test_size = 0.8
