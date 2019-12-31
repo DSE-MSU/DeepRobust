@@ -81,11 +81,13 @@ class BaseMeta(BaseAttack):
 
 class Metattack(BaseMeta):
 
-    def __init__(self, model=None, nnodes=None, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', lambda_=0.5, lr=0.1, momentum=0.9):
+    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.1, momentum=0.9):
 
         super(Metattack, self).__init__(model, nnodes, feature_shape, lambda_, attack_features, lambda_, device)
         self.momentum = momentum
         self.lr = lr
+        self.train_iters = train_iters
+        self.with_bias = with_bias
 
         self.weights = []
         self.biases = []
@@ -99,57 +101,62 @@ class Metattack(BaseMeta):
         previous_size = self.nfeat
         for ix, nhid in enumerate(self.hidden_sizes):
             weight = Parameter(torch.FloatTensor(previous_size, nhid).to(device))
-            bias = Parameter(torch.FloatTensor(nhid).to(device))
             w_velocity = torch.zeros(weight.shape).to(device)
-            b_velocity = torch.zeros(bias.shape).to(device)
+            self.weights.append(weight)
+            self.w_velocities.append(w_velocity)
+
+            if self.with_bias:
+                bias = Parameter(torch.FloatTensor(nhid).to(device))
+                b_velocity = torch.zeros(bias.shape).to(device)
+                self.biases.append(bias)
+                self.b_velocities.append(b_velocity)
+
             previous_size = nhid
 
-            self.weights.append(weight)
-            self.biases.append(bias)
-            self.w_velocities.append(w_velocity)
-            self.b_velocities.append(b_velocity)
-
         output_weight = Parameter(torch.FloatTensor(previous_size, self.nclass).to(device))
-        output_bias = Parameter(torch.FloatTensor(self.nclass).to(device))
         output_w_velocity = torch.zeros(output_weight.shape).to(device)
-        output_b_velocity = torch.zeros(output_bias.shape).to(device)
-
         self.weights.append(output_weight)
-        self.biases.append(output_bias)
         self.w_velocities.append(output_w_velocity)
-        self.b_velocities.append(output_b_velocity)
+
+        if self.with_bias:
+            output_bias = Parameter(torch.FloatTensor(self.nclass).to(device))
+            output_b_velocity = torch.zeros(output_bias.shape).to(device)
+            self.biases.append(output_bias)
+            self.b_velocities.append(output_b_velocity)
 
         self._initialize()
 
     def _initialize(self):
+        for w, v in zip(self.weights, self.w_velocities):
+            stdv = 1. / math.sqrt(w.size(1))
+            w.data.uniform_(-stdv, stdv)
+            v.data.fill_(0)
 
-        for w, b in zip(self.weights, self.biases):
-            w.data.fill_(1)
-            b.data.fill_(1)
-
-            # stdv = 1. / math.sqrt(w.size(1))
-            # w.data.uniform_(-stdv, stdv)
-            # b.data.uniform_(-stdv, stdv)
+        if self.with_bias:
+            for b, v in zip(self.biases, self.b_velocities):
+                stdv = 1. / math.sqrt(w.size(1))
+                b.data.uniform_(-stdv, stdv)
+                v.data.fill_(0)
 
     def inner_train(self, features, adj_norm, idx_train, idx_unlabeled, labels):
+        self._initialize()
 
         for ix in range(len(self.hidden_sizes) + 1):
             self.weights[ix] = self.weights[ix].detach()
             self.weights[ix].requires_grad = True
-
             self.w_velocities[ix] = self.w_velocities[ix].detach()
             self.w_velocities[ix].requires_grad = True
 
-            # self.biases[ix] = self.biases[ix].detach()
-            # self.biases[ix].requires_grad = True
-            # self.b_velocities[ix] = self.b_velocities[ix].detach()
-            # self.b_velocities[ix].requires_grad = True
+            if self.with_bias:
+                self.biases[ix] = self.biases[ix].detach()
+                self.biases[ix].requires_grad = True
+                self.b_velocities[ix] = self.b_velocities[ix].detach()
+                self.b_velocities[ix].requires_grad = True
 
-        self.train_iters = 1
         for j in range(self.train_iters):
             hidden = features
-            for w, b in zip(self.weights, self.biases):
-                b = 0
+            for ix, w in enumerate(self.weights):
+                b = self.biases[ix] if self.with_bias else 0
                 if self.sparse_features:
                     hidden = adj_norm @ torch.spmm(hidden, w) + b
                 else:
@@ -160,19 +167,21 @@ class Metattack(BaseMeta):
             output = F.log_softmax(hidden, dim=1)
             loss_labeled = F.nll_loss(output[idx_train], labels[idx_train])
 
-            # weight_grads = torch.autograd.grad(loss_labeled, self.weights, create_graph=True)
-            weight_grads = torch.autograd.grad(loss_labeled, self.weights, retain_graph=True)
+            weight_grads = torch.autograd.grad(loss_labeled, self.weights, create_graph=True)
             self.w_velocities = [self.momentum * v + g for v, g in zip(self.w_velocities, weight_grads)]
-            self.weights = [w - self.lr * v for w, v in zip(self.weights, self.w_velocities)]
+            if self.with_bias:
+                bias_grads = torch.autograd.grad(loss_labeled, self.biases, create_graph=True)
+                self.b_velocities = [self.momentum * v + g for v, g in zip(self.b_velocities, bias_grads)]
 
-            # self.biases = [b - self.lr * v for b, v in zip(self.biases, self.b_velocities)]
-            # bias_grads = torch.autograd.grad(loss_labeled, self.biases, create_graph=True)
-            # self.b_velocities = [self.momentum * v + g for v, g in zip(self.b_velocities, bias_grads)]
+            self.weights = [w - self.lr * v for w, v in zip(self.weights, self.w_velocities)]
+            if self.with_bias:
+                self.biases = [b - self.lr * v for b, v in zip(self.biases, self.b_velocities)]
 
     def get_meta_grad(self, features, adj_norm, idx_train, idx_unlabeled, labels, labels_self_training):
+
         hidden = features
-        for w, b in zip(self.weights, self.biases):
-            b = 0
+        for ix, w in enumerate(self.weights):
+            b = self.biases[ix] if self.with_bias else 0
             if self.sparse_features:
                 hidden = adj_norm @ torch.spmm(hidden, w) + b
             else:
@@ -186,8 +195,7 @@ class Metattack(BaseMeta):
         loss_unlabeled = F.nll_loss(output[idx_unlabeled], labels_self_training[idx_unlabeled])
 
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
-        print(f'GCN loss on unlabled data: {loss_test_val.item()}')
-        print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
+
 
         if self.lambda_ == 1:
             attack_loss = loss_labeled
@@ -196,6 +204,8 @@ class Metattack(BaseMeta):
         else:
             attack_loss = self.lambda_ * loss_labeled + (1 - self.lambda_) * loss_unlabeled
 
+        print(f'GCN loss on unlabled data: {loss_test_val.item()}')
+        print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
         print(f'attack loss: {attack_loss.item()}')
         adj_grad = torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
         # adj_grad = torch.autograd.grad(attack_loss, self.adj_changes, create_graph=True)[0]
@@ -208,23 +218,14 @@ class Metattack(BaseMeta):
         labels_self_training = self.self_training_label(labels, idx_train)
 
         for i in tqdm(range(perturbations), desc="Perturbing graph"):
-            # Sets the diagonal to zero
             adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
             ind = np.diag_indices(self.adj_changes.shape[0])
-            # self.adj_changes[ind[0], ind[1]] = torch.zeros(self.adj_changes.shape[0])
-            # # Make it symmetric
-            # adj_changes_symm = torch.clamp(self.adj_changes + torch.transpose(self.adj_changes, 1, 0), -1, 1)
             adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
-
-            # self.adj_changes.data.copy_(torch.clamp(self.adj_changes.data, min=-1, max=1))
             modified_adj = adj_changes_symm + ori_adj
 
             adj_norm = utils.normalize_adj_tensor(modified_adj)
             self.inner_train(features, adj_norm, idx_train, idx_unlabeled, labels)
             adj_grad = self.get_meta_grad(features, adj_norm, idx_train, idx_unlabeled, labels, labels_self_training)
-
-            import ipdb
-            ipdb.set_trace()
 
             adj_meta_grad = adj_grad * (-2 * modified_adj + 1)
 
@@ -243,7 +244,7 @@ class Metattack(BaseMeta):
                 allowed_mask, self.ll_ratio = self.log_likelihood_constraint(modified_adj, ori_adj, ll_cutoff)
                 allowed_mask = allowed_mask.to(self.device)
 
-                # make allowed_mask symmetric
+                # TODO make allowed_mask symmetric
                 import ipdb
                 ipdb.set_trace()
 
@@ -299,8 +300,12 @@ class Metattack(BaseMeta):
 
 class MetaApprox(BaseMeta):
 
-    def __init__(self, nfeat, hidden_sizes, nclass, nnodes, dropout, train_iters, attack_features, lambda_, device, with_relu=False, with_bias=False, lr=0.01):
-        super(MetaApprox, self).__init__(nfeat, hidden_sizes, nclass, nnodes, dropout, train_iters, attack_features, lambda_, device, with_bias=with_bias, with_relu=with_relu)
+    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', lambda_=0.5, train_iters=100, lr=0.01):
+
+        super(MetaApprox, self).__init__(model, nnodes, feature_shape, lambda_, attack_features, lambda_, device)
+
+        self.lr = lr
+        self.train_iters = train_iters
 
         self.adj_meta_grad = None
         self.features_meta_grad = None
@@ -379,23 +384,25 @@ class MetaApprox(BaseMeta):
             self.grad_sum += torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
             self.optimizer.zero_grad()
             loss_labeled.backward(retain_graph=True)
-            # loss_labeled.backward(retain_graph=True)
             self.optimizer.step()
 
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
         print(f'GCN loss on unlabled data: {loss_test_val.item()}')
         print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
+
         # self.adj_changes.grad.zero_()
 
-    def forward(self, features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+    def attack(self, features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
         labels_self_training = self.train_surrogate(features, ori_adj, labels, idx_train)
         self.sparse_features = sp.issparse(features)
 
         for i in tqdm(range(perturbations), desc="Perturbing graph"):
-            self.adj_changes.data.copy_(torch.clamp(self.adj_changes.data, min=-1, max=1))
-            modified_adj = self.adj_changes + ori_adj
-            self.grad_sum.data.fill_(0)
+            adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
+            ind = np.diag_indices(self.adj_changes.shape[0])
+            adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
+            modified_adj = adj_changes_symm + ori_adj
 
+            self.grad_sum.data.fill_(0)
             self.inner_train(features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training)
 
             adj_meta_grad = self.grad_sum * (-2 * modified_adj + 1)
@@ -428,9 +435,4 @@ class MetaApprox(BaseMeta):
         return self.adj_changes + ori_adj
 
 
-def visualize(your_var):
-    from graphviz import Digraph
-    import torch
-    from torch.autograd import Variable
-    from torchviz import make_dot
-    make_dot(your_var).view()
+
