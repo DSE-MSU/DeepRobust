@@ -1,8 +1,6 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
-import networkx as nx
-import sys
 from sklearn.model_selection import train_test_split
 import torch.sparse as ts
 
@@ -70,12 +68,13 @@ def normalize_adj(mx):
     return mx
 
 def normalize_adj_tensor(adj, sparse=False):
+    device = torch.device("cuda:0" if adj.is_cuda else "cpu")
     if sparse:
         adj = to_scipy(adj)
         mx = normalize_adj(adj)
-        return sparse_mx_to_torch_sparse_tensor(mx).cuda()
+        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
-        mx = adj + torch.eye(adj.shape[0]).cuda()
+        mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
         r_inv = rowsum.pow(-1/2).flatten()
         r_inv[torch.isinf(r_inv)] = 0.
@@ -348,4 +347,10 @@ def ravel_multiple_indices(ixs, shape, reverse=False):
 
     return ixs[:, 0] * shape[1] + ixs[:, 1]
 
-
+def visualize(your_var):
+    '''visualize computation graph'''
+    from graphviz import Digraph
+    import torch
+    from torch.autograd import Variable
+    from torchviz import make_dot
+    make_dot(your_var).view()
