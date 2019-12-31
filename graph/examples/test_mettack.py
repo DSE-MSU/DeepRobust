@@ -10,7 +10,7 @@ from DeepRobust.graph.data import Dataset
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '5'
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
 
 parser = argparse.ArgumentParser()
@@ -32,12 +32,12 @@ parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation r
 parser.add_argument('--model', type=str, default='Meta-Self', choices=['A-Meta-Self', 'Meta-Self'], help='model variant')
 
 args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
-print('cuda: %s' % args.cuda)
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 np.random.seed(args.seed)
-if args.cuda:
+torch.manual_seed(args.seed)
+if device != 'cpu':
     torch.cuda.manual_seed(args.seed)
 
 data = Dataset(root='/tmp/', name=args.dataset)
@@ -60,7 +60,7 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=True)
+                nhid=16, dropout=0.5, with_relu=False, with_bias=True)
 
 adj = adj.to(device)
 features = features.to(device)
@@ -80,7 +80,6 @@ if 'A' in args.model:
     model = MetaApprox(model, hidden_sizes=[args.hidden],
                        nnodes=adj.shape[0], nclass=nclass, dropout=args.dropout,
                        train_iters=100, attack_features=False, lambda_=lambda_, device=device)
-
 else:
     model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
@@ -89,31 +88,19 @@ model = model.to(device)
 def test(adj):
     ''' test on GCN '''
 
-    adj = normalize_adj_tensor(adj)
+    # adj = normalize_adj_tensor(adj)
     gcn = GCN(nfeat=features.shape[1],
               nhid=args.hidden,
               nclass=labels.max().item() + 1,
               dropout=args.dropout)
 
-    if args.cuda:
-        gcn = gcn.to(device)
+    gcn = gcn.to(device)
 
     optimizer = optim.Adam(gcn.parameters(),
                            lr=args.lr, weight_decay=args.weight_decay)
 
-    gcn.train()
-
-    for epoch in range(args.epochs):
-        optimizer.zero_grad()
-        output = gcn(features, adj)
-        loss_train = F.nll_loss(output[idx_train], labels[idx_train])
-        acc_train = accuracy(output[idx_train], labels[idx_train])
-        loss_train.backward()
-        optimizer.step()
-
-    gcn.eval()
-    output = gcn(features, adj)
-
+    gcn.fit(features, adj, labels, idx_train, idx_val)
+    output = gcn.predict()
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
@@ -126,11 +113,8 @@ def test(adj):
 def main():
     print('=== testing GCN on original(clean) graph ===')
     # test(adj)
-
     modified_adj = model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
     modified_adj = modified_adj.detach()
-    import ipdb
-    ipdb.set_trace()
     test(modified_adj)
 
 
