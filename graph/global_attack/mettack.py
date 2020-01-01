@@ -29,19 +29,36 @@ class BaseMeta(BaseAttack):
 
         super(BaseMeta, self).__init__(model, nnodes, attack_structure, attack_features, device)
         self.lambda_ = lambda_
-        self.adj_changes = Parameter(torch.FloatTensor(nnodes, nnodes))
-        self.adj_changes.data.fill_(0)
+
+        assert attack_features or attack_structure, 'attack_features or attack_structure cannot be both False'
+
+        self.modified_adj = None
+        self.modified_features = None
+
+        if attack_structure:
+            assert nnodes is not None, 'Please give nnodes='
+            self.adj_changes = Parameter(torch.FloatTensor(nnodes, nnodes))
+            self.adj_changes.data.fill_(0)
 
         if attack_features:
+            assert feature_shape is not None, 'Please give feature_shape='
             self.feature_changes = Parameter(torch.FloatTensor(feature_shape))
-            self.features.data.fill_(0)
-        else:
-            pass
+            self.feature_changes.data.fill_(0)
 
         self.with_relu = model.with_relu
 
     def attack(self, adj, labels, n_perturbations):
         pass
+
+    def get_modified_adj(self, ori_adj):
+        adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
+        ind = np.diag_indices(self.adj_changes.shape[0])
+        adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
+        modified_adj = adj_changes_symm + ori_adj
+        return modified_adj
+
+    def get_modified_features(self, ori_features):
+        return ori_features + self.feature_changes
 
     def filter_potential_singletons(self, modified_adj):
         """
@@ -69,6 +86,8 @@ class BaseMeta(BaseAttack):
         """
         Computes a mask for entries that, if the edge corresponding to the entry is added/removed, would lead to the
         log likelihood constraint to be violated.
+
+        Note that different data type (float, double) can effect the final results.
         """
         t_d_min = torch.tensor(2.0).to(self.device)
         t_possible_edges = np.array(np.triu(np.ones((self.nnodes, self.nnodes)), k=1).nonzero()).T
@@ -78,12 +97,33 @@ class BaseMeta(BaseAttack):
                                                                     ll_cutoff)
         return allowed_mask, current_ratio
 
+    def get_adj_score(self, adj_grad, modified_adj, ori_adj, ll_constraint, ll_cutoff):
+        adj_meta_grad = adj_grad * (-2 * modified_adj + 1)
+        # Make sure that the minimum entry is 0.
+        adj_meta_grad -= adj_meta_grad.min()
+        # Filter self-loops
+        adj_meta_grad -= torch.diag(torch.diag(adj_meta_grad, 0))
+        # # Set entries to 0 that could lead to singleton nodes.
+        singleton_mask = self.filter_potential_singletons(modified_adj)
+        adj_meta_grad = adj_meta_grad *  singleton_mask
+
+        if ll_constraint:
+            allowed_mask, self.ll_ratio = self.log_likelihood_constraint(modified_adj, ori_adj, ll_cutoff)
+            allowed_mask = allowed_mask.to(self.device)
+            adj_meta_grad = adj_meta_grad * allowed_mask
+        return adj_meta_grad
+
+    def get_feature_score(self, feature_grad, modified_features):
+        feature_meta_grad = feature_grad * (-2 * modified_features + 1)
+        feature_meta_grad -= feature_meta_grad.min()
+        return feature_meta_grad
+
 
 class Metattack(BaseMeta):
 
     def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.1, momentum=0.9):
 
-        super(Metattack, self).__init__(model, nnodes, feature_shape, lambda_, attack_features, lambda_, device)
+        super(Metattack, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, device)
         self.momentum = momentum
         self.lr = lr
         self.train_iters = train_iters
@@ -193,9 +233,7 @@ class Metattack(BaseMeta):
 
         loss_labeled = F.nll_loss(output[idx_train], labels[idx_train])
         loss_unlabeled = F.nll_loss(output[idx_unlabeled], labels_self_training[idx_unlabeled])
-
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
-
 
         if self.lambda_ == 1:
             attack_loss = loss_labeled
@@ -207,114 +245,76 @@ class Metattack(BaseMeta):
         print(f'GCN loss on unlabled data: {loss_test_val.item()}')
         print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
         print(f'attack loss: {attack_loss.item()}')
-        adj_grad = torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
-        # adj_grad = torch.autograd.grad(attack_loss, self.adj_changes, create_graph=True)[0]
-        return adj_grad
 
+        adj_grad, feature_grad = None, None
+        if self.attack_structure:
+            adj_grad = torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
+        if self.attack_features:
+            feature_grad = torch.autograd.grad(attack_loss, self.feature_changes, retain_graph=True)[0]
+        return adj_grad, feature_grad
 
-    def attack(self, features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
-        self.sparse_features = sp.issparse(features)
-
+    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+        self.sparse_features = sp.issparse(ori_features)
         labels_self_training = self.self_training_label(labels, idx_train)
+        modified_adj = ori_adj
+        modified_features = ori_features
 
         for i in tqdm(range(perturbations), desc="Perturbing graph"):
-            adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
-            ind = np.diag_indices(self.adj_changes.shape[0])
-            adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
-            modified_adj = adj_changes_symm + ori_adj
-
-            adj_norm = utils.normalize_adj_tensor(modified_adj)
-            self.inner_train(features, adj_norm, idx_train, idx_unlabeled, labels)
-            adj_grad = self.get_meta_grad(features, adj_norm, idx_train, idx_unlabeled, labels, labels_self_training)
-
-            adj_meta_grad = adj_grad * (-2 * modified_adj + 1)
-
-            # Make sure that the minimum entry is 0.
-            adj_meta_grad -= adj_meta_grad.min()
-
-            # Filter self-loops
-            adj_meta_grad -= torch.diag(torch.diag(adj_meta_grad, 0))
-
-            # # Set entries to 0 that could lead to singleton nodes.
-            singleton_mask = self.filter_potential_singletons(modified_adj)
-            adj_meta_grad = adj_meta_grad *  singleton_mask
-
-            ll_constraint = False
-            if ll_constraint:
-                allowed_mask, self.ll_ratio = self.log_likelihood_constraint(modified_adj, ori_adj, ll_cutoff)
-                allowed_mask = allowed_mask.to(self.device)
-
-                # TODO make allowed_mask symmetric
-                import ipdb
-                ipdb.set_trace()
-
-                adj_meta_grad = adj_meta_grad * allowed_mask
-
-            # Get argmax of the approximate meta gradients.
-            adj_meta_approx_argmax = torch.argmax(adj_meta_grad)
-
-            row_idx, col_idx = utils.unravel_index(adj_meta_approx_argmax, ori_adj.shape)
-
-            self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
-            self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+            if self.attack_structure:
+                modified_adj = self.get_modified_adj(ori_adj)
 
             if self.attack_features:
-                self.perturb_features()
+                modified_features = ori_features + self.feature_changes
 
-        return self.adj_changes + ori_adj
+            adj_norm = utils.normalize_adj_tensor(modified_adj)
+            self.inner_train(modified_features, adj_norm, idx_train, idx_unlabeled, labels)
 
-    def perturb_features(self):
+            adj_grad, feature_grad = self.get_meta_grad(modified_features, adj_norm, idx_train, idx_unlabeled, labels, labels_self_training)
 
-        adj_grad = torch.autograd.grad(attack_loss, self.adj_changes)[0]
-        adj_meta_grad = adj_grad * (-2 * modified_adj + 1)
-        adj_meta_grad -= adj_meta_grad.min()
-        singleton_mask = self.filter_potential_singletons(modified_adj)
-        adj_meta_grad = adj_meta_grad *  singleton_mask
+            adj_meta_score = torch.tensor(0.0).to(self.device)
+            feature_meta_score = torch.tensor(0.0).to(self.device)
+            if self.attack_structure:
+                adj_meta_score = self.get_adj_score(adj_grad, modified_adj, ori_adj, ll_constraint, ll_cutoff)
+            if self.attack_features:
+                feature_meta_score = self.get_feature_score(feature_grad, modified_features)
 
-        feature_grad = torch.autograd.grad(attack_loss, self.feature_changes)[0]
-        feature_meta_grad = feature_grad * (-2 * feature + 1)
-        # TODO
-        feature_meta_grad -= feature_meta_grad.min()
-        features_meta_grad_argmax = torch.argmax(features_meta_grad)
+            if adj_meta_score.max() >= feature_meta_score.max():
+                adj_meta_argmax = torch.argmax(adj_meta_score)
+                row_idx, col_idx = utils.unravel_index(adj_meta_argmax, ori_adj.shape)
+                self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+                self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+            else:
+                feature_meta_argmax = torch.argmax(feature_meta_score)
+                row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
+                self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
 
-        # Get meta gradients of the attributes.
-        self.attribute_meta_grad = tf.multiply(tf.gradients(attack_loss, self.attribute_changes)[0],
-                                               tf.reshape(self.attributes, [-1]) * -2 + 1)
-        self.attribute_meta_grad -= tf.reduce_min(self.attribute_meta_grad)
+        if self.attack_structure:
+            self.modified_adj = self.get_modified_adj(ori_adj)
+        if self.attack_features:
+            self.modified_features = self.get_modified_features(ori_features)
 
-        attribute_meta_grad_argmax = tf.argmax(self.attribute_meta_grad)
-
-        self.attribute_meta_update = tf.scatter_add(self.attribute_changes,
-                                                    indices=attribute_meta_grad_argmax,
-                                                    updates=-2 * tf.gather(
-                                                        tf.reshape(self.attributes, [-1]),
-                                                        attribute_meta_grad_argmax) + 1),
-
-        adjacency_meta_grad_max = tf.reduce_max(self.adjacency_meta_grad)
-        attribute_meta_grad_max = tf.reduce_max(self.attribute_meta_grad)
-
-        cond = adjacency_meta_grad_max > attribute_meta_grad_max
-
-        self.combined_update = tf.cond(cond, lambda: self.adjacency_meta_update,
-                                       lambda: self.attribute_meta_update)
 
 class MetaApprox(BaseMeta):
 
-    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', lambda_=0.5, train_iters=100, lr=0.01):
+    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.01):
 
-        super(MetaApprox, self).__init__(model, nnodes, feature_shape, lambda_, attack_features, lambda_, device)
+        super(MetaApprox, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, device)
 
         self.lr = lr
         self.train_iters = train_iters
-
         self.adj_meta_grad = None
         self.features_meta_grad = None
+        if self.attack_structure:
+            self.adj_grad_sum = torch.zeros(nnodes, nnodes).to(device)
+        if self.attack_features:
+            self.feature_grad_sum = torch.zeros(feature_shape).to(device)
 
-        self.grad_sum = torch.zeros(nnodes, nnodes).to(device)
+        self.with_bias = with_bias
 
         self.weights = []
         self.biases = []
-        previous_size = nfeat
+
+        previous_size = self.nfeat
         for ix, nhid in enumerate(self.hidden_sizes):
             weight = Parameter(torch.FloatTensor(previous_size, nhid).to(device))
             bias = Parameter(torch.FloatTensor(nhid).to(device))
@@ -323,8 +323,8 @@ class MetaApprox(BaseMeta):
             self.weights.append(weight)
             self.biases.append(bias)
 
-        output_weight = Parameter(torch.FloatTensor(previous_size, nclass).to(device))
-        output_bias = Parameter(torch.FloatTensor(nclass).to(device))
+        output_weight = Parameter(torch.FloatTensor(previous_size, self.nclass).to(device))
+        output_bias = Parameter(torch.FloatTensor(self.nclass).to(device))
         self.weights.append(output_weight)
         self.biases.append(output_bias)
 
@@ -333,33 +333,16 @@ class MetaApprox(BaseMeta):
 
     def _initialize(self):
         for w, b in zip(self.weights, self.biases):
-            stdv = 1. / math.sqrt(w.size(1))
-            w.data.uniform_(-stdv, stdv)
-            b.data.uniform_(-stdv, stdv)
-
-    def single_inner_train(self, features, adj_norm, idx_train, idx_unlabeled, labels, labels_self_training):
-        for j in range(self.train_iters):
-            self.optimizer.zero_grad()
-            hidden = features
-            for ix, w in enumerate(self.weights):
-                b = self.biases[ix]*float(self.with_bias)
-                if ix == 0 and self.sparse_features:
-                    hidden = adj_norm @ torch.spmm(features, w) + b
-                else:
-                    hidden = adj_norm @ hidden @ w + b
-                if self.with_relu:
-                    hidden = F.relu(hidden)
-
-            output = F.log_softmax(hidden, dim=1)
-            loss_labeled = F.nll_loss(output[idx_train], labels[idx_train])
-            loss_unlabeled = F.nll_loss(output[idx_unlabeled], labels_self_training[idx_unlabeled])
-            loss_labeled.backward()
-            self.optimizer.step()
-
-        return loss_labeled, loss_unlabeled
+            w.data.fill_(1)
+            b.data.fill_(1)
+            # stdv = 1. / math.sqrt(w.size(1))
+            # w.data.uniform_(-stdv, stdv)
+            # b.data.uniform_(-stdv, stdv)
+        self.optimizer = optim.Adam(self.weights + self.biases, lr=self.lr)
 
     def inner_train(self, features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training):
         adj_norm = utils.normalize_adj_tensor(modified_adj)
+
         for j in range(self.train_iters):
             hidden = features
             for w, b in zip(self.weights, self.biases):
@@ -381,10 +364,16 @@ class MetaApprox(BaseMeta):
             else:
                 attack_loss = self.lambda_ * loss_labeled + (1 - self.lambda_) * loss_unlabeled
 
-            self.grad_sum += torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
             self.optimizer.zero_grad()
             loss_labeled.backward(retain_graph=True)
             self.optimizer.step()
+
+            if self.attack_structure:
+                self.adj_changes.grad.zero_()
+                self.adj_grad_sum += torch.autograd.grad(attack_loss, self.adj_changes, retain_graph=True)[0]
+            if self.attack_features:
+                self.feature_changes.grad.zero_()
+                self.feature_grad_sum += torch.autograd.grad(attack_loss, self.feature_changes, retain_graph=True)[0]
 
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
         print(f'GCN loss on unlabled data: {loss_test_val.item()}')
@@ -392,47 +381,47 @@ class MetaApprox(BaseMeta):
 
         # self.adj_changes.grad.zero_()
 
-    def attack(self, features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
-        labels_self_training = self.train_surrogate(features, ori_adj, labels, idx_train)
-        self.sparse_features = sp.issparse(features)
+    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+        labels_self_training = self.self_training_label(labels, idx_train)
+        self.sparse_features = sp.issparse(ori_features)
+        modified_adj = ori_adj
+        modified_features = ori_features
 
         for i in tqdm(range(perturbations), desc="Perturbing graph"):
-            adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
-            ind = np.diag_indices(self.adj_changes.shape[0])
-            adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
-            modified_adj = adj_changes_symm + ori_adj
+            self._initialize()
 
-            self.grad_sum.data.fill_(0)
-            self.inner_train(features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training)
+            if self.attack_structure:
+                modified_adj = self.get_modified_adj(ori_adj)
 
-            adj_meta_grad = self.grad_sum * (-2 * modified_adj + 1)
-            # Make sure that the minimum entry is 0.
-            adj_meta_grad -= adj_meta_grad.min()
+            if self.attack_features:
+                modified_features = ori_features + self.feature_changes
 
-            # Set entries to 0 that could lead to singleton nodes.
-            singleton_mask = self.filter_potential_singletons(modified_adj)
-            adj_meta_grad = adj_meta_grad *  singleton_mask
+            self.adj_grad_sum.data.fill_(0)
+            self.inner_train(modified_features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training)
 
-            if ll_constraint:
-                allowed_mask, self.ll_ratio = self.log_likelihood_constraint(modified_adj, ori_adj, ll_cutoff)
-                # Set entries to 0 that would violate the log likelihood constraint.
-                allowed_mask = allowed_mask.to(self.device)
-                adj_meta_grad = adj_meta_grad * allowed_mask
+            adj_meta_score = torch.tensor(0.0).to(self.device)
+            feature_meta_score = torch.tensor(0.0).to(self.device)
+            if self.attack_structure:
+                adj_meta_score = self.get_adj_score(self.adj_grad_sum, modified_adj, ori_adj, ll_constraint, ll_cutoff)
+            if self.attack_features:
+                feature_meta_score = self.get_feature_score(self.feature_grad_sum, modified_features)
 
-            # Get argmax of the approximate meta gradients.
-            adj_meta_approx_argmax = torch.argmax(adj_meta_grad)
-            row_idx, col_idx = utils.unravel_index(adj_meta_approx_argmax, ori_adj.shape)
-
-            # self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
-            # self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
-            if modifed_adj[row_idx][col_idx] == 0:
-                self.adj_changes.data[row_idx][col_idx] = 1
-                self.adj_changes.data[col_idx][row_idx] = 1
+            if adj_meta_score.max() >= feature_meta_score.max():
+                adj_meta_argmax = torch.argmax(adj_meta_score)
+                row_idx, col_idx = utils.unravel_index(adj_meta_argmax, ori_adj.shape)
+                self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+                self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
             else:
-                self.adj_changes.data[row_idx][col_idx] = 0
-                self.adj_changes.data[col_idx][row_idx] = 0
+                feature_meta_argmax = torch.argmax(feature_meta_score)
+                row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
+                self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
+
+        if self.attack_structure:
+            self.modified_adj = self.get_modified_adj(ori_adj)
+        if self.attack_features:
+            self.modified_features = self.get_modified_features(ori_features)
+
 
         return self.adj_changes + ori_adj
-
 
 
