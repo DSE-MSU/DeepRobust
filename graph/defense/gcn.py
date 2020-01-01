@@ -26,13 +26,14 @@ class GraphConvolution(Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        # self.weight.data.fill_(1)
-        # if self.bias is not None:
-        #     self.bias.data.fill_(1)
-        stdv = 1. / math.sqrt(self.weight.size(1))
-        self.weight.data.uniform_(-stdv, stdv)
+        self.weight.data.fill_(1)
         if self.bias is not None:
-            self.bias.data.uniform_(-stdv, stdv)
+            self.bias.data.fill_(1)
+
+        # stdv = 1. / math.sqrt(self.weight.size(1))
+        # self.weight.data.uniform_(-stdv, stdv)
+        # if self.bias is not None:
+        #     self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
         support = torch.mm(input, self.weight)
@@ -116,6 +117,10 @@ class GCN(nn.Module):
             loss_train.backward()
             optimizer.step()
 
+
+        import ipdb
+        ipdb.set_trace()
+
         self.output = output
 
     def _train_with_val(self, labels, idx_train, idx_val, train_iters):
@@ -123,21 +128,36 @@ class GCN(nn.Module):
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
         best_loss_val = 100
+        best_acc_val = 0
+
         for i in range(train_iters):
+            self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
             loss_train = F.nll_loss(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
+
+            self.eval()
+            output = self.forward(self.features, self.adj_norm)
             loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+            acc_val = utils.accuracy(output[idx_val], labels[idx_val])
 
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
                 best_gcn = deepcopy(self)
 
+            if acc_val > best_acc_val:
+                best_acc_val = acc_val
+                best_gcn = deepcopy(self)
+
         print('=== picking the best model according to the performance on validation ===')
         self.best_model = best_gcn
         self.output = output
+
+    def _set_parameters():
+        # TODO
+        pass
 
     def predict(self):
         self.eval()
