@@ -60,7 +60,7 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0.5, with_relu=False, with_bias=True)
+                nhid=16, dropout=0, with_relu=False, with_bias=True, weight_decay=0)
 
 adj = adj.to(device)
 features = features.to(device)
@@ -77,9 +77,8 @@ if 'Both' in args.model:
     lambda_ = 0.5
 
 if 'A' in args.model:
-    model = MetaApprox(model, hidden_sizes=[args.hidden],
-                       nnodes=adj.shape[0], nclass=nclass, dropout=args.dropout,
-                       train_iters=100, attack_features=False, lambda_=lambda_, device=device)
+    model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=True, device=device, lambda_=lambda_)
+
 else:
     model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
@@ -100,7 +99,7 @@ def test(adj):
                            lr=args.lr, weight_decay=args.weight_decay)
 
     gcn.fit(features, adj, labels, idx_train, idx_val)
-    output = gcn.predict()
+    output = gcn.best_model.predict()
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
@@ -114,9 +113,9 @@ def main():
     print('=== testing GCN on original(clean) graph ===')
     # test(adj)
     modified_adj = model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
-    modified_adj = modified_adj.detach()
+    modified_adj = model.modified_adj.detach()
+    # modified_features = model.modified_features.detach()
     test(modified_adj)
-
 
 if __name__ == '__main__':
     main()
