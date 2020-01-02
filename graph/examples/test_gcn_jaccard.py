@@ -33,7 +33,6 @@ train_size = 1 - test_size - val_size
 
 idx = np.arange(_N)
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
-idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
 
