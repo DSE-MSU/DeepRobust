@@ -390,15 +390,16 @@ class MetaApprox(BaseMeta):
 
             if self.attack_structure:
                 modified_adj = self.get_modified_adj(ori_adj)
-
+                self.adj_grad_sum.data.fill_(0)
             if self.attack_features:
                 modified_features = ori_features + self.feature_changes
+                self.feature_grad_sum.data.fill_(0)
 
-            self.adj_grad_sum.data.fill_(0)
             self.inner_train(modified_features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training)
 
             adj_meta_score = torch.tensor(0.0).to(self.device)
             feature_meta_score = torch.tensor(0.0).to(self.device)
+
             if self.attack_structure:
                 adj_meta_score = self.get_adj_score(self.adj_grad_sum, modified_adj, ori_adj, ll_constraint, ll_cutoff)
             if self.attack_features:
