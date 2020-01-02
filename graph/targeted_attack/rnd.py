@@ -9,7 +9,7 @@ from copy import deepcopy
 
 class RND(BaseAttack):
 
-    def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='gpu'):
+    def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
         """
         As is described in Adversarial Attacks on Neural Networks for Graph Data (KDD'19),
         'Rnd is an attack in which we modify the structure of the graph. Given our target node v,

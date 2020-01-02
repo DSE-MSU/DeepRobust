@@ -11,6 +11,9 @@ import torch
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from torch.distributions.multivariate_normal import MultivariateNormal
+from DeepRobust.graph import utils
+import torch.optim as optim
+
 
 class GaussianConvolution(Module):
 
@@ -56,11 +59,13 @@ class GaussianConvolution(Module):
 
 class RGCN(Module):
 
-    def __init__(self, nnodes, nfeat, nhid, nclass, gamma=1.0, beta1=5e-4, beta2=5e-4, dropout=0.6, device='cpu'):
+    def __init__(self, nnodes, nfeat, nhid, nclass, gamma=1.0, beta1=5e-4, beta2=5e-4, lr=0.01, dropout=0.6, device='cpu'):
         super(RGCN, self).__init__()
 
+        self.device = device
         # adj_norm = normalize(adj)
         # first turn original features to distribution
+        self.lr = lr
         self.gamma = gamma
         self.beta1 = beta1
         self.beta2 = beta2
@@ -77,17 +82,19 @@ class RGCN(Module):
                 torch.diag_embed(torch.ones(nnodes, self.nclass)))
         self.miu1 = None
         self.sigma1 = None
+        self.adj_norm1, self.adj_norm2 = None, None
+        self.features, self.labels = None, None
 
-    def forward(self, features, adj):
-        alpha = 1
+    def forward(self):
+        features = self.features
         miu, sigma = self.gc1(features, features)
-        miu, sigma = F.elu(miu, alpha=alpha), F.relu(sigma)
+        miu, sigma = F.elu(miu, alpha=1), F.relu(sigma)
         self.miu1, self.sigma1 = miu, sigma
         miu = F.dropout(miu, self.dropout, training=self.training)
         sigma = F.dropout(sigma, self.dropout, training=self.training)
 
         miu, sigma = self.gc2(miu, sigma, self.adj_norm1, self.adj_norm2, self.gamma)
-        miu, sigma = F.elu(miu, alpha=alpha), F.relu(sigma)
+        miu, sigma = F.elu(miu, alpha=1), F.relu(sigma)
 
         # # third layer
         # miu = F.dropout(miu, self.dropout, training=self.training)
@@ -97,19 +104,27 @@ class RGCN(Module):
 
         return F.log_softmax(miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma))
 
-    def fit_(self, features, adj, labels, idx_train):
+    def fit_(self, features, adj, labels, idx_train, train_iters=200, verbose=True):
+
+        adj, features, labels = utils.to_tensor(adj.todense(), features, labels, device=self.device)
+        self.features, self.labels = features, labels
         self.adj_norm1 = self._normalize_adj(adj, power=-1/2)
         self.adj_norm2 = self._normalize_adj(adj, power=-1)
         print('=== training rgcn model ===')
+
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
         for i in range(train_iters):
-            output = model(features, adj)
-            loss_train = model.loss(output[idx_train], labels[idx_train])
-            acc_train = accuracy(output[idx_train], labels[idx_train])
+            optimizer.zero_grad()
+            output = self.forward()
+            loss_train = self.loss(output[idx_train], labels[idx_train])
+            # acc_train = utils.accuracy(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
+            if verbose:
+                print(f'Epoch {i}: training loss: {loss_train.item()}')
 
-    def test(self, features, adj, idx_test):
-        output = self.forward(features, adj)
+    def test(self, idx_test):
+        output = self.forward()
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
@@ -128,13 +143,17 @@ class RGCN(Module):
 
         norm2 = torch.norm(self.gc1.weight_miu, 2).pow(2) + \
                torch.norm(self.gc1.weight_sigma, 2).pow(2)
-        print(f'gcn_loss: {loss.item()}, kl_loss: {self.beta1 * kl_loss.item()}, norm2: {self.beta2 * norm2.item()}')
+        # print(f'gcn_loss: {loss.item()}, kl_loss: {self.beta1 * kl_loss.item()}, norm2: {self.beta2 * norm2.item()}')
         return loss  + self.beta1 * kl_loss + self.beta2 * norm2
+
+    def _initialize(self):
+        self.gc1.reset_parameters()
+        self.gc2.reset_parameters()
 
     def _normalize_adj(self, adj, power=-1/2):
 
         """Row-normalize sparse matrix"""
-        A = adj + torch.eye(len(adj)).to(device)
+        A = adj + torch.eye(len(adj)).to(self.device)
         D_power = (A.sum(1)).pow(power)
         D_power[torch.isinf(D_power)] = 0.
         D_power = torch.diag(D_power)

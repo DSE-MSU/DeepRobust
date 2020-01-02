@@ -2,7 +2,7 @@ from torch.nn.modules.module import Module
 
 class BaseAttack(Module):
 
-    def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='gpu'):
+    def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='cpu'):
         super(BaseAttack, self).__init__()
 
         self.surrogate = model
