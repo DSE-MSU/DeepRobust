@@ -144,14 +144,15 @@ class GCN(nn.Module):
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
                 best_gcn = deepcopy(self)
+                self.output = output
 
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
                 best_gcn = deepcopy(self)
+                self.output = output
 
         print('=== picking the best model according to the performance on validation ===')
         self.best_model = best_gcn
-        self.output = output
 
     def _set_parameters():
         # TODO

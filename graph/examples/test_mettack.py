@@ -117,6 +117,7 @@ def main():
     modified_adj = model.modified_adj
     # modified_features = model.modified_features
     test(modified_adj)
+
     # # if you want to save the modified adj/features, uncomment the code below
     # model.save_adj(root='./', name='mod_adj')
     # model.save_features(root='./', name='mod_features')
