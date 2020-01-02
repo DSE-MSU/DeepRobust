@@ -7,18 +7,18 @@ class Dataset():
 
     def __init__(self, root, name, require_lcc=True, transform=None):
         self.name = name.lower()
-        assert self.name in ['cora', 'citeseer', 'pubmed', 'polblogs'], \
-            'Currently only support cora, citeseer, pubmed, polblogs'
+        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs'], \
+            'Currently only support cora, citeseer, cora_ml, polblogs'
 
         self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
         self.root = osp.expanduser(osp.normpath(root))
         self.data_filename = osp.join(root, self.name)
+        self.data_filename += '.npz'
         self.require_lcc = require_lcc
         self.transform = transform
-        self.adj, self.features, self.labels = self.load_data(self.root)
+        self.adj, self.features, self.labels = self.load_data()
 
-    def load_data(self, val_size=0.1, test_size=0.1):
-        self.data_filename += '.npz'
+    def load_data(self):
         if not osp.exists(self.data_filename):
             self.download_npz()
         print('Loading {} dataset...'.format(self.name))
@@ -34,7 +34,9 @@ class Dataset():
     def get_adj(self, require_lcc=True):
         adj, features, labels = self.load_npz(self.data_filename)
         adj = adj + adj.T
+        adj = adj.tolil()
         adj[adj > 1] = 1
+
         if require_lcc:
             lcc = self.largest_connected_components(adj)
             adj = adj[lcc][:, lcc]
@@ -42,15 +44,12 @@ class Dataset():
             labels = labels[lcc]
         # whether to set diag=0?
         adj.setdiag(0)
-        adj = adj.astype("float32")
+        adj = adj.astype("float32").tocsr()
         adj.eliminate_zeros()
 
         assert adj.sum(0).A1.min() > 0, "Graph contains singleton nodes"
         assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
         assert adj.max() == 1 and len(np.unique(adj[adj.nonzero()].A1)) == 1, "Graph must be unweighted"
-
-        if features is None:
-            features = np.eye(adj.shape[0])
 
         return adj, features, labels
 
@@ -73,6 +72,8 @@ class Dataset():
                 else:
                     features = None
                 labels = loader.get('labels')
+        if features is None:
+            features = np.eye(adj.shape[0])
         features = sp.csr_matrix(features, dtype=np.float32)
         return adj, features, labels
 

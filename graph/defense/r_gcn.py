@@ -101,8 +101,8 @@ class RGCN(Module):
         # sigma = F.dropout(sigma, self.dropout, training=self.training)
         # miu, sigma = self.gc3(miu, sigma, self.adj_norm1, self.adj_norm2, self.gamma)
         # miu, sigma = F.elu(miu), F.relu(sigma)
-
-        return F.log_softmax(miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma + 1e-8))
+        output = miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma + 1e-8)
+        return F.log_softmax(output, dim=1)
 
     def fit_(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True):
 
@@ -111,6 +111,7 @@ class RGCN(Module):
         self.adj_norm1 = self._normalize_adj(adj, power=-1/2)
         self.adj_norm2 = self._normalize_adj(adj, power=-1)
         print('=== training rgcn model ===')
+        self._initialize()
         if idx_val is None:
             self._train_without_val(labels, idx_train, train_iters, verbose)
         else:
@@ -119,6 +120,7 @@ class RGCN(Module):
     def _train_without_val(self, labels, idx_train, train_iters, verbose=True):
         print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr)
+        self.train()
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward()
@@ -157,12 +159,10 @@ class RGCN(Module):
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
                 self.output = output
-                print('loss val  %s' % best_loss_val)
 
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
                 self.output = output
-                print('acc val %s' % acc_val)
 
         print('=== picking the best model according to the performance on validation ===')
 
