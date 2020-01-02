@@ -10,7 +10,7 @@ from DeepRobust.graph.data import Dataset
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 
 parser = argparse.ArgumentParser()
@@ -80,7 +80,7 @@ if 'A' in args.model:
     model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
 else:
-    model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=True, device=device, lambda_=lambda_)
+    model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
 model = model.to(device)
 
