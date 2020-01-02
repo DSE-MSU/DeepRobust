@@ -50,9 +50,10 @@ class GraphConvolution(Module):
 
 
 class GCN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True):
+    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
         super(GCN, self).__init__()
 
+        self.device = device
         self.nfeat = nfeat
         self.hidden_sizes = [nhid]
         self.nclass = nclass
@@ -86,14 +87,16 @@ class GCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=False):
         '''
             train the gcn model, when idx_val is not None, pick the best model
             according to the validation loss
         '''
-        self.initialize()
-        self.train()
 
+        if type(adj) is not torch.Tensor:
+            features, adj, labels = utils.to_tensor(features, adj, labels, device=self.device)
+
+        self.initialize()
         if utils.is_sparse_tensor(adj):
             adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
         else:
@@ -101,14 +104,16 @@ class GCN(nn.Module):
 
         self.adj_norm = adj_norm
         self.features = features
+        self.labels = labels
 
         if idx_val is None:
-            self._train_without_val(labels, idx_train, train_iters)
+            self._train_without_val(labels, idx_train, train_iters, verbose)
         else:
-            self._train_with_val(labels, idx_train, idx_val, train_iters)
+            self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
-    def _train_without_val(self, labels, idx_train, train_iters):
+    def _train_without_val(self, labels, idx_train, train_iters, verbose):
         print('=== training gcn model ===')
+        self.train()
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         for i in range(train_iters):
             optimizer.zero_grad()
@@ -116,12 +121,14 @@ class GCN(nn.Module):
             loss_train = F.nll_loss(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
+            if verbose and i % 10 == 0:
+                print('Epoch {}, training loss: {}'.format(i, loss_train.item()))
 
         self.eval()
         output = self.forward(self.features, self.adj_norm)
         self.output = output
 
-    def _train_with_val(self, labels, idx_train, idx_val, train_iters):
+    def _train_with_val(self, labels, idx_train, idx_val, train_iters, verbose):
         print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
@@ -136,6 +143,9 @@ class GCN(nn.Module):
             loss_train.backward()
             optimizer.step()
 
+            if verbose and i % 10 == 0:
+                print('Epoch {}, training loss: {}'.format(i, loss_train.item()))
+
             self.eval()
             output = self.forward(self.features, self.adj_norm)
             loss_val = F.nll_loss(output[idx_val], labels[idx_val])
@@ -143,16 +153,22 @@ class GCN(nn.Module):
 
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
-                best_gcn = deepcopy(self)
                 self.output = output
 
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
-                best_gcn = deepcopy(self)
                 self.output = output
 
         print('=== picking the best model according to the performance on validation ===')
-        self.best_model = best_gcn
+
+    def test(self, idx_test):
+        # output = self.forward()
+        output = self.output
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
+        acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
+        print("Test set results:",
+              "loss= {:.4f}".format(loss_test.item()),
+              "accuracy= {:.4f}".format(acc_test.item()))
 
     def _set_parameters():
         # TODO

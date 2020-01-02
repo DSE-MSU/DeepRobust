@@ -10,7 +10,7 @@ from DeepRobust.graph.data import Dataset
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 
 parser = argparse.ArgumentParser()
@@ -100,7 +100,7 @@ def test(adj):
 
     gcn.fit(features, adj, labels, idx_train) # train without model picking
     # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
-    output = gcn.best_model.predict()
+    output = gcn.output
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
@@ -119,7 +119,7 @@ def main():
     test(modified_adj)
 
     # # if you want to save the modified adj/features, uncomment the code below
-    # model.save_adj(root='./', name='mod_adj')
+    # model.save_adj(root='./', name=f'mod_adj')
     # model.save_features(root='./', name='mod_features')
 
 if __name__ == '__main__':
