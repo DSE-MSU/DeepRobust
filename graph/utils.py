@@ -111,7 +111,9 @@ def to_scipy(tensor):
         return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
 
 def is_sparse_tensor(tensor):
-    if hasattr(tensor, 'nnz'):
+
+    # if hasattr(tensor, 'nnz'):
+    if tensor.layout == torch.sparse_coo:
         return True
     else:
         return False

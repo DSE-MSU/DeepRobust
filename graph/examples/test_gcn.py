@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-from DeepRobust.graph.defense import RGCN
+from DeepRobust.graph.defense import GCN
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
 from DeepRobust.graph.data import PtbDataset
@@ -43,13 +43,12 @@ train_size = 1 - test_size - val_size
 idx = np.arange(_N)
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 
-# Setup RGCN Model
-model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1], nclass=labels.max()+1,
-                nhid=128, device=device)
-
+# Setup GCN Model
+model = GCN(nfeat=features.shape[1], nhid=16, nclass=labels.max()+1, device=device)
 model = model.to(device)
-
-model.fit_(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
+# # using validation to pick model
+# model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
 
 # You can use the inner function of model to test
