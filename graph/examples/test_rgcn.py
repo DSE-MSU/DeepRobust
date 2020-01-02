@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-import torch.optim as optim
 from DeepRobust.graph.defense import RGCN
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
@@ -37,15 +36,13 @@ train_size = 1 - test_size - val_size
 idx = np.arange(_N)
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 
-
 # Setup Surrogate Model
 model = RGCN(nnodes=adj.shape[0], nfeat=features.shape[1], nclass=labels.max()+1,
                 nhid=16, device=device)
 
 model = model.to(device)
 
-print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit_(features, adj, labels, idx_train)
+model.fit_(features, adj, labels, idx_train, verbose=True)
 model.eval()
 output = model.test(idx_test)
 

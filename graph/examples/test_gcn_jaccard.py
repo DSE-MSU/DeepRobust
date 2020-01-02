@@ -1,7 +1,6 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-import torch.optim as optim
 from DeepRobust.graph.defense import GCNJaccard
 from DeepRobust.graph.utils import *
 

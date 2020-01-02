@@ -25,7 +25,7 @@ from torch import spmm
 
 class Nettack(BaseAttack):
 
-    def __init__(self, model, nnodes=None, attack_structure=True, attack_features=False, device='gpu'):
+    def __init__(self, model, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
 
         super(Nettack, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
@@ -68,10 +68,6 @@ class Nettack(BaseAttack):
 
     def get_linearized_weight(self):
         surrogate = self.surrogate
-
-        import ipdb
-        ipdb.set_trace()
-
         W = surrogate.gc1.weight @ surrogate.gc2.weight
         return W.detach().cpu().numpy()
 
