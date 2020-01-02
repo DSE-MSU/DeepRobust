@@ -10,7 +10,7 @@ from DeepRobust.graph.data import Dataset
 import argparse
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
+os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 
 parser = argparse.ArgumentParser()
@@ -60,7 +60,7 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=True, weight_decay=0)
+                nhid=16, dropout=0.5, with_relu=False, with_bias=True, weight_decay=5e-4)
 
 adj = adj.to(device)
 features = features.to(device)
@@ -77,10 +77,10 @@ if 'Both' in args.model:
     lambda_ = 0.5
 
 if 'A' in args.model:
-    model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=True, device=device, lambda_=lambda_)
+    model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
 else:
-    model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
+    model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=True, device=device, lambda_=lambda_)
 
 model = model.to(device)
 
@@ -110,12 +110,15 @@ def test(adj):
 
 
 def main():
-    print('=== testing GCN on original(clean) graph ===')
-    # test(adj)
     modified_adj = model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
-    modified_adj = model.modified_adj.detach()
-    # modified_features = model.modified_features.detach()
+    print('=== testing GCN on original(clean) graph ===')
+    test(adj)
+    modified_adj = model.modified_adj
+    # modified_features = model.modified_features
     test(modified_adj)
+    # # if you want to save the modified adj/features, uncomment the code below
+    # model.save_adj(root='./', name='mod_adj')
+    # model.save_features(root='./', name='mod_features')
 
 if __name__ == '__main__':
     main()

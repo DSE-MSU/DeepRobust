@@ -10,7 +10,7 @@ import scipy.sparse as sp
 
 class DICE(BaseAttack):
 
-    def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='gpu'):
+    def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
         """
         As is described in ADVERSARIAL ATTACKS ON GRAPH NEURAL NETWORKS VIA META LEARNING (ICLR'19),
         'DICE (delete internally, connect externally) is a baseline where, for each perturbation,

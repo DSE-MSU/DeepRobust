@@ -31,7 +31,7 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
 
     return adj, features, labels
 
-def to_tensor(adj, features, labels, device='cpu', sparse=False):
+def to_tensor(adj, features, labels, device='cpu'):
     labels = torch.LongTensor(labels)
     if sp.issparse(adj):
         adj = sparse_mx_to_torch_sparse_tensor(adj)
@@ -99,13 +99,22 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     shape = torch.Size(sparse_mx.shape)
     return torch.sparse.FloatTensor(indices, values, shape)
 
-def to_scipy(sparse_tensor):
-    """Convert a scipy sparse matrix to a torch sparse tensor."""
-    values = sparse_tensor._values()
-    indices = sparse_tensor._indices()
+def to_scipy(tensor):
+    """Convert a dense/sparse tensor to """
+    if is_sparse_tensor(tensor):
+        values = tensor._values()
+        indices = tensor._indices()
+        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
+    else:
+        indices = tensor.nonzero().t()
+        values = tensor[indices[0], indices[1]]
+        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
 
-    return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
-
+def is_sparse_tensor(tensor):
+    if hasattr(tensor, 'nnz'):
+        return True
+    else:
+        return False
 
 def get_train_val_test(idx, train_size, val_size, test_size, stratify):
 
@@ -145,34 +154,6 @@ def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, 
     https://dl.acm.org/citation.cfm?id=3220078. In essence, for each node pair return 1 if adding/removing the edge
     between the two nodes does not violate the unnoticeability constraint, and return 0 otherwise. Assumes unweighted
     and undirected graphs.
-
-    Parameters
-    ----------
-    node_pairs: tf.Tensor, shape (e, 2) dtype int
-        The e node pairs to consider, where each node pair consists of the two indices of the nodes.
-
-    modified_adjacency: tf.Tensor shape (N,N) dtype int
-        The input (modified) adjacency matrix. Assumed to be unweighted and symmetric.
-
-    original_adjacency: tf.Tensor shape (N,N) dtype int
-        The input (original) adjacency matrix. Assumed to be unweighted and symmetric.
-
-    d_min: int
-        The minimum degree considered in the Powerlaw distribution.
-
-    threshold: float, default 0.004
-        Cutoff value for the unnoticeability constraint. Smaller means stricter constraint. 0.004 corresponds to a
-        p-value of 0.95 in the Chi-square distribution with one degree of freedom.
-
-    Returns
-    -------
-    allowed_mask: tf.Tensor, shape (e,), dtype bool
-        For each node pair p return True if adding/removing the edge p does not violate the
-        cutoff value, False otherwise.
-
-    current_ratio: tf.Tensor, shape (), dtype float
-        The current value of the log likelihood ratio.
-
     """
 
     N = int(modified_adjacency.shape[0])
@@ -220,32 +201,9 @@ def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, 
 def degree_sequence_log_likelihood(degree_sequence, d_min):
     """
     Compute the (maximum) log likelihood of the Powerlaw distribution fit on a degree distribution.
-
-    Parameters
-    ----------
-    degree_sequence: tf.Tensor dtype int shape (N,)
-        Observed degree distribution.
-
-    d_min: int
-        The minimum degree considered in the Powerlaw distribution.
-
-    Returns
-    -------
-    ll: tf.Tensor dtype float, (scalar)
-        The log likelihood under the maximum likelihood estimate of the Powerlaw exponent alpha.
-
-    alpha: tf.Tensor dtype float (scalar)
-        The maximum likelihood estimate of the Powerlaw exponent.
-
-    n: int
-        The number of degrees in the degree sequence that are >= d_min.
-
-    sum_log_degrees: tf.Tensor dtype float (scalar)
-        The sum of the log of degrees in the distribution which are >= d_min.
-
     """
-    # Determine which degrees are to be considered, i.e. >= d_min.
 
+    # Determine which degrees are to be considered, i.e. >= d_min.
     D_G = degree_sequence[(degree_sequence >= d_min.item())]
     try:
         sum_log_degrees = torch.log(D_G).sum()
@@ -288,12 +246,10 @@ def update_sum_log_degrees(sum_log_degrees_before, n_old, d_old, d_new, d_min):
     d_new_in_range = d_new * new_in_range.float()
 
     # Update the sum by subtracting the old values and then adding the updated logs of the degrees.
-    # sum_log_degrees_after = sum_log_degrees_before - tf.reduce_sum(tf.log(tf.maximum(d_old_in_range, 1)), axis=1) + tf.reduce_sum(tf.log(tf.maximum(d_new_in_range, 1)), axis=1)
     sum_log_degrees_after = sum_log_degrees_before - (torch.log(torch.clamp(d_old_in_range, min=1))).sum(1) \
                                  + (torch.log(torch.clamp(d_new_in_range, min=1))).sum(1)
 
     # Update the number of degrees >= d_min
-    # new_n = tf.cast(n_old, tf.int64) - tf.count_nonzero(old_in_range, axis=1) + tf.count_nonzero(new_in_range, axis=1)
 
     new_n = n_old - (old_in_range!=0).sum(1) + (new_in_range!=0).sum(1)
     new_n = new_n.float()

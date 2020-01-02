@@ -6,13 +6,11 @@
 '''
 
 import torch
-from DeepRobust.graph.targeted_attack import BaseAttack
+from DeepRobust.graph.global_attack import BaseAttack
 from torch.nn.parameter import Parameter
-from copy import deepcopy
 from DeepRobust.graph import utils
 import torch.nn.functional as F
 import numpy as np
-from copy import deepcopy
 import scipy.sparse as sp
 
 from torch import optim
@@ -289,9 +287,9 @@ class Metattack(BaseMeta):
                 self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
 
         if self.attack_structure:
-            self.modified_adj = self.get_modified_adj(ori_adj)
+            self.modified_adj = self.get_modified_adj(ori_adj).detach()
         if self.attack_features:
-            self.modified_features = self.get_modified_features(ori_features)
+            self.modified_features = self.get_modified_features(ori_features).detach()
 
 
 class MetaApprox(BaseMeta):
@@ -333,11 +331,12 @@ class MetaApprox(BaseMeta):
 
     def _initialize(self):
         for w, b in zip(self.weights, self.biases):
-            w.data.fill_(1)
-            b.data.fill_(1)
-            # stdv = 1. / math.sqrt(w.size(1))
-            # w.data.uniform_(-stdv, stdv)
-            # b.data.uniform_(-stdv, stdv)
+            # w.data.fill_(1)
+            # b.data.fill_(1)
+            stdv = 1. / math.sqrt(w.size(1))
+            w.data.uniform_(-stdv, stdv)
+            b.data.uniform_(-stdv, stdv)
+
         self.optimizer = optim.Adam(self.weights + self.biases, lr=self.lr)
 
     def inner_train(self, features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training):
@@ -379,7 +378,6 @@ class MetaApprox(BaseMeta):
         print(f'GCN loss on unlabled data: {loss_test_val.item()}')
         print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
 
-        # self.adj_changes.grad.zero_()
 
     def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
         labels_self_training = self.self_training_label(labels, idx_train)
@@ -417,11 +415,9 @@ class MetaApprox(BaseMeta):
                 self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
 
         if self.attack_structure:
-            self.modified_adj = self.get_modified_adj(ori_adj)
+            self.modified_adj = self.get_modified_adj(ori_adj).detach()
         if self.attack_features:
-            self.modified_features = self.get_modified_features(ori_features)
+            self.modified_features = self.get_modified_features(ori_features).detach()
 
-
-        return self.adj_changes + ori_adj
 
 
