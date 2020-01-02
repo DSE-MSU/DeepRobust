@@ -98,7 +98,8 @@ def test(adj):
     optimizer = optim.Adam(gcn.parameters(),
                            lr=args.lr, weight_decay=args.weight_decay)
 
-    gcn.fit(features, adj, labels, idx_train, idx_val)
+    gcn.fit(features, adj, labels, idx_train) # train without model picking
+    # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
     output = gcn.best_model.predict()
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
