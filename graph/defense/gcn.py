@@ -117,6 +117,8 @@ class GCN(nn.Module):
             loss_train.backward()
             optimizer.step()
 
+        self.eval()
+        output = self.forward(self.features, self.adj_norm)
         self.output = output
 
     def _train_with_val(self, labels, idx_train, idx_val, train_iters):
