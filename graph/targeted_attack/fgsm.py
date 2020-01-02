@@ -12,7 +12,7 @@ import torch.nn.functional as F
 
 class FGSM(BaseAttack):
 
-    def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='gpu'):
+    def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='cpu'):
 
         super(FGSM, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
