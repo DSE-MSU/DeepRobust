@@ -13,7 +13,7 @@ from torch.nn.modules.module import Module
 from torch.distributions.multivariate_normal import MultivariateNormal
 from DeepRobust.graph import utils
 import torch.optim as optim
-
+from copy import deepcopy
 
 class GaussianConvolution(Module):
 
@@ -102,29 +102,74 @@ class RGCN(Module):
         # miu, sigma = self.gc3(miu, sigma, self.adj_norm1, self.adj_norm2, self.gamma)
         # miu, sigma = F.elu(miu), F.relu(sigma)
 
-        return F.log_softmax(miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma))
+        return F.log_softmax(miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma + 1e-8))
 
-    def fit_(self, features, adj, labels, idx_train, train_iters=200, verbose=True):
+    def fit_(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True):
 
         adj, features, labels = utils.to_tensor(adj.todense(), features, labels, device=self.device)
         self.features, self.labels = features, labels
         self.adj_norm1 = self._normalize_adj(adj, power=-1/2)
         self.adj_norm2 = self._normalize_adj(adj, power=-1)
         print('=== training rgcn model ===')
+        if idx_val is None:
+            self._train_without_val(labels, idx_train, train_iters, verbose)
+        else:
+            self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
+    def _train_without_val(self, labels, idx_train, train_iters, verbose=True):
+        print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr)
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward()
             loss_train = self.loss(output[idx_train], labels[idx_train])
-            # acc_train = utils.accuracy(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
-            if verbose:
-                print(f'Epoch {i}: training loss: {loss_train.item()}')
+            if verbose and i % 10 == 0:
+                print('Epoch {}, training loss: {}'.format(i, loss_train.item()))
+
+        self.eval()
+        output = self.forward()
+        self.output = output
+
+    def _train_with_val(self, labels, idx_train, idx_val, train_iters, verbose):
+        print('=== training gcn model ===')
+        optimizer = optim.Adam(self.parameters(), lr=self.lr)
+
+        best_loss_val = 100
+        best_acc_val = 0
+
+        for i in range(train_iters):
+            self.train()
+            optimizer.zero_grad()
+            output = self.forward()
+            loss_train = self.loss(output[idx_train], labels[idx_train])
+            loss_train.backward()
+            optimizer.step()
+            if verbose and i % 10 == 0:
+                print('Epoch {}, training loss: {}'.format(i, loss_train.item()))
+
+            self.eval()
+            output = self.forward()
+            loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+            acc_val = utils.accuracy(output[idx_val], labels[idx_val])
+
+            if best_loss_val > loss_val:
+                best_loss_val = loss_val
+                self.output = output
+                print('loss val  %s' % best_loss_val)
+
+            if acc_val > best_acc_val:
+                best_acc_val = acc_val
+                self.output = output
+                print('acc val %s' % acc_val)
+
+        print('=== picking the best model according to the performance on validation ===')
+
 
     def test(self, idx_test):
-        output = self.forward()
+        # output = self.forward()
+        output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
@@ -133,14 +178,8 @@ class RGCN(Module):
 
     def loss(self, input, labels):
         loss = F.nll_loss(input, labels)
-
-        zeros = torch.zeros(len(self.miu1), self.nhid).to(self.device)
-        ones = torch.ones(len(self.miu1), self.nhid).to(self.device)
-
-        gaussian1 = MultivariateNormal(self.miu1, torch.diag_embed(self.sigma1 + 1e-8))
-        gaussian2 = MultivariateNormal(zeros, torch.diag_embed(ones).to(self.device))
-        kl_loss = torch.distributions.kl_divergence(gaussian1, gaussian2).sum()
-
+        kl_loss = 0.5 * (self.miu1.pow(2) + self.sigma1 - torch.log(1e-8 + self.sigma1)).mean(1)
+        kl_loss = kl_loss.sum()
         norm2 = torch.norm(self.gc1.weight_miu, 2).pow(2) + \
                torch.norm(self.gc1.weight_sigma, 2).pow(2)
         # print(f'gcn_loss: {loss.item()}, kl_loss: {self.beta1 * kl_loss.item()}, norm2: {self.beta2 * norm2.item()}')
