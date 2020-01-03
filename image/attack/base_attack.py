@@ -22,7 +22,7 @@ class BaseAttack(object):
 
         ################## devices
         if self.device == 'cuda':
-            image = image.cuda**()
+            image = image.cuda()
             label = label.cuda()
             self.model = self.model.cuda()
         elif self.device == 'cpu':
