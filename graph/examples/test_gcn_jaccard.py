@@ -3,6 +3,8 @@ import numpy as np
 import torch.nn.functional as F
 from DeepRobust.graph.defense import GCNJaccard
 from DeepRobust.graph.utils import *
+from DeepRobust.graph.data import Dataset
+from DeepRobust.graph.data import PtbDataset
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '6'
@@ -23,7 +25,13 @@ np.random.seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-adj, features, labels = load_data(dataset=args.dataset)
+# load original dataset (to get clean features and labels)
+data = Dataset(root='/tmp/', name=args.dataset)
+adj, features, labels = data.adj, data.features, data.labels
+
+# load pre-attacked graph
+perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
+perturbed_adj = perturbed_data.adj
 
 # shuffle
 _N = adj.shape[0]
@@ -43,7 +51,7 @@ model = GCNJaccard(nfeat=features.shape[1], nclass=labels.max()+1,
 model = model.to(device)
 
 print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit_(features, adj, labels, idx_train)
+model.fit_(features, perturbed_adj, labels, idx_train)
 model.eval()
 output = model.test(idx_test)
 

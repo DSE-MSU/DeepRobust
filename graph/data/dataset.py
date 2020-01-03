@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 import os.path as osp
 import os
+import urllib.request
 
 class Dataset():
 
@@ -26,10 +27,12 @@ class Dataset():
         return adj, features, labels
 
     def download_npz(self):
-        print(f'Dowloading from {self.url} to {self.data_filename}')
-        if os.system(f'wget -O {self.data_filename} {self.url}'):
-            os.system(f'rm {self.data_filename}')
-            raise Exception("Download failed!")
+        print('Dowloading from {} to {}'.format(self.url, self.data_filename))
+        try:
+            urllib.request.urlretrieve(self.url, self.data_filename)
+        except:
+            raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
+
 
     def get_adj(self, require_lcc=True):
         adj, features, labels = self.load_npz(self.data_filename)

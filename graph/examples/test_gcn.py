@@ -47,6 +47,7 @@ idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, tes
 model = GCN(nfeat=features.shape[1], nhid=16, nclass=labels.max()+1, device=device)
 model = model.to(device)
 model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
+
 # # using validation to pick model
 # model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
