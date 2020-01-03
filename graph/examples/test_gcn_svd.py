@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 from DeepRobust.graph.defense import GCNSVD
 from DeepRobust.graph.utils import *
+from DeepRobust.graph.data import Dataset
+from DeepRobust.graph.data import PtbDataset
 
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '6'
@@ -24,7 +26,13 @@ np.random.seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-adj, features, labels = load_data(dataset=args.dataset)
+# load original dataset (to get clean features and labels)
+data = Dataset(root='/tmp/', name=args.dataset)
+adj, features, labels = data.adj, data.features, data.labels
+
+# load pre-attacked graph
+perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
+perturbed_adj = perturbed_data.adj
 
 # shuffle
 _N = adj.shape[0]
@@ -35,7 +43,6 @@ train_size = 1 - test_size - val_size
 idx = np.arange(_N)
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 
-
 # Setup Surrogate Model
 model = GCNSVD(nfeat=features.shape[1], nclass=labels.max()+1,
                 nhid=16, dropout=0, with_relu=False, with_bias=True, device=device)
@@ -43,7 +50,7 @@ model = GCNSVD(nfeat=features.shape[1], nclass=labels.max()+1,
 model = model.to(device)
 
 print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit_(features, adj, labels, idx_train)
+model.fit_(features, perturbed_adj, labels, idx_train, verbose=True)
 model.eval()
 output = model.test(idx_test)
 
