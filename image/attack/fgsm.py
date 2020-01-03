@@ -3,9 +3,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
 import numpy as np
 from numpy import linalg as LA
+
+import ipdb
 
 from DeepRobust.image.attack.base_attack import BaseAttack
 
@@ -28,7 +29,8 @@ class FGM(BaseAttack):
                    self.epsilon,
                    self.order,
                    self.clip_min,
-                   self.clip_max)
+                   self.clip_max,
+                   self.device)
 
     def parse_params(self,
                      epsilon = 0.2,
@@ -42,18 +44,21 @@ class FGM(BaseAttack):
         return True
 
 
-def fgm(model, image, label, epsilon, order, clip_min, clip_max):
+def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
 
-    X_fgsm = Variable(image.data, requires_grad = True)
+    imageArray = image.cpu().numpy()
+    X_fgsm = torch.tensor(imageArray).to(device)
+
     #print(image.data)
-    
+
+    X_fgsm.requires_grad = True
+
     opt = optim.SGD([X_fgsm], lr=1e-3)
     opt.zero_grad()
 
-    with torch.enable_grad():
-        loss = nn.CrossEntropyLoss()(model(X_fgsm), label)
+    loss = nn.CrossEntropyLoss()(model(X_fgsm), label)
+    
     loss.backward()
-
     #print(X_fgsm)
     #print(X_fgsm.grad)
     if order == np.inf:
@@ -69,7 +74,7 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max):
         clip_max = np.inf
         clip_min = -np.inf
 
-    x_adv = Variable(torch.clamp(x_adv,clip_min, clip_max))
+    x_adv = torch.clamp(x_adv,clip_min, clip_max)
 
     return x_adv
 
