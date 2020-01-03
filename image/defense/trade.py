@@ -12,8 +12,7 @@ from torch.autograd import Variable
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-sys.path.append("..")
-from netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNNmodel import Net
 
 def squared_l2_norm(x):
     flattened = x.view(x.unsqueeze(0).shape[0], -1)
