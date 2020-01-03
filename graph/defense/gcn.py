@@ -50,7 +50,9 @@ class GraphConvolution(Module):
 
 
 class GCN(nn.Module):
+
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
+
         super(GCN, self).__init__()
 
         self.device = device

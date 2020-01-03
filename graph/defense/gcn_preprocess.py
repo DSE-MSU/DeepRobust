@@ -2,7 +2,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 import torch
-import torch.optim as optim
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from DeepRobust.graph import utils
@@ -13,18 +12,21 @@ import numpy as np
 
 
 class GCNSVD(GCN):
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, with_relu=True, with_bias=True, device='cpu'):
-        super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, with_relu, with_bias)
+
+    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
+
+        super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
         self.device = device
 
-    def fit_(self, features, adj, labels, idx_train, k=50, train_iters=200):
+    def fit_(self, features, adj, labels, idx_train, k=50, train_iters=200, verbose=True):
         modified_adj = self.truncatedSVD(adj, k=k)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
         features, modified_adj, labels = utils.to_tensor(features, modified_adj, labels, device=self.device)
+
         self.modified_adj = modified_adj
         self.features = features
         self.labels = labels
-        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters)
+        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters, verbose=verbose)
 
     def truncatedSVD(self, data, k=50):
         print(f'=== GCN-SVD: rank={k} ===')
@@ -52,12 +54,15 @@ class GCNSVD(GCN):
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
 
+
 class GCNJaccard(GCN):
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, with_relu=True, with_bias=True, device='cpu'):
-        super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, with_relu, with_bias)
+
+    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
+
+        super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
         self.device = device
 
-    def fit_(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200):
+    def fit_(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200, verbose=True):
         self.threshold = threshold
         modified_adj = self.drop_dissimilar_edges(features, adj)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
@@ -65,7 +70,7 @@ class GCNJaccard(GCN):
         self.modified_adj = modified_adj
         self.features = features
         self.labels = labels
-        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters)
+        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters, verbose=verbose)
 
     def test(self, idx_test):
         output = self.output

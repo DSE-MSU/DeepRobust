@@ -33,7 +33,7 @@ adj, features, labels = data.adj, data.features, data.labels
 # load pre-attacked graph
 perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
 perturbed_adj = perturbed_data.adj
-
+perturbed_adj = adj
 # shuffle
 _N = perturbed_adj.shape[0]
 val_size = 0.1
@@ -45,7 +45,7 @@ idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, tes
 
 # Setup RGCN Model
 model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1], nclass=labels.max()+1,
-                nhid=128, device=device)
+                nhid=64, device=device)
 
 model = model.to(device)
 
