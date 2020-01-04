@@ -35,7 +35,7 @@ def train(model, data, device, maxepoch):
 
         if (save_model and epoch %10 == 0):
             print('Save model.')
-            torch.save(train_loader, 'DeepRobust/image/save_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+            torch.save(model, 'DeepRobust/image/save_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
 
 def feed_dataset(data, data_dict):
     if(data == 'CIFAR10'):
