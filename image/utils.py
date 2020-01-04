@@ -130,3 +130,17 @@ def l2_norm(x, keepdim=True):
 
 def l1_norm(x, keepdim=True):
     return reduce_sum(x.abs(), keepdim=keepdim)
+
+def adjust_learning_rate(optimizer, epoch, learning_rate):
+    """decrease the learning rate"""
+    lr = learning_rate
+    if epoch >= 55:
+        lr = learning_rate * 0.1
+    if epoch >= 75:
+        lr = learning_rate * 0.01
+    if epoch >= 90:
+        lr = learning_rate * 0.001
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    
+    return optimizer
