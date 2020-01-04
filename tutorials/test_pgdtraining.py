@@ -3,7 +3,7 @@ from DeepRobust.image.attack.pgd import PGD
 import torch
 from torchvision import datasets, transforms
 from DeepRobust.image.netmodels.CNN import Net
-from DeepRobust.image.defense.config import defense_params
+from DeepRobust.image.config import defense_params
 import ipdb
 
 model = Net()

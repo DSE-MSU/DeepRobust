@@ -11,15 +11,15 @@ import logging
 import ipdb
 
 ## TODO
-class ther_attack(pgd_attack):
-    """
-    PGD attacks in response to thermometer encoding models
-    """
+# class ther_attack(pgd_attack):
+#     """
+#     PGD attacks in response to thermometer encoding models
+#     """
 ## TODO
-def adv_train():
-    """
-    adversarial training for thermomoter encoding
-    """
+# def adv_train():
+#     """
+#     adversarial training for thermomoter encoding
+#     """
 
 def train(model, device, train_loader, optimizer, epoch):
     logger.info('trainging')
