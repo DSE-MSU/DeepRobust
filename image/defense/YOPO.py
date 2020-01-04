@@ -15,12 +15,9 @@ import argparse
 import json
 import math
 
-import os
-import sys
-sys.path.append("..")
-from netmodels import YOPOCNN
-import utils
-from attack import YOPOpgd
+from DeepRobust.image.netmodels import YOPOCNN
+from DeepRobust.image import utils
+from DeepRobust.image.attack import YOPOpgd
 import time
 from tensorboardX import SummaryWriter
 
