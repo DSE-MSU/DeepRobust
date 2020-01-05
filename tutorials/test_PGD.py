@@ -13,8 +13,12 @@ from DeepRobust.image.config import attack_params
 import matplotlib.pyplot as plt
 
 
+
 model = resnet.ResNet18().to('cuda')
+import ipdb
+ipdb.set_trace()
 print("Load network")
+
 model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
 model.eval()
 
