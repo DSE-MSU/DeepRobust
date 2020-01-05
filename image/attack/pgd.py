@@ -60,7 +60,6 @@ def pgd_attack(model,
     X_pgd.requires_grad = True
     X_random = torch.Tensor(X_pgd.shape).uniform_(-epsilon, epsilon).to(X_pgd.device)
     X_pgd = torch.clamp(X_pgd + X_random, 0, 1.0)
-    X_pgd.requires_grad = True
 
     for _ in range(num_steps):
         opt = optim.SGD([X_pgd], lr=1e-3)
