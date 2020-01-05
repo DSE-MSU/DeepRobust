@@ -1,5 +1,3 @@
-from DeepRobust.image.defense.config import config, args
-
 import os
 import torch
 import torch.nn as nn
@@ -16,6 +14,8 @@ from DeepRobust.image.defense.base_defense import BaseDefense
 
 class PGDtraining(BaseDefense):
     def __init__(self, model, device):
+        device = torch.device("cpu" if not torch.cuda.is_available() else device)
+
         self.device = device
         self.model = model
 
@@ -135,13 +135,13 @@ class PGDtraining(BaseDefense):
             test_loss_adv, correct_adv, len(test_loader.dataset),
             100. * correct_adv / len(test_loader.dataset)))
             
-    def adv_data(self, data, output, ep = 0.3, num = 40):
+    def adv_data(self, data, output, ep = 0.3, num_steps = 40):
         # """
         # Generate input(adversarial) data for training.
         
         # """
         adversary = PGD(self.model)
-        data_adv = adversary.generate(data, output.flatten(), epsilon = ep, num_steps = num)
+        data_adv = adversary.generate(data, output.flatten(), epsilon = ep, num_steps = num_steps)
         output = self.model(data_adv)
 
         return data_adv, output
