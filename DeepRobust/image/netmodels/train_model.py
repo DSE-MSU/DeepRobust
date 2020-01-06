@@ -43,12 +43,12 @@ def feed_dataset(data, data_dict):
                 transforms.RandomCrop(32, padding=5),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+                #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                 ])
 
         transform_val = transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+                #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
                 ])
 
         train_loader = torch.utils.data.DataLoader(
@@ -65,14 +65,14 @@ def feed_dataset(data, data_dict):
         train_loader = torch.utils.data.DataLoader(
                  datasets.MNIST(data_dict, train=True, download=True,
                  transform=transforms.Compose([transforms.ToTensor(),
-                 transforms.Normalize((0.1307,), (0.3081,))])),
+                 #transforms.Normalize((0.1307,), (0.3081,))])),
                  batch_size=64,
                  shuffle=True)
 
         test_loader = torch.utils.data.DataLoader(
                 datasets.MNIST('../data', train=False,
                 transform=transforms.Compose([transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,))])),
+                #transforms.Normalize((0.1307,), (0.3081,))])),
                 batch_size=1000,
                 shuffle=True)
 

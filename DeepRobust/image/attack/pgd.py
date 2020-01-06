@@ -55,7 +55,7 @@ def pgd_attack(model,
                   clip_min,
                   num_steps,
                   step_size):
-    print(X)
+    
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
     #TODO: find a other way 
@@ -69,22 +69,18 @@ def pgd_attack(model,
 
     for _ in range(num_steps):
 
-        # opt = optim.SGD([X_pgd], lr=1e-3)
-        # opt.zero_grad()
-
         pred = model(X_pgd)
         loss = nn.CrossEntropyLoss()(pred, y)
-        #print(loss)
+
         loss.backward()
 
         eta = step_size * X_pgd.grad.data.sign()
 
         X_pgd = X_pgd + eta
-        eta = torch.clamp(X_pgd - X.data, -epsilon, epsilon)
-        print(eta)
-        X_pgd = X_pgd + eta
+        eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
+
+        X_pgd = X.data + eta
         X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
-        #print(X_pgd)
         X_pgd = X_pgd.detach()
         X_pgd.requires_grad_()
         X_pgd.retain_grad()
