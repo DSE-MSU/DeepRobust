@@ -1,5 +1,5 @@
 # Attack Methods
-|   Attack Methods   | Type<img width=200> | Perturbation <img width=200> | Evasion/<br>Poisoning | Apply Domain | Links |
+|   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Links |
 |--------------------|------|--------------------|-------------|-------|----|
 | Nettack | Targeted Attack | Structure<br>Features | Both | Node Classification | [Adversarial Attacks on Neural Networks for Graph Data](https://arxiv.org/pdf/1805.07984.pdf)|
 | FGSM | Targeted Attack<br>Global Attack | Structure<br>Features | Both | Node Classification | [Adversarial Attacks on Neural Networks for Graph Data](https://arxiv.org/pdf/1805.07984.pdf)|
