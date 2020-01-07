@@ -16,4 +16,4 @@
 | YOPO | Adverserial Training | Image Classification | [You Only Propagate Once: Accelerating Adversarial Training via Maximal Principle](https://arxiv.org/pdf/1905.00877.pdf) |
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
 | Thermometer Encoding | Gradient Masking | Image Classification | [Thermometer Encoding:One Hot Way To Resist Adversarial Examples](https://openreview.net/pdf?id=S18Su--CW) |
-
+| LID-based adversarial classifier | Detection | Image Classification | [Characterizing Adversarial Subspaces Using Local Intrinsic Dimensionality](https://arxiv.org/pdf/1801.02613.pdf) |
