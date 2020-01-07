@@ -4,6 +4,7 @@ import torch
 from sklearn.model_selection import train_test_split
 import torch.sparse as ts
 
+
 def encode_onehot(labels):
     classes = set(labels)
     classes_dict = {c: np.identity(len(classes))[i, :] for i, c in
@@ -31,8 +32,7 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
 
     return adj, features, labels
 
-def to_tensor(adj, features, labels, device='cpu'):
-    labels = torch.LongTensor(labels)
+def to_tensor(adj, features, labels=None, device='cpu'):
     if sp.issparse(adj):
         adj = sparse_mx_to_torch_sparse_tensor(adj)
     else:
@@ -41,7 +41,12 @@ def to_tensor(adj, features, labels, device='cpu'):
         features = sparse_mx_to_torch_sparse_tensor(features)
     else:
         features = torch.FloatTensor(np.array(features))
-    return adj.to(device), features.to(device), labels.to(device)
+
+    if labels is None:
+        return adj.to(device), features.to(device)
+    else:
+        labels = torch.LongTensor(labels)
+        return adj.to(device), features.to(device), labels.to(device)
 
 
 
@@ -85,10 +90,21 @@ def normalize_adj_tensor(adj, sparse=False):
 
 
 def accuracy(output, labels):
+    if type(labels) is not torch.Tensor:
+        labels = torch.LongTensor(labels)
     preds = output.max(1)[1].type_as(labels)
     correct = preds.eq(labels).double()
     correct = correct.sum()
     return correct / len(labels)
+
+
+def classification_margin(output, true_label):
+    probs = torch.exp(output)
+    probs_true_label = probs[true_label]
+    probs[true_label] = 0
+    probs_best_second_class = probs[probs.argmax()]
+    return (probs_true_label - probs_best_second_class).item()
+
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""

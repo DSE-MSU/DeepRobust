@@ -18,7 +18,8 @@ class GCNSVD(GCN):
         super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
         self.device = device
 
-    def fit_(self, features, adj, labels, idx_train, k=50, train_iters=200, verbose=True):
+    def fit(self, features, adj, labels, idx_train, k=50, train_iters=200, initialize=True, verbose=True):
+
         modified_adj = self.truncatedSVD(adj, k=k)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
         features, modified_adj, labels = utils.to_tensor(features, modified_adj, labels, device=self.device)
@@ -26,7 +27,7 @@ class GCNSVD(GCN):
         self.modified_adj = modified_adj
         self.features = features
         self.labels = labels
-        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters, verbose=verbose)
+        super().fit(features, modified_adj, labels, idx_train, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def truncatedSVD(self, data, k=50):
         print(f'=== GCN-SVD: rank={k} ===')
@@ -62,7 +63,7 @@ class GCNJaccard(GCN):
         super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
         self.device = device
 
-    def fit_(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200, verbose=True):
+    def fit(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200, initialize=True, verbose=True):
         self.threshold = threshold
         modified_adj = self.drop_dissimilar_edges(features, adj)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
@@ -70,7 +71,7 @@ class GCNJaccard(GCN):
         self.modified_adj = modified_adj
         self.features = features
         self.labels = labels
-        self.fit(features, modified_adj, labels, idx_train, train_iters=train_iters, verbose=verbose)
+        super().fit(features, modified_adj, labels, idx_train, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def test(self, idx_test):
         output = self.output

@@ -2,7 +2,8 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
-from DeepRobust.graph.defense import GCNSVD
+from DeepRobust.graph.defense import GCN
+from DeepRobust.graph.global_attack import Random
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
 from DeepRobust.graph.data import PtbDataset
@@ -43,14 +44,45 @@ train_size = 1 - test_size - val_size
 idx = np.arange(_N)
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 
-# Setup Surrogate Model
-model = GCNSVD(nfeat=features.shape[1], nclass=labels.max()+1,
+# Setup Target Model
+model = GCN(nfeat=features.shape[1], nclass=labels.max()+1,
                 nhid=16, dropout=0, with_relu=False, with_bias=True, device=device)
 
 model = model.to(device)
 
-print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit(features, perturbed_adj, labels, idx_train, verbose=True)
+adversary = Random()
+# test on original adj
+print('=== test on original adj ===')
+model.fit(features, adj, labels, idx_train)
+output = model.output
+acc_test = accuracy(output[idx_test], labels[idx_test])
+print("Test set results:",
+      "accuracy= {:.4f}".format(acc_test.item()))
+
+print('=== testing GCN on perturbed graph ===')
+model.fit(features, perturbed_adj, labels, idx_train)
+output = model.output
+acc_test = accuracy(output[idx_test], labels[idx_test])
+print("Test set results:",
+      "accuracy= {:.4f}".format(acc_test.item()))
+
+
+# For poisoning attack, the adjacency matrix you have
+# is alreay perturbed
+print('=== Adversarial Training for Poisoning Attack===')
+model.initialize()
+n_perturbations = int(0.01 * (adj.sum()//2))
+for i in range(100):
+    # modified_adj = adversary.attack(features, adj)
+    modified_adj = adversary.attack(perturbed_adj, n_perturbations=n_perturbations, type='remove')
+    model.fit(features, modified_adj, labels, idx_train, train_iters=50, initialize=False)
+
 model.eval()
-output = model.test(idx_test)
+
+# test directly or fine tune
+print('=== test on perturbed adj ===')
+output = model.predict(features, perturbed_adj)
+acc_test = accuracy(output[idx_test], labels[idx_test])
+print("Test set results:",
+      "accuracy= {:.4f}".format(acc_test.item()))
 

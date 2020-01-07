@@ -30,17 +30,19 @@ class DICE(BaseAttack):
         # adj: tensor sparse?
 
         print(f'number of pertubations: {n_perturbations}')
-        modified_adj = deepcopy(adj).tolil()
+        modified_adj = adj.tolil()
 
         remove_or_insert = np.random.choice(2, n_perturbations)
         n_remove = sum(remove_or_insert)
-        n_insert = n_perturbations - n_remove
         indices = sp.triu(modified_adj).nonzero()
         possible_indices = [x for x in zip(indices[0], indices[1])
                             if labels[x[0]]== labels[x[1]]]
 
         remove_indices = np.random.permutation(possible_indices)[: n_remove]
         modified_adj[remove_indices[:, 0], remove_indices[:, 1]] = 0
+        modified_adj[remove_indices[:, 1], remove_indices[:, 0]] = 0
+
+        n_insert = n_perturbations - n_remove
 
         for i in range(n_insert):
             # select a node
@@ -50,6 +52,8 @@ class DICE(BaseAttack):
             # select another node
             node2 = possible_nodes[np.random.randint(len(possible_nodes))]
             modified_adj[node, node2] = 1
+            modified_adj[node2, node] = 1
 
+        self.check_adj(modified_adj)
         return modified_adj
 

@@ -51,7 +51,7 @@ model = GCNJaccard(nfeat=features.shape[1], nclass=labels.max()+1,
 model = model.to(device)
 
 print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit_(features, perturbed_adj, labels, idx_train)
+model.fit(features, perturbed_adj, labels, idx_train)
 model.eval()
 output = model.test(idx_test)
 

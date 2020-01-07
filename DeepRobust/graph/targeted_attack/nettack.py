@@ -84,10 +84,17 @@ class Nettack(BaseAttack):
         self.target_node = target_node
         # ori_adj = adj
         # modified_adj = deepcopy(adj)
-        self.ori_adj = utils.to_scipy(adj).tolil()
-        self.modified_adj = utils.to_scipy(adj).tolil()
-        self.ori_features = utils.to_scipy(features).tolil()
-        self.modified_features = utils.to_scipy(features).tolil()
+        if type(adj) is torch.Tensor:
+            self.ori_adj = utils.to_scipy(adj).tolil()
+            self.modified_adj = utils.to_scipy(adj).tolil()
+            self.ori_features = utils.to_scipy(features).tolil()
+            self.modified_features = utils.to_scipy(features).tolil()
+        else:
+            self.ori_adj = adj.tolil()
+            self.modified_adj = adj.tolil()
+            self.ori_features = features.tolil()
+            self.modified_features = features.tolil()
+
         self.cooc_matrix = self.modified_features.T.dot(self.modified_features).tolil()
 
         attack_features = self.attack_features
