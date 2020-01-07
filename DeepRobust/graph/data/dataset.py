@@ -45,12 +45,13 @@ class Dataset():
             adj = adj[lcc][:, lcc]
             features = features[lcc]
             labels = labels[lcc]
+            assert adj.sum(0).A1.min() > 0, "Graph contains singleton nodes"
+
         # whether to set diag=0?
         adj.setdiag(0)
         adj = adj.astype("float32").tocsr()
         adj.eliminate_zeros()
 
-        assert adj.sum(0).A1.min() > 0, "Graph contains singleton nodes"
         assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
         assert adj.max() == 1 and len(np.unique(adj[adj.nonzero()].A1)) == 1, "Graph must be unweighted"
 

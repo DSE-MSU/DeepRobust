@@ -3,119 +3,79 @@ import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 from DeepRobust.graph.defense import GCN
-from DeepRobust.graph.global_attack import DICE
+from DeepRobust.graph.global_attack import Random
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
 
 import argparse
-import numpy as np
-from metattack import MetaApprox, Metattack
-import torch.nn.functional as F
-import torch.optim as optim
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
-
+os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--no-cuda', action='store_true', default=False,
-                    help='Disables CUDA training.')
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
-parser.add_argument('--epochs', type=int, default=200,
-                    help='Number of epochs to train.')
-parser.add_argument('--lr', type=float, default=0.01,
-                    help='Initial learning rate.')
-parser.add_argument('--weight_decay', type=float, default=5e-4,
-                    help='Weight decay (L2 loss on parameters).')
-parser.add_argument('--hidden', type=int, default=16,
-                    help='Number of hidden units.')
-parser.add_argument('--dropout', type=float, default=0.5,
-                    help='Dropout rate (1 - keep probability).')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')
 parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation rate')
-parser.add_argument('--model', type=str, default='Meta-Self', choices=['A-Meta-Self', 'Meta-Self'], help='model variant')
+
 
 args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
+args.cuda = torch.cuda.is_available()
 print('cuda: %s' % args.cuda)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 np.random.seed(args.seed)
+torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
 
-nclass = max(labels) + 1
-
-# shuffle
-_N = adj.shape[0]
 val_size = 0.1
 test_size = 0.8
 train_size = 1 - test_size - val_size
 
-idx = np.arange(_N)
+idx = np.arange(adj.shape[0])
 idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
-perturbations = int(args.ptb_rate * (adj.sum()//2))
-nfeat = features.shape[1]
+# Setup Attack Model
+model = Random()
 
-adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
+u = 0 # node to attack
+assert u in idx_unlabeled
 
-if 'Self' in args.model:
-    lambda_ = 0
-if 'Train' in args.model:
-    lambda_ = 1
-if 'Both' in args.model:
-    lambda_ = 0.5
+n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
-if 'A' in args.model:
-    model = MetaApprox(nfeat=features.shape[1], hidden_sizes=[args.hidden],
-                       nnodes=adj.shape[0], nclass=nclass, dropout=args.dropout,
-                       train_iters=100, attack_features=False, lambda_=lambda_, device=device)
+# modified_adj = model.attack(adj, n_perturbations)
+modified_adj = model.add_nodes(adj, 10, n_perturbations)
 
-else:
-    model = Metattack(nfeat=features.shape[1], hidden_sizes=[args.hidden],
-                       nnodes=adj.shape[0], nclass=nclass, dropout=args.dropout,
-                       train_iters=100, attack_features=False, lambda_=lambda_, device=device)
+adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
+adj = adj.to(device)
+features = features.to(device)
+labels = labels.to(device)
 
-if args.cuda:
-    adj = adj.to(device)
-    features = features.to(device)
-    labels = labels.to(device)
-    model = model.to(device)
+modified_adj = normalize_adj(modified_adj)
+modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
+modified_adj = modified_adj.to(device)
 
 
 def test(adj):
     ''' test on GCN '''
-
-    adj = normalize_adj_tensor(adj)
+    # adj = normalize_adj_tensor(adj)
     gcn = GCN(nfeat=features.shape[1],
-              nhid=args.hidden,
+              nhid=16,
               nclass=labels.max().item() + 1,
-              dropout=args.dropout)
+              dropout=0.5)
 
-    if args.cuda:
-        gcn = gcn.to(device)
+    gcn = gcn.to(device)
 
     optimizer = optim.Adam(gcn.parameters(),
-                           lr=args.lr, weight_decay=args.weight_decay)
+                           lr=0.01, weight_decay=5e-4)
 
-    gcn.train()
-
-    for epoch in range(args.epochs):
-        optimizer.zero_grad()
-        output = gcn(features, adj)
-        loss_train = F.nll_loss(output[idx_train], labels[idx_train])
-        acc_train = accuracy(output[idx_train], labels[idx_train])
-        loss_train.backward()
-        optimizer.step()
-
-    gcn.eval()
-    output = gcn(features, adj)
-
+    gcn.fit(features, adj, labels, idx_train) # train without model picking
+    # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
+    output = gcn.output
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
@@ -127,15 +87,8 @@ def test(adj):
 
 def main():
     print('=== testing GCN on original(clean) graph ===')
-    # test(adj)
-
-    modified_adj = model(features, adj, labels, idx_train, idx_unlabeled, perturbations)
-
-    modified_adj = modified_adj.detach()
-
-    import ipdb
-    ipdb.set_trace()
-
+    test(adj)
+    print('=== testing GCN on perturbed graph ===')
     test(modified_adj)
 
 
