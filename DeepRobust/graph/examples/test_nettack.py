@@ -40,28 +40,21 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, 
 
 # Setup Surrogate model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=False)
+                nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
 
-adj = adj.to(device)
-features = features.to(device)
-labels = labels.to(device)
 surrogate = surrogate.to(device)
 surrogate.fit(features, adj, labels, idx_train)
 
 # Setup Attack Model
 target_node = 0
+assert target_node in idx_unlabeled
+
 model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
 model = model.to(device)
 
 def main():
-    u = 0 # node to attack
-    assert u in idx_unlabeled
-
-    # train surrogate model
-
     degrees = torch.sparse.sum(adj, dim=0).to_dense()
-
-    n_perturbations = int(degrees[u]) # How many perturbations to perform. Default: Degree of the node
+    n_perturbations = int(degrees[target_node]) # How many perturbations to perform. Default: Degree of the node
 
     modified_adj = model.attack(features, adj, labels, target_node, n_perturbations)
 
@@ -80,7 +73,7 @@ def test(adj, target_node):
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
-              dropout=0.5)
+              dropout=0.5, device=device)
 
     if args.cuda:
         gcn = gcn.to(device)
@@ -88,20 +81,12 @@ def test(adj, target_node):
     gcn.fit(features, adj, labels, idx_train)
 
     gcn.eval()
-
-    try:
-        adj = normalize_adj_tensor(adj, sparse=True)
-    except:
-        adj = normalize_adj_tensor(adj)
-    output = gcn(features, adj)
-
+    output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
     print(f'probs: {probs.detach().cpu().numpy()}')
-    loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
 
     print("Test set results:",
-          "loss= {:.4f}".format(loss_test.item()),
           "accuracy= {:.4f}".format(acc_test.item()))
 
     return acc_test.item()

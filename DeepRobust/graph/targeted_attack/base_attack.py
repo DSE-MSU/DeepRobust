@@ -1,4 +1,5 @@
 from torch.nn.modules.module import Module
+import numpy as np
 
 class BaseAttack(Module):
 
@@ -20,4 +21,9 @@ class BaseAttack(Module):
         pass
 
 
+    def check_adj(self, adj):
+        '''
+            check if the modified adjacency is symmetric and unweighted
+        '''
+        assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
 
