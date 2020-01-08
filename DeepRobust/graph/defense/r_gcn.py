@@ -88,13 +88,17 @@ class RGCN(Module):
     def forward(self):
         features = self.features
         miu, sigma = self.gc1(features, features)
-        miu, sigma = F.elu(miu, alpha=1), F.relu(sigma)
+        miu, sigma = F.elu(miu), F.relu(sigma)
         self.miu1, self.sigma1 = miu, sigma
         miu = F.dropout(miu, self.dropout, training=self.training)
         sigma = F.dropout(sigma, self.dropout, training=self.training)
 
         miu, sigma = self.gc2(miu, sigma, self.adj_norm1, self.adj_norm2, self.gamma)
-        miu, sigma = F.elu(miu, alpha=1), F.relu(sigma)
+        miu, sigma = F.elu(miu), F.relu(sigma)
+
+        Att = torch.exp(-sigma)
+        miu = self.adj_norm1 @ (miu * Att)
+        sigma = self.adj_norm2 @ (sigma * Att * Att)
 
         # # third layer
         # miu = F.dropout(miu, self.dropout, training=self.training)
@@ -104,7 +108,7 @@ class RGCN(Module):
         output = miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma + 1e-8)
         return F.log_softmax(output, dim=1)
 
-    def fit_(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True):
 
         adj, features, labels = utils.to_tensor(adj.todense(), features, labels, device=self.device)
         self.features, self.labels = features, labels
