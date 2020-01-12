@@ -1,4 +1,4 @@
-from DeepRobust.image.netmodels.CNN import CNN
+from DeepRobust.image.netmodels.CNN_multilayer import Net
 
 def train(self, device, train_loader, optimizer, epoch):
     """
@@ -38,16 +38,19 @@ def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
     """
     funcs = [K.function([model.layers[0].input, K.learning_phase()], [out])
                  for out in get_layer_wise_activations(model, dataset)]
+    
     lid_dim = len(funcs)
     print("Number of layers to estimate: ", lid_dim)
 
     def estimate(i_batch):
+        
         start = i_batch * batch_size
         end = np.minimum(len(X), (i_batch + 1) * batch_size)
         n_feed = end - start
         lid_batch = np.zeros(shape=(n_feed, lid_dim))
         lid_batch_adv = np.zeros(shape=(n_feed, lid_dim))
         lid_batch_noisy = np.zeros(shape=(n_feed, lid_dim))
+        
         for i, func in enumerate(funcs):
             X_act = func([X[start:end], 0])[0]
             X_act = np.asarray(X_act, dtype=np.float32).reshape((n_feed, -1))
@@ -69,13 +72,16 @@ def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
             # print("lid_batch_adv: ", lid_batch_adv.shape)
             lid_batch_noisy[:, i] = mle_batch(X_act, X_noisy_act, k=k)
             # print("lid_batch_noisy: ", lid_batch_noisy.shape)
+        
         return lid_batch, lid_batch_noisy, lid_batch_adv
 
     lids = []
     lids_adv = []
     lids_noisy = []
     n_batches = int(np.ceil(X.shape[0] / float(batch_size)))
+    
     for i_batch in tqdm(range(n_batches)):
+        
         lid_batch, lid_batch_noisy, lid_batch_adv = estimate(i_batch)
         lids.extend(lid_batch)
         lids_adv.extend(lid_batch_adv)
