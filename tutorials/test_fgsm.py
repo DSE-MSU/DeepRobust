@@ -15,7 +15,7 @@ import ipdb
 model = Net()
 
 print("Load network")
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt"))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/MNIST_CNN_epoch_10.pt"))
 model.eval()
 
 xx = datasets.MNIST('DeepRobust/image/data', download = False).data[999:1000].to('cuda')

@@ -31,15 +31,15 @@ class CarliniWagner(BaseAttack):
 
     def parse_params(self,
                      target,
-                     classnum,
-                     confidence, 
-                     clip_max, 
-                     clip_min, 
-                     max_iterations, 
-                     initial_const, 
-                     binary_search_steps, 
-                     learning_rate, 
-                     abort_early):
+                     classnum = 10,
+                     confidence = 1e-4, 
+                     clip_max = 1, 
+                     clip_min = 0, 
+                     max_iterations = 1000, 
+                     initial_const = 1e-2, 
+                     binary_search_steps = 5, 
+                     learning_rate = 5e-3, 
+                     abort_early = True):
 
         self.target = target
         self.classnum = classnum
