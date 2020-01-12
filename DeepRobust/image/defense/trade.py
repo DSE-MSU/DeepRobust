@@ -12,13 +12,12 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 
 from DeepRobust.image.defense.base_defense import BaseDefense
-from DeepRobust.image.netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNN import Net
 from DeepRobust.image.utils import adjust_learning_rate
 
 class TRADE(BaseDefense):
     def __init__(self, model, device):
         self.device = device
-        device = torch.device("cpu" if not torch.cuda.is_available())
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):

@@ -12,7 +12,7 @@ from DeepRobust.image.attack.fgsm import FGM
 from DeepRobust.image.defense.base_defense import BaseDefense
 
 class FGSMtraining(BaseDefense):
-       def __init__(self, model, device):
+    def __init__(self, model, device):
 
         self.device = device
         self.model = model
