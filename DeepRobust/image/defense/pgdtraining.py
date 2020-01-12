@@ -14,14 +14,13 @@ from DeepRobust.image.defense.base_defense import BaseDefense
 
 class PGDtraining(BaseDefense):
     def __init__(self, model, device):
-        device = torch.device("cpu" if not torch.cuda.is_available() else device)
 
         self.device = device
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
         """
-        Pgd attacking process:
+        Pgd defense process:
         """
         self.parse_params(**kwargs)
         
