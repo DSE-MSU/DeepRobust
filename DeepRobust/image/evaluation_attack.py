@@ -58,7 +58,7 @@ def parameter_parser():
     parser.add_argument("--step_size", type = float, default = 0.01)
     parser.add_argument("--device",  default = 'cuda',
                         help = "choose the device.")
-
+    parser.add_argument("")
     return parser.parse_args()
 
 
@@ -97,13 +97,23 @@ if __name__ == "__main__":
                         shuffle = True)
         print("Load ImageNet Dataset")      
 
-    
-    if(args.attack_method == "PGD_attack"):
+    if(args.attack_method == "PGD"):
         from DeepRobust.image.attack.pgd import PGD
-        attack_method = PGD(model)
+        attack_method = PGD(model, device)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
-    elif(args.attack_method == "FGSM_attack"):
+    elif(args.attack_method == "FGSM"):
         from DeepRobust.image.attack.fgsm import FGM
-        attack_method = FGM(model)
+        attack_method = FGM(model, device):
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
+    elif(args.attack_method == "LBFGS"):
+        pass
+    elif(args.attack_method == "CW"):
+        from DeepRobust.image.attack.cw import CarliniWagner
+        attack_method = CarliniWagner(model, device)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
+    elif(args.attack_method == "deepfool"):
+        from DeepRobust.image.attack.deepfool import deepfool
+        attack_method = DeepFool(model, device)
+    elif(args.attack_method == "Nattack"):
+        pass
 
