@@ -19,7 +19,7 @@ logger.info("Start test cw attack")
 
 # load model
 model = Net()
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt", map_location = torch.device('cuda')))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
 model.eval()
 
 xx = datasets.MNIST('DeepRobust/image/data', download = False).data[8888]
