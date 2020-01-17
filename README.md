@@ -31,3 +31,25 @@ We would be glad if you find our work useful and cite the paper.
 - SimpleCNN
 - ResNet
 
+# Usage
+- Attack
+1. Import algorithm directely and implement your own program.
+
+    Example to generate an adversary example with PGD attack:
+    ```python
+    from DeepRobust.image.attack.pgd import PGD
+    from DeepRobust.image.config import attack_params
+
+    adversary = PGD(model, device)
+    Adv_example = adversary.generate(X, Y, **attack_params['PGD_CIFAR10')
+    ```
+    More example code can be found in "DeepRobust/tutorials".
+
+
+2. Use our evulation program to test attack algorithm against defense.
+
+    Example:
+    
+    ```
+    python -m DeepRobust.image.evaluation_attack --attack_method --attack_model --dataset --epsilon --batch_num --batch_size --num_steps --step_size --device --path
+    ```
