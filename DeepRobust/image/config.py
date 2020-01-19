@@ -40,7 +40,7 @@ attack_params = {
 
 defense_params = {
     "PGDtraining_MNIST":{
-        'save_dir': dir,
+        'save_dir': "defense_model",
         'save_model': True
     } 
 }
