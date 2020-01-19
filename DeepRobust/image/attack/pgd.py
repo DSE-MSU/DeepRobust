@@ -91,5 +91,7 @@ def pgd_attack(model,
         X_pgd = X_pgd.detach()
         X_pgd.requires_grad_()
         X_pgd.retain_grad()
+        
+        model.zero_grad()  ## han
 
     return X_pgd
