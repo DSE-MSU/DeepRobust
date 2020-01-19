@@ -35,19 +35,19 @@ class PGDtraining(BaseDefense):
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
-            if (self.save_model):
-                if os.path.isdir('./' + self.save_dir):
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
-                    print("model saved in " + './' + self.save_dir)
-                else:
-                    print("make new directory and save model in " + './' + self.save_dir)
-                    os.mkdir('./' + self.save_dir)
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+        if (self.save_model and epoch % 10 == 0):
+            if os.path.isdir('./' + self.save_dir):
+                torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+                print("model saved in " + './' + self.save_dir)
+            else:
+                print("make new directory and save model in " + './' + self.save_dir)
+                os.mkdir('./' + self.save_dir)
+                torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
 
         return self.model    
     
     def parse_params(self, 
-                     save_dir,
+                     save_dir = 'defense_models',
                      save_model = True,
                      epsilon = 0.3,
                      num_steps = 40,
@@ -106,22 +106,21 @@ class PGDtraining(BaseDefense):
         correct = 0
         test_loss_adv = 0
         correct_adv = 0
-        with torch.no_grad():
-             for data, target in test_loader:
-                data, target = data.to(device), target.to(device)
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
                 
-                # print clean accuracy
-                output = model(data)
-                test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-                pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
-                correct += pred.eq(target.view_as(pred)).sum().item()
+            # print clean accuracy
+            output = model(data)
+            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
                 
-                # print adversarial accuracy
-                data_adv, output_adv = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
+            # print adversarial accuracy
+            data_adv, output_adv = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
 
-                test_loss_adv += self.calculate_loss(output_adv, target, redmode = 'sum').item()  # sum up batch loss
-                pred_adv = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
-                correct_adv += pred_adv.eq(target.view_as(pred_adv)).sum().item()
+            test_loss_adv += self.calculate_loss(output_adv, target, redmode = 'sum').item()  # sum up batch loss
+            pred_adv = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
+            correct_adv += pred_adv.eq(target.view_as(pred_adv)).sum().item()
             
         test_loss /= len(test_loader.dataset)
         test_loss_adv /= len(test_loader.dataset)
