@@ -9,13 +9,15 @@ from DeepRobust.image.attack.base_attack import BaseAttack
 class DeepFool(BaseAttack):
     def __init__(self, model, device = 'cuda' ):
         super(DeepFool, self).__init__(model, device)
+        self.model = model
+        self.device = device
 
     def generate(self, image, **kwargs):
 
         #check type device
         is_cuda = torch.cuda.is_available()
 
-        if is_cuda:
+        if (is_cuda and self.device == 'cuda'):
             print("Using GPU")
             image = image.cuda()
             self.model = self.model.cuda()
@@ -28,29 +30,35 @@ class DeepFool(BaseAttack):
                         image,
                         self.num_classes,
                         self.overshoot,
-                        self.max_iter,
+                        self.max_iteration,
                         is_cuda)
     
     def parse_params(self,
                      num_classes = 10,
                      overshoot = 0.02,
-                     max_iter = 50):
+                     max_iteration = 50):
         self.num_classes = num_classes
         self.overshoot = overshoot
-        self.max_iter = max_iter
+        self.max_iteration = max_iteration
         return True
 
 def deepfool(net, image, num_classes, overshoot, max_iter, is_cuda):
     """
-       :param image: Image of size HxWx3
-       :param net: network (input: images, output: values of activation **BEFORE** softmax).
-       :param num_classes: num_classes (limits the number of classes to test against, by default = 10)
-       :param overshoot: used as a termination criterion to prevent vanishing updates (default = 0.02).
-       :param max_iter: maximum number of iterations for deepfool (default = 50)
-       :return: minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
+       :param image: 
+            -Image of size HxWx3
+       :param net: 
+            -network (input: images, output: values of activation **BEFORE** softmax).
+       :param num_classes: 
+            -num_classes (limits the number of classes to test against, by default = 10)
+       :param overshoot: 
+            -used as a termination criterion to prevent vanishing updates (default = 0.02).
+       :param max_iter: 
+            -maximum number of iterations for deepfool (default = 50)
+       :return: 
+            -minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
     """
 
-    f_image = net.forward(Variable(image[None, :, :, :], requires_grad=True)).data.cpu().numpy().flatten()
+    f_image = net.forward(Variable(image, requires_grad=True)).data.cpu().numpy().flatten()
     I = (np.array(f_image)).flatten().argsort()[::-1]
 
     I = I[0:num_classes]
