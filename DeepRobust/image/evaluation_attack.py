@@ -6,7 +6,7 @@ import numpy as np
 import argparse
 import matplotlib.pyplot as plt
 
-from DeepRobust.image.netmodels.CNNmodel import Net
+from DeepRobust.image.netmodels.CNN import Net
 
 def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwargs):
     test_loss = 0
@@ -14,22 +14,21 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwarg
     samplenum = 1000
     count = 0
     
-    with torch.no_grad():
-        for count, (data, target) in enumerate(test_loader):
-            if count > batch_num:
-                break
-            print('batch:{}'.format(count))
+    for count, (data, target) in enumerate(test_loader):
+        if count > batch_num:
+            break
+        print('batch:{}'.format(count))
 
-            data, target = data.to(device), target.to(device)
-            adv_example = attackmethod.generate(data, target, **kwargs)
+        data, target = data.to(device), target.to(device)
+        adv_example = attackmethod.generate(data, target, **kwargs)
             
-            output = model(adv_example)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+        output = model(adv_example)
+        test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
 
-            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability.
+        pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability.
 
-            #print(pred, target)
-            correct += pred.eq(target.view_as(pred)).sum().item()
+        #print(pred, target)
+        correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
 
@@ -43,10 +42,10 @@ def parameter_parser():
     parser = argparse.ArgumentParser(description = "Run attack algorithms.")
 
     parser.add_argument("--attack_method", 
-                        default = 'PGD_attack', 
+                        default = 'PGD', 
                         help = "choose a attack algorithm.")
     parser.add_argument("--attack_model", 
-                        default = 'mnist_cnn.pt',
+                        default = 'MNIST_CNN_epoch_20.pt',
                         help = "choose a attack model.")
     parser.add_argument("--dataset", 
                         default = 'MNIST',
@@ -56,8 +55,10 @@ def parameter_parser():
     parser.add_argument("--batch_size", type = int, default = 1000)
     parser.add_argument("--num_steps", type = int, default = 40)
     parser.add_argument("--step_size", type = float, default = 0.01)
-    parser.add_argument("--device",  default = 'cuda',
+    parser.add_argument("--device", default = 'cuda',
                         help = "choose the device.")
+    parser.add_argument("--path", 
+                        default = "DeepRobust/image/save_models/")
 
     return parser.parse_args()
 
@@ -67,14 +68,15 @@ if __name__ == "__main__":
     args = parameter_parser() # read argument and creat an argparse object
     model = Net()
 
-    model.load_state_dict(torch.load("DeepRobust/image/save_models/"+args.attack_model))
+    model.load_state_dict(torch.load(args.path + args.attack_model))
     model.eval()
     print("Load network.")
 
     #load datasets
     if(args.dataset == "MNIST"):
         test_loader = torch.utils.data.DataLoader(
-                        datasets.MNIST('DeepRobust/image/data', train=False,
+                        datasets.MNIST('DeepRobust/image/data', train = False,
+                        download = True,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -82,7 +84,7 @@ if __name__ == "__main__":
     
     elif(args.dataset == "CIFAR"):
         test_loader = torch.utils.data.DataLoader(
-                        datasets.CIFAR10('DeepRobust/image/data', train=False,
+                        datasets.CIFAR10('DeepRobust/image/data', train = False,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -97,13 +99,28 @@ if __name__ == "__main__":
                         shuffle = True)
         print("Load ImageNet Dataset")      
 
-    
-    if(args.attack_method == "PGD_attack"):
+    if(args.attack_method == "PGD"):
         from DeepRobust.image.attack.pgd import PGD
-        attack_method = PGD(model)
+        attack_method = PGD(model, args.device)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
-    elif(args.attack_method == "FGSM_attack"):
+    
+    elif(args.attack_method == "FGSM"):
         from DeepRobust.image.attack.fgsm import FGM
-        attack_method = FGM(model)
+        attack_method = FGM(model, args.device)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon) 
+    
+    elif(args.attack_method == "LBFGS"):
+        pass
+    
+    elif(args.attack_method == "CW"):
+        from DeepRobust.image.attack.cw import CarliniWagner
+        attack_method = CarliniWagner(model, args.device)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
+    
+    elif(args.attack_method == "deepfool"):
+        from DeepRobust.image.attack.deepfool import deepfool
+        attack_method = DeepFool(model, args.device)
+    
+    elif(args.attack_method == "Nattack"):
+        pass
 

@@ -11,7 +11,8 @@ attack_params = {
     "PGD_CIFAR10": {
     'epsilon': 0.1,
     'clip_max': (1 - 0.4914) / 0.2023,
-    'clip_min': (0-0.4914) / 0.2023
+    'clip_min': (0-0.4914) / 0.2023,
+    'print_process': True
     },
 
     "LBFGS_MNIST": {
@@ -39,7 +40,7 @@ attack_params = {
 
 defense_params = {
     "PGDtraining_MNIST":{
-        'save_dir': dir,
+        'save_dir': "defense_model",
         'save_model': True
     } 
 }

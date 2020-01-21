@@ -14,14 +14,13 @@ from DeepRobust.image.defense.base_defense import BaseDefense
 
 class PGDtraining(BaseDefense):
     def __init__(self, model, device):
-        device = torch.device("cpu" if not torch.cuda.is_available() else device)
 
         self.device = device
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
         """
-        Pgd attacking process:
+        Pgd defense process:
         """
         self.parse_params(**kwargs)
         
@@ -31,36 +30,54 @@ class PGDtraining(BaseDefense):
         optimizer = optim.SGD(self.model.parameters(), self.lr, momentum=0.1)
     
         save_model = True
-        for epoch in range(1, 100 + 1):     ## 5 batches
+        for epoch in range(1, self.epoch + 1):     ## 5 batches
             print(epoch, flush = True)  ## han
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
-            if (self.save_model):
-                if os.path.isdir('./' + self.save_dir):
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
-                    print("model saved in " + './' + self.save_dir)
+            if (self.save_model and epoch % 10 == 0):
+                if os.path.isdir('./' + str(self.save_dir)):
+                    torch.save(self.model.state_dict(), './' + str(self.save_dir) + "/" + self.save_name)  ## han
+                    print("model saved in " + './' + str(self.save_dir))
                 else:
-                    print("make new directory and save model in " + './' + self.save_dir)
-                    os.mkdir('./' + self.save_dir)
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
-
+                    print("make new directory and save model in " + './' + str(self.save_dir))
+                    os.mkdir('./' + str(self.save_dir))
+                    torch.save(self.model.state_dict(), './' + str(self.save_dir) +"/" + self.save_name)  ## han
         return self.model    
     
     def parse_params(self, 
-                     save_dir,
+                     epoch = 60,
+                     save_dir = "defense_models",
+                     save_name = "mnist_pgdtraining_0.3.pt",
                      save_model = True,
                      epsilon = 0.3,
                      num_steps = 40,
+                     perturb_step_size = 0.01,
                      lr = 0.001,
                      momentum = 0.1):
-        # """
-        # Set parameters for pgd training.
-        # """
+        """
+        :param epoch : int 
+            - pgd training epoch
+        :param save_dir : str 
+            - directory path to save model
+        :param epsilon : float 
+            - perturb constraint of pgd adversary example used to train defense model
+        :param num_steps : int 
+            - the perturb 
+        :param perturb_step_size : float 
+            - step_size 
+        :param lr : float 
+            - learning rate for adversary training process
+        :param momentum : float 
+            - parameter for optimizer in training process
+        """
+        self.epoch = epoch
         self.save_model = True
         self.save_dir = save_dir
+        self.save_name = save_name
         self.epsilon = epsilon
         self.num_steps = num_steps
+        self.perturb_step_size = perturb_step_size
         self.lr = lr
         self.momentum = momentum
 
@@ -78,7 +95,7 @@ class PGDtraining(BaseDefense):
             
             data, target = data.to(device), target.to(device)
 
-            data_adv, output = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
+            data_adv, output = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps, perturb_step_size = self.perturb_step_size)
 
             loss = self.calculate_loss(output, target)
             
@@ -107,22 +124,21 @@ class PGDtraining(BaseDefense):
         correct = 0
         test_loss_adv = 0
         correct_adv = 0
-        with torch.no_grad():
-             for data, target in test_loader:
-                data, target = data.to(device), target.to(device)
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
                 
-                # print clean accuracy
-                output = model(data)
-                test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-                pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
-                correct += pred.eq(target.view_as(pred)).sum().item()
+            # print clean accuracy
+            output = model(data)
+            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
                 
-                # print adversarial accuracy
-                data_adv, output_adv = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
+            # print adversarial accuracy
+            data_adv, output_adv = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
 
-                test_loss_adv += self.calculate_loss(output_adv, target, redmode = 'sum').item()  # sum up batch loss
-                pred_adv = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
-                correct_adv += pred_adv.eq(target.view_as(pred_adv)).sum().item()
+            test_loss_adv += self.calculate_loss(output_adv, target, redmode = 'sum').item()  # sum up batch loss
+            pred_adv = output_adv.argmax(dim = 1, keepdim = True)  # get the index of the max log-probability
+            correct_adv += pred_adv.eq(target.view_as(pred_adv)).sum().item()
             
         test_loss /= len(test_loader.dataset)
         test_loss_adv /= len(test_loader.dataset)
@@ -135,13 +151,13 @@ class PGDtraining(BaseDefense):
             test_loss_adv, correct_adv, len(test_loader.dataset),
             100. * correct_adv / len(test_loader.dataset)))
             
-    def adv_data(self, data, output, ep = 0.3, num_steps = 40):
-        # """
-        # Generate input(adversarial) data for training.
+    def adv_data(self, data, output, ep = 0.3, num_steps = 40, perturb_step_size = 0.01):
+        """
+        Generate input(adversarial) data for training.
+        """
         
-        # """
         adversary = PGD(self.model)
-        data_adv = adversary.generate(data, output.flatten(), epsilon = ep, num_steps = num_steps)
+        data_adv = adversary.generate(data, output.flatten(), epsilon = ep, num_steps = num_steps, step_size = perturb_step_size)
         output = self.model(data_adv)
 
         return data_adv, output
