@@ -1,5 +1,11 @@
+"""
+Carlini-Wagner attack (https://arxiv.org/pdf/1608.04644.pdf)
+
+"""
+
 import torch
 from torch import optim
+import torch.nn as nn
 import numpy as np
 import logging
 
@@ -38,7 +44,7 @@ class CarliniWagner(BaseAttack):
                      max_iterations = 1000, 
                      initial_const = 1e-2, 
                      binary_search_steps = 5, 
-                     learning_rate = 5e-3, 
+                     learning_rate = 0.00001, 
                      abort_early = True):
 
         self.target = target
@@ -85,7 +91,19 @@ class CarliniWagner(BaseAttack):
         return x, grad
 
     def cw(self, model, image, label, target, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
-        
+        """
+        parameters:
+        :param model: the target model to attack
+        :param image: original image to perturb
+        :param label: true label of original image
+        :param target: target class
+        :param confidence: 
+        :param clip_max, clip_min:
+        :param max_iterations: the maximum number of iteration in cw attack procedure
+        :param initial_const:
+        :param binary_search_steps:
+        :param learning_rate:
+        """
         #change the input image
         img_tanh = self.to_attack_space(image.cpu())
         img_ori ,_ = self.to_model_space(img_tanh)
@@ -98,19 +116,19 @@ class CarliniWagner(BaseAttack):
         found_adv = False
         last_loss = np.inf
 
-        for step in range(max_iterations):
+        for step in range(binary_search_steps):
 
-            #initialize perturbation
-            perturbation = torch.from_numpy(np.zeros_like(img_tanh))
+            #initialize w : perturbed image in tanh space
+            w = torch.from_numpy(img_tanh.numpy())
 
-            optimizer = AdamOptimizer(img_tanh.shape)
+            optimizer = optim.Adam([w], lr = learning_rate)
             
             is_adversarial = False
 
             for iteration in range(max_iterations):
 
                 # adversary example
-                img_adv, adv_grid = self.to_model_space(img_tanh + perturbation)
+                img_adv, adv_grid = self.to_model_space(w)
                 img_adv = img_adv.to(self.device)
                 img_adv.requires_grad = True
                 
@@ -124,10 +142,12 @@ class CarliniWagner(BaseAttack):
                 loss, loss_grad = self.loss_function(
                     img_adv, c, self.target, img_ori, self.confidence, self.clip_min, self.clip_max 
                 )
-                
+
+               
                 #calculate gradient of loss function on w
                 gradient = adv_grid.to(self.device) * loss_grad.to(self.device)
-                perturbation = perturbation + torch.from_numpy(optimizer(gradient.cpu().detach().numpy(), learning_rate)).float()
+                w = w + torch.from_numpy(optimizer(gradient.cpu().detach().numpy(), learning_rate)).float()
+                
                 if is_adversarial:
                     found_adv = True
             
@@ -142,20 +162,24 @@ class CarliniWagner(BaseAttack):
             else:
                 c = (c_high + c_low) / 2
         
-            print("optimization itaration:{:.1f},loss:{:.4f}".format(step,loss))
-    
+            if (step % 10 == 0):
+                print("iteration:{:.0f},loss:{:.4f}".format(step,loss))
+
+            # if (step == 50):
+            #     learning_rate = learning_rate/100
+
             #abort early
-            if(self.abort_early == True and (step % 10) == 0 and step > 15) :
-                print(loss, last_loss)
-                if not (loss <= 0.999 * last_loss):
+            if(self.abort_early == True and (step % 10) == 0 and step > 100) :
+                print("early abortion?", loss, last_loss)
+                if not (loss <= 0.9999 * last_loss):
                     break
                 last_loss = loss
         
-        return img_adv
+
+        return img_adv.detach()
 
     def loss_function(
-        self, x_p, const, target, reconstructed_original, confidence, min_, max_
-    ):
+        self, x_p, const, target, reconstructed_original, confidence, min_, max_):
         """Returns the loss and the gradient of the loss w.r.t. x,
         assuming that logits = model(x)."""
 
@@ -217,51 +241,5 @@ class CarliniWagner(BaseAttack):
         else:
             return False
 
-
-class AdamOptimizer:
-    """Basic Adam optimizer implementation that can minimize w.r.t.
-    a single variable. 
-    Parameters
-    ----------
-    shape : tuple
-        shape of the variable w.r.t. which the loss should be minimized
-    """
-    #TODO Add reference or rewrite the function.
-    def __init__(self, shape):
-        self.m = np.zeros(shape)
-        self.v = np.zeros(shape)
-        self.t = 0
-
-    def __call__(self, gradient, learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8):
-        """Updates internal parameters of the optimizer and returns
-        the change that should be applied to the variable.
-        Parameters
-        ----------
-        gradient : `np.ndarray`
-            the gradient of the loss w.r.t. to the variable
-        learning_rate: float
-            the learning rate in the current iteration
-        beta1: float
-            decay rate for calculating the exponentially
-            decaying average of past gradients
-        beta2: float
-            decay rate for calculating the exponentially
-            decaying average of past squared gradients
-        epsilon: float
-            small value to avoid division by zero
-        """
-
-        self.t += 1
-
-        self.m = beta1 * self.m + (1 - beta1) * gradient
-        self.v = beta2 * self.v + (1 - beta2) * gradient ** 2
-
-        bias_correction_1 = 1 - beta1 ** self.t
-        bias_correction_2 = 1 - beta2 ** self.t
-
-        m_hat = self.m / bias_correction_1
-        v_hat = self.v / bias_correction_2
-
-        return -learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)
     
     
