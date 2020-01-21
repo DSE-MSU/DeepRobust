@@ -41,7 +41,7 @@ AdvExArray = adversary.generate(xx, yy, **attack_params['PGD_CIFAR10']).float()
 predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)
 
-print('----------------------')
+print('====== RESULT =====')
 print('true label',classes[yy])
 print('predict_orig',classes[predict0])
 print('predict_adv',classes[predict1])
