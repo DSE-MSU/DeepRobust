@@ -32,24 +32,24 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(1024, 10)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, int(self.H/4) * int(self.W/4) * self.out_channel2)
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        self.layers[0] = F.relu(self.conv1(x))
+        self.layers[1] = F.max_pool2d(x, 2, 2)
+        self.layers[2] = F.relu(self.conv2(x))
+        self.layers[3] = F.max_pool2d(x, 2, 2)
+        self.layers[4] = x.view(-1, int(self.H/4) * int(self.W/4) * self.out_channel2)
+        self.layers[5] = F.relu(self.fc1(x))
+        self.layers[6] = self.fc2(x)
+        return F.log_softmax(layers[6], dim=1)
 
-    def get_logits(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = F.relu(self.conv2(x))
-        x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, int(self.H/4) * int(self.W/4) * self.out_channel2)
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
+    #def get_logits(self, x):
+        #x = F.relu(self.conv1(x))
+        #x = F.max_pool2d(x, 2, 2)
+        #x = F.relu(self.conv2(x))
+        #x = F.max_pool2d(x, 2, 2)
+        #x = x.view(-1, 4* 4 * 50)
+        #x = F.relu(self.fc1(x))
+        #x = self.fc2(x)
+        #return x
 
 
 def train(model, device, train_loader, optimizer, epoch):

@@ -9,14 +9,29 @@ from PIL import Image
 from DeepRobust.image.attack.fgsm import FGM
 from DeepRobust.image.netmodels.CNN import Net
 from DeepRobust.image.config import attack_params
-
+from DeepRobust.image.utils import download_model
 import ipdb
 
-model = Net()
+def parameter_parser():
+    parser = argparse.ArgumentParser(description = "Run attack algorithms.")
 
-print("Load network")
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt"))
+    parser.add_argument("--download destination", 
+                        default = '~/lyx/projects/models/download', 
+                        help = "choose destination to load the pretrained models.")
+
+    parser.add_argument("--file name", 
+                        default = "MNIST_CNN")
+
+    return parser.parse_args()
+
+args = parameter_parser() # read argument and creat an argparse object
+
+model = Net()
+print("Download network from Google Drive.")
+
+model.load_state_dict(torch.load(destination + filename))
 model.eval()
+print("Finish loading network.")
 
 xx = datasets.MNIST('DeepRobust/image/data', download = False).data[999:1000].to('cuda')
 xx = xx.unsqueeze_(1).float()/255

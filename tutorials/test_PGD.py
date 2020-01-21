@@ -25,7 +25,7 @@ transform_val = transforms.Compose([
 test_loader  = torch.utils.data.DataLoader(
                 datasets.CIFAR10('DeepRobust/image/data', train = False, download=True,
                 transform = transform_val),
-                batch_size = 1, shuffle=True) #, **kwargs)
+                batch_size = 10, shuffle=True) #, **kwargs)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
@@ -41,7 +41,7 @@ AdvExArray = adversary.generate(xx, yy, **attack_params['PGD_CIFAR10']).float()
 predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)
 
-print('----------------------')
+print('====== RESULT =====')
 print('true label',classes[yy])
 print('predict_orig',classes[predict0])
 print('predict_adv',classes[predict1])
