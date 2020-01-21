@@ -19,15 +19,15 @@ logger.info("Start test cw attack")
 
 # load model
 model = Net()
-model.load_state_dict(torch.load("DeepRobust/image/save_models/mnist_pgdtraining.pt", map_location = torch.device('cuda')))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
 model.eval()
 
-xx = datasets.MNIST('DeepRobust/image/data', download = False).data[8888]
+xx = datasets.MNIST('DeepRobust/image/data', download = False).data[1234]
 xx = xx.unsqueeze_(0).float()/255
 xx = xx.unsqueeze_(0).float().to('cuda')
 
 ## Set Targetå
-yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[8888]
+yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[1234]
 yy = yy.float()
 
 
@@ -48,6 +48,6 @@ print(predict1)
 
 import matplotlib.pyplot as plt
 Adv = Adv.cpu()
-plt.imshow(Adv[0]*255,cmap='gray',vmin=0,vmax=255)
-plt.savefig('advexample_cw.png')
+plt.imshow(Adv[0,0]*255,cmap='gray',vmin=0,vmax=255)
+plt.savefig('./adversary_examples/mnist_advexample_cw.png')
 

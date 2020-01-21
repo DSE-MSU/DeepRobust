@@ -9,74 +9,49 @@ import torch
 import torch.optim as optim
 import torch.utils.data as data_utils
 from torch.autograd import Variable
-import torchvision.models as models
-
-import math
-from PIL import Image
-import os
+from torchvision import models, datasets
 
 from DeepRobust.image.attack.deepfool import DeepFool
+import DeepRobust.image.netmodels.resnet as resnet
+import matplotlib.pyplot as plt
 
+'''
+CIFAR10
+'''
 
-#load pretrained model
-net = models.resnet34(pretrained=True)
+# load model
+model = resnet.ResNet18().to('cuda')
+print("Load network")
 
-# Switch to evaluation mode
-net.eval()
+model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.eval()
 
-#load original example
-im_orig = Image.open('test_im2.jpg')
+# load dataset
+testloader = torch.utils.data.DataLoader(
+    datasets.CIFAR10('image/data', train = False, download = True,
+    transform = transforms.Compose([transforms.ToTensor()])),
+    batch_size = 1, shuffle = True)
+classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-mean = [ 0.485, 0.456, 0.406 ]
-std = [ 0.229, 0.224, 0.225 ]
+# choose attack example
+X, Y = next(iter(testloader))
+X = X.to('cuda').float()
 
-# Remove the mean
-im = transforms.Compose([
-    transforms.Scale(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor()])(im_orig)
+# run deepfool attack
+adversary = DeepFool(model)
+AdvExArray = adversary.generate(X).float()
 
-print(im)
-Attack1 = DeepFool(net, device = 'cuda')
-r, loop_i, label_orig, label_pert, pert_image = Attack1.generate(im)
+# predict 
+pred = model(AdvExArray).cpu().detach()
 
-labels = open(os.path.join('synset_words.txt'), 'r').read().split('\n')
+# print and save result
+print('===== RESULT =====')
+print("true label:", classes[Y])
+print("predict_adv:", classes[np.argmax(pred)])
 
-str_label_orig = labels[np.int(label_orig)].split(',')[0]
-str_label_pert = labels[np.int(label_pert)].split(',')[0]
+AdvExArray = AdvExArray.cpu().detach().numpy()
+AdvExArray = AdvExArray.swapaxes(1,3).swapaxes(1,2)[0]
 
-print("Original label = ", str_label_orig)
-print("Perturbed label = ", str_label_pert)
+plt.imshow(AdvExArray, vmin = 0, vmax = 255)
+plt.savefig('./adversary_examples/cifar_advexample_deepfool.png')
 
-def clip_tensor(A, minv, maxv):
-    A = torch.max(A, minv*torch.ones(A.shape))
-    A = torch.min(A, maxv*torch.ones(A.shape))
-    return A
-
-clip = lambda x: clip_tensor(x, 0, 255)
-
-# A = torch.clamp(A, 0, 255)
-
-transf = transforms.Compose([transforms.Lambda(clip)])
-
-
-im_orig = transforms.Compose([
-    transforms.Scale(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor()
-    ])(im_orig)
-
-#print(pert_image)
-im_pert = transf(pert_image.cpu()[0])
-im_diff = im_pert - im_orig
-
-im_orig = transforms.ToPILImage()(im_orig).convert('RGB')
-im_pert = transforms.ToPILImage()(im_pert).convert('RGB')
-im_diff = transforms.ToPILImage()(im_diff).convert('RGB')
-
-plt.imshow(im_pert)
-plt.savefig('deepfool_pert.png')
-plt.imshow(im_orig)
-plt.savefig('deepfool_orig.png')
-plt.imshow(im_diff)
-plt.savefig('deepfool_diff.png')

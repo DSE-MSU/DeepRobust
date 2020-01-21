@@ -41,12 +41,10 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
     x_t = image
     x0 = image[0].numpy()
     min_, max_ = bounds
-        
-        
+           
     target_dist = torch.tensor(target_label)
     target_dist = target_dist.unsqueeze_(0).long()
        
-
     # store the shape for later and operate on the flattened input
         
     shape = x0.shape
@@ -126,7 +124,6 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         return optimize_output, is_adversarial
 
     #x_new, isadv = lbfgs_b(0)
-
 
     # finding initial c
     c = epsilon

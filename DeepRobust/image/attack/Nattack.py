@@ -28,12 +28,13 @@ class NATTACK(BaseAttack):
                      target_or_not = False, 
                      clip_max = 1, 
                      clip_min = 0, 
-                     epsilon = 0.015,
+                     epsilon = 0.2,
                      population = 300,
                      max_iterations = 400,
-                     learning_rate = 0.008,
+                     learning_rate = 2,
                      sigma = 0.1
                      ):
+
         self.dataloader = dataloader
         self.classnum = classnum
         self.target_or_not = target_or_not
@@ -55,118 +56,92 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
     
     #initialization
     totalImages = 0
+    succImages = 0
     faillist = []
     successlist = []
+    printlist = []
+
     for i, (inputs, targets) in enumerate(loader):
+
         success = False
-        print('attack',i,'picture.')
-        #print(inputs.size())
-        c = inputs.size(1)
-        l = inputs.size(2)
-        w = inputs.size(3)
-        modify = torch.from_numpy(np.random.randn(1,c, l, w) * 0.001).float()
-        
+        print('attack picture No. ' + str(i))
+
+        c = inputs.size(1)  # chanel
+        l = inputs.size(2)  # length
+        w = inputs.size(3)  # width
+
+        mu = arctanh((inputs * 2) - 1)
+        #mu = torch.from_numpy(np.random.randn(1, c, l, w) * 0.001).float()  # random initialize mean
         predict = model.forward(inputs)
 
+        ## skip wrongly classified samples
         if  predict.argmax(dim = 1, keepdim = True) != targets:
             print('skip the wrong example ', i)
             continue
         totalImages += 1
 
-        # if (i > 1):
-        #     break
-
+        ## finding most possible mean
         for runstep in range(max_iterations):
-            #a = input()
-            # random choose sample
-            Nsample = torch.from_numpy(np.random.randn(population, c, l, w)).float()
 
-            modify_try = modify.repeat(population,1,1,1) + sigma * Nsample
-            
-            # calculate g0(z)
-            g0_z = arctanh((inputs * 2) - 1)
-            # print('g0', g0_z)
-            # initialize g(z)
-            gz = np.tanh(g0_z + modify_try) * 1 / 2 + 1 / 2
-            # print('gz', gz)
+            # sample points from normal distribution
+            eps = torch.from_numpy(np.random.randn(population, c, l, w)).float()
+            z = mu.repeat(population, 1, 1, 1) + sigma * eps
 
-            #pending whether attack is successfull every 10 iterations.
+            # calculate g_z
+            g_z = np.tanh(z) * 1 / 2 + 1 / 2
+
+            # testing whether exists successful attack every 10 iterations.
             if runstep % 10 == 0:
-                # a = input()
-                # calculate g(z)
-                realinputimg = np.tanh(g0_z + modify) * 1 / 2 + 1 / 2
-                # print(g0_z)
-                # print(modify)
-                # calculate dist in miu space
-                realdist = realinputimg - (np.tanh(g0_z) * 1/2 + 1/2)
+
+                realdist = g_z - inputs
 
                 realclipdist = np.clip(realdist, -epsilon, epsilon).float()
-                realclipinput = realclipdist + (np.tanh(g0_z) * 1/2 + 1/2)
-                # l2real = np.sum((realclipinput - (np.tanh(g0_z) * 1 / 2 + 1 / 2))**2)**0.5
-                #l2real = np.abs(realclipinput - inputs.numpy())
-                
+                realclipinput = realclipdist + inputs
+
                 info = 'inputs.shape__' + str(inputs.shape)
                 logging.debug(info)
+
                 predict = model.forward(realclipinput)
-                # print(predict.argmax(dim = 1, keepdim = True), targets)
-                #outputsreal = sess.run(real_logits, feed_dict={input_xs: realclipinput.transpose(0,2,3,1)})
-                # print('l2real: '+ str(l2real.max()))
-                
+
                 #pending attack
                 if (target_or_not == False):
-                    if (predict.argmax(dim = 1, keepdim = True) != targets) and (np.abs(realclipdist).max() <= epsilon):
+
+                    if sum(predict.argmax(dim = 1, keepdim = True)[0] != targets) > 0 and (np.abs(realclipdist).max() <= epsilon):
                         succImages += 1
                         success = True
-                        print('clipimage succImages: '+str(succImages)+' totalImages: '+str(totalImages))
-                        print('lirealsucc: '+str(realclipdist.max()))
+                        print('succeed attack Images: '+str(succImages)+'     totalImages: '+str(totalImages))
+                        print('steps: '+ str(runstep))
                         successlist.append(i)
                         printlist.append(runstep)
-                        #break
-                        return
+                        break
 
             # calculate distance
-            dist = gz - (np.tanh(g0_z) * 1 / 2 + 1 / 2)
+            dist = g_z - inputs
             clipdist = np.clip(dist, -epsilon, epsilon)
-            clipinput = (clipdist + (np.tanh(g0_z) * 1 / 2 + 1 / 2)).reshape(population,1,28,28)
-            # print(clipinput.size())
-            
+            proj_g_z = inputs + clipdist
+            proj_g_z = proj_g_z.float()
+            outputs = model.forward(proj_g_z)
+
+            # get cw loss on sampled images
             target_onehot = np.zeros((1,classnum))
-
             target_onehot[0][targets]=1.
-            # print('target', target_onehot)
-            #outputs = sess.run(real_logits, feed_dict={input_xs: clipinput.transpose(0,2,3,1)})
-
-            clipinput = clipinput.float()
-            outputs = model.forward(clipinput)
-            # print('output', outputs)
-            # print(target_onehot)
             real = (target_onehot * outputs.detach().numpy()).sum(1)
             other = ((1. - target_onehot) * outputs.detach().numpy() - target_onehot * 10000.).max(1)
-            # prinst('onehot', target_onehot * outputs.detach().numpy())
-            # print('other', (1. - target_onehot) * outputs.detach().numpy() - target_onehot * 10000.)
-            # print('other.max', ((1. - target_onehot) * outputs.detach().numpy() - target_onehot * 10000.).max(1))
-
-            loss1 = np.clip(real - other, 0.,1000)
+            loss1 = np.clip(real - other, a_min= 0, a_max= 1e10)
             Reward = 0.5 * loss1
-            
-            #Reward = l2dist
 
-            Reward = - Reward
+            # update mean by nes
+            A = ((Reward - np.mean(Reward)) / (np.std(Reward)+1e-7))
+            A = np.array(A, dtype= np.float32)
 
-            A = (Reward - np.mean(Reward)) / (np.std(Reward)+1e-7)
-            #print(A.sum())
-            modify = modify + torch.from_numpy((learning_rate/(population*sigma)) * ((np.dot(Nsample.reshape(population,-1).T, A)).reshape(1, 1,28,28)))
-            # print(np.shape(modify))
-            # print('Nsample', np.shape(Nsample.reshape(population,-1)))
+            mu = mu - torch.from_numpy((learning_rate/(population*sigma)) *
+                                               ((np.dot(eps.reshape(population,-1).T, A)).reshape(1, 1, 28, 28)))
+
         if not success:
             faillist.append(i)
-            print('failed:',faillist)
+            print('failed:',faillist.__len__())
+            print('....................................')
         else:
-            print('successed:',successlist)
-    
-    # print(faillist)
-    # success_rate = succImages/float(totalImages)
-    # np.savez('runstep',printlist)
-    # end_time = time.time()
-    # print('all time :', end_time - start_time)
-    # print('succc rate', success_rate)
+            #print('succeed:',successlist.__len__())
+            print('....................................')
+
