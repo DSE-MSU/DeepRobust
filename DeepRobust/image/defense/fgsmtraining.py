@@ -26,29 +26,30 @@ class FGSMtraining(BaseDefense):
         torch.manual_seed(100)
         device = torch.device(self.device)
 
-        optimizer = optim.SGD(self.model.parameters(), self.lr, momentum=0.1)
+        optimizer = optim.Adam(self.model.parameters(), self.lr, momentum=0.1)
     
         save_model = True
-        for epoch in range(1, 100 + 1):     ## 5 batches
-            print(epoch, flush = True)  ## han
+        for epoch in range(1, 100 + 1):    
+            print(epoch, flush = True)  
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
             if (self.save_model):
                 if os.path.isdir('./' + self.save_dir):
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+                    torch.save(self.model.state_dict(), './' + self.save_dir + "/" + self.save_name) 
                     print("model saved in " + './' + self.save_dir)
                 else:
                     print("make new directory and save model in " + './' + self.save_dir)
                     os.mkdir('./' + self.save_dir)
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/mnist_pgdtraining.pt")  ## han
+                    torch.save(self.model.state_dict(), './' + self.save_dir +"/" + self.save_name) 
 
         return self.model    
     
     def parse_params(self, 
-                     save_dir,
+                     save_dir = "defense_models",
                      save_model = True,
-                     epsilon = 0.3,
+                     save_name = "mnist_fgsmtraining_0.3.pt",
+                     epsilon = 0.2,
                      num_steps = 40,
                      lr = 0.001,
                      momentum = 0.1):
@@ -57,6 +58,7 @@ class FGSMtraining(BaseDefense):
         # """
         self.save_model = True
         self.save_dir = save_dir
+        self.save_name = save_name
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.lr = lr
