@@ -41,7 +41,7 @@ We would be glad if you find our work useful and cite the paper.
     from DeepRobust.image.config import attack_params
 
     adversary = PGD(model, device)
-    Adv_example = adversary.generate(X, Y, **attack_params['PGD_CIFAR10')
+    Adv_example = adversary.generate(X, Y, **attack_params['PGD_CIFAR10')]
     ```
     More example code can be found in "DeepRobust/tutorials".
 
