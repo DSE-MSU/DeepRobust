@@ -27,33 +27,33 @@ class PGDtraining(BaseDefense):
         torch.manual_seed(100)
         device = torch.device(self.device)
 
-        optimizer = optim.SGD(self.model.parameters(), self.lr, momentum=0.1)
+        optimizer = optim.Adam(self.model.parameters(), self.lr)
     
         save_model = True
-        for epoch in range(1, self.epoch + 1):     ## 5 batches
-            print(epoch, flush = True)  ## han
+        for epoch in range(1, self.epoch + 1):    
+            print(epoch, flush = True) 
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
             if (self.save_model and epoch % 10 == 0):
                 if os.path.isdir('./' + str(self.save_dir)):
-                    torch.save(self.model.state_dict(), './' + str(self.save_dir) + "/" + self.save_name)  ## han
+                    torch.save(self.model.state_dict(), './' + str(self.save_dir) + "/" + self.save_name)  
                     print("model saved in " + './' + str(self.save_dir))
                 else:
                     print("make new directory and save model in " + './' + str(self.save_dir))
                     os.mkdir('./' + str(self.save_dir))
-                    torch.save(self.model.state_dict(), './' + str(self.save_dir) +"/" + self.save_name)  ## han
+                    torch.save(self.model.state_dict(), './' + str(self.save_dir) +"/" + self.save_name)  
         return self.model    
     
     def parse_params(self, 
-                     epoch = 60,
+                     epoch = 100,
                      save_dir = "defense_models",
                      save_name = "mnist_pgdtraining_0.3.pt",
                      save_model = True,
                      epsilon = 0.3,
                      num_steps = 40,
                      perturb_step_size = 0.01,
-                     lr = 0.001,
+                     lr = 5e-4,
                      momentum = 0.1):
         """
         :param epoch : int 
