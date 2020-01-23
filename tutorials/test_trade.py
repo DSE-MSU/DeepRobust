@@ -1,27 +1,25 @@
 import torch
-from torchvision import datasets
+from torchvision import datasets, transforms
 import numpy as np
 
-from DeepRobust.image.defense import trade
-
-model = Net()
-
-defense = TRADE(model,'cuda')
+from DeepRobust.image.defense.trade import TRADE
+from DeepRobust.image.netmodels.CNN import Net
 
 train_loader = torch.utils.data.DataLoader(
-                datasets.MNIST('DeepRobust/image/defense/data', train=True, download=True,
-                transform=transforms.Compose([transforms.ToTensor()])),
-                batch_size=100,
-                shuffle=True)  
+                datasets.MNIST('DeepRobust/image/defense/data', train = True, download = True,
+                transform = transforms.Compose([transforms.ToTensor()])),
+                batch_size = 100,
+                shuffle = True)  
 
 test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('DeepRobust/image/defense/data', train=False,
-            transform=transforms.Compose([transforms.ToTensor()])),
-            batch_size=1000,
-            shuffle=True)  
+            datasets.MNIST('DeepRobust/image/defense/data', train = False,
+            transform = transforms.Compose([transforms.ToTensor()])),
+            batch_size = 1000,
+            shuffle = True)  
 
-dir = "DeepRobust/image/save_models/"
 
+model = Net()
+defense = TRADE(model,'cuda')
 defense.generate(train_loader, test_loader)
 
 xx = datasets.MNIST('../data').data[3333]
@@ -51,6 +49,3 @@ print(predict2)
 
 AdvExArray = AdvExArray.cpu().detach().numpy()
 
-import matplotlib.pyplot as plt
-plt.imshow(AdvExArray[0,0]*255, cmap='gray', vmin = 0, vmax = 255)
-plt.savefig('advexample_pgd.png')
