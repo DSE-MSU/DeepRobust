@@ -2,7 +2,7 @@ import torch
 from torchvision import datasets, transforms
 import numpy as np
 
-from DeepRobust.image.defense.trade import TRADE
+from DeepRobust.image.defense.trades import TRADES
 from DeepRobust.image.netmodels.CNN import Net
 
 train_loader = torch.utils.data.DataLoader(
@@ -19,7 +19,7 @@ test_loader = torch.utils.data.DataLoader(
 
 
 model = Net()
-defense = TRADE(model,'cuda')
+defense = TRADES(model,'cuda')
 defense.generate(train_loader, test_loader)
 
 xx = datasets.MNIST('../data').data[3333]

@@ -1,3 +1,10 @@
+"""
+Reference: 
+Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January). 
+Intriguing properties of neural networks. 
+In 2nd International Conference on Learning Representations, ICLR 2014.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -14,8 +21,12 @@ from DeepRobust.image.defense.base_defense import BaseDefense
 
 class FGSMtraining(BaseDefense):
     def __init__(self, model, device):
-
-        self.device = device
+        if not torch.cuda.is_available():
+            print('CUDA not availiable, using cpu...')
+            self.device = 'cpu'
+        else:
+            self.device = device
+            
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
@@ -23,13 +34,12 @@ class FGSMtraining(BaseDefense):
         FGSM defense process:
         """
         self.parse_params(**kwargs)
-        
         torch.manual_seed(100)
         device = torch.device(self.device)
-
         optimizer = optim.Adam(self.model.parameters(), self.lr_train)
     
         for epoch in range(1, self.epoch_num + 1):    
+            
             print(epoch, flush = True)  
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
