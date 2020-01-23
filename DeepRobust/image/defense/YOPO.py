@@ -1,6 +1,12 @@
 """
-Reference: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+Reference: 
+Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019). 
+You only propagate once: Painless adversarial training using maximal principle. 
+arXiv preprint arXiv:1905.00877.
+
+This implementation is based on their code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
 """
+
 import torch
 import torch.nn as nn
 from torch.nn.modules.loss import _Loss

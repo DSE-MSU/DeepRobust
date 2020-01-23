@@ -26,6 +26,11 @@ def create_test_dataset(batch_size = 128, root = '../data'):
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
     return testloader
 
+def download_model():
+
+
+    return model
+
 def save_checkpoint(now_epoch, net, optimizer, lr_scheduler, file_name):
     checkpoint = {'epoch': now_epoch,
                   'state_dict': net.state_dict(),
