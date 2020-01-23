@@ -1,3 +1,10 @@
+"""
+Reference:
+Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017). 
+Towards Deep Learning Models Resistant to Adversarial Attacks. 
+stat, 1050, 9.
+"""
+
 import os
 import torch
 import torch.nn as nn
@@ -14,8 +21,12 @@ from DeepRobust.image.defense.base_defense import BaseDefense
 
 class PGDtraining(BaseDefense):
     def __init__(self, model, device):
-
-        self.device = device
+        if not torch.cuda.is_available():
+            print('CUDA not availiable, using cpu...')
+            self.device = 'cpu'
+        else:
+            self.device = device
+            
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
