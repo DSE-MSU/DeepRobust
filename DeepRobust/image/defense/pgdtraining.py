@@ -37,7 +37,7 @@ class PGDtraining(BaseDefense):
 
             if (self.save_model and epoch % 10 == 0):
                 if os.path.isdir('./' + str(self.save_dir)):
-                    torch.save(self.model.state_dict(), './' + str(self.save_dir) + "/" + self.save_name)  
+                    torch.save(self.model.state_dict(),  str(self.save_dir) + "/" + self.save_name)  
                     print("model saved in " + './' + str(self.save_dir))
                 else:
                     print("make new directory and save model in " + './' + str(self.save_dir))
@@ -47,7 +47,7 @@ class PGDtraining(BaseDefense):
     
     def parse_params(self, 
                      epoch = 100,
-                     save_dir = "defense_models",
+                     save_dir = "./defense_models",
                      save_name = "mnist_pgdtraining_0.3.pt",
                      save_model = True,
                      epsilon = 0.3,

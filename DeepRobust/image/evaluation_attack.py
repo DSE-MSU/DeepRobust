@@ -7,6 +7,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 from DeepRobust.image.netmodels.CNN import Net
+from DeepRobust.image import utils
 
 def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwargs):
     test_loss = 0
@@ -31,7 +32,7 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, **kwarg
         correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-
+    print("===== ACCURACY =====")
     print('Attack Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, batch_num * batch_size,
         100. * correct / (batch_num * batch_size)))
@@ -58,7 +59,7 @@ def parameter_parser():
     parser.add_argument("--device", default = 'cuda',
                         help = "choose the device.")
     parser.add_argument("--path", 
-                        default = "DeepRobust/image/save_models/")
+                        default = "./defense_model/")
 
     return parser.parse_args()
 
@@ -66,11 +67,12 @@ def parameter_parser():
 if __name__ == "__main__":
     # read arguments
     args = parameter_parser() # read argument and creat an argparse object
-    model = Net()
+    utils.tab_printer(args)
 
+    model = Net()
     model.load_state_dict(torch.load(args.path + args.attack_model))
     model.eval()
-    print("Load network.")
+    print("Loading network from" + args.path + args.attack_model)
 
     #load datasets
     if(args.dataset == "MNIST"):
@@ -80,16 +82,16 @@ if __name__ == "__main__":
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
-        print("Load MNIST Dataset")
+        print("Loading MNIST dataset.")
     
-    elif(args.dataset == "CIFAR"):
+    elif(args.dataset == "CIFAR" or args.dataset == 'CIFAR10'):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('DeepRobust/image/data', train = False,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
         classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-        print("Load CIFAR10 Dataset")
+        print("Loading CIFAR10 dataset.")
 
     elif(args.dataset == "ImageNet"):
         test_loader = torch.utils.data.DataLoader(
@@ -97,8 +99,10 @@ if __name__ == "__main__":
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
-        print("Load ImageNet Dataset")      
+        print("Loading ImageNet dataset.")
 
+
+    print("===== START ATTACK =====")
     if(args.attack_method == "PGD"):
         from DeepRobust.image.attack.pgd import PGD
         attack_method = PGD(model, args.device)
