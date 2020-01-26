@@ -21,6 +21,8 @@ import argparse
 import json
 import math
 
+import os
+
 from DeepRobust.image.netmodels import YOPOCNN
 from DeepRobust.image import utils
 from DeepRobust.image.attack import YOPOpgd
@@ -376,7 +378,7 @@ if __name__ =='__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model_dir',default = "../save_models/YOPO")
+    parser.add_argument('--model_dir',default = "./defense_model")
     parser.add_argument('--resume', default=None, type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
     parser.add_argument('-b', '--batch_size', default=256, type=int,
