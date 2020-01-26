@@ -55,7 +55,7 @@ class TRADES(BaseDefense):
             if not os.path.exists(self.save_dir):
                 os.makedirs(self.save_dir)
             if epoch % self.save_freq == 0:
-                torch.save(model.state_dict(),
+                torch.save(self.model.state_dict(),
                         os.path.join(self.save_dir, 'trade_model-nn-epoch{}.pt'.format(epoch)))
                 torch.save(optimizer.state_dict(),
                         os.path.join(self.save_dir, 'opt-nn-checkpoint_epoch{}.tar'.format(epoch)))
