@@ -34,13 +34,13 @@ class Dataset():
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
 
 
-    def get_adj(self, require_lcc=True):
+    def get_adj(self):
         adj, features, labels = self.load_npz(self.data_filename)
         adj = adj + adj.T
         adj = adj.tolil()
         adj[adj > 1] = 1
 
-        if require_lcc:
+        if self.require_lcc:
             lcc = self.largest_connected_components(adj)
             adj = adj[lcc][:, lcc]
             features = features[lcc]
