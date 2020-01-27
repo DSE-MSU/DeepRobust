@@ -63,7 +63,8 @@ def normalize_feature(mx):
 def normalize_adj(mx):
     """Row-normalize sparse matrix"""
     mx = mx.tolil()
-    mx = mx + sp.eye(mx.shape[0])
+    if mx[0, 0] == 0 :
+        mx = mx + sp.eye(mx.shape[0])
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1/2).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -88,6 +89,32 @@ def normalize_adj_tensor(adj, sparse=False):
         mx = mx @ r_mat_inv
     return mx
 
+
+def degree_normalize_adj(mx):
+    """Row-normalize sparse matrix"""
+    mx = mx.tolil()
+    rowsum = np.array(mx.sum(1))
+    r_inv = np.power(rowsum, -1).flatten()
+    r_inv[np.isinf(r_inv)] = 0.
+    r_mat_inv = sp.diags(r_inv)
+    # mx = mx.dot(r_mat_inv)
+    mx = r_mat_inv.dot(mx)
+    return mx
+
+def degree_normalize_adj_tensor(adj, sparse=True):
+    device = torch.device("cuda:0" if adj.is_cuda else "cpu")
+    if sparse:
+        adj = to_scipy(adj)
+        mx = degree_normalize_adj(adj)
+        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+    else:
+        mx = adj
+        rowsum = mx.sum(1)
+        r_inv = rowsum.pow(-1).flatten()
+        r_inv[torch.isinf(r_inv)] = 0.
+        r_mat_inv = torch.diag(r_inv)
+        mx = r_mat_inv @ mx
+    return mx
 
 def accuracy(output, labels):
     if type(labels) is not torch.Tensor:
