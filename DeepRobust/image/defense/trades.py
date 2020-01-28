@@ -23,7 +23,7 @@ from DeepRobust.image.utils import adjust_learning_rate
 class TRADES(BaseDefense):
     def __init__(self, model, device = 'cuda'):
         if not torch.cuda.is_available():
-            print('CUDA not availiable, using cpu...')
+            print('CUDA not available, using cpu...')
             self.device = 'cpu'
         else:
             self.device = device
