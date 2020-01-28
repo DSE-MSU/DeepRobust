@@ -122,7 +122,7 @@ if __name__ == "__main__":
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
     
     elif(args.attack_method == "deepfool"):
-        from DeepRobust.image.attack.deepfool import deepfool
+        from DeepRobust.image.attack.deepfool import DeepFool
         attack_method = DeepFool(model, args.device)
     
     elif(args.attack_method == "Nattack"):
