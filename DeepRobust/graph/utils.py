@@ -3,7 +3,7 @@ import scipy.sparse as sp
 import torch
 from sklearn.model_selection import train_test_split
 import torch.sparse as ts
-
+import torch.nn.functional as F
 
 def encode_onehot(labels):
     classes = set(labels)
@@ -124,6 +124,15 @@ def accuracy(output, labels):
     correct = correct.sum()
     return correct / len(labels)
 
+def loss_acc(output, labels, targets, avg_loss=True):
+    if type(labels) is not torch.Tensor:
+        labels = torch.LongTensor(labels)
+    preds = output.max(1)[1].type_as(labels)
+    correct = preds.eq(labels).double()
+    loss = F.nll_loss(output, labels, reduction='mean' if avg_loss else 'none')
+    return loss[targets], correct[targets]
+    # correct = correct.sum()
+    # return loss, correct / len(labels)
 
 def classification_margin(output, true_label):
     probs = torch.exp(output)
@@ -154,15 +163,24 @@ def to_scipy(tensor):
         return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
 
 def is_sparse_tensor(tensor):
-
     # if hasattr(tensor, 'nnz'):
     if tensor.layout == torch.sparse_coo:
         return True
     else:
         return False
 
-def get_train_val_test(idx, train_size, val_size, test_size, stratify):
+def get_train_val_test(nnodes, val_size=0.1, test_size=0.8, stratify=None, seed=None):
+    '''
+        This setting follows nettack/mettack, where we split the nodes
+        into 10% training, 10% validation and 80% testing data
+    '''
+    assert stratify is not None, 'stratify cannot be None!'
 
+    if seed is not None:
+        np.random.seed(seed)
+
+    idx = np.arange(nnodes)
+    train_size = 1 - val_size - test_size
     idx_train_and_val, idx_test = train_test_split(idx,
                                                    random_state=None,
                                                    train_size=train_size + val_size,
@@ -180,6 +198,28 @@ def get_train_val_test(idx, train_size, val_size, test_size, stratify):
 
     return idx_train, idx_val, idx_test
 
+def get_train_val_test_gcn(labels, seed=None):
+    '''
+        This setting follows gcn, where we randomly sample 20 instances for each class
+        as training data, 500 instances as validation data, 1000 instances as test data.
+    '''
+    if seed is not None:
+        np.random.seed(seed)
+
+    idx = np.arange(len(labels))
+    nclass = labels.max() + 1
+    idx_train = []
+    idx_unlabeled = []
+    for i in range(nclass):
+        labels_i = idx[labels==i]
+        labels_i = np.random.permutation(labels_i)
+        idx_train = np.hstack((idx_train, labels_i[: 20])).astype(np.int)
+        idx_unlabeled = np.hstack((idx_unlabeled, labels_i[20: ])).astype(np.int)
+
+    idx_unlabeled = np.random.permutation(idx_unlabeled)
+    idx_val = idx_unlabeled[: 500]
+    idx_test = idx_unlabeled[500: 1500]
+    return idx_train, idx_val, idx_test
 
 def unravel_index(index, array_shape):
     rows = index // array_shape[1]

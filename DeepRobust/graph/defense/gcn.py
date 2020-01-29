@@ -161,12 +161,15 @@ class GCN(nn.Module):
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
                 self.output = output
+                weights = deepcopy(self.state_dict())
 
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
                 self.output = output
+                weights = deepcopy(self.state_dict())
 
         print('=== picking the best model according to the performance on validation ===')
+        self.load_state_dict(weights)
 
     def test(self, idx_test):
         # output = self.forward()
@@ -182,6 +185,7 @@ class GCN(nn.Module):
         pass
 
     def predict(self, features=None, adj=None):
+        '''By default, inputs are unnormalized data'''
         self.eval()
         if features is None and adj is None:
             return self.forward(self.features, self.adj_norm)
@@ -189,9 +193,10 @@ class GCN(nn.Module):
             if type(adj) is not torch.Tensor:
                 features, adj = utils.to_tensor(features, adj, device=self.device)
 
+            self.features = features
             if utils.is_sparse_tensor(adj):
-                adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+                self.adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
             else:
-                adj_norm = utils.normalize_adj_tensor(adj)
-            return self.forward(features, adj_norm)
+                self.adj_norm = utils.normalize_adj_tensor(adj)
+            return self.forward(self.features, self.adj_norm)
 
