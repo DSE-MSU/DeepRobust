@@ -35,7 +35,7 @@ class BaseAttack(object):
         ################## data type
         if type(image).__name__ == 'Tensor':
             image = image.float()
-            label = label.clone().detach().requires_grad_(True)
+            image = image.float().clone().detach().requires_grad_(True)
         elif type(x).__name__ == 'ndarray':
             image = image.astype('float')
             image = torch.tensor(image, requires_grad=True)
@@ -56,7 +56,6 @@ class BaseAttack(object):
         self.label = label
 
         return True
-
 
     def get_or_predict_lable(self, image):
         output = self.model(image)
