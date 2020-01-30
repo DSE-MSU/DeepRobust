@@ -29,7 +29,6 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
     else:
         features = torch.FloatTensor(np.array(features.todense()))
         adj = torch.FloatTensor(adj.todense())
-
     return adj, features, labels
 
 def to_tensor(adj, features, labels=None, device='cpu'):
