@@ -12,11 +12,13 @@ def load_victim_model(data, saved_model='gcn', device='cpu'):
     file_path = f'saved_models/{data.name}/{saved_model}_checkpoint'
 
     # Setup victim model
+
     if osp.exists(file_path):
         victim_model = GCN(nfeat=data.features.shape[1], nclass=data.labels.max().item()+1,
                     nhid=16, dropout=0.5, weight_decay=5e-4, device=device)
 
         victim_model.load_state_dict(torch.load(file_path, map_location=device))
+        victim_model.to(device)
         victim_model.eval()
         return victim_model
 
