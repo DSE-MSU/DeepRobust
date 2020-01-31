@@ -72,12 +72,48 @@ def normalize_adj(mx):
     mx = mx.dot(r_mat_inv)
     return mx
 
+def normalize_sparse_tensor(adj, fill_value=1):
+    edge_index = adj._indices()
+    edge_weight = adj._values()
+    num_nodes= adj.size(0)
+    edge_index, edge_weight = add_self_loops(
+	edge_index, edge_weight, fill_value, num_nodes)
+
+    row, col = edge_index
+    from torch_scatter import scatter_add
+    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg_inv_sqrt = deg.pow(-0.5)
+    deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
+
+    values = deg_inv_sqrt[row] * edge_weight * deg_inv_sqrt[col]
+
+    shape = adj.shape
+    return torch.sparse.FloatTensor(edge_index, values, shape)
+
+
+def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
+    # num_nodes = maybe_num_nodes(edge_index, num_nodes)
+
+    loop_index = torch.arange(0, num_nodes, dtype=torch.long,
+                              device=edge_index.device)
+    loop_index = loop_index.unsqueeze(0).repeat(2, 1)
+
+    if edge_weight is not None:
+        assert edge_weight.numel() == edge_index.size(1)
+        loop_weight = edge_weight.new_full((num_nodes, ), fill_value)
+        edge_weight = torch.cat([edge_weight, loop_weight], dim=0)
+
+    edge_index = torch.cat([edge_index, loop_index], dim=1)
+
+    return edge_index, edge_weight
+
 def normalize_adj_tensor(adj, sparse=False):
     device = torch.device("cuda:0" if adj.is_cuda else "cpu")
     if sparse:
-        adj = to_scipy(adj)
-        mx = normalize_adj(adj)
-        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+        return normalize_sparse_tensor(adj)
+        # adj = to_scipy(adj)
+        # mx = normalize_adj(adj)
+        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
         mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
@@ -92,6 +128,8 @@ def normalize_adj_tensor(adj, sparse=False):
 def degree_normalize_adj(mx):
     """Row-normalize sparse matrix"""
     mx = mx.tolil()
+    if mx[0, 0] == 0 :
+        mx = mx + sp.eye(mx.shape[0])
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -100,14 +138,33 @@ def degree_normalize_adj(mx):
     mx = r_mat_inv.dot(mx)
     return mx
 
+def degree_normalize_sparse_tensor(adj, fill_value=1):
+    edge_index = adj._indices()
+    edge_weight = adj._values()
+    num_nodes= adj.size(0)
+
+    edge_index, edge_weight = add_self_loops(
+	edge_index, edge_weight, fill_value, num_nodes)
+
+    row, col = edge_index
+    from torch_scatter import scatter_add
+    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg_inv_sqrt = deg.pow(-1)
+    deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
+
+    values = deg_inv_sqrt[row] * edge_weight
+    shape = adj.shape
+    return torch.sparse.FloatTensor(edge_index, values, shape)
+
 def degree_normalize_adj_tensor(adj, sparse=True):
     device = torch.device("cuda:0" if adj.is_cuda else "cpu")
     if sparse:
-        adj = to_scipy(adj)
-        mx = degree_normalize_adj(adj)
-        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+        return  degree_normalize_sparse_tensor(adj)
+        # adj = to_scipy(adj)
+        # mx = degree_normalize_adj(adj)
+        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
-        mx = adj
+        mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
         r_inv = rowsum.pow(-1).flatten()
         r_inv[torch.isinf(r_inv)] = 0.
