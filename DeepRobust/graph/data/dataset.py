@@ -36,6 +36,7 @@ class Dataset():
             self.download_npz()
         print('Loading {} dataset...'.format(self.name))
         adj, features, labels = self.get_adj()
+
         return adj, features, labels
 
     def download_npz(self):
