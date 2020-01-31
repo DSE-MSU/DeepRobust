@@ -1,6 +1,11 @@
 """
-Carlini-Wagner attack (https://arxiv.org/pdf/1608.04644.pdf)
+Carlini-Wagner attack 
+Carlini, N., & Wagner, D. (2017, May). 
+Towards evaluating the robustness of neural networks. 
+In 2017 ieee symposium on security and privacy (sp) (pp. 39-57). IEEE.
+https://arxiv.org/pdf/1608.04644.pdf
 
+This reimplementation is based on https://github.com/kkew3/pytorch-cw2
 """
 
 import torch
@@ -11,6 +16,7 @@ import logging
 
 from DeepRobust.image.attack.base_attack import BaseAttack
 from DeepRobust.image.utils import onehot_like
+from DeepRobust.image.optimizer import AdamOptimizer
 
 class CarliniWagner(BaseAttack):
 
@@ -19,9 +25,10 @@ class CarliniWagner(BaseAttack):
         self.model = model
         self.device = device
     
-    def generate(self, image, label, **kwargs):
+    def generate(self, image, label, target_label, **kwargs):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
+        self.target = target_label
         return self.cw(self.model, 
                   self.image, 
                   self.label,
@@ -36,7 +43,6 @@ class CarliniWagner(BaseAttack):
                   )
 
     def parse_params(self,
-                     target,
                      classnum = 10,
                      confidence = 1e-4, 
                      clip_max = 1, 
@@ -47,7 +53,6 @@ class CarliniWagner(BaseAttack):
                      learning_rate = 0.00001, 
                      abort_early = True):
 
-        self.target = target
         self.classnum = classnum
         self.confidence = confidence
         self.clip_max = clip_max
@@ -58,37 +63,6 @@ class CarliniWagner(BaseAttack):
         self.learning_rate = learning_rate
         self.abort_early = abort_early
         return True
-
-    def to_attack_space(self, x):
-        # map from [min_, max_] to [-1, +1]
-        # x'=(x- 0.5 * (max+min) / 0.5 * (max-min))
-        a = (self.clip_min + self.clip_max) / 2
-        b = (self.clip_max - self.clip_min) / 2
-        x = (x - a) / b
-
-        # from [-1, +1] to approx. (-1, +1)
-        x = x * 0.999999
-
-        # from (-1, +1) to (-inf, +inf)
-        return np.arctanh(x)
-
-    def to_model_space(self, x):
-        """Transforms an input from the attack space
-        to the model space. This transformation and
-        the returned gradient are elementwise."""
-
-        # from (-inf, +inf) to (-1, +1)
-        x = np.tanh(x)
-
-        grad = 1 - np.square(x)
-
-        # map from (-1, +1) to (min_, max_)
-        a = (self.clip_min + self.clip_max) / 2
-        b = (self.clip_max - self.clip_min) / 2
-        x = x * b + a
-
-        grad = grad * b
-        return x, grad
 
     def cw(self, model, image, label, target, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
         """
@@ -121,7 +95,7 @@ class CarliniWagner(BaseAttack):
             #initialize w : perturbed image in tanh space
             w = torch.from_numpy(img_tanh.numpy())
 
-            optimizer = optim.Adam([w], lr = learning_rate)
+            optimizer = AdamOptimizer(img_tanh.shape)
             
             is_adversarial = False
 
@@ -192,14 +166,7 @@ class CarliniWagner(BaseAttack):
         secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).to(self.device)
         
         secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy())
-
-        # print(logits)
-        # print(secondlargest)
-        # print(target)
-        # print(targetlabel_mask)
-        # print(secondlargest_mask)
-        # print((logits.double() * secondlargest_mask).cpu().detach().numpy())
-        
+      
         is_adv_loss = logits[0][secondlargest] - logits[0][target]
 
         # is_adv is True as soon as the is_adv_loss goes below 0
@@ -240,6 +207,38 @@ class CarliniWagner(BaseAttack):
             return True
         else:
             return False
+
+    def to_attack_space(self, x):
+        x = x.detach()
+        # map from [min_, max_] to [-1, +1]
+        # x'=(x- 0.5 * (max+min) / 0.5 * (max-min))
+        a = (self.clip_min + self.clip_max) / 2
+        b = (self.clip_max - self.clip_min) / 2
+        x = (x - a) / b
+
+        # from [-1, +1] to approx. (-1, +1)
+        x = x * 0.999999
+
+        # from (-1, +1) to (-inf, +inf)
+        return np.arctanh(x)
+
+    def to_model_space(self, x):
+        """Transforms an input from the attack space
+        to the model space. This transformation and
+        the returned gradient are elementwise."""
+
+        # from (-inf, +inf) to (-1, +1)
+        x = np.tanh(x)
+
+        grad = 1 - np.square(x)
+
+        # map from (-1, +1) to (min_, max_)
+        a = (self.clip_min + self.clip_max) / 2
+        b = (self.clip_max - self.clip_min) / 2
+        x = x * b + a
+
+        grad = grad * b
+        return x, grad
 
     
     
