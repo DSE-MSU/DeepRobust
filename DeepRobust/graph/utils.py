@@ -47,8 +47,6 @@ def to_tensor(adj, features, labels=None, device='cpu'):
         labels = torch.LongTensor(labels)
         return adj.to(device), features.to(device), labels.to(device)
 
-
-
 def normalize_feature(mx):
     """Row-normalize sparse matrix"""
     mx = mx.lil()
@@ -90,7 +88,6 @@ def normalize_sparse_tensor(adj, fill_value=1):
     shape = adj.shape
     return torch.sparse.FloatTensor(edge_index, values, shape)
 
-
 def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
     # num_nodes = maybe_num_nodes(edge_index, num_nodes)
 
@@ -123,7 +120,6 @@ def normalize_adj_tensor(adj, sparse=False):
         mx = r_mat_inv @ mx
         mx = mx @ r_mat_inv
     return mx
-
 
 def degree_normalize_adj(mx):
     """Row-normalize sparse matrix"""
