@@ -438,3 +438,9 @@ def visualize(your_var):
     from torch.autograd import Variable
     from torchviz import make_dot
     make_dot(your_var).view()
+
+
+# def check_path(file_path):
+#     if not osp.exists(file_path):
+#         os.system(f'mkdir -p {file_path}')
+
