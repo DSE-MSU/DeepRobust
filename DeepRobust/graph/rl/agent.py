@@ -1,5 +1,6 @@
 import os
 import sys
+import os.path as osp
 import numpy as np
 import torch
 import networkx as nx
@@ -33,6 +34,9 @@ class Agent(object):
         self.reward_type = reward_type
         self.batch_size = batch_size
         self.save_dir = save_dir
+        if not osp.exists(save_dir):
+            os.system(f'mkdir -p {save_dir}')
+
         self.gm = gm
         self.device = device
 
@@ -160,10 +164,10 @@ class Agent(object):
 
         if training == True and self.best_eval is None or acc < self.best_eval:
             print('----saving to best attacker since this is the best attack rate so far.----')
-            torch.save(self.net.state_dict(), self.save_dir + '/epoch-best.model')
-            with open(self.save_dir + '/epoch-best.txt', 'w') as f:
+            torch.save(self.net.state_dict(), osp.join(self.save_dir, 'epoch-best.model'))
+            with open(osp.join(self.save_dir, 'epoch-best.txt'), 'w') as f:
                 f.write('%.4f\n' % acc)
-            with open(self.save_dir + '/attack_solution.txt', 'w') as f:
+            with open(osp.join(self.save_dir, 'attack_solution.txt'), 'w') as f:
                 for i in range(len(self.idx_meta)):
                     f.write('%d: [' % self.idx_meta[i])
                     for e in self.env.modified_list[i].directed_edges:

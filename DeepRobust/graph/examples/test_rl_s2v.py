@@ -34,7 +34,7 @@ def init_setup():
     adj = adj.to(device)
     labels = labels.to(device)
 
-    victim_model = load_victim_model(data, device=device)
+    victim_model = load_victim_model(data, device=device, file_path=cmd_args.saved_model)
     setattr(victim_model, 'norm_tool',  GraphNormTool(normalize=True, gm='gcn', device=device))
     output = victim_model.predict(features, adj)
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
