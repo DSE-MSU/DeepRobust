@@ -15,15 +15,21 @@ def train(model, data, device, maxepoch):
     train_loader, test_loader = feed_dataset(data, 'DeepRobust/image/data')
 
     if (model == 'CNN'):
-        import DeepRobust.image.netmodels.CNN as MODEL
         from DeepRobust.image.netmodels.CNN import Net
         train_net = Net().to(device)
 
     elif (model == 'ResNet18'):
         import DeepRobust.image.netmodels.resnet as MODEL
-        from DeepRobust.image.netmodels.resnet import Net
         train_net = MODEL.ResNet18().to(device)
-    
+
+    elif (model == 'ResNet34'):
+        import DeepRobust.image.netmodels.resnet as MODEL
+        train_net = MODEL.ResNet34().to(device)
+
+    elif (model == 'ResNet50'):
+        import DeepRobust.image.netmodels.resnet as MODEL
+        train_net = MODEL.ResNet50().to(device)
+
     optimizer = optim.SGD(train_net.parameters(), lr=0.01, momentum=0.5)
 
     save_model = True
@@ -80,6 +86,6 @@ def feed_dataset(data, data_dict):
         pass
 
     return train_loader, test_loader
-        
+
 
 
