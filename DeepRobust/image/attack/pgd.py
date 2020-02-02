@@ -31,7 +31,7 @@ class PGD(BaseAttack):
                    self.clip_min,
                    self.num_steps,
                    self.step_size,
-                   self.print_process) 
+                   self.print_process)
                    ##default parameter for mnist data set.
 
     def parse_params(self,
@@ -59,12 +59,12 @@ def pgd_attack(model,
                   num_steps,
                   step_size,
                   print_process):
-    
+
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
-    #TODO: find a other way 
+    #TODO: find a other way
     device = X.device
-    imageArray = X.cpu().numpy()
+    imageArray = X.detach().cpu().numpy()
     X_random = np.random.uniform(-epsilon, epsilon, X.shape)
     imageArray = np.clip(imageArray + X_random, 0, 1.0)
 
@@ -75,10 +75,10 @@ def pgd_attack(model,
 
         pred = model(X_pgd)
         loss = nn.CrossEntropyLoss()(pred, y)
-        
+
         if print_process:
             print("iteration {:.0f}, loss:{:.4f}".format(i,loss))
-        
+
         loss.backward()
 
         eta = step_size * X_pgd.grad.data.sign()
@@ -91,6 +91,6 @@ def pgd_attack(model,
         X_pgd = X_pgd.detach()
         X_pgd.requires_grad_()
         X_pgd.retain_grad()
-       
+
 
     return X_pgd
