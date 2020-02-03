@@ -14,9 +14,9 @@ def encode_onehot(labels):
     return labels_onehot
 
 
-def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=False, sparse=False):
+def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=False, sparse=False, device='cpu'):
 
-    if preprocess_adj == 'GCN':
+    if preprocess_adj:
         adj_norm = normalize_adj(adj)
 
     if preprocess_feature:
@@ -29,7 +29,7 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
     else:
         features = torch.FloatTensor(np.array(features.todense()))
         adj = torch.FloatTensor(adj.todense())
-    return adj, features, labels
+    return adj.to(device), features.to(device), labels.to(device)
 
 def to_tensor(adj, features, labels=None, device='cpu'):
     if sp.issparse(adj):
@@ -439,6 +439,9 @@ def visualize(your_var):
     from torchviz import make_dot
     make_dot(your_var).view()
 
+def reshape_mx(mx, shape):
+    indices = mx.nonzero()
+    return sp.csr_matrix((mx.data, (indices[0], indices[1])), shape=shape).tolil()
 
 # def check_path(file_path):
 #     if not osp.exists(file_path):
