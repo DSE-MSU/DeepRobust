@@ -75,7 +75,6 @@ class Agent(object):
         if random.random() < self.eps and not greedy:
             actions = self.env.uniformRandActions()
         else:
-
             cur_state = self.env.getStateRef()
             actions, values = self.net(time_t, cur_state, None, greedy_acts=True, is_inference=True)
             actions = list(actions.cpu().numpy())
