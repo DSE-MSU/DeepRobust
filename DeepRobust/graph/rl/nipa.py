@@ -169,14 +169,14 @@ class NIPA(object):
                     f.write('] succ: %d\n' % (self.env.binary_rewards[i]))
             self.best_eval = acc
 
-    def train(self, episodes=10, num_steps=100000, lr=0.001):
+    def train(self, episodes=10, num_steps=100000, lr=0.01):
+        optimizer = optim.Adam(self.net.parameters(), lr=lr)
         for epi in range(episodes):
             self.env.init_overall_steps()
             pbar = tqdm(range(self.burn_in), unit='batch')
             for p in pbar:
                 self.run_simulation()
             pbar = tqdm(range(num_steps), unit='steps')
-            optimizer = optim.Adam(self.net.parameters(), lr=lr)
             for self.step in pbar:
 
                 self.run_simulation()
