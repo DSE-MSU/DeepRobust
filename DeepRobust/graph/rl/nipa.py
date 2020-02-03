@@ -11,11 +11,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
 from copy import deepcopy
-from DeepRobust.graph.rl.q_net_node import QNetNode, NStepQNetNode, node_greedy_actions
-from DeepRobust.graph.rl.env import NodeAttakEnv
+from DeepRobust.graph.rl.nipa_q_net_node import QNetNode, NStepQNetNode, node_greedy_actions
 from DeepRobust.graph.rl.nstep_replay_mem import NstepReplayMem
 
-class Nipa(object):
+class NIPA(object):
 
     def __init__(self, env, features, labels, idx_meta, idx_test,
             list_action_space, num_mod, reward_type, batch_size=10,
@@ -40,7 +39,7 @@ class Nipa(object):
         self.gm = gm
         self.device = device
 
-        self.mem_pool = NstepReplayMem(memory_size=500000, n_steps=2 * num_mod, balance_sample=reward_type == 'binary')
+        self.mem_pool = NstepReplayMem(memory_size=500000, n_steps=2 * num_mod, balance_sample=reward_type == 'binary', model='nipa')
         self.env = env
 
         # self.net = QNetNode(features, labels, list_action_space)
@@ -76,7 +75,6 @@ class Nipa(object):
         if random.random() < self.eps and not greedy:
             actions = self.env.uniformRandActions()
         else:
-
             cur_state = self.env.getStateRef()
             actions, values = self.net(time_t, cur_state, None, greedy_acts=True, is_inference=True)
             actions = list(actions.cpu().numpy())
@@ -85,25 +83,25 @@ class Nipa(object):
 
     def run_simulation(self):
 
+        self.env.setup()
+
         t = 0
-        #  The length is 3, since we have three steps.
         list_of_list_st = []
         list_of_list_at = []
 
         while not self.env.isActionFinished():
-            # the list is of length 1
             list_at = self.make_actions(t)
             list_st = self.env.cloneState()
 
             self.env.step(list_at)
 
-            # TODO Wei added line #87
             env = self.env
-            assert (env.rewards is not None) == env.isTerminal()
+            assert (env.rewards is not None) == env.isActionFinished()
             if env.isActionFinished():
                 rewards = env.rewards
                 s_prime = None
             else:
+                # rewards = env.rewards
                 rewards = np.zeros(len(list_at), dtype=np.float32)
                 s_prime = self.env.cloneState()
 
@@ -112,6 +110,9 @@ class Nipa(object):
             list_of_list_at.append( deepcopy(list_at) )
             t += 1
 
+        # if the reward type is nll_loss, directly return
+        if self.reward_type == 'nll':
+            return
 
         # T = t
         # cands = self.env.sample_pos_rewards(len(selected_idx))
@@ -142,7 +143,8 @@ class Nipa(object):
         #             self.mem_pool.mem_cells[t].add(s_t, a_t, r, s_prime, term)
 
     def eval(self, training=True):
-        self.env.setup(self.idx_meta)
+        self.env.init_overall_steps()
+        self.env.setup()
         t = 0
 
         while not self.env.isTerminal():
@@ -167,18 +169,16 @@ class Nipa(object):
                     f.write('] succ: %d\n' % (self.env.binary_rewards[i]))
             self.best_eval = acc
 
-    def train(self, num_steps=100000, lr=0.01):
-        self.env.setup(selected_idx)
+    def train(self, episodes=10, num_steps=100000, lr=0.001):
+        for epi in range(episodes):
+            self.env.init_overall_steps()
+            pbar = tqdm(range(self.burn_in), unit='batch')
+            for p in pbar:
+                self.run_simulation()
+            pbar = tqdm(range(num_steps), unit='steps')
+            optimizer = optim.Adam(self.net.parameters(), lr=lr)
+            for self.step in pbar:
 
-        pbar = tqdm(range(self.burn_in), unit='batch')
-        for p in pbar:
-            self.run_simulation()
-
-        pbar = tqdm(range(num_steps), unit='steps')
-        optimizer = optim.Adam(self.net.parameters(), lr=lr)
-
-        for self.step in pbar:
-            for t in range(self.n_perturbations):
                 self.run_simulation()
 
                 if self.step % 123 == 0:
@@ -204,6 +204,6 @@ class Nipa(object):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-                # pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
-                # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+                pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+            # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
 

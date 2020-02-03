@@ -20,7 +20,7 @@ def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=F
         adj_norm = normalize_adj(adj)
 
     if preprocess_feature:
-        features = normalize_f(features)
+        features = normalize_feature(features)
 
     labels = torch.LongTensor(labels)
     if sparse:
@@ -49,7 +49,8 @@ def to_tensor(adj, features, labels=None, device='cpu'):
 
 def normalize_feature(mx):
     """Row-normalize sparse matrix"""
-    mx = mx.lil()
+    if type(mx) is not sp.lil.lil_matrix:
+        mx = mx.tolil()
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -59,7 +60,8 @@ def normalize_feature(mx):
 
 def normalize_adj(mx):
     """Row-normalize sparse matrix"""
-    mx = mx.tolil()
+    if type(mx) is not sp.lil.lil_matrix:
+        mx = mx.tolil()
     if mx[0, 0] == 0 :
         mx = mx + sp.eye(mx.shape[0])
     rowsum = np.array(mx.sum(1))
@@ -180,9 +182,12 @@ def loss_acc(output, labels, targets, avg_loss=True):
     if type(labels) is not torch.Tensor:
         labels = torch.LongTensor(labels)
     preds = output.max(1)[1].type_as(labels)
-    correct = preds.eq(labels).double()
-    loss = F.nll_loss(output, labels, reduction='mean' if avg_loss else 'none')
-    return loss[targets], correct[targets]
+    correct = preds.eq(labels).double()[targets]
+    loss = F.nll_loss(output[targets], labels[targets], reduction='mean' if avg_loss else 'none')
+
+    if avg_loss:
+        return loss, correct.sum() / len(targets)
+    return loss, correct
     # correct = correct.sum()
     # return loss, correct / len(labels)
 
@@ -441,7 +446,7 @@ def visualize(your_var):
 
 def reshape_mx(mx, shape):
     indices = mx.nonzero()
-    return sp.csr_matrix((mx.data, (indices[0], indices[1])), shape=shape).tolil()
+    return sp.csr_matrix((mx.data, (indices[0], indices[1])), shape=shape)
 
 # def check_path(file_path):
 #     if not osp.exists(file_path):

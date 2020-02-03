@@ -65,9 +65,9 @@ class GraphNormTool(object):
         return new_adj
 
 
-
 class ModifiedGraph(object):
     def __init__(self, directed_edges = None, weights = None):
+        self.edge_set = set()  #(first, second)
         if directed_edges is not None:
             self.directed_edges = deepcopy(directed_edges)
             self.weights = deepcopy(weights)
@@ -84,9 +84,11 @@ class ModifiedGraph(object):
                 return
             if e[1] == x and e[0] == y:
                 return
+        self.edge_set.add((x, y)) # (first, second)
+        self.edge_set.add((y, x)) # (second, first)
         self.directed_edges.append((x, y))
-        assert z < 0
-        self.weights.append(-1.0)
+        # assert z < 0
+        self.weights.append(z)
 
     def get_extra_adj(self, device):
         if len(self.directed_edges):
@@ -104,7 +106,7 @@ class ModifiedGraph(object):
         else:
             return None
 
-class NodeAttakEnv(object):
+class NodeAttackEnv(object):
 
     def __init__(self, features, labels, all_targets, list_action_space, classifier, num_mod=1, reward_type='binary'):
 

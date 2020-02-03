@@ -65,6 +65,20 @@ def hash_state_action(s_t, a_t):
     key = (key * base + a_t) % base
     return key
 
+def nipa_hash_state_action(s_t, a_t):
+    key = s_t[0]
+    base = 179424673
+    for e in s_t[1].directed_edges:
+        key = (key * base + e[0]) % base
+        key = (key * base + e[1]) % base
+    if s_t[2] is not None:
+        key = (key * base + s_t[2]) % base
+    else:
+        key = (key * base) % base
+
+    key = (key * base + a_t) % base
+    return key
+
 class NstepReplayMemCell(object):
     def __init__(self, memory_size, balance_sample = False):
         self.sub_list = []
@@ -74,15 +88,17 @@ class NstepReplayMemCell(object):
             self.sub_list.append(NstepReplaySubMemCell(memory_size))
             self.state_set = set()
 
-    def add(self, s_t, a_t, r_t, s_prime, terminal):
+    def add(self, s_t, a_t, r_t, s_prime, terminal, use_hash=True):
         if not self.balance_sample or r_t < 0:
             self.sub_list[0].add(s_t, a_t, r_t, s_prime, terminal)
         else:
             assert r_t > 0
-            key = hash_state_action(s_t, a_t)
-            if key in self.state_set:
-                return
-            self.state_set.add(key)
+            if use_hash:
+                # TODO add hash?
+                key = hash_state_action(s_t, a_t)
+                if key in self.state_set:
+                    return
+                self.state_set.add(key)
             self.sub_list[1].add(s_t, a_t, r_t, s_prime, terminal)
 
     def sample(self, batch_size):
@@ -95,7 +111,7 @@ class NstepReplayMemCell(object):
         return list_st + list_st2, list_at + list_at2, list_rt + list_rt2, list_s_primes + list_s_primes2, list_term + list_term2
 
 class NstepReplayMem(object):
-    def __init__(self, memory_size, n_steps, balance_sample = False):
+    def __init__(self, memory_size, n_steps, balance_sample=False, model='rl_s2v'):
         self.mem_cells = []
         for i in range(n_steps - 1):
             self.mem_cells.append(NstepReplayMemCell(memory_size, False))
@@ -103,14 +119,18 @@ class NstepReplayMem(object):
 
         self.n_steps = n_steps
         self.memory_size = memory_size
+        self.model = model
 
     def add(self, s_t, a_t, r_t, s_prime, terminal, t):
         assert t >= 0 and t < self.n_steps
-        if t == self.n_steps - 1:
-            assert terminal
+        if self.model == 'nipa':
+            self.mem_cells[t].add(s_t, a_t, r_t, s_prime, terminal, use_hash=False)
         else:
-            assert not terminal
-        self.mem_cells[t].add(s_t, a_t, r_t, s_prime, terminal)
+            if t == self.n_steps - 1:
+                assert terminal
+            else:
+                assert not terminal
+            self.mem_cells[t].add(s_t, a_t, r_t, s_prime, terminal, use_hash=True)
 
     def add_list(self, list_st, list_at, list_rt, list_sp, list_term, t):
         for i in range(len(list_st)):
