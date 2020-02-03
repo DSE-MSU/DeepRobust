@@ -8,11 +8,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
 from copy import deepcopy
-from DeepRobust.graph.rl.env import NodeAttakEnv, GraphNormTool, StaticGraph
+from DeepRobust.graph.rl.nipa_env import NodeInjectionEnv, GraphNormTool, StaticGraph
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
 from DeepRobust.graph.black_box import *
-from DeepRobust.graph.rl.nipa import Nipa
+from DeepRobust.graph.rl.nipa import NIPA
 from DeepRobust.graph.rl.nipa_config import args
 
 
@@ -29,9 +29,11 @@ def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_
 
     return modified_adj, modified_features
 
-def generate_injected_features(features):
+def generate_injected_features(features, n_added):
     # TODO
     features = features.tolil()
+    avg = np.tile(features.mean(0), (n_added, 1))
+    features[-n_added: ] = avg + np.random.normal(0, 1, (n_added, features.shape[1]))
     return features
 
 def injecting_nodes(data):
@@ -39,7 +41,7 @@ def injecting_nodes(data):
         injecting nodes to adj, features, and assign labels to the injected nodes
     '''
     adj, features, labels = data.adj, data.features, data.labels
-
+    features = normalize_feature(features)
     N = adj.shape[0]
     D = features.shape[1]
 
@@ -48,13 +50,14 @@ def injecting_nodes(data):
 
     data.adj = reshape_mx(adj, shape=(N+n_added, N+n_added))
     enlarged_features = reshape_mx(features, shape=(N+n_added, D))
-    data.features = generate_injected_features(enlarged_features)
+    data.features = generate_injected_features(enlarged_features, n_added)
     injected_labels = np.random.choice(labels.max()+1, n_added)
     data.labels = np.hstack((labels, injected_labels))
 
 def init_setup():
     data = Dataset(root='/tmp/', name=args.dataset, setting='nettack')
     injecting_nodes(data)
+
     adj, features, labels = data.adj, data.features, data.labels
 
     StaticGraph.graph = nx.from_scipy_sparse_matrix(adj)
@@ -65,10 +68,10 @@ def init_setup():
     device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
     # black box setting
-    adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
-
     victim_model = load_victim_model(data, device=device, file_path=args.saved_model)
     setattr(victim_model, 'norm_tool',  GraphNormTool(normalize=True, gm='gcn', device=device))
+
+    adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
     output = victim_model.predict(features, adj)
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
@@ -83,41 +86,17 @@ np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 torch.cuda.manual_seed(args.seed)
 
-features, labels, idx_valid, idx_test, victim_model, dict_of_lists, adj = init_setup()
+features, labels, idx_val, idx_test, victim_model, dict_of_lists, adj = init_setup()
 output = victim_model(victim_model.features, victim_model.adj_norm)
 preds = output.max(1)[1].type_as(labels)
 acc = preds.eq(labels).double()
 acc_test = acc[idx_test]
 
-attack_list = []
-for i in range(len(idx_test)):
-    # only attack those misclassifed and degree>0 nodes
-    if acc_test[i] > 0 and len(dict_of_lists[idx_test[i]]):
-        attack_list.append(idx_test[i])
-
-if not args.meta_test:
-    total = attack_list
-    idx_valid = idx_test
-else:
-    total = attack_list + idx_valid
-
-acc_test = acc[idx_valid]
-meta_list = []
-num_wrong = 0
-for i in range(len(idx_valid)):
-    if acc_test[i] > 0:
-        if len(dict_of_lists[idx_valid[i]]):
-            meta_list.append(idx_valid[i])
-    else:
-        num_wrong += 1
-
-print( 'meta list ratio:', len(meta_list) / float(len(idx_valid)))
-
 device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
-env = NodeAttakEnv(features, labels, total, dict_of_lists, victim_model, num_mod=args.num_mod, reward_type=args.reward_type)
+env = NodeInjectionEnv(features, labels, idx_val, dict_of_lists, victim_model, ratio=args.ratio, reward_type=args.reward_type)
 
-agent = Nipa(env, features, labels, meta_list, attack_list, dict_of_lists, num_wrong=num_wrong,
+agent = NIPA(env, features, labels, [], [], dict_of_lists, num_wrong=0,
         num_mod=args.num_mod, reward_type=args.reward_type,
         batch_size=args.batch_size, save_dir=args.save_dir,
         bilin_q=args.bilin_q, embed_dim=args.latent_dim,

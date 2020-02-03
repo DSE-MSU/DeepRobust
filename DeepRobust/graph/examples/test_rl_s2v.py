@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
 from copy import deepcopy
-from DeepRobust.graph.rl.env import NodeAttakEnv, GraphNormTool, StaticGraph
+from DeepRobust.graph.rl.env import NodeAttackEnv, GraphNormTool, StaticGraph
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
 from DeepRobust.graph.black_box import *
@@ -19,7 +19,9 @@ from DeepRobust.graph.rl.rl_s2v_config import args
 def init_setup():
     data = Dataset(root='/tmp/', name=args.dataset, setting='gcn')
 
+    data.features = normalize_feature(data.features)
     adj, features, labels = data.adj, data.features, data.labels
+
     StaticGraph.graph = nx.from_scipy_sparse_matrix(adj)
     dict_of_lists = nx.to_dict_of_lists(StaticGraph.graph)
 
@@ -76,7 +78,7 @@ print( 'meta list ratio:', len(meta_list) / float(len(idx_valid)))
 
 device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
-env = NodeAttakEnv(features, labels, total, dict_of_lists, victim_model, num_mod=args.num_mod, reward_type=args.reward_type)
+env = NodeAttackEnv(features, labels, total, dict_of_lists, victim_model, num_mod=args.num_mod, reward_type=args.reward_type)
 agent = Agent(env, features, labels, meta_list, attack_list, dict_of_lists, num_wrong=num_wrong,
         num_mod=args.num_mod, reward_type=args.reward_type,
         batch_size=args.batch_size, save_dir=args.save_dir,
