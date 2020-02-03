@@ -105,7 +105,9 @@ class ModifiedGraph(object):
             return None
 
 class NodeAttakEnv(object):
+
     def __init__(self, features, labels, all_targets, list_action_space, classifier, num_mod=1, reward_type='binary'):
+
         self.classifier = classifier
         self.list_action_space = list_action_space
         self.features = features
@@ -127,6 +129,9 @@ class NodeAttakEnv(object):
         self.list_acc_of_all = []
 
     def step(self, actions):
+        '''
+            run actions
+        '''
         if self.first_nodes is None: # pick the first node of edge
             assert self.n_steps % 2 == 0
             self.first_nodes = actions[:]
@@ -140,6 +145,7 @@ class NodeAttakEnv(object):
         self.n_steps += 1
 
         if self.isTerminal():
+            # only calc reward when its terminal
             acc_list = []
             loss_list = []
             # for i in tqdm(range(len(self.target_nodes))):

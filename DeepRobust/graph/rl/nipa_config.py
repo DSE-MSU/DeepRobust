@@ -3,6 +3,8 @@ import pickle as cp
 
 cmd_opt = argparse.ArgumentParser(description='Argparser for molecule vae')
 
+cmd_opt.add_argument('-ratio', type=float, default=0.01, help='ratio of injected nodes')
+
 cmd_opt.add_argument('-saved_model', type=str, default=None, help='saved model')
 cmd_opt.add_argument('-save_dir', type=str, default=None, help='save folder')
 cmd_opt.add_argument('-ctx', type=str, default='gpu', help='cpu/gpu')
@@ -39,10 +41,10 @@ cmd_opt.add_argument('-mlp_hidden', type=int, default=64, help='mlp hidden layer
 # cmd_opt.add_argument('-n_hops', type=int, default=2, help='attack range')
 
 
-cmd_args, _ = cmd_opt.parse_known_args()
-cmd_args.save_dir = f'./results/rl_s2v/{cmd_args.dataset}-gcn'
-cmd_args.saved_model = f'results/node_classification/{cmd_args.dataset}'
-print(cmd_args)
+args, _ = cmd_opt.parse_known_args()
+args.save_dir = f'./results/rl_s2v/{args.dataset}-gcn'
+args.saved_model = f'results/node_classification/{args.dataset}'
+print(args)
 
 def build_kwargs(keys, arg_dict):
     st = ''
