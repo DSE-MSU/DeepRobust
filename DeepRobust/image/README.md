@@ -8,6 +8,7 @@
 | CW attack | White-Box | Image Classification | [Towards Evaluating the Robustness of Neural Networks](https://arxiv.org/pdf/1608.04644.pdf) |
 | One pixel attack | White-Box | Image Classification | [One pixel attack for fooling deep neural networks](https://arxiv.org/pdf/1608.04644.pdf) |
 | BPDA attack | White-Box | Image Classification | [Obfuscated Gradients Give a False Sense of Security: Circumventing Defenses to Adversarial Examples](https://arxiv.org/pdf/1802.00420.pdf) |
+| Universal attack | White-Box | Image Classification | [Universal adversarial perturbations](https://arxiv.org/pdf/1610.08401.pdf) |
 | Nattack | Black-Box | Image Classification | [NATTACK: Learning the Distributions of Adversarial Examples for an Improved Black-Box Attack on Deep Neural Networks](https://arxiv.org/pdf/1905.00441.pdf) |
 
 # Defense Methods
@@ -20,3 +21,12 @@
 | TRADES | Adverserial Training | Image Classification | [Theoretically Principled Trade-off between Robustness and Accuracy](https://arxiv.org/pdf/1901.08573.pdf) |
 | Thermometer Encoding | Gradient Masking | Image Classification | [Thermometer Encoding:One Hot Way To Resist Adversarial Examples](https://openreview.net/pdf?id=S18Su--CW) |
 | LID-based adversarial classifier | Detection | Image Classification | [Characterizing Adversarial Subspaces Using Local Intrinsic Dimensionality](https://arxiv.org/pdf/1801.02613.pdf) |
+
+# Support Datasets
+- MNIST
+- CIFAR-10
+- ImageNet
+
+# Support Networks
+- SimpleCNN
+- ResNet(ResNet18, ResNet34, ResNet50)
