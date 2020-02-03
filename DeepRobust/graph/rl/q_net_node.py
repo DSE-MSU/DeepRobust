@@ -78,18 +78,18 @@ class QNetNode(nn.Module):
 
             node_embed = input_node_linear.clone()
             if picked_nodes is not None and picked_nodes[i] is not None:
-
-                with torch.no_grad():
+                with torch.set_grad_enabled(mode=not is_inference):
                     picked_sp =  self.make_spmat(self.total_nodes, 1, picked_nodes[i], 0)
                     node_embed += torch.spmm(picked_sp, self.bias_picked)
                     region = self.list_action_space[picked_nodes[i]]
 
             if not self.bilin_q:
-                with torch.no_grad():
+                with torch.set_grad_enabled(mode=not is_inference):
+                # with torch.no_grad():
                     target_sp = self.make_spmat(self.total_nodes, 1, target_nodes[i], 0)
                     node_embed += torch.spmm(target_sp, self.bias_target)
 
-            with torch.no_grad():
+            with torch.set_grad_enabled(mode=not is_inference):
                 device = self.node_features.device
                 adj = self.norm_tool.norm_extra( batch_graph[i].get_extra_adj(device))
 
@@ -104,29 +104,29 @@ class QNetNode(nn.Module):
                     node_embed = F.relu(merged_linear)
                     lv += 1
 
-            target_embed = node_embed[target_nodes[i], :].view(-1, 1)
-            if region is not None:
-                node_embed = node_embed[region]
-
-            graph_embed = torch.mean(node_embed, dim=0, keepdim=True)
-
-            if actions is None:
-                graph_embed = graph_embed.repeat(node_embed.size()[0], 1)
-            else:
+                target_embed = node_embed[target_nodes[i], :].view(-1, 1)
                 if region is not None:
-                    act_idx = region.index(actions[i])
+                    node_embed = node_embed[region]
+
+                graph_embed = torch.mean(node_embed, dim=0, keepdim=True)
+
+                if actions is None:
+                    graph_embed = graph_embed.repeat(node_embed.size()[0], 1)
                 else:
-                    act_idx = actions[i]
-                node_embed = node_embed[act_idx, :].view(1, -1)
+                    if region is not None:
+                        act_idx = region.index(actions[i])
+                    else:
+                        act_idx = actions[i]
+                    node_embed = node_embed[act_idx, :].view(1, -1)
 
-            embed_s_a = torch.cat((node_embed, graph_embed), dim=1)
-            if self.mlp_hidden:
-                embed_s_a = F.relu( self.linear_1(embed_s_a) )
-            raw_pred = self.linear_out(embed_s_a)
+                embed_s_a = torch.cat((node_embed, graph_embed), dim=1)
+                if self.mlp_hidden:
+                    embed_s_a = F.relu( self.linear_1(embed_s_a) )
+                raw_pred = self.linear_out(embed_s_a)
 
-            if self.bilin_q:
-                raw_pred = torch.mm(raw_pred, target_embed)
-            list_pred.append(raw_pred)
+                if self.bilin_q:
+                    raw_pred = torch.mm(raw_pred, target_embed)
+                list_pred.append(raw_pred)
 
         if greedy_acts:
             actions, _ = node_greedy_actions(target_nodes, picked_nodes, list_pred, self)

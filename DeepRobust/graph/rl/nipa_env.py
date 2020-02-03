@@ -192,6 +192,7 @@ class NodeInjectionEnv(NodeAttackEnv):
             if self.first_nodes is not None and self.second_nodes is not None:
                 # a3: choose label
                 cur_action = np.random.randint(self.label.max() + 1)
+
             act_list.append(cur_action)
         return act_list
 
@@ -206,27 +207,22 @@ class NodeInjectionEnv(NodeAttackEnv):
         return False
 
     def getStateRef(self):
-        # needn't copy
-
-        import ipdb
-        ipdb.set_trace()
-
         return list(zip(self.modified_list, self.modified_label_list))
 
-        cp_first = [None] * len(self.target_nodes)
-        if self.first_nodes is not None:
-            cp_first = self.first_nodes
+        # cp_first = [None] * len(self.target_nodes)
+        # if self.first_nodes is not None:
+        #     cp_first = self.first_nodes
 
-        return zip(self.target_nodes, self.modified_list, cp_first)
+        # return zip(self.target_nodes, self.modified_list, cp_first)
 
     def cloneState(self):
         # TODO
         return list(zip(deepcopy(self.modified_list), deepcopy(self.labels[self.injected_nodes])))
 
-        cp_first = [None] * len(self.target_nodes)
-        if self.first_nodes is not None:
-            cp_first = self.first_nodes[:]
+        # cp_first = [None] * len(self.target_nodes)
+        # if self.first_nodes is not None:
+        #     cp_first = self.first_nodes[:]
 
-        return list(zip(self.target_nodes[:], deepcopy(self.modified_list), cp_first))
+        # return list(zip(self.target_nodes[:], deepcopy(self.modified_list), cp_first))
 
 

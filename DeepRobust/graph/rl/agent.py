@@ -12,7 +12,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from copy import deepcopy
 from DeepRobust.graph.rl.q_net_node import QNetNode, NStepQNetNode, node_greedy_actions
-from DeepRobust.graph.rl.env import NodeAttakEnv
+from DeepRobust.graph.rl.env import NodeAttackEnv
 from DeepRobust.graph.rl.nstep_replay_mem import NstepReplayMem
 
 class Agent(object):
