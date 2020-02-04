@@ -44,11 +44,11 @@ class NIPA(object):
 
         # self.net = QNetNode(features, labels, list_action_space)
         # self.old_net = QNetNode(features, labels, list_action_space)
-        self.net = NStepQNetNode(2 * num_mod, features, labels, list_action_space,
+        self.net = NStepQNetNode(3, features, labels, list_action_space,
                           bilin_q=bilin_q, embed_dim=embed_dim, mlp_hidden=mlp_hidden,
                           max_lv=max_lv, gm=gm, device=device)
 
-        self.old_net = NStepQNetNode(2 * num_mod, features, labels, list_action_space,
+        self.old_net = NStepQNetNode(3, features, labels, list_action_space,
                           bilin_q=bilin_q, embed_dim=embed_dim, mlp_hidden=mlp_hidden,
                           max_lv=max_lv, gm=gm, device=device)
 
