@@ -46,7 +46,7 @@ We would be glad if you find our work useful and cite the paper.
     from DeepRobust.image.config import attack_params
 
     adversary = PGD(model, device)
-    Adv_example = adversary.generate(X, Y, **attack_params['PGD_CIFAR10']
+    Adv_img = adversary.generate(x, y, **attack_params['PGD_CIFAR10'])
     ```
 
     Example: Train defense model.
@@ -64,6 +64,5 @@ We would be glad if you find our work useful and cite the paper.
 
     Example:
     ```
-    python -m DeepRobust.image.evaluation_attack --attack_method --attack_model --path --file_name --epsilon --batch_num --batch_size --num_steps --step_size --random_targeted --device
+    python -m DeepRobust.image.evaluation_attack 
     ```
-    Use python -m DeepRobust.image.evaluation_attack --help for more information.
