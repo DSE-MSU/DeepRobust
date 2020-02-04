@@ -26,6 +26,11 @@ def create_test_dataset(batch_size = 128, root = '../data'):
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
     return testloader
 
+def download_model():
+
+
+    return model
+
 def save_checkpoint(now_epoch, net, optimizer, lr_scheduler, file_name):
     checkpoint = {'epoch': now_epoch,
                   'state_dict': net.state_dict(),
@@ -69,6 +74,19 @@ def make_symlink(source, link_name):
         return
     else:
         print('Source path not exists')    
+
+from texttable import Texttable
+def tab_printer(args):
+    """
+    Function to print the logs in a nice tabular format.
+    input:
+        param args: Parameters used for the model.
+    """
+    args = vars(args)
+    keys = sorted(args.keys())
+    t = Texttable() 
+    t.add_rows([["Parameter", "Value"]] +  [[k.replace("_"," ").capitalize(), args[k]] for k in keys])
+    print(t.draw())
 
 def onehot_like(a, index, value=1):
     """Creates an array like a, with all values
@@ -144,3 +162,46 @@ def adjust_learning_rate(optimizer, epoch, learning_rate):
         param_group['lr'] = lr
     
     return optimizer
+
+def progress_bar(current, total, msg=None):
+    global last_time, begin_time
+    if current == 0:
+        begin_time = time.time()  # Reset for new bar.
+
+    cur_len = int(TOTAL_BAR_LENGTH*current/total)
+    rest_len = int(TOTAL_BAR_LENGTH - cur_len) - 1
+
+    sys.stdout.write(' [')
+    for i in range(cur_len):
+        sys.stdout.write('=')
+    sys.stdout.write('>')
+    for i in range(rest_len):
+        sys.stdout.write('.')
+    sys.stdout.write(']')
+
+    cur_time = time.time()
+    step_time = cur_time - last_time
+    last_time = cur_time
+    tot_time = cur_time - begin_time
+
+    L = []
+    L.append('  Step: %s' % format_time(step_time))
+    L.append(' | Tot: %s' % format_time(tot_time))
+    if msg:
+        L.append(' | ' + msg)
+
+    msg = ''.join(L)
+    sys.stdout.write(msg)
+    for i in range(term_width-int(TOTAL_BAR_LENGTH)-len(msg)-3):
+        sys.stdout.write(' ')
+
+    # Go back to the center of the bar.
+    for i in range(term_width-int(TOTAL_BAR_LENGTH/2)+2):
+        sys.stdout.write('\b')
+    sys.stdout.write(' %d/%d ' % (current+1, total))
+
+    if current < total-1:
+        sys.stdout.write('\r')
+    else:
+        sys.stdout.write('\n')
+    sys.stdout.flush()

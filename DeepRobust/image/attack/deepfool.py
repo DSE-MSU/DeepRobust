@@ -12,17 +12,16 @@ class DeepFool(BaseAttack):
         self.model = model
         self.device = device
 
-    def generate(self, image, **kwargs):
+    def generate(self, image, label, **kwargs):
 
         #check type device
+        assert self.check_type_device(image, label)
         is_cuda = torch.cuda.is_available()
 
         if (is_cuda and self.device == 'cuda'):
-            print("Using GPU")
             self.image = image.cuda()
             self.model = self.model.cuda()
         else:
-            print("Using CPU")
             self.image = image
 
         assert self.parse_params(**kwargs)
@@ -59,17 +58,16 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
             -minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
     """
 
-    f_image = model.forward(Variable(image, requires_grad=True)).data.cpu().numpy().flatten()
+    f_image = model.forward(image).data.cpu().numpy().flatten()
     output = (np.array(f_image)).flatten().argsort()[::-1]
 
     output = output[0:num_classes]
     label = output[0]
 
     input_shape = image.cpu().numpy().shape
-    x = copy.deepcopy(image)
+    x = copy.deepcopy(image).requires_grad_(True)
     w = np.zeros(input_shape)
     r_tot = np.zeros(input_shape)
-
 
     fs = model.forward(x)
     fs_list = [fs[0,output[k]] for k in range(num_classes)]
@@ -78,7 +76,7 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
     for i in range(max_iter):
 
         pert = np.inf
-        fs[0, output[0]].backward(retain_graph=True)
+        fs[0, output[0]].backward(retain_graph = True)
         grad_orig = x.grad.data.cpu().numpy().copy()
 
         for k in range(1, num_classes):
@@ -103,9 +101,9 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
         r_i =  (pert+1e-4) * w / np.linalg.norm(w)
         r_tot = np.float32(r_tot + r_i)
 
-        pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).cuda()
+        pert_image = image + (1+overshoot)*torch.from_numpy(r_tot).to(device)
 
-        x = Variable(pert_image, requires_grad=True)
+        x = pert_image.detach().requires_grad_(True)
         fs = model.forward(x)
 
         if (not np.argmax(fs.data.cpu().numpy().flatten()) == label):

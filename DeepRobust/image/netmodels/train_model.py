@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 import argparse
 import torch
 import torch.nn as nn
@@ -21,9 +22,16 @@ def train(model, data, device, maxepoch):
 
     elif (model == 'ResNet18'):
         import DeepRobust.image.netmodels.resnet as MODEL
-        from DeepRobust.image.netmodels.resnet import Net
         train_net = MODEL.ResNet18().to(device)
-    
+
+    elif (model == 'ResNet34'):
+        import DeepRobust.image.netmodels.resnet as MODEL
+        train_net = MODEL.ResNet34().to(device)
+
+    elif (model == 'ResNet50'):
+        import DeepRobust.image.netmodels.resnet as MODEL
+        train_net = MODEL.ResNet50().to(device)
+
     optimizer = optim.SGD(train_net.parameters(), lr=0.01, momentum=0.5)
 
     save_model = True
@@ -34,8 +42,13 @@ def train(model, data, device, maxepoch):
         MODEL.test(train_net, device, test_loader)
 
         if (save_model and epoch %10 == 0):
-            print('Save model.')
-            torch.save(train_net.state_dict(), 'DeepRobust/image/save_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+            if os.path.isdir('./trained_models/'):
+                print('Save model.')
+                torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+            else:
+                os.mkdir('./trained_models/')
+                print('Make directory and save model.')
+                torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
 
 def feed_dataset(data, data_dict):
     if(data == 'CIFAR10'):
@@ -52,25 +65,25 @@ def feed_dataset(data, data_dict):
                 ])
 
         train_loader = torch.utils.data.DataLoader(
-                 datasets.CIFAR10(data_dict, train=True, download=True,
+                 datasets.CIFAR10(data_dict, train=True, download = True,
                         transform=transform_train),
                  batch_size= 1000, shuffle=True) #, **kwargs)
 
         test_loader  = torch.utils.data.DataLoader(
-                 datasets.CIFAR10(data_dict, train=False, download=True,
+                 datasets.CIFAR10(data_dict, train=False, download = True,
                         transform=transform_val),
                 batch_size= 1000, shuffle=True) #, **kwargs)
 
     elif(data == 'MNIST'):
         train_loader = torch.utils.data.DataLoader(
-                 datasets.MNIST(data_dict, train=True, download=True,
+                 datasets.MNIST(data_dict, train=True, download = True,
                  transform=transforms.Compose([transforms.ToTensor(),
                  transforms.Normalize((0.1307,), (0.3081,))])),
                  batch_size=64,
                  shuffle=True)
 
         test_loader = torch.utils.data.DataLoader(
-                datasets.MNIST('../data', train=False,
+                datasets.MNIST('../data', train=False, download = True,
                 transform=transforms.Compose([transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,))])),
                 batch_size=1000,
@@ -80,6 +93,6 @@ def feed_dataset(data, data_dict):
         pass
 
     return train_loader, test_loader
-        
+
 
 
