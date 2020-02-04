@@ -15,11 +15,11 @@ import ipdb
 def parameter_parser():
     parser = argparse.ArgumentParser(description = "Run attack algorithms.")
 
-    parser.add_argument("--download destination", 
-                        default = '~/lyx/projects/models/download', 
+    parser.add_argument("--download destination",
+                        default = '~/lyx/projects/models/download',
                         help = "choose destination to load the pretrained models.")
 
-    parser.add_argument("--file name", 
+    parser.add_argument("--file name",
                         default = "MNIST_CNN")
 
     return parser.parse_args()

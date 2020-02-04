@@ -3,6 +3,7 @@ import scipy.sparse as sp
 import torch
 from sklearn.model_selection import train_test_split
 import torch.sparse as ts
+import torch.nn.functional as F
 
 def encode_onehot(labels):
     classes = set(labels)
@@ -13,13 +14,13 @@ def encode_onehot(labels):
     return labels_onehot
 
 
-def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=False, sparse=False):
+def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=False, sparse=False, device='cpu'):
 
-    if preprocess_adj == 'GCN':
+    if preprocess_adj:
         adj_norm = normalize_adj(adj)
 
     if preprocess_feature:
-        features = normalize_f(features)
+        features = normalize_feature(features)
 
     labels = torch.LongTensor(labels)
     if sparse:
@@ -28,11 +29,9 @@ def preprocess(adj, features, labels, preprocess_adj='GCN', preprocess_feature=F
     else:
         features = torch.FloatTensor(np.array(features.todense()))
         adj = torch.FloatTensor(adj.todense())
+    return adj.to(device), features.to(device), labels.to(device)
 
-    return adj, features, labels
-
-def to_tensor(adj, features, labels, device='cpu'):
-    labels = torch.LongTensor(labels)
+def to_tensor(adj, features, labels=None, device='cpu'):
     if sp.issparse(adj):
         adj = sparse_mx_to_torch_sparse_tensor(adj)
     else:
@@ -41,13 +40,17 @@ def to_tensor(adj, features, labels, device='cpu'):
         features = sparse_mx_to_torch_sparse_tensor(features)
     else:
         features = torch.FloatTensor(np.array(features))
-    return adj.to(device), features.to(device), labels.to(device)
 
-
+    if labels is None:
+        return adj.to(device), features.to(device)
+    else:
+        labels = torch.LongTensor(labels)
+        return adj.to(device), features.to(device), labels.to(device)
 
 def normalize_feature(mx):
     """Row-normalize sparse matrix"""
-    mx = mx.lil()
+    if type(mx) is not sp.lil.lil_matrix:
+        mx = mx.tolil()
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -57,8 +60,10 @@ def normalize_feature(mx):
 
 def normalize_adj(mx):
     """Row-normalize sparse matrix"""
-    mx = mx.tolil()
-    mx = mx + sp.eye(mx.shape[0])
+    if type(mx) is not sp.lil.lil_matrix:
+        mx = mx.tolil()
+    if mx[0, 0] == 0 :
+        mx = mx + sp.eye(mx.shape[0])
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1/2).flatten()
     r_inv[np.isinf(r_inv)] = 0.
@@ -67,12 +72,47 @@ def normalize_adj(mx):
     mx = mx.dot(r_mat_inv)
     return mx
 
+def normalize_sparse_tensor(adj, fill_value=1):
+    edge_index = adj._indices()
+    edge_weight = adj._values()
+    num_nodes= adj.size(0)
+    edge_index, edge_weight = add_self_loops(
+	edge_index, edge_weight, fill_value, num_nodes)
+
+    row, col = edge_index
+    from torch_scatter import scatter_add
+    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg_inv_sqrt = deg.pow(-0.5)
+    deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
+
+    values = deg_inv_sqrt[row] * edge_weight * deg_inv_sqrt[col]
+
+    shape = adj.shape
+    return torch.sparse.FloatTensor(edge_index, values, shape)
+
+def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
+    # num_nodes = maybe_num_nodes(edge_index, num_nodes)
+
+    loop_index = torch.arange(0, num_nodes, dtype=torch.long,
+                              device=edge_index.device)
+    loop_index = loop_index.unsqueeze(0).repeat(2, 1)
+
+    if edge_weight is not None:
+        assert edge_weight.numel() == edge_index.size(1)
+        loop_weight = edge_weight.new_full((num_nodes, ), fill_value)
+        edge_weight = torch.cat([edge_weight, loop_weight], dim=0)
+
+    edge_index = torch.cat([edge_index, loop_index], dim=1)
+
+    return edge_index, edge_weight
+
 def normalize_adj_tensor(adj, sparse=False):
     device = torch.device("cuda:0" if adj.is_cuda else "cpu")
     if sparse:
-        adj = to_scipy(adj)
-        mx = normalize_adj(adj)
-        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+        return normalize_sparse_tensor(adj)
+        # adj = to_scipy(adj)
+        # mx = normalize_adj(adj)
+        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
         mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
@@ -83,12 +123,81 @@ def normalize_adj_tensor(adj, sparse=False):
         mx = mx @ r_mat_inv
     return mx
 
+def degree_normalize_adj(mx):
+    """Row-normalize sparse matrix"""
+    mx = mx.tolil()
+    if mx[0, 0] == 0 :
+        mx = mx + sp.eye(mx.shape[0])
+    rowsum = np.array(mx.sum(1))
+    r_inv = np.power(rowsum, -1).flatten()
+    r_inv[np.isinf(r_inv)] = 0.
+    r_mat_inv = sp.diags(r_inv)
+    # mx = mx.dot(r_mat_inv)
+    mx = r_mat_inv.dot(mx)
+    return mx
+
+def degree_normalize_sparse_tensor(adj, fill_value=1):
+    edge_index = adj._indices()
+    edge_weight = adj._values()
+    num_nodes= adj.size(0)
+
+    edge_index, edge_weight = add_self_loops(
+	edge_index, edge_weight, fill_value, num_nodes)
+
+    row, col = edge_index
+    from torch_scatter import scatter_add
+    deg = scatter_add(edge_weight, row, dim=0, dim_size=num_nodes)
+    deg_inv_sqrt = deg.pow(-1)
+    deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
+
+    values = deg_inv_sqrt[row] * edge_weight
+    shape = adj.shape
+    return torch.sparse.FloatTensor(edge_index, values, shape)
+
+def degree_normalize_adj_tensor(adj, sparse=True):
+    device = torch.device("cuda:0" if adj.is_cuda else "cpu")
+    if sparse:
+        return  degree_normalize_sparse_tensor(adj)
+        # adj = to_scipy(adj)
+        # mx = degree_normalize_adj(adj)
+        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+    else:
+        mx = adj + torch.eye(adj.shape[0]).to(device)
+        rowsum = mx.sum(1)
+        r_inv = rowsum.pow(-1).flatten()
+        r_inv[torch.isinf(r_inv)] = 0.
+        r_mat_inv = torch.diag(r_inv)
+        mx = r_mat_inv @ mx
+    return mx
 
 def accuracy(output, labels):
+    if type(labels) is not torch.Tensor:
+        labels = torch.LongTensor(labels)
     preds = output.max(1)[1].type_as(labels)
     correct = preds.eq(labels).double()
     correct = correct.sum()
     return correct / len(labels)
+
+def loss_acc(output, labels, targets, avg_loss=True):
+    if type(labels) is not torch.Tensor:
+        labels = torch.LongTensor(labels)
+    preds = output.max(1)[1].type_as(labels)
+    correct = preds.eq(labels).double()[targets]
+    loss = F.nll_loss(output[targets], labels[targets], reduction='mean' if avg_loss else 'none')
+
+    if avg_loss:
+        return loss, correct.sum() / len(targets)
+    return loss, correct
+    # correct = correct.sum()
+    # return loss, correct / len(labels)
+
+def classification_margin(output, true_label):
+    probs = torch.exp(output)
+    probs_true_label = probs[true_label]
+    probs[true_label] = 0
+    probs_best_second_class = probs[probs.argmax()]
+    return (probs_true_label - probs_best_second_class).item()
+
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""
@@ -111,15 +220,24 @@ def to_scipy(tensor):
         return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
 
 def is_sparse_tensor(tensor):
-
     # if hasattr(tensor, 'nnz'):
     if tensor.layout == torch.sparse_coo:
         return True
     else:
         return False
 
-def get_train_val_test(idx, train_size, val_size, test_size, stratify):
+def get_train_val_test(nnodes, val_size=0.1, test_size=0.8, stratify=None, seed=None):
+    '''
+        This setting follows nettack/mettack, where we split the nodes
+        into 10% training, 10% validation and 80% testing data
+    '''
+    assert stratify is not None, 'stratify cannot be None!'
 
+    if seed is not None:
+        np.random.seed(seed)
+
+    idx = np.arange(nnodes)
+    train_size = 1 - val_size - test_size
     idx_train_and_val, idx_test = train_test_split(idx,
                                                    random_state=None,
                                                    train_size=train_size + val_size,
@@ -137,6 +255,28 @@ def get_train_val_test(idx, train_size, val_size, test_size, stratify):
 
     return idx_train, idx_val, idx_test
 
+def get_train_val_test_gcn(labels, seed=None):
+    '''
+        This setting follows gcn, where we randomly sample 20 instances for each class
+        as training data, 500 instances as validation data, 1000 instances as test data.
+    '''
+    if seed is not None:
+        np.random.seed(seed)
+
+    idx = np.arange(len(labels))
+    nclass = labels.max() + 1
+    idx_train = []
+    idx_unlabeled = []
+    for i in range(nclass):
+        labels_i = idx[labels==i]
+        labels_i = np.random.permutation(labels_i)
+        idx_train = np.hstack((idx_train, labels_i[: 20])).astype(np.int)
+        idx_unlabeled = np.hstack((idx_unlabeled, labels_i[20: ])).astype(np.int)
+
+    idx_unlabeled = np.random.permutation(idx_unlabeled)
+    idx_val = idx_unlabeled[: 500]
+    idx_test = idx_unlabeled[500: 1500]
+    return idx_train, idx_val, idx_test
 
 def unravel_index(index, array_shape):
     rows = index // array_shape[1]
@@ -303,3 +443,12 @@ def visualize(your_var):
     from torch.autograd import Variable
     from torchviz import make_dot
     make_dot(your_var).view()
+
+def reshape_mx(mx, shape):
+    indices = mx.nonzero()
+    return sp.csr_matrix((mx.data, (indices[0], indices[1])), shape=shape)
+
+# def check_path(file_path):
+#     if not osp.exists(file_path):
+#         os.system(f'mkdir -p {file_path}')
+

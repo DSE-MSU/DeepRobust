@@ -65,4 +65,3 @@ plt.imshow(AdvExArray, vmin = 0, vmax = 255)
 plt.savefig('./adversary_examples/cifar_advexample_pgd.png')
 
 
-

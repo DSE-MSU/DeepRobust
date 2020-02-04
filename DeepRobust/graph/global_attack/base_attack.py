@@ -3,6 +3,7 @@ from torch.nn.modules.module import Module
 import scipy.sparse as sp
 from DeepRobust.graph import utils
 import os.path as osp
+import numpy as np
 
 class BaseAttack(Module):
 
@@ -23,6 +24,12 @@ class BaseAttack(Module):
 
     def attack(self):
         pass
+
+    def check_adj(self, adj):
+        '''
+            check if the modified adjacency is symmetric and unweighted
+        '''
+        assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
 
     def save_adj(self, root=r'/tmp/', name='mod_adj'):
         assert self.modified_adj is not None, \

@@ -31,7 +31,7 @@ def download_model():
 
     return model
 
-def save_checkpoint(now_epoch, net, optimizer, lr_scheduler, file_name):
+===def save_checkpoint(now_epoch, net, optimizer, lr_scheduler, file_name):
     checkpoint = {'epoch': now_epoch,
                   'state_dict': net.state_dict(),
                   'optimizer_state_dict': optimizer.state_dict(),
@@ -73,7 +73,7 @@ def make_symlink(source, link_name):
         os.symlink(source, link_name)
         return
     else:
-        print('Source path not exists')    
+        print('Source path not exists')
 
 from texttable import Texttable
 def tab_printer(args):
@@ -84,7 +84,7 @@ def tab_printer(args):
     """
     args = vars(args)
     keys = sorted(args.keys())
-    t = Texttable() 
+    t = Texttable()
     t.add_rows([["Parameter", "Value"]] +  [[k.replace("_"," ").capitalize(), args[k]] for k in keys])
     print(t.draw())
 
@@ -160,7 +160,7 @@ def adjust_learning_rate(optimizer, epoch, learning_rate):
         lr = learning_rate * 0.001
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
-    
+
     return optimizer
 
 def progress_bar(current, total, msg=None):
@@ -205,3 +205,4 @@ def progress_bar(current, total, msg=None):
     else:
         sys.stdout.write('\n')
     sys.stdout.flush()
+

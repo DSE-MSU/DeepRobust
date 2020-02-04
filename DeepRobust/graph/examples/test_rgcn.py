@@ -33,7 +33,6 @@ adj, features, labels = data.adj, data.features, data.labels
 # load pre-attacked graph
 perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
 perturbed_adj = perturbed_data.adj
-perturbed_adj = adj
 # shuffle
 _N = perturbed_adj.shape[0]
 val_size = 0.1
@@ -49,7 +48,7 @@ model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1], nclass=labe
 
 model = model.to(device)
 
-model.fit_(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
 
 # You can use the inner function of model to test

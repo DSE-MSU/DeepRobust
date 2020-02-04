@@ -10,11 +10,11 @@ import ipdb
 
 from DeepRobust.image.attack.base_attack import BaseAttack
 
-class FGSM(BaseAttack):
+class FGM(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):
 
-        super(FGSM, self).__init__(model, device)
+        super(FGM, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
         label = label.type(torch.FloatTensor)
@@ -46,7 +46,7 @@ class FGSM(BaseAttack):
 
 def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
 
-    imageArray = image.detach().cpu().numpy()
+    imageArray = image.cpu().numpy()
     X_fgsm = torch.tensor(imageArray).to(device)
 
     #print(image.data)
@@ -57,7 +57,7 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
     opt.zero_grad()
 
     loss = nn.CrossEntropyLoss()(model(X_fgsm), label)
-
+    
     loss.backward()
     #print(X_fgsm)
     #print(X_fgsm.grad)

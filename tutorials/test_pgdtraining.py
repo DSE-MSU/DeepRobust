@@ -15,13 +15,13 @@ train_loader = torch.utils.data.DataLoader(
                 datasets.MNIST('DeepRobust/image/defense/data', train=True, download=True,
                 transform=transforms.Compose([transforms.ToTensor()])),
                 batch_size=100,
-                shuffle=True)  
+                shuffle=True)
 
 test_loader = torch.utils.data.DataLoader(
             datasets.MNIST('DeepRobust/image/defense/data', train=False,
             transform=transforms.Compose([transforms.ToTensor()])),
             batch_size=1000,
-            shuffle=True)  
+            shuffle=True)
 
 """
 TRAIN DEFENSE MODEL
@@ -35,3 +35,4 @@ defense = PGDtraining(model, 'cuda')
 defense.generate(train_loader, test_loader, **defense_params["PGDtraining_MNIST"])
 
 print('====== FINISH TRAINING =====')
+
