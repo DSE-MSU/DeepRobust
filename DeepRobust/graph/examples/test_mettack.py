@@ -6,12 +6,9 @@ from DeepRobust.graph.defense import GCN
 from DeepRobust.graph.global_attack import MetaApprox, Metattack
 from DeepRobust.graph.utils import *
 from DeepRobust.graph.data import Dataset
-
 import argparse
-
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -40,27 +37,21 @@ torch.manual_seed(args.seed)
 if device != 'cpu':
     torch.cuda.manual_seed(args.seed)
 
-data = Dataset(root='/tmp/', name=args.dataset)
+data = Dataset(root='/tmp/', name=args.dataset, setting='nettack')
 adj, features, labels = data.adj, data.features, data.labels
-nclass = max(labels) + 1
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # shuffle
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
-
-idx = np.arange(adj.shape[0])
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
+# idx_train, idx_val, idx_test = get_train_val_test(nnodes=adj.shape[0], val_size=0.1, test_size=0.8, stratify=labels)
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
-nfeat = features.shape[1]
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0.5, with_relu=False, with_bias=True, weight_decay=5e-4)
+                nhid=16, dropout=0.5, with_relu=False, with_bias=True, weight_decay=5e-4, device=device)
 
 adj = adj.to(device)
 features = features.to(device)

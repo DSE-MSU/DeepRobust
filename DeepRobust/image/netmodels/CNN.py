@@ -14,7 +14,7 @@ class Net(nn.Module):
         self.H = H
         self.W = W
         self.out_channel2 = out_channel2
-        
+
         ## define two convolutional layers
         self.conv1 = nn.Conv2d(in_channels = in_channel1,
                                out_channels = out_channel1,
@@ -50,7 +50,6 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
-
 
 def train(model, device, train_loader, optimizer, epoch):
     model.train()

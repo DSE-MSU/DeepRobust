@@ -1,7 +1,7 @@
 """
-Reference: 
-Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019). 
-You only propagate once: Painless adversarial training using maximal principle. 
+Reference:
+Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019).
+You only propagate once: Painless adversarial training using maximal principle.
 arXiv preprint arXiv:1905.00877.
 
 Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
@@ -142,7 +142,7 @@ def add_path(path):
         sys.path.append(path)
 
 class Hamiltonian(_Loss):
-    
+
     def __init__(self, layer, reg_cof = 1e-4):
         super(Hamiltonian, self).__init__()
         self.layer = layer
@@ -255,7 +255,7 @@ def eval_one_epoch(net, batch_generator,  DEVICE=torch.device('cuda:0'), AttackM
         adv_acc = adv_accuracy.mean if AttackMethod is not None else 0
     return clean_accuracy.mean, adv_acc
 
-   
+
 class YOPO(BaseDefense):
     def __init__(self, model, device = 'cuda'):
         if not torch.cuda.is_available():
@@ -263,7 +263,7 @@ class YOPO(BaseDefense):
             self.device = 'cpu'
         else:
             self.device = device
-        
+
         self.model = model.to(self.device)
 
     def generate(self, train_loader, test_loader, **kwargs):
@@ -276,7 +276,7 @@ class YOPO(BaseDefense):
         sigma = 0.01
         eps = 0.3
         self.lr = 1e-2
-        self.momentum = 0.9 
+        self.momentum = 0.9
         create_optimizer = SGDOptimizerMaker(lr =1e-2 / K, momentum = 0.9, weight_decay = weight_decay)
         create_optimizer = torch.optim.SGD(params, lr=self.lr, momentum=self.momentum, weight_decay=self.weight_decay)
 
@@ -305,7 +305,7 @@ class YOPO(BaseDefense):
         parser.add_argument('--auto-continue', default=False, action = 'store_true',
                             help = 'Continue from the latest checkpoint')
         args = parser.parse_args()
-        
+
         DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         net = YOPOCNN.Net()
@@ -320,7 +320,7 @@ class YOPO(BaseDefense):
                                                                         milestones = [15, 19], gamma = 0.1)
         LayerOneTrainer = FastGradientLayerOneTrainer(Hamiltonian_func, layer_one_optimizer,
                                                     inner_iters, sigma, eps)
-        
+
         ds_train = utils.create_train_dataset(args.batch_size)
         ds_val = utils.create_test_dataset(args.batch_size)
 
@@ -342,15 +342,15 @@ class YOPO(BaseDefense):
             descrip_str = 'Training epoch:{}/{} -- lr:{}'.format(now_epoch, num_epochs,
                                                                             lr_scheduler.get_lr()[0])
             s_time = time.time()
-            
-            #train 
+
+            #train
             acc, yopoacc = train_one_epoch(net, ds_train, optimizer, criterion, LayerOneTrainer, K,
                             DEVICE, descrip_str)
-            
+
             now_train_time = now_train_time + time.time() - s_time
             tb_train_dic = {'Acc':acc, 'YoPoAcc':yopoacc}
             print(tb_train_dic)
-            
+
             # writer.add_scalars('Train', tb_train_dic, now_epoch)
             # if val_interval > 0 and now_epoch % val_interval == 0:
             #     acc, advacc = eval_one_epoch(net, ds_val, DEVICE, EvalAttack)
@@ -428,3 +428,4 @@ class YOPO(BaseDefense):
             pbar.set_postfix(pbar_dic)
 
         return cleanacc, yofoacc
+

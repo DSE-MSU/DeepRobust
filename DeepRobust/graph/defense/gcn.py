@@ -36,7 +36,10 @@ class GraphConvolution(Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
-        support = torch.mm(input, self.weight)
+        if input.data.is_sparse:
+            support = torch.spmm(input, self.weight)
+        else:
+            support = torch.mm(input, self.weight)
         output = torch.spmm(adj, support)
         if self.bias is not None:
             return output + self.bias
@@ -51,10 +54,11 @@ class GraphConvolution(Module):
 
 class GCN(nn.Module):
 
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
+    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device=None):
 
         super(GCN, self).__init__()
 
+        assert device is not None, "Please specify 'device'!"
         self.device = device
         self.nfeat = nfeat
         self.hidden_sizes = [nhid]
@@ -89,16 +93,21 @@ class GCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=False):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False):
         '''
             train the gcn model, when idx_val is not None, pick the best model
             according to the validation loss
         '''
+        if initialize:
+            self.initialize()
 
         if type(adj) is not torch.Tensor:
             features, adj, labels = utils.to_tensor(features, adj, labels, device=self.device)
+        else:
+            features = features.to(self.device)
+            adj = adj.to(self.device)
+            labels = labels.to(self.device)
 
-        self.initialize()
         if utils.is_sparse_tensor(adj):
             adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
         else:
@@ -114,7 +123,6 @@ class GCN(nn.Module):
             self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
     def _train_without_val(self, labels, idx_train, train_iters, verbose):
-        print('=== training gcn model ===')
         self.train()
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         for i in range(train_iters):
@@ -156,12 +164,15 @@ class GCN(nn.Module):
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
                 self.output = output
+                weights = deepcopy(self.state_dict())
 
             if acc_val > best_acc_val:
                 best_acc_val = acc_val
                 self.output = output
+                weights = deepcopy(self.state_dict())
 
         print('=== picking the best model according to the performance on validation ===')
+        self.load_state_dict(weights)
 
     def test(self, idx_test):
         # output = self.forward()
@@ -176,7 +187,19 @@ class GCN(nn.Module):
         # TODO
         pass
 
-    def predict(self):
+    def predict(self, features=None, adj=None):
+        '''By default, inputs are unnormalized data'''
         self.eval()
-        return self.forward(self.features, self.adj_norm)
+        if features is None and adj is None:
+            return self.forward(self.features, self.adj_norm)
+        else:
+            if type(adj) is not torch.Tensor:
+                features, adj = utils.to_tensor(features, adj, device=self.device)
+
+            self.features = features
+            if utils.is_sparse_tensor(adj):
+                self.adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+            else:
+                self.adj_norm = utils.normalize_adj_tensor(adj)
+            return self.forward(self.features, self.adj_norm)
 

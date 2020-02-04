@@ -41,7 +41,7 @@ X = X.to('cuda').float()
 adversary = DeepFool(model)
 AdvExArray = adversary.generate(X, Y).float()
 
-# predict 
+# predict
 pred = model(AdvExArray).cpu().detach()
 
 # print and save result

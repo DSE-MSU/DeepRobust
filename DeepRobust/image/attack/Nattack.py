@@ -13,21 +13,21 @@ class NATTACK(BaseAttack):
         super(NATTACK, self).__init__(model, device)
         self.model = model
         self.device = device
-    
+
     def generate(self, **kwargs):
         assert self.parse_params(**kwargs)
-        return attack(self.model, self.dataloader, self.classnum, 
+        return attack(self.model, self.dataloader, self.classnum,
                            self.clip_max, self.clip_min, self.epsilon,
-                           self.population, self.max_iterations, 
+                           self.population, self.max_iterations,
                            self.learning_rate, self.sigma, self.target_or_not)
         assert self.check_type_device(self.dataloader)
 
     def parse_params(self,
                      dataloader,
                      classnum,
-                     target_or_not = False, 
-                     clip_max = 1, 
-                     clip_min = 0, 
+                     target_or_not = False,
+                     clip_max = 1,
+                     clip_min = 0,
                      epsilon = 0.2,
                      population = 300,
                      max_iterations = 400,
@@ -48,12 +48,12 @@ class NATTACK(BaseAttack):
         return True
 
 def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max_iterations, learning_rate, sigma, target_or_not):
-    
+
     logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s')
     logger = logging.getLogger('log_nattack')
     logger.setLevel(logging.DEBUG)
     logger.info('Start attack.')
-    
+
     #initialization
     totalImages = 0
     succImages = 0
@@ -144,4 +144,5 @@ def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max
         else:
             #print('succeed:',successlist.__len__())
             print('....................................')
+
 

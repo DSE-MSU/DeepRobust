@@ -32,7 +32,7 @@ yy = yy.float()
 
 
 attack = CarliniWagner(model, device='cuda')
-AdvExArray = attack.generate(xx, yy, target_label = 1, classnum = 10, **attack_params['CW_MNIST'])
+AdvExArray = attack.generate(xx, yy, target = 1, classnum = 10, **attack_params['CW_MNIST'])
 Adv = AdvExArray.clone()
 
 # test the result

@@ -3,4 +3,5 @@ from .dice import DICE
 from .mettack import MetaApprox, Metattack
 from .random import Random
 
-__all__ = ['BaseAttack', 'DICE', 'MetaApprox', 'Metattack']
+
+__all__ = ['BaseAttack', 'DICE', 'MetaApprox', 'Metattack', 'Random']

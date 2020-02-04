@@ -25,14 +25,14 @@ class DeepFool(BaseAttack):
             self.image = image
 
         assert self.parse_params(**kwargs)
-        
+
         return deepfool(self.model,
                         self.image,
                         self.num_classes,
                         self.overshoot,
                         self.max_iteration,
                         self.device)
-    
+
     def parse_params(self,
                      num_classes = 10,
                      overshoot = 0.02,
@@ -45,14 +45,14 @@ class DeepFool(BaseAttack):
 def deepfool(model, image, num_classes, overshoot, max_iter, device):
     """
        :param image: 1*H*W*3
-            -a batch of Image 
-       :param model: 
+            -a batch of Image
+       :param model:
             -network (input: images, output: values of activation **BEFORE** softmax).
        :param num_classes: int
             -num_classes (limits the number of classes to test against, by default = 10)
        :param overshoot: float
             -used as a termination criterion to prevent vanishing updates (default = 0.02).
-       :param max_iter: int 
+       :param max_iter: int
             -maximum number of iterations for deepfool (default = 50)
        :return: tensor
             -minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
@@ -108,8 +108,9 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
 
         if (not np.argmax(fs.data.cpu().numpy().flatten()) == label):
             break
-       
+
 
     r_tot = (1+overshoot)*r_tot
 
     return pert_image
+
