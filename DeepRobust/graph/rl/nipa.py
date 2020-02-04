@@ -25,6 +25,7 @@ class NIPA(object):
 
         self.features = features
         self.labels = labels
+        self.possible_labels = np.arange(labels.max() + 1)
         self.idx_meta = idx_meta
         self.idx_test = idx_test
         self.num_wrong = num_wrong
@@ -39,7 +40,7 @@ class NIPA(object):
         self.gm = gm
         self.device = device
 
-        self.mem_pool = NstepReplayMem(memory_size=500000, n_steps=2 * num_mod, balance_sample=reward_type == 'binary', model='nipa')
+        self.mem_pool = NstepReplayMem(memory_size=500000, n_steps=3, balance_sample=reward_type == 'binary', model='nipa')
         self.env = env
 
         # self.net = QNetNode(features, labels, list_action_space)
@@ -58,7 +59,7 @@ class NIPA(object):
         self.eps_start = 1.0
         self.eps_end = 0.05
         self.eps_step = 100000
-        self.burn_in = 10
+        self.burn_in = 100
         self.step = 0
         self.pos = 0
         self.best_eval = None
@@ -95,17 +96,21 @@ class NIPA(object):
 
             self.env.step(list_at)
 
-            env = self.env
-            assert (env.rewards is not None) == env.isActionFinished()
-            if env.isActionFinished():
-                rewards = env.rewards
-                s_prime = None
+            assert (self.env.rewards is not None) == self.env.isActionFinished()
+            if self.env.isActionFinished():
+                rewards = self.env.rewards
+                s_prime = self.env.cloneState()
             else:
                 # rewards = env.rewards
                 rewards = np.zeros(len(list_at), dtype=np.float32)
                 s_prime = self.env.cloneState()
 
-            self.mem_pool.add_list(list_st, list_at, rewards, s_prime, [env.isTerminal()] * len(list_at), t)
+            if self.env.isTerminal():
+                rewards = np.zeros(len(list_at), dtype=np.float32)
+                s_prime = None
+
+            self.mem_pool.add_list(list_st, list_at, rewards, s_prime,
+                                    [self.env.isTerminal()] * len(list_at), t)
             list_of_list_st.append( deepcopy(list_st) )
             list_of_list_at.append( deepcopy(list_at) )
             t += 1
@@ -171,11 +176,14 @@ class NIPA(object):
 
     def train(self, episodes=10, num_steps=100000, lr=0.01):
         optimizer = optim.Adam(self.net.parameters(), lr=lr)
+
+        self.env.init_overall_steps()
+        pbar = tqdm(range(self.burn_in), unit='batch')
+        for p in pbar:
+            self.run_simulation()
+
         for epi in range(episodes):
             self.env.init_overall_steps()
-            pbar = tqdm(range(self.burn_in), unit='batch')
-            for p in pbar:
-                self.run_simulation()
             pbar = tqdm(range(num_steps), unit='steps')
             for self.step in pbar:
 
@@ -184,19 +192,45 @@ class NIPA(object):
                 if self.step % 123 == 0:
                     # update the params of old_net
                     self.take_snapshot()
-                if self.step % 500 == 0:
-                    self.eval()
+
+                # TODO
+                # if self.step % 500 == 0:
+                #     self.eval()
 
                 cur_time, list_st, list_at, list_rt, list_s_primes, list_term = self.mem_pool.sample(batch_size=self.batch_size)
                 list_target = torch.Tensor(list_rt).to(self.device)
 
                 if not list_term[0]:
-                    target_nodes, _, picked_nodes = zip(*list_s_primes)
+
+                    # target_nodes, _, picked_nodes = zip(*list_s_primes)
+                    # send actions None
+
+                    def possible_actions(list_st, list_at, t):
+
+                        import ipdb
+                        ipdb.set_trace()
+
+                        if t == 0:
+                            return np.repeat(self.injected_nodes)
+
+                        if t == 1:
+                            actions = []
+                            for i in range(len(list_at)):
+                                list_st[i], self.nodes_set
+                            return actions
+
+                        if t == 2:
+                            return np.repeat(self.possible_labels)
+
+                    actions = possible_actions(list_st, list_at, t+1)
                     _, q_t_plus_1 = self.old_net(cur_time + 1, list_s_primes, None)
+
+                    import ipdb
+                    ipdb.set_trace()
+
                     _, q_rhs = node_greedy_actions(target_nodes, picked_nodes, q_t_plus_1, self.old_net)
                     list_target += q_rhs
 
-                # list_target = Variable(list_target.view(-1, 1))
                 list_target = list_target.view(-1, 1)
                 _, q_sa = self.net(cur_time, list_st, list_at)
                 q_sa = torch.cat(q_sa, dim=0)
@@ -205,5 +239,5 @@ class NIPA(object):
                 loss.backward()
                 optimizer.step()
                 pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
-            # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+                # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
 
