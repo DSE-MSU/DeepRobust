@@ -68,6 +68,7 @@ class GraphNormTool(object):
 class ModifiedGraph(object):
     def __init__(self, directed_edges = None, weights = None):
         self.edge_set = set()  #(first, second)
+        self.node_set = set(range(StaticGraph.get_gsize()[0]))
         if directed_edges is not None:
             self.directed_edges = deepcopy(directed_edges)
             self.weights = deepcopy(weights)
@@ -105,6 +106,19 @@ class ModifiedGraph(object):
             return added_adj
         else:
             return None
+
+    def get_possible_nodes(self, target_node):
+        conncted = set()
+        for n1, n2 in self.edge_set:
+            if n1 == target_node:
+                conncted.add(target_node)
+
+        edges = np.array(self.directed_edges, dtype=np.int64)
+        rev_edges = np.array([edges[:, 1], edges[:, 0]], dtype=np.int64)
+        edges = np.hstack((edges.T, rev_edges))
+        adj = self.get_extra_adj(device='cpu')
+        adj[target_node]
+        csr_matrix((data, (row, col))
 
 class NodeAttackEnv(object):
 
