@@ -40,7 +40,29 @@ attack_params = {
 
 defense_params = {
     "PGDtraining_MNIST":{
-        'save_dir': "defense_model",
-        'save_model': True
-    } 
+        'save_dir': "./defense_model",
+        'save_model': True,
+        'save_name' : "mnist_fgsmtraining_0.2.pt",
+        'epsilon' : 0.3,
+        'epoch_num' : 100,
+        'lr' : 0.001
+    },
+
+    "FGSMtraining_MNIST":{
+        'save_dir': "./defense_model",
+        'save_model': True,
+        'save_name' : "mnist_fgsmtraining_0.2.pt",
+        'epsilon' : 0.2,
+        'epoch_num' : 50,
+        'lr_train' : 0.001
+    },
+
+    "FAST_MNIST":{
+        'save_dir': "./defense_model",
+        'save_model': True,
+        'save_name' : "fast_mnist_0.3.pt",
+        'epsilon' : 0.3,
+        'epoch_num' : 50,
+        'lr_train' : 0.001
+    }
 }
