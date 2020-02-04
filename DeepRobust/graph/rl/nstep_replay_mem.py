@@ -33,6 +33,7 @@ class NstepReplaySubMemCell(object):
             self.add(list_st[i], list_at[i], list_rt[i], sp, list_term[i])
 
     def sample(self, batch_size):
+
         assert self.count >= batch_size
 
         list_st = []

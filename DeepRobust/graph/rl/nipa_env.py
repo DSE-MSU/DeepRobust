@@ -35,6 +35,7 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.n_injected = len(degrees) - N
         assert self.n_injected == int(ratio * N)
 
+        self.ori_adj_size = N
         self.n_perturbations = int(self.n_injected * avg_degree)
         self.all_nodes = np.arange(N)
         self.injected_nodes = self.all_nodes[-self.n_injected: ]
@@ -77,9 +78,7 @@ class NodeInjectionEnv(NodeAttackEnv):
         if (self.n_steps + 1) % 3 == 0:
             for i in range(self.parallel_size):
                 # change label
-                import ipdb
-                ipdb.set_trace()
-                self.modified_label_list[i][self.first_nodes[i]] = actions[i]
+                self.modified_label_list[i][self.first_nodes[i] - self.ori_adj_size] = actions[i]
 
             self.first_nodes = None
             self.second_nodes = None
@@ -191,13 +190,13 @@ class NodeInjectionEnv(NodeAttackEnv):
 
             if self.first_nodes is not None and self.second_nodes is not None:
                 # a3: choose label
-                cur_action = np.random.randint(self.label.max() + 1)
+                cur_action = np.random.randint(self.labels.max() + 1)
 
             act_list.append(cur_action)
         return act_list
 
     def isActionFinished(self):
-        if (self.n_steps +1) % 3 == 0:
+        if (self.n_steps) % 3 == 0 and self.n_steps != 0:
             return True
         return False
 
@@ -209,20 +208,6 @@ class NodeInjectionEnv(NodeAttackEnv):
     def getStateRef(self):
         return list(zip(self.modified_list, self.modified_label_list))
 
-        # cp_first = [None] * len(self.target_nodes)
-        # if self.first_nodes is not None:
-        #     cp_first = self.first_nodes
-
-        # return zip(self.target_nodes, self.modified_list, cp_first)
-
     def cloneState(self):
-        # TODO
-        return list(zip(deepcopy(self.modified_list), deepcopy(self.labels[self.injected_nodes])))
-
-        # cp_first = [None] * len(self.target_nodes)
-        # if self.first_nodes is not None:
-        #     cp_first = self.first_nodes[:]
-
-        # return list(zip(self.target_nodes[:], deepcopy(self.modified_list), cp_first))
-
+        return list(zip(deepcopy(self.modified_list), deepcopy(self.modified_label_list)))
 

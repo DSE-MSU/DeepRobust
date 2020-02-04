@@ -13,7 +13,7 @@ from DeepRobust.graph.rl.env import GraphNormTool
 
 class QNetNode(nn.Module):
 
-    def __init__(self, node_features, node_labels, list_action_space, bilin_q=0, embed_dim=64, mlp_hidden=64, max_lv=1, gm='mean_field', device='cpu'):
+    def __init__(self, node_features, node_labels, list_action_space, bilin_q=1, embed_dim=64, mlp_hidden=64, max_lv=1, gm='mean_field', device='cpu'):
         '''
         bilin_q: bilinear q or not
         mlp_hidden: mlp hidden layer size
@@ -21,7 +21,9 @@ class QNetNode(nn.Module):
         '''
         super(QNetNode, self).__init__()
         self.node_features = node_features
-        self.node_labels = node_labels
+        self.identity = torch.eye(node_labels.max() + 1).to(node_labels.device)
+        self.node_labels = self.to_onehot(node_labels)
+
         self.list_action_space = list_action_space
         self.total_nodes = len(list_action_space)
 
@@ -31,17 +33,11 @@ class QNetNode(nn.Module):
         self.max_lv = max_lv
         self.gm = gm
 
-        if bilin_q:
-            last_wout = embed_dim
-        else:
-            last_wout = 1
-            self.bias_target = Parameter(torch.Tensor(1, embed_dim))
-
         if mlp_hidden:
-            self.linear_1 = nn.Linear(embed_dim * 2, mlp_hidden)
-            self.linear_out = nn.Linear(mlp_hidden, last_wout)
+            self.linear_1 = nn.Linear(embed_dim * 3, mlp_hidden)
+            self.linear_out = nn.Linear(mlp_hidden, 1)
         else:
-            self.linear_out = nn.Linear(embed_dim * 2, last_wout)
+            self.linear_out = nn.Linear(embed_dim * 3, 1)
 
         self.w_n2l = Parameter(torch.Tensor(node_features.size()[1], embed_dim))
         self.bias_n2l = Parameter(torch.Tensor(embed_dim))
@@ -50,16 +46,40 @@ class QNetNode(nn.Module):
         self.conv_params = nn.Linear(embed_dim, embed_dim)
         self.norm_tool = GraphNormTool(normalize=True, gm=self.gm, device=device)
         weights_init(self)
-        self.label_encoder = nn.Linear(embed_dim, embed_label_dim)
 
-    def encode_labels(self):
-        # to one hot
-        # two layer nn
-        return
+        self.label_encoder_1 = nn.Linear(self.node_labels.shape[1], mlp_hidden)
+        self.label_encoder_2 = nn.Linear(mlp_hidden, embed_dim)
 
-    def get_graph_embedding(self):
+    def to_onehot(self, labels):
+        return self.identity[labels]
 
-        return
+    def get_label_embedding(self, labels):
+        # int to one hot
+        onehot = self.to_onehot(labels)
+
+        x = F.relu(self.label_encoder_1(onehot))
+        x = F.relu(self.label_encoder_2(x))
+        return x
+
+    def get_graph_embedding(self, adj):
+        if self.node_features.data.is_sparse:
+            node_embed = torch.spmm(self.node_features, self.w_n2l)
+        else:
+            node_embed = torch.mm(self.node_features, self.w_n2l)
+
+        node_embed += self.bias_n2l
+
+        input_message = node_embed
+        node_embed = F.relu(input_message)
+
+        for i in range(self.max_lv):
+            n2npool = torch.spmm(adj, node_embed)
+            node_linear = self.conv_params(n2npool)
+            merged_linear = node_linear + input_message
+            node_embed = F.relu(merged_linear)
+
+        graph_embed = torch.mean(node_embed, dim=0, keepdim=True)
+        return graph_embed, node_embed
 
     def make_spmat(self, n_rows, n_cols, row_idx, col_idx):
         idxes = torch.LongTensor([[row_idx], [col_idx]])
@@ -71,50 +91,34 @@ class QNetNode(nn.Module):
         return sp
 
     def forward(self, time_t, states, actions, greedy_acts=False, is_inference=False):
-
-        # get graph representation
-
-        # get label reprensentation
-
-        # concat them and send it to neural network
-
         list_pred = []
+        batch_graph, modified_labels = zip(*states)
         with torch.set_grad_enabled(mode=not is_inference):
+
             for i in range(len(batch_graph)):
                 device = self.node_features.device
-                adj = self.norm_tool.norm_extra( batch_graph[i].get_extra_adj(device))
+                adj = self.norm_tool.norm_extra(batch_graph[i].get_extra_adj(device))
+                # get graph representation
+                graph_embed, node_embed = self.get_graph_embedding(adj)
 
-                lv = 0
-                input_message = node_embed
+                # get label reprensentation
+                label_embed = self.get_label_embedding(modified_labels[i])
 
-                node_embed = F.relu(input_message)
-                while lv < self.max_lv:
-                    n2npool = torch.spmm(adj, node_embed)
-                    node_linear = self.conv_params( n2npool )
-                    merged_linear = node_linear + input_message
-                    node_embed = F.relu(merged_linear)
-                    lv += 1
-
-                graph_embed = torch.mean(node_embed, dim=0, keepdim=True)
-
-                if actions is None:
-                    graph_embed = graph_embed.repeat(node_embed.size()[0], 1)
+                # get action reprensentation
+                if time_t != 2:
+                    action_embed = node_embed[actions[i]]
                 else:
-                    if region is not None:
-                        act_idx = region.index(actions[i])
-                    else:
-                        act_idx = actions[i]
-                    node_embed = node_embed[act_idx, :].view(1, -1)
+                    import ipdb
+                    ipdb.set_trace()
+                    action_embed = self.get_label_embedding(actions[i])
 
-                embed_s_a = torch.cat((node_embed, graph_embed), dim=1)
+                # concat them and send it to neural network
+                embed_s_a = torch.cat((graph_embed, label_embed, action_embed), dim=1)
 
                 if self.mlp_hidden:
                     embed_s_a = F.relu( self.linear_1(embed_s_a) )
-
                 raw_pred = self.linear_out(embed_s_a)
 
-                if self.bilin_q:
-                    raw_pred = torch.mm(raw_pred, target_embed)
                 list_pred.append(raw_pred)
 
         if greedy_acts:
@@ -123,12 +127,6 @@ class QNetNode(nn.Module):
         return actions, list_pred
 
 
-        if self.node_features.data.is_sparse:
-            input_node_linear = torch.spmm(self.node_features, self.w_n2l)
-        else:
-            input_node_linear = torch.mm(self.node_features, self.w_n2l)
-
-        input_node_linear += self.bias_n2l
 
         batch_graph, modified_labels = zip(*states)
 
