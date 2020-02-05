@@ -7,7 +7,7 @@ cmd_opt.add_argument('-ratio', type=float, default=0.01, help='ratio of injected
 
 cmd_opt.add_argument('-saved_model', type=str, default=None, help='saved model')
 cmd_opt.add_argument('-save_dir', type=str, default=None, help='save folder')
-cmd_opt.add_argument('-ctx', type=str, default='cpu', help='cpu/gpu')
+cmd_opt.add_argument('-ctx', type=str, default='gpu', help='cpu/gpu')
 
 cmd_opt.add_argument('-phase', type=str, default='train', help='train/test')
 cmd_opt.add_argument('-batch_size', type=int, default=10, help='minibatch size')

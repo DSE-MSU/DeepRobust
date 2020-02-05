@@ -42,11 +42,9 @@ adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # shuffle
-# idx_train, idx_val, idx_test = get_train_val_test(nnodes=adj.shape[0], val_size=0.1, test_size=0.8, stratify=labels)
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
-
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model

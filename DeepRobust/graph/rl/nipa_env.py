@@ -19,7 +19,7 @@ from DeepRobust.graph.rl.env import *
 
 class NodeInjectionEnv(NodeAttackEnv):
 
-    def __init__(self, features, labels, idx_val, dict_of_lists, classifier, ratio=0.01, parallel_size=2, reward_type='binary'):
+    def __init__(self, features, labels, idx_train, idx_val, dict_of_lists, classifier, ratio=0.01, parallel_size=1, reward_type='binary'):
         '''
             number of injected nodes: ratio*|V|
             number of modifications: ratio*|V|*|D_avg|
@@ -35,10 +35,13 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.n_injected = len(degrees) - N
         assert self.n_injected == int(ratio * N)
 
+        self.ori_adj_size = N
         self.n_perturbations = int(self.n_injected * avg_degree)
         self.all_nodes = np.arange(N)
         self.injected_nodes = self.all_nodes[-self.n_injected: ]
         self.previous_acc = [1] * parallel_size
+
+        self.idx_train = np.hstack((idx_train, self.injected_nodes))
         self.idx_val = idx_val
 
         self.modified_label_list = []
@@ -77,9 +80,7 @@ class NodeInjectionEnv(NodeAttackEnv):
         if (self.n_steps + 1) % 3 == 0:
             for i in range(self.parallel_size):
                 # change label
-                import ipdb
-                ipdb.set_trace()
-                self.modified_label_list[i][self.first_nodes[i]] = actions[i]
+                self.modified_label_list[i][self.first_nodes[i] - self.ori_adj_size] = actions[i]
 
             self.first_nodes = None
             self.second_nodes = None
@@ -95,65 +96,17 @@ class NodeInjectionEnv(NodeAttackEnv):
                 device = self.labels.device
                 extra_adj = self.modified_list[i].get_extra_adj(device=device)
                 adj = self.classifier.norm_tool.norm_extra(extra_adj)
+                labels = torch.cat((self.labels, self.modified_label_list[i]))
+                # self.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False)
+                self.classifier.fit(self.features, adj, labels, self.idx_train, normalize=False)
                 output = self.classifier(self.features, adj)
                 loss, acc = loss_acc(output, self.labels, self.idx_val)
-
-                r = 1 if self.previous_acc[i] > acc else -1
+                print(acc)
+                r = 1 if self.previous_acc[i] - acc > 0.01 else -1
+                self.previous_acc[i] = acc
                 rewards.append(r)
+                self.rewards = np.array(rewards).astype(np.float32)
 
-            self.rewards = np.array(rewards).astype(np.float32)
-
-                # self.previous_acc[i] = acc
-                # acc = np.copy(acc.double().cpu().view(-1).numpy())
-                # loss = loss.data.cpu().view(-1).numpy()
-                # self.list_acc_of_all.append(acc)
-                # acc_list.append(acc)
-                # loss_list.append(loss)
-
-            # self.binary_rewards = (np.array(acc_list) * -2.0 + 1.0).astype(np.float32)
-            # if self.reward_type == 'binary':
-            #     self.rewards = (np.array(acc_list) * -2.0 + 1.0).astype(np.float32)
-
-        # if self.first_nodes is None: # pick the first node of edge
-        #     assert self.n_steps % 2 == 0
-        #     self.first_nodes = actions[:]
-        # else:
-        #     for i in range(len(self.target_nodes)):
-        #         # assert self.first_nodes[i] != actions[i]
-        #         # deleta an edge from the graph
-        #         self.modified_list[i].add_edge(self.first_nodes[i], actions[i], -1.0)
-        #     self.first_nodes = None
-        #     self.banned_list = None
-        # self.n_steps += 1
-
-        # if self.isTerminal():
-        #     # only calc reward when its terminal
-        #     acc_list = []
-        #     loss_list = []
-        #     # for i in tqdm(range(len(self.target_nodes))):
-        #     for i in (range(len(self.target_nodes))):
-        #         device = self.labels.device
-        #         extra_adj = self.modified_list[i].get_extra_adj(device=device)
-        #         adj = self.classifier.norm_tool.norm_extra(extra_adj)
-
-        #         output = self.classifier(self.features, adj)
-
-        #         loss, acc = loss_acc(output, self.labels, self.all_targets, avg_loss=False)
-        #         # _, loss, acc = self.classifier(self.features, Variable(adj), self.all_targets, self.labels, avg_loss=False)
-
-        #         cur_idx = self.all_targets.index(self.target_nodes[i])
-        #         acc = np.copy(acc.double().cpu().view(-1).numpy())
-        #         loss = loss.data.cpu().view(-1).numpy()
-        #         self.list_acc_of_all.append(acc)
-        #         acc_list.append(acc[cur_idx])
-        #         loss_list.append(loss[cur_idx])
-
-        #     self.binary_rewards = (np.array(acc_list) * -2.0 + 1.0).astype(np.float32)
-        #     if self.reward_type == 'binary':
-        #         self.rewards = (np.array(acc_list) * -2.0 + 1.0).astype(np.float32)
-        #     else:
-        #         assert self.reward_type == 'nll'
-        #         self.rewards = np.array(loss_list).astype(np.float32)
 
     def sample_pos_rewards(self, num_samples):
         assert self.list_acc_of_all is not None
@@ -180,24 +133,19 @@ class NodeInjectionEnv(NodeAttackEnv):
 
             if self.first_nodes is not None and self.second_nodes is None:
                 # a2: choose a node from all nodes
-                # TODO cannot be connected with a1
                 cur_action = np.random.randint(len(self.list_action_space))
                 while (self.first_nodes[i], cur_action) in self.modified_list[i].edge_set:
-
-                    import ipdb
-                    ipdb.set_trace()
-
                     cur_action = np.random.randint(len(self.list_action_space))
 
             if self.first_nodes is not None and self.second_nodes is not None:
                 # a3: choose label
-                cur_action = np.random.randint(self.label.max() + 1)
+                cur_action = np.random.randint(self.labels.cpu().max() + 1)
 
             act_list.append(cur_action)
         return act_list
 
     def isActionFinished(self):
-        if (self.n_steps +1) % 3 == 0:
+        if (self.n_steps) % 3 == 0 and self.n_steps != 0:
             return True
         return False
 
@@ -209,20 +157,6 @@ class NodeInjectionEnv(NodeAttackEnv):
     def getStateRef(self):
         return list(zip(self.modified_list, self.modified_label_list))
 
-        # cp_first = [None] * len(self.target_nodes)
-        # if self.first_nodes is not None:
-        #     cp_first = self.first_nodes
-
-        # return zip(self.target_nodes, self.modified_list, cp_first)
-
     def cloneState(self):
-        # TODO
-        return list(zip(deepcopy(self.modified_list), deepcopy(self.labels[self.injected_nodes])))
-
-        # cp_first = [None] * len(self.target_nodes)
-        # if self.first_nodes is not None:
-        #     cp_first = self.first_nodes[:]
-
-        # return list(zip(self.target_nodes[:], deepcopy(self.modified_list), cp_first))
-
+        return list(zip(deepcopy(self.modified_list), deepcopy(self.modified_label_list)))
 
