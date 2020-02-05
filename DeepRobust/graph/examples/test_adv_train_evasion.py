@@ -32,15 +32,7 @@ if args.cuda:
 # load original dataset (to get clean features and labels)
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
-
-# shuffle
-_N = adj.shape[0]
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
-
-idx = np.arange(_N)
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # Setup Target Model
 model = GCN(nfeat=features.shape[1], nclass=labels.max()+1,

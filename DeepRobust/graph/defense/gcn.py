@@ -98,6 +98,7 @@ class GCN(nn.Module):
             train the gcn model, when idx_val is not None, pick the best model
             according to the validation loss
         '''
+        self.device = self.gc1.weight.device
         if initialize:
             self.initialize()
 
