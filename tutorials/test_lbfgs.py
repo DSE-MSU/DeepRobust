@@ -6,21 +6,21 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
-from DeepRobust.image.attack.lbfgs import LBFGS
-from DeepRobust.image.netmodels.CNN import Net
-from DeepRobust.image.config import attack_params
+from deeprobust.image.attack.lbfgs import LBFGS
+from deeprobust.image.netmodels.CNN import Net
+from deeprobust.image.config import attack_params
 
 #load model
 model = Net()
-model.load_state_dict(torch.load("DeepRobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
+model.load_state_dict(torch.load("deeprobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
 model.eval()
 
-xx = datasets.MNIST('DeepRobust/image/data', download = True).data[8888]
+xx = datasets.MNIST('deeprobust/image/data', download = True).data[8888]
 xx = xx.unsqueeze_(0).float()/255
 xx = xx.unsqueeze_(0).float()
 
 ## Set Targetå
-yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[8888]
+yy = datasets.MNIST('deeprobust/image/data', download = False).targets[8888]
 yy = yy.float()
 
 

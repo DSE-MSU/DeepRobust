@@ -6,16 +6,16 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
-from DeepRobust.image.attack.pgd import PGD
-import DeepRobust.image.netmodels.resnet as resnet
-import DeepRobust.image.netmodels.CNN as CNN
-from DeepRobust.image.config import attack_params
+from deeprobust.image.attack.pgd import PGD
+import deeprobust.image.netmodels.resnet as resnet
+import deeprobust.image.netmodels.CNN as CNN
+from deeprobust.image.config import attack_params
 import matplotlib.pyplot as plt
 
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.load_state_dict(torch.load("deeprobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
 model.eval()
 
 transform_val = transforms.Compose([
@@ -23,7 +23,7 @@ transform_val = transforms.Compose([
                 ])
 
 test_loader  = torch.utils.data.DataLoader(
-                datasets.CIFAR10('DeepRobust/image/data', train = False, download=True,
+                datasets.CIFAR10('deeprobust/image/data', train = False, download=True,
                 transform = transform_val),
                 batch_size = 10, shuffle=True) #, **kwargs)
 

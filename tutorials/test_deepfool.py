@@ -11,8 +11,8 @@ import torch.utils.data as data_utils
 from torch.autograd import Variable
 from torchvision import models, datasets
 
-from DeepRobust.image.attack.deepfool import DeepFool
-import DeepRobust.image.netmodels.resnet as resnet
+from deeprobust.image.attack.deepfool import DeepFool
+import deeprobust.image.netmodels.resnet as resnet
 import matplotlib.pyplot as plt
 
 '''
@@ -23,7 +23,7 @@ CIFAR10
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.load_state_dict(torch.load("deeprobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
 model.eval()
 
 # load dataset

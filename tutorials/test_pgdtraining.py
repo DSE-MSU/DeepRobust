@@ -1,9 +1,9 @@
-from DeepRobust.image.defense.pgdtraining import PGDtraining
-from DeepRobust.image.attack.pgd import PGD
+from deeprobust.image.defense.pgdtraining import PGDtraining
+from deeprobust.image.attack.pgd import PGD
 import torch
 from torchvision import datasets, transforms
-from DeepRobust.image.netmodels.CNN import Net
-from DeepRobust.image.config import defense_params
+from deeprobust.image.netmodels.CNN import Net
+from deeprobust.image.config import defense_params
 import ipdb
 
 
@@ -12,13 +12,13 @@ LOAD DATASETS
 """
 
 train_loader = torch.utils.data.DataLoader(
-                datasets.MNIST('DeepRobust/image/defense/data', train=True, download=True,
+                datasets.MNIST('deeprobust/image/defense/data', train=True, download=True,
                 transform=transforms.Compose([transforms.ToTensor()])),
                 batch_size=100,
                 shuffle=True)
 
 test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('DeepRobust/image/defense/data', train=False,
+            datasets.MNIST('deeprobust/image/defense/data', train=False,
             transform=transforms.Compose([transforms.ToTensor()])),
             batch_size=1000,
             shuffle=True)
