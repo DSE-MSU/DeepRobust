@@ -8,26 +8,34 @@ from DeepRobust.image.attack.base_attack import BaseAttack
  
 class LBFGS(BaseAttack):
 
-    def __init__(self, model, target_label, device = 'cuda' ):  
+    def __init__(self, model, label, device = 'cuda' ):  
         super(LBFGS, self).__init__(model, device)
-        self.target_label = target_label
 
-    def generate(self, image, label, **kwargs):
+    def generate(self, image, label, target_label, **kwargs):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
-        return optimize(self.model, 
-                        self.image, 
-                        self.label, 
-                        self.target_label, 
-                        self.bounds, 
-                        self.epsilon, 
-                        self.maxiter, 
-                        self.class_num)
+        self.target_label = target_label
+        adv_img, self.dist, self.loss = optimize(self.model, 
+                                       self.image, 
+                                       self.label, 
+                                       self.target_label, 
+                                       self.bounds, 
+                                       self.epsilon, 
+                                       self.maxiter, 
+                                       self.class_num,
+                                       self.device)
+        return adv_img
+
+    def distance(self):
+        return self.dist
+
+    def loss(self):
+        return self.loss
 
     def parse_params(self,
-                     clip_max,
-                     clip_min,
-                     class_num,
+                     clip_max = 1,
+                     clip_min = 0,
+                     class_num = 10,
                      epsilon = 1e-5,  #step of finding initial c
                      maxiter = 20,    #maximum of iteration in lbfgs optimization  
                      ):
@@ -37,15 +45,13 @@ class LBFGS(BaseAttack):
         self.bounds = (clip_min, clip_max)
         return True
 
-def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_num):
+def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_num, device):
     x_t = image
-    x0 = image[0].numpy()
+    x0 = image[0].to('cpu').detach().numpy()
     min_, max_ = bounds
         
-        
     target_dist = torch.tensor(target_label)
-    target_dist = target_dist.unsqueeze_(0).long()
-       
+    target_dist = target_dist.unsqueeze_(0).long().to(device)
 
     # store the shape for later and operate on the flattened input
         
@@ -69,7 +75,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         v1 = distance(x0,x)
             
         x = torch.tensor(x.astype(dtype).reshape(shape))
-        x = x.unsqueeze_(0).float()
+        x = x.unsqueeze_(0).float().to(device)
 
         predict = model(x)
         v2 = F.nll_loss(predict, target_dist)
@@ -82,7 +88,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         # pending if the attack success
         adv_exp = adv_exp.reshape(shape).astype(dtype)
         adv_exp = torch.from_numpy(adv_exp)
-        adv_exp = adv_exp.unsqueeze_(0).float()
+        adv_exp = adv_exp.unsqueeze_(0).float().to(device)
 
         predict1 = target_model(adv_exp)
         label = predict1.argmax(dim=1, keepdim=True)
@@ -166,7 +172,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
     x_new = x_new.reshape(shape)
     x_new = torch.from_numpy(x_new)
         
-    return x_new, dis, mintargetfunc, c_low
+    return x_new, dis, mintargetfunc
 
 
 

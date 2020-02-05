@@ -23,7 +23,7 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 
-from DeepRobust.image.optimization import differential_evolution
+from DeepRobust.image.optimizer import differential_evolution
 from DeepRobust.image.attack.base_attack import BaseAttack
 from DeepRobust.image.utils import progress_bar
 
@@ -42,18 +42,21 @@ class Onepixel(BaseAttack):
 
 		return self.one_pixel(self.image, 
 						 self.label, 
-						 self.targeted, 
+						 self.targeted_attack, 
 						 self.pixels, 
 						 self.maxiter, 
 						 self.popsize, 
 						 self.print_log)
 
+	def get_pred():
+		return self.adv_pred
+		
 	def parse_params(self, 
 					 pixels = 1,
 					 maxiter = 100,
 					 popsize = 400,
 					 samples = 100,
-					 targeted = True,
+					 targeted_attack = False,
 					 print_log = True,
 					 target = 0
 					 ):
@@ -61,23 +64,23 @@ class Onepixel(BaseAttack):
 		self.maxiter = maxiter
 		self.popsize = popsize
 		self.samples = samples
-		self.targeted = targeted
+		self.targeted_attack = targeted_attack
 		self.print_log = print_log
 		self.target = target
 		return True
 	
-	def one_pixel(self, img, label, targeted = False, target = 0, pixels = 1, maxiter = 75, popsize = 400, print_log = False):
+	def one_pixel(self, img, label, targeted_attack = False, target = 0, pixels = 1, maxiter = 75, popsize = 400, print_log = False):
 		# img: 1*3*W*H tensor
 		# label: a number
 
-		target_calss = target if targeted else label
+		target_calss = target if targeted_attack else label
 
 		bounds = [(0,32), (0,32), (0,255), (0,255), (0,255)] * pixels
 
 		popmul = max(1, popsize/len(bounds))
 
 		predict_fn = lambda xs: predict_classes(
-			xs, img, target_calss, self.model, targeted, self.device)
+			xs, img, target_calss, self.model, targeted_attack, self.device)
 		callback_fn = lambda x, convergence: attack_success(
 			x, img, target_calss, self.model, targeted_attack, print_log, self.device)
 
@@ -95,13 +98,14 @@ class Onepixel(BaseAttack):
 
 		attack_image = perturb_image(attack_result.x, img)
 		attack_var = Variable(attack_image, volatile=True).cuda()
-		predicted_probs = F.softmax(net(attack_var)).data.cpu().numpy()[0]
+		predicted_probs = F.softmax(self.model(attack_var)).data.cpu().numpy()[0]
 
 		predicted_class = np.argmax(predicted_probs)
 
-		if (not targeted and predicted_class != label) or (targeted and predicted_class == target_calss):
-			return attack_image, attack_result.x.astype(int)
-		return [None], [None]
+		if (not targeted_attack and predicted_class != label) or (targeted_attack and predicted_class == target_calss):
+			self.adv_pred = predict_class
+			return attack_image
+		return [None]
 
 def perturb_image(xs, img):
 	
@@ -131,16 +135,15 @@ def predict_classes(xs, img, target_calss, net, minimize=True, device = 'cuda'):
 
 	return predictions if minimize else 1 - predictions
 
-def attack_success(x, img, target_calss, net, targeted_attack=False, print_log=False, device = 'cuda'):
+def attack_success(x, img, target_calss, net, targeted_attack = False, print_log=False, device = 'cuda'):
 
-	attack_image = perturb_image(x, img.clone())
-	input = Variable(attack_image, volatile=True).to(device)
-	confidence = F.softmax(net(input)).data.cpu().numpy()[0]
-	predicted_class = np.argmax(confidence)
+	attack_image = perturb_image(x, img.clone()).to(device)
+	confidence = F.softmax(net(attack_image)).data.cpu().numpy()[0]
+	pred = np.argmax(confidence)
 
 	if (print_log):
 		print("Confidence: %.4f"%confidence[target_calss])
-	if (targeted_attack and predicted_class == target_calss) or (not targeted_attack and predicted_class != target_calss):
+	if (targeted_attack and pred == target_calss) or (not targeted_attack and pred != target_calss):
 		return True
 
 
