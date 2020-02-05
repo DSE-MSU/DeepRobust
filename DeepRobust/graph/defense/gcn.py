@@ -93,11 +93,12 @@ class GCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True):
         '''
             train the gcn model, when idx_val is not None, pick the best model
             according to the validation loss
         '''
+        self.device = self.gc1.weight.device
         if initialize:
             self.initialize()
 
@@ -108,10 +109,13 @@ class GCN(nn.Module):
             adj = adj.to(self.device)
             labels = labels.to(self.device)
 
-        if utils.is_sparse_tensor(adj):
-            adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+        if normalize:
+            if utils.is_sparse_tensor(adj):
+                adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+            else:
+                adj_norm = utils.normalize_adj_tensor(adj)
         else:
-            adj_norm = utils.normalize_adj_tensor(adj)
+            adj_norm = adj
 
         self.adj_norm = adj_norm
         self.features = features
@@ -139,7 +143,8 @@ class GCN(nn.Module):
         self.output = output
 
     def _train_with_val(self, labels, idx_train, idx_val, train_iters, verbose):
-        print('=== training gcn model ===')
+        if verbose:
+            print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
         best_loss_val = 100
@@ -171,7 +176,8 @@ class GCN(nn.Module):
                 self.output = output
                 weights = deepcopy(self.state_dict())
 
-        print('=== picking the best model according to the performance on validation ===')
+        if verbose:
+            print('=== picking the best model according to the performance on validation ===')
         self.load_state_dict(weights)
 
     def test(self, idx_test):

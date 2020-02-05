@@ -30,13 +30,7 @@ if args.cuda:
 
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
-
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
-
-idx = np.arange(adj.shape[0])
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 # Setup Attack Model
@@ -49,10 +43,7 @@ n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
 modified_adj = model.attack(adj, labels, n_perturbations)
 
-adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
-adj = adj.to(device)
-features = features.to(device)
-labels = labels.to(device)
+adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
 
 modified_adj = normalize_adj(modified_adj)
 modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
@@ -64,7 +55,7 @@ def test(adj):
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
-              dropout=0.5)
+              dropout=0.5, device=device)
 
     gcn = gcn.to(device)
 
