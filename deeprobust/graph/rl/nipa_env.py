@@ -89,8 +89,6 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.overall_steps += 1
 
         if self.isActionFinished():
-            acc_list = []
-            loss_list = []
             rewards = []
             for i in (range(self.parallel_size)):
                 device = self.labels.device
@@ -102,7 +100,7 @@ class NodeInjectionEnv(NodeAttackEnv):
                 output = self.classifier(self.features, adj)
                 loss, acc = loss_acc(output, self.labels, self.idx_val)
                 print(acc)
-                r = 1 if self.previous_acc[i] - acc > 0.01 else -1
+                r = 1 if self.previous_acc[i] > acc  else -1
                 self.previous_acc[i] = acc
                 rewards.append(r)
                 self.rewards = np.array(rewards).astype(np.float32)

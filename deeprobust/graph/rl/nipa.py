@@ -18,7 +18,7 @@ from deeprobust.graph.utils import loss_acc
 class NIPA(object):
 
     def __init__(self, env, features, labels, idx_train, idx_test,
-            list_action_space, ratio, reward_type='binary', batch_size=30,
+            list_action_space, ratio, reward_type='binary', batch_size=20,
             num_wrong=0, bilin_q=1, embed_dim=64, gm='mean_field',
             mlp_hidden=64, max_lv=1, save_dir='checkpoint_dqn', device=None):
 
@@ -67,7 +67,7 @@ class NIPA(object):
         self.eps_end = 0.05
         # self.eps_step = 100000
         self.eps_step = 10000
-        self.burn_in = 10
+        self.burn_in = 50
         self.step = 0
         self.pos = 0
         self.best_eval = None
@@ -95,10 +95,13 @@ class NIPA(object):
 
         return actions
 
+    def run_whole_simulation(self):
+        self.env.init_overall_steps()
+        while not self.env.isTerminal():
+            self.run_simulation()
+
     def run_simulation(self):
-
         self.env.setup()
-
         t = 0
         while not self.env.isActionFinished():
             list_at = self.make_actions(t)
@@ -118,6 +121,7 @@ class NIPA(object):
             if self.env.isTerminal():
                 rewards = np.zeros(len(list_at), dtype=np.float32)
                 s_prime = None
+                self.env.init_overall_steps()
 
             self.mem_pool.add_list(list_st, list_at, rewards, s_prime,
                                     [self.env.isTerminal()] * len(list_at), t)
@@ -132,9 +136,6 @@ class NIPA(object):
             list_at = self.make_actions(t % 3, greedy=True)
             self.env.step(list_at)
             t += 1
-
-        import ipdb
-        ipdb.set_trace()
 
         device = self.labels.device
         extra_adj = self.env.modified_list[0].get_extra_adj(device=device)
@@ -169,38 +170,36 @@ class NIPA(object):
 
         self.mem_pool.print_count()
 
-        for epi in range(episodes):
-            self.env.init_overall_steps()
-            pbar = tqdm(range(num_steps), unit='steps')
-            for self.step in pbar:
-                self.run_simulation()
-                if self.step % 123 == 0:
-                    self.take_snapshot()
+        self.env.init_overall_steps()
+        pbar = tqdm(range(num_steps), unit='steps')
+        for self.step in pbar:
+            self.run_simulation()
+            if self.step % 123 == 0:
+                self.take_snapshot()
 
-                # # TODO
-                # if self.step % 500 == 0:
-                #     self.eval()
+            if self.step % 1000 == 0:
+                self.eval()
 
-                cur_time, list_st, list_at, list_rt, list_s_primes, list_term = self.mem_pool.sample(batch_size=self.batch_size)
-                list_target = torch.Tensor(list_rt).to(self.device)
+            cur_time, list_st, list_at, list_rt, list_s_primes, list_term = self.mem_pool.sample(batch_size=self.batch_size)
+            list_target = torch.Tensor(list_rt).to(self.device)
 
-                if not list_term[0]:
-                    # target_nodes, _, picked_nodes = zip(*list_s_primes)
-                    actions = self.possible_actions(list_st, list_at, cur_time+1)
-                    _, q_rhs = self.old_net(cur_time + 1, list_s_primes, actions, greedy_acts=True)
-                    list_target += q_rhs
+            if not list_term[0]:
+                # target_nodes, _, picked_nodes = zip(*list_s_primes)
+                actions = self.possible_actions(list_st, list_at, cur_time+1)
+                _, q_rhs = self.old_net(cur_time + 1, list_s_primes, actions, greedy_acts=True)
+                list_target += q_rhs
 
-                # list_target = list_target.view(-1, 1)
-                _, q_sa = self.net(cur_time, list_st, list_at)
-                # q_sa = torch.cat(q_sa, dim=0)
-                loss = F.mse_loss(q_sa, list_target)
-                loss = torch.clamp(loss, -1, 1)
-                optimizer.zero_grad()
-                # print([x[0] for x in self.named_parameters() if x[1].grad is None])
-                loss.backward()
-                optimizer.step()
-                pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
-                # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+            # list_target = list_target.view(-1, 1)
+            _, q_sa = self.net(cur_time, list_st, list_at)
+            # q_sa = torch.cat(q_sa, dim=0)
+            loss = F.mse_loss(q_sa, list_target)
+            loss = torch.clamp(loss, -1, 1)
+            optimizer.zero_grad()
+            # print([x[0] for x in self.named_parameters() if x[1].grad is None])
+            loss.backward()
+            optimizer.step()
+            pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+            # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
 
     def possible_actions(self, list_st, list_at, t):
         '''
