@@ -11,7 +11,7 @@ import ipdb
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.load_state_dict(torch.load("DeepRobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt").state_dict())
 model.eval()
 
 transform_val = transforms.Compose([
@@ -33,5 +33,11 @@ onepixel_params = {
 }
 print(xx.size())
 attack = Onepixel(model,'cuda')
-success, rate = attack.generate(image = xx, label = yy, **onepixel_params)
-print(success, rate)
+AdvImg = attack.generate(image = xx, label = yy, **onepixel_params)
+AdvImg = AdvImg.cpu().detach().numpy()
+AdvImg = AdvImg.swapaxes(1,3).swapaxes(1,2)[0]
+
+
+import matplotlib.pyplot as plt
+plt.imshow(AdvImg,cmap='gray',vmin=0,vmax=255)
+plt.savefig('advexample_onepixel.png')

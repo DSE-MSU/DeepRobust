@@ -9,7 +9,7 @@ import random
 
 from DeepRobust.image import utils
 
-def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_targeted = False, **kwargs):
+def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_targeted = False, target_label = -1, **kwargs):
     test_loss = 0
     correct = 0
     samplenum = 1000
@@ -25,7 +25,10 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_
             r = list(range(0, target)) + list(range(target+1, classnum))
             target_label = random.choice(r)
             adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
-
+        
+        elif(target_label >= 0):
+            adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
+        
         else:
             adv_example = attackmethod.generate(data, target, **kwargs)
 
@@ -90,7 +93,7 @@ def parameter_parser():
                         default = "CNN",
                         help = "Choose network structure from: CNN, ResNet")
     parser.add_argument("--path",
-                        default = "./defense_model/",
+                        default = "./trained_models/",
                         help = "Type the path where the model is saved.")
     parser.add_argument("--file_name",
                         default = 'MNIST_CNN_epoch_20.pt',
@@ -105,6 +108,8 @@ def parameter_parser():
     parser.add_argument("--step_size", type = float, default = 0.01)
     parser.add_argument("--random_targeted", type = bool, default = False,
                         help = "default: False. By setting this parameter be True, the program would random generate target labels for the input samples.")
+    parser.add_argument("--target_label", type = int, default = -1,
+                        help = "default: -1. Generate all attack Fixed target label.")
     parser.add_argument("--device", default = 'cuda',
                         help = "Choose the device.")
 
@@ -127,9 +132,9 @@ if __name__ == "__main__":
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon)
 
     elif(args.attack_method == "FGSM"):
-        from DeepRobust.image.attack.fgsm import FGM
+        from DeepRobust.image.attack.fgsm import FGSM
         test_loader = generate_dataloader(args.dataset, args.batch_size)
-        attack_method = FGM(model, args.device)
+        attack_method = FGSM(model, args.device)
         utils.tab_printer(args)
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader, epsilon = args.epsilon)
 
@@ -143,7 +148,8 @@ if __name__ == "__main__":
 
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
-        run_attack(attack_method, 1, args.batch_num, args.device, test_loader, random_targeted = args.random_targeted)
+        attack_method = LBFGS(model, args.device)
+        run_attack(attack_method, 1, args.batch_num, args.device, test_loader, random_targeted = args.random_targeted, target_label = args.target_label)
 
     elif(args.attack_method == "CW"):
         from DeepRobust.image.attack.cw import CarliniWagner
@@ -156,7 +162,7 @@ if __name__ == "__main__":
 
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
-        run_attack(attack_method, 1, args.batch_num, args.device, test_loader, random_targeted = args.random_targeted)
+        run_attack(attack_method, 1, args.batch_num, args.device, test_loader, random_targeted = args.random_targeted, target_label = args.target_label)
 
     elif(args.attack_method == "deepfool"):
         from DeepRobust.image.attack.deepfool import DeepFool
