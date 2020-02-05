@@ -35,7 +35,6 @@ class NstepReplaySubMemCell(object):
     def sample(self, batch_size):
 
         assert self.count >= batch_size
-
         list_st = []
         list_at = []
         list_rt = []
@@ -144,5 +143,10 @@ class NstepReplayMem(object):
     def sample(self, batch_size, t = None):
         if t is None:
             t = np.random.randint(self.n_steps)
-        list_st, list_at, list_rt, list_s_primes, list_term = self.mem_cells[t].sample(batch_size)
+            list_st, list_at, list_rt, list_s_primes, list_term = self.mem_cells[t].sample(batch_size)
         return t, list_st, list_at, list_rt, list_s_primes, list_term
+
+    def print_count(self):
+        for i in range(self.n_steps):
+            for j, cell in enumerate(self.mem_cells[i].sub_list):
+                print('Cell {} sub_list {}: {}'.format(i, j, cell.count))
