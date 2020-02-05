@@ -6,10 +6,10 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
-from DeepRobust.image.attack.fgsm import FGM
-from DeepRobust.image.netmodels.CNN import Net
-from DeepRobust.image.config import attack_params
-from DeepRobust.image.utils import download_model
+from deeprobust.image.attack.fgsm import FGM
+from deeprobust.image.netmodels.CNN import Net
+from deeprobust.image.config import attack_params
+from deeprobust.image.utils import download_model
 import ipdb
 
 def parameter_parser():
@@ -33,12 +33,12 @@ model.load_state_dict(torch.load(destination + filename))
 model.eval()
 print("Finish loading network.")
 
-xx = datasets.MNIST('DeepRobust/image/data', download = False).data[999:1000].to('cuda')
+xx = datasets.MNIST('deeprobust/image/data', download = False).data[999:1000].to('cuda')
 xx = xx.unsqueeze_(1).float()/255
 print(xx.size())
 
 ## Set Targetå
-yy = datasets.MNIST('DeepRobust/image/data', download = False).targets[999:1000].to('cuda')
+yy = datasets.MNIST('deeprobust/image/data', download = False).targets[999:1000].to('cuda')
 
 
 F1 = FGM(model, device = "cuda")       ### or cuda

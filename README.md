@@ -1,4 +1,4 @@
-# DeepRobust
+# deeprobust
 For more details about attacks and defenses, you can read this paper.
 
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
@@ -22,9 +22,9 @@ We would be glad if you find our work useful and cite the paper.
 * `matplotlib`
 
 # List of including algorithms
-[Image classification](https://github.com/I-am-Bot/DeepRobust/tree/master/DeepRobust/image)
+[Image classification](https://github.com/I-am-Bot/deeprobust/tree/master/deeprobust/image)
 
-[Graph classification](https://github.com/I-am-Bot/DeepRobust/tree/master/DeepRobust/graph)
+[Graph classification](https://github.com/I-am-Bot/deeprobust/tree/master/deeprobust/graph)
 
 
 
@@ -33,7 +33,7 @@ We would be glad if you find our work useful and cite the paper.
 
     Example: Train a simple CNN model on MNIST dataset for 20 epoch on gpu.
     ```python
-    import DeepRobust.image.netmodels.train_model as trainmodel
+    import deeprobust.image.netmodels.train_model as trainmodel
     trainmodel.train('CNN', 'MNIST', 'cuda', 20)
     ```
     Model would be saved in deeprobust/trained_models/.
@@ -42,8 +42,8 @@ We would be glad if you find our work useful and cite the paper.
 
     Example: Generate adversary example with PGD attack.
     ```python
-    from DeepRobust.image.attack.pgd import PGD
-    from DeepRobust.image.config import attack_params
+    from deeprobust.image.attack.pgd import PGD
+    from deeprobust.image.config import attack_params
 
     adversary = PGD(model, device)
     Adv_img = adversary.generate(x, y, **attack_params['PGD_CIFAR10'])
@@ -51,8 +51,8 @@ We would be glad if you find our work useful and cite the paper.
 
     Example: Train defense model.
     ```python
-    from DeepRobust.image.defense.pgdtraining import PGDtraining
-    from DeepRobust.image.config import defense_params
+    from deeprobust.image.defense.pgdtraining import PGDtraining
+    from deeprobust.image.config import defense_params
 
     model = Net()
     defense = PGDtraining(model, 'cuda')
@@ -64,5 +64,5 @@ We would be glad if you find our work useful and cite the paper.
 
     Example:
     ```
-    python -m DeepRobust.image.evaluation_attack 
+    python -m deeprobust.image.evaluation_attack 
     ```

@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 from torchvision import datasets, models, transforms
 
-from DeepRobust.image.attack.Nattack import NATTACK
-from DeepRobust.image.netmodels.CNN import Net
+from deeprobust.image.attack.Nattack import NATTACK
+from deeprobust.image.netmodels.CNN import Net
 
 
 #initialize model
@@ -17,7 +17,7 @@ for names,parameters in model.named_parameters():
     print(names,',', parameters.type())
 print("-------------------------------------")
 data_loader = torch.utils.data.DataLoader(
-              datasets.MNIST('DeepRobust/image/data', train = True,
+              datasets.MNIST('deeprobust/image/data', train = True,
               download = True,
               transform = transforms.Compose([transforms.ToTensor()])),
               batch_size = 1,
