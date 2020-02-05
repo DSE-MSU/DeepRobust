@@ -79,14 +79,15 @@ def init_setup():
           "loss= {:.4f}".format(loss_test.item()),
           "accuracy= {:.4f}".format(acc_test.item()))
 
-    return features, labels, idx_val, idx_test, victim_model, dict_of_lists, adj
+    return features, labels, idx_train, idx_val, idx_test, victim_model, dict_of_lists, adj
 
 random.seed(args.seed)
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 torch.cuda.manual_seed(args.seed)
 
-features, labels, idx_val, idx_test, victim_model, dict_of_lists, adj = init_setup()
+features, labels, idx_train, idx_val, idx_test, victim_model, dict_of_lists, adj = init_setup()
+victim_model.eval()
 output = victim_model(victim_model.features, victim_model.adj_norm)
 preds = output.max(1)[1].type_as(labels)
 acc = preds.eq(labels).double()
@@ -94,10 +95,10 @@ acc_test = acc[idx_test]
 
 device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
-env = NodeInjectionEnv(features, labels, idx_val, dict_of_lists, victim_model, ratio=args.ratio, reward_type=args.reward_type)
+env = NodeInjectionEnv(features, labels, idx_train, idx_val, dict_of_lists, victim_model, ratio=args.ratio, reward_type=args.reward_type)
 
-agent = NIPA(env, features, labels, [], [], dict_of_lists, num_wrong=0,
-        num_mod=args.num_mod, reward_type=args.reward_type,
+agent = NIPA(env, features, labels, idx_train, idx_test, dict_of_lists, num_wrong=0,
+        ratio=args.ratio, reward_type=args.reward_type,
         batch_size=args.batch_size, save_dir=args.save_dir,
         bilin_q=args.bilin_q, embed_dim=args.latent_dim,
         mlp_hidden=args.mlp_hidden, max_lv=args.max_lv,
