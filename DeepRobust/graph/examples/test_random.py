@@ -29,13 +29,7 @@ if args.cuda:
 
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
-
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
-
-idx = np.arange(adj.shape[0])
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 # Setup Attack Model
