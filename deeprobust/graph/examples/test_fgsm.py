@@ -34,7 +34,7 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, 
 
 # Setup Surrogate model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=False)
+                nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
 
 adj = adj.to(device)
 features = features.to(device)

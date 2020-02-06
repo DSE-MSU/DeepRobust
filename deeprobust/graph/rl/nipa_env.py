@@ -100,7 +100,7 @@ class NodeInjectionEnv(NodeAttackEnv):
                 self.classifier.fit(self.features, adj, labels, self.idx_train, normalize=False)
                 output = self.classifier(self.features, adj)
                 loss, acc = loss_acc(output, self.labels, self.idx_val)
-                print(acc)
+                # print(acc)
                 r = 1 if self.previous_acc[i] - acc > 0.01  else -1
                 self.previous_acc[i] = acc
                 rewards.append(r)

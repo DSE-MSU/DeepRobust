@@ -73,7 +73,7 @@ def test(adj):
     gcn = GCN(nfeat=features.shape[1],
               nhid=args.hidden,
               nclass=labels.max().item() + 1,
-              dropout=args.dropout)
+              dropout=args.dropout, device=device)
     gcn = gcn.to(device)
     gcn.fit(features, adj, labels, idx_train) # train without model picking
     # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking

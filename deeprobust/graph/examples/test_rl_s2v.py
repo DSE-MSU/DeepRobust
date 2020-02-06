@@ -12,7 +12,8 @@ from deeprobust.graph.rl.env import NodeAttackEnv, GraphNormTool, StaticGraph
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.black_box import *
-from deeprobust.graph.rl.agent import Agent
+# from deeprobust.graph.rl.rl_s2v import Agent
+from deeprobust.graph.targeted_attack.rl_s2v import Agent
 from deeprobust.graph.rl.rl_s2v_config import args
 
 
