@@ -253,6 +253,7 @@ class Metattack(BaseMeta):
 
     def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
         self.sparse_features = sp.issparse(ori_features)
+        ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
         labels_self_training = self.self_training_label(labels, idx_train)
         modified_adj = ori_adj
         modified_features = ori_features
@@ -380,6 +381,7 @@ class MetaApprox(BaseMeta):
 
 
     def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+        ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
         labels_self_training = self.self_training_label(labels, idx_train)
         self.sparse_features = sp.issparse(ori_features)
         modified_adj = ori_adj
@@ -419,6 +421,5 @@ class MetaApprox(BaseMeta):
             self.modified_adj = self.get_modified_adj(ori_adj).detach()
         if self.attack_features:
             self.modified_features = self.get_modified_features(ori_features).detach()
-
 
 

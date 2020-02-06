@@ -71,11 +71,12 @@ class Random(BaseAttack):
 
         return modified_features
 
-    def add_nodes(self, adj, n_add, n_perturbations):
+    def inject_nodes(self, adj, n_add, n_perturbations):
         """
         For each added node, randomly connect with other nodes.
         """
         # adj: sp.csr_matrix
+        # TODO
         print(f'number of pertubations: {n_perturbations}')
 
         import ipdb

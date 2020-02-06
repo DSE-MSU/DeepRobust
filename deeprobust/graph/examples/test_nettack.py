@@ -7,8 +7,6 @@ from deeprobust.graph.targeted_attack import Nettack
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 import argparse
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
@@ -27,13 +25,8 @@ if args.cuda:
 
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
-
-idx = np.arange(adj.shape[0])
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
@@ -75,8 +68,7 @@ def test(adj, target_node):
               nclass=labels.max().item() + 1,
               dropout=0.5, device=device)
 
-    if args.cuda:
-        gcn = gcn.to(device)
+    gcn = gcn.to(device)
 
     gcn.fit(features, adj, labels, idx_train)
 

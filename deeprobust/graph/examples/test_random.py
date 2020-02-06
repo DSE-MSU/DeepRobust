@@ -6,10 +6,7 @@ from deeprobust.graph.defense import GCN
 from deeprobust.graph.global_attack import Random
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
-
 import argparse
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
@@ -35,13 +32,9 @@ idx_unlabeled = np.union1d(idx_val, idx_test)
 # Setup Attack Model
 model = Random()
 
-u = 0 # node to attack
-assert u in idx_unlabeled
-
 n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
-# modified_adj = model.attack(adj, n_perturbations)
-modified_adj = model.add_nodes(adj, 10, n_perturbations)
+modified_adj = model.attack(adj, n_perturbations)
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
 adj = adj.to(device)
@@ -59,7 +52,7 @@ def test(adj):
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
-              dropout=0.5)
+              dropout=0.5, device=device)
 
     gcn = gcn.to(device)
 
