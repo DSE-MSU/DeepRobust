@@ -13,13 +13,13 @@ We would be glad if you find our work useful and cite the paper.
   year={2019}
 }
 ```
-[Requirements](#requirements)
+[Environment](#Environment)
 [List of Including Algorithms](#list-of-including-algorithms)
 [Usage](#usage)
 *[Image Attack and Defense](#image-attack-and-defense)
 *[Graph Attack and Defense](#graph-attack-and-defense)
 
-# Requirements
+# Environment
 * `python3`
 * `numpy`
 * `pytorch v1.2.0`
@@ -27,9 +27,9 @@ We would be glad if you find our work useful and cite the paper.
 * `matplotlib`
 
 # List of including algorithms
-[Image](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/image)
+[Image](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image)
 
-[Graph](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/graph)
+[Graph](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph)
 
 
 # Usage
