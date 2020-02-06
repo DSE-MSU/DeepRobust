@@ -1,4 +1,15 @@
 # deeprobust
+
+[Requirements](#requirements)
+
+[List of Including Algorithms](#list-of-including-algorithms)
+
+[Usage](#usage)
+
+* [Image Attack and Defense](#image-attack-and-defense)
+
+* [Graph Attack and Defense](#graph-attack-and-defense)
+
 For more details about attacks and defenses, you can read this paper.
 
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
@@ -13,16 +24,6 @@ We would be glad if you find our work useful and cite the paper.
   year={2019}
 }
 ```
-
-[Requirements](#requirements)
-
-[List of Including Algorithms](#list-of-including-algorithms)
-
-[Usage](#usage)
-
-* [Image Attack and Defense](#image-attack-and-defense)
-
-* [Graph Attack and Defense](#graph-attack-and-defense)
 
 # Requirements
 * `python3`
@@ -114,8 +115,8 @@ We would be glad if you find our work useful and cite the paper.
     model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
     modified_adj = model.modified_adj
     ```
+    
 For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_mettack.py) or run 
-
     ```
     python -m deeprobust.graph.examples.test_mettack.py
     ```
@@ -156,8 +157,8 @@ For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRo
     model.eval()
     output = model.test(idx_test)
     ```
+    
 For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_gcn_jaccard.py) or run
-
     ```
     python -m deeprobust.graph.examples.test_gcn_jaccrad.py
     ```
