@@ -29,7 +29,7 @@ class PtbDataset:
             self.download_npz()
         print('Loading {} dataset perturbed by 0.05 mettack...'.format(self.name))
         adj = sp.load_npz(self.data_filename)
-        print('''UserWarning: the adjacency matrix is perturbed, using the data splits under seed 15, so if you are going to verify the attacking performance, you should use the same data splits''')
+        print('''UserWarning: the adjacency matrix is perturbed, using the data splits under seed 15(default seed for deeprobust.graph.data.Dataset), so if you are going to verify the attacking performance, you should use the same data splits''')
         return adj
 
     def download_npz(self):

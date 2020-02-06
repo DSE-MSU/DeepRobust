@@ -15,7 +15,7 @@ class GCNSVD(GCN):
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
 
-        super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
+        super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
 
     def fit(self, features, adj, labels, idx_train, k=50, train_iters=200, initialize=True, verbose=True):
@@ -60,7 +60,7 @@ class GCNJaccard(GCN):
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
 
-        super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias)
+        super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
 
     def fit(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200, initialize=True, verbose=True):
