@@ -78,9 +78,7 @@ class Random(BaseAttack):
         # adj: sp.csr_matrix
         # TODO
         print(f'number of pertubations: {n_perturbations}')
-
-        import ipdb
-        ipdb.set_trace()
+        raise NotImplementedError
 
         modified_adj = adj.tolil()
         return modified_adj

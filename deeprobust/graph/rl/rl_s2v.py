@@ -198,10 +198,6 @@ class Agent(object):
 
             if not list_term[0]:
 
-                if True in list_term:
-                    import ipdb
-                    ipdb.set_trace()
-
                 target_nodes, _, picked_nodes = zip(*list_s_primes)
                 _, q_t_plus_1 = self.old_net(cur_time + 1, list_s_primes, None)
                 _, q_rhs = node_greedy_actions(target_nodes, picked_nodes, q_t_plus_1, self.old_net)
