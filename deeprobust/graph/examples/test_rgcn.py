@@ -6,9 +6,6 @@ from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.data import PtbDataset
 
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
-
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')

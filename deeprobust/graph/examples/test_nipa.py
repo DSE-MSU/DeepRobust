@@ -12,7 +12,8 @@ from deeprobust.graph.rl.nipa_env import NodeInjectionEnv, GraphNormTool, Static
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.black_box import *
-from deeprobust.graph.rl.nipa import NIPA
+# from deeprobust.graph.rl.nipa import NIPA
+from deeprobust.graph.global_attack.nipa import NIPA
 from deeprobust.graph.rl.nipa_config import args
 
 
@@ -106,7 +107,7 @@ agent = NIPA(env, features, labels, idx_train, idx_test, dict_of_lists, num_wron
 
 
 if args.phase == 'train':
-    agent.train(num_steps=args.num_steps, lr=args.learning_rate)
+    agent.train(num_episodes=10000, lr=args.learning_rate)
 else:
     agent.net.load_state_dict(torch.load(args.save_dir + '/epoch-best.model'))
     agent.eval(training=args.phase)

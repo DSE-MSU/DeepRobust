@@ -5,11 +5,8 @@ from deeprobust.graph.defense import GCNJaccard
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.data import PtbDataset
-
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
-
 import argparse
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')
@@ -28,25 +25,16 @@ if args.cuda:
 # load original dataset (to get clean features and labels)
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # load pre-attacked graph
 perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
 perturbed_adj = perturbed_data.adj
 
-# shuffle
-_N = adj.shape[0]
-val_size = 0.1
-test_size = 0.8
-train_size = 1 - test_size - val_size
 
-idx = np.arange(_N)
-idx_train, idx_val, idx_test = get_train_val_test(idx, train_size, val_size, test_size, stratify=labels)
-
-perturbations = int(args.ptb_rate * (adj.sum()//2))
-
-# Setup Surrogate Model
+# Setup Defense Model
 model = GCNJaccard(nfeat=features.shape[1], nclass=labels.max()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=True, device=device)
+                nhid=16, device=device)
 
 model = model.to(device)
 

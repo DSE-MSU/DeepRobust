@@ -7,8 +7,6 @@ from deeprobust.graph.global_attack import MetaApprox, Metattack
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 import argparse
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -40,20 +38,15 @@ if device != 'cpu':
 data = Dataset(root='/tmp/', name=args.dataset, setting='nettack')
 adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-
-# shuffle
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
-surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
-                nhid=16, dropout=0.5, with_relu=False, with_bias=True, weight_decay=5e-4, device=device)
+surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=16,
+        dropout=0.5, with_relu=False, with_bias=True, weight_decay=5e-4, device=device)
 
-adj = adj.to(device)
-features = features.to(device)
-labels = labels.to(device)
 surrogate = surrogate.to(device)
 surrogate.fit(features, adj, labels, idx_train)
 
@@ -66,7 +59,7 @@ if 'Both' in args.model:
     lambda_ = 0.5
 
 if 'A' in args.model:
-    model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
+    model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape, attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
 
 else:
     model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape,  attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
@@ -80,13 +73,8 @@ def test(adj):
     gcn = GCN(nfeat=features.shape[1],
               nhid=args.hidden,
               nclass=labels.max().item() + 1,
-              dropout=args.dropout)
-
+              dropout=args.dropout, device=device)
     gcn = gcn.to(device)
-
-    optimizer = optim.Adam(gcn.parameters(),
-                           lr=args.lr, weight_decay=args.weight_decay)
-
     gcn.fit(features, adj, labels, idx_train) # train without model picking
     # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
     output = gcn.output
@@ -100,7 +88,7 @@ def test(adj):
 
 
 def main():
-    modified_adj = model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
+    model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
     print('=== testing GCN on original(clean) graph ===')
     test(adj)
     modified_adj = model.modified_adj

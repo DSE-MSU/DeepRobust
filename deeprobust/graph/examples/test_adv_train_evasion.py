@@ -9,11 +9,8 @@ from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.data import PtbDataset
 from tqdm import tqdm
-
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '6'
-
 import argparse
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')

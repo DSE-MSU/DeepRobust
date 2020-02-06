@@ -37,6 +37,7 @@ class NodeInjectionEnv(NodeAttackEnv):
 
         self.ori_adj_size = N
         self.n_perturbations = int(self.n_injected * avg_degree)
+        print("number of perturbations: {}".format(self.n_perturbations))
         self.all_nodes = np.arange(N)
         self.injected_nodes = self.all_nodes[-self.n_injected: ]
         self.previous_acc = [1] * parallel_size
@@ -89,8 +90,6 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.overall_steps += 1
 
         if self.isActionFinished():
-            acc_list = []
-            loss_list = []
             rewards = []
             for i in (range(self.parallel_size)):
                 device = self.labels.device
@@ -101,8 +100,8 @@ class NodeInjectionEnv(NodeAttackEnv):
                 self.classifier.fit(self.features, adj, labels, self.idx_train, normalize=False)
                 output = self.classifier(self.features, adj)
                 loss, acc = loss_acc(output, self.labels, self.idx_val)
-                print(acc)
-                r = 1 if self.previous_acc[i] - acc > 0.01 else -1
+                # print(acc)
+                r = 1 if self.previous_acc[i] - acc > 0.01  else -1
                 self.previous_acc[i] = acc
                 rewards.append(r)
                 self.rewards = np.array(rewards).astype(np.float32)
@@ -150,7 +149,7 @@ class NodeInjectionEnv(NodeAttackEnv):
         return False
 
     def isTerminal(self):
-        if self.overall_steps == self.n_perturbations:
+        if self.overall_steps == 3 * self.n_perturbations:
             return True
         return False
 

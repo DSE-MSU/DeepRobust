@@ -9,9 +9,6 @@ from deeprobust.graph.data import Dataset
 
 import argparse
 
-import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '7'
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')

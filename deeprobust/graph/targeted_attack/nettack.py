@@ -50,22 +50,6 @@ class Nettack(BaseAttack):
         flat_mask = 1 - logical_and_symmetric
         return flat_mask
 
-    def log_likelihood_constraint(self, modified_adj, ori_adj, ll_cutoff):
-        """
-        Computes a mask for entries that, if the edge corresponding to the entry is added/removed, would lead to the
-        log likelihood constraint to be violated.
-        """
-
-        t_d_min = torch.tensor(2.0).to(self.device)
-        # t_possible_edges = np.array(np.triu(np.ones((self.nnodes, self.nnodes)), k=1).nonzero()).T
-        t_possible_edges = self.potential_edges
-        allowed_mask, current_ratio = utils.likelihood_ratio_filter(t_possible_edges,
-                                                                    modified_adj,
-                                                                    ori_adj, t_d_min,
-                                                                    ll_cutoff)
-
-        return allowed_mask, current_ratio
-
     def get_linearized_weight(self):
         surrogate = self.surrogate
         W = surrogate.gc1.weight @ surrogate.gc2.weight
@@ -105,7 +89,6 @@ class Nettack(BaseAttack):
 
         # adj_norm = utils.normalize_adj_tensor(modified_adj, sparse=True)
         self.adj_norm = utils.normalize_adj(self.modified_adj)
-
         self.W = self.get_linearized_weight()
 
         logits = (self.adj_norm @ self.adj_norm @ self.modified_features @ self.W )[target_node]
@@ -194,12 +177,6 @@ class Nettack(BaseAttack):
                 # likelihood ration Chi_square cutoff value.
                 powerlaw_filter = filter_chisquare(new_ratios, ll_cutoff)
                 filtered_edges_final = filtered_edges[powerlaw_filter]
-
-                # allowed_mask, ll_ratio = self.log_likelihood_constraint(modified_adj, ori_adj, delta_cutoff)
-                # allowed_mask = allowed_mask.to(self.device)
-                # filtered_edges_final = allowed_mask * self.filter_potential_singletons(modified_adj)
-
-                # filtered_edges_final = self.potential_edges
 
                 # Compute new entries in A_hat_square_uv
                 a_hat_uv_new = self.compute_new_a_hat_uv(filtered_edges_final, target_node)
