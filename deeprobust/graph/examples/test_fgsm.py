@@ -70,7 +70,7 @@ def test(adj, target_node):
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
-              dropout=0.5)
+              dropout=0.5, device=device)
 
     if args.cuda:
         gcn = gcn.to(device)
