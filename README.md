@@ -13,6 +13,11 @@ We would be glad if you find our work useful and cite the paper.
   year={2019}
 }
 ```
+[Requirements](#requirements)
+[List of Including Algorithms](#list-of-including-algorithms)
+[Usage](#usage)
+*[Image Attack and Defense](#image-attack-and-defense)
+*[Graph Attack and Defense](#graph-attack-and-defense)
 
 # Requirements
 * `python3`
@@ -22,14 +27,13 @@ We would be glad if you find our work useful and cite the paper.
 * `matplotlib`
 
 # List of including algorithms
-[Image Attack](#image-attack)
+[Image](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/image)
 
-[Graph Attack](#graph-attack)
-
+[Graph](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/graph)
 
 
 # Usage
-## Image Attack
+## Image Attack and Defense
 1. Train model
 
     Example: Train a simple CNN model on MNIST dataset for 20 epoch on gpu.
@@ -59,6 +63,7 @@ We would be glad if you find our work useful and cite the paper.
     defense = PGDtraining(model, 'cuda')
     defense.generate(train_loader, test_loader, **defense_params["PGDtraining_MNIST"])
     ```
+
     More example code can be found in deeprobust/tutorials.
 
 3. Use our evulation program to test attack algorithm against defense.
@@ -67,4 +72,82 @@ We would be glad if you find our work useful and cite the paper.
     ```
     python -m deeprobust.image.evaluation_attack 
     ```
-## Graph Attack    
+
+## Graph Attack and Defense 
+
+### Attacking Graph Neural Networks
+
+Load dataset
+```
+import torch
+import numpy as np
+from deeprobust.graph.data import Dataset
+from deeprobust.graph.defense import GCN
+from deeprobust.graph.global_attack import Metattack
+
+data = Dataset(root='/tmp/', name='cora', setting='nettack')
+adj, features, labels = data.adj, data.features, data.labels
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+idx_unlabeled = np.union1d(idx_val, idx_test)
+```
+
+Set up surrogate model
+```
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=16,
+                with_relu=False, device=device)
+                surrogate = surrogate.to(device)
+                surrogate.fit(features, adj, labels, idx_train)
+                ```
+
+                Set up attack model and generate perturbations
+                ```
+                model = Metattack(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape, device=device)
+                model = model.to(device)
+                perturbations = int(0.05 * (adj.sum() // 2))
+                model.attack(features, adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=False)
+                modified_adj = model.modified_adj
+                ```
+                For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_mettack.py) or run 
+                ```
+                python -m deeprobust.graph.examples.test_mettack.py
+                ```
+
+### Defending Against Graph Attacks
+
+Load dataset
+```
+import torch
+from deeprobust.graph.data import Dataset, PtbDataset
+from deeprobust.graph.defense import GCN, GCNJaccard
+import numpy as np
+np.random.seed(15)
+
+# load clean graph
+data = Dataset(root='/tmp/', name='cora', setting='nettack')
+adj, features, labels = data.adj, data.features, data.labels
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+
+# load pre-attacked graph by mettack
+perturbed_data = PtbDataset(root='/tmp/', name='cora')
+perturbed_adj = perturbed_data.adj
+
+# Set up defense model and test performance
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+model = GCNJaccard(nfeat=features.shape[1], nclass=labels.max()+1, nhid=16, device=device)
+model = model.to(device)
+model.fit(features, perturbed_adj, labels, idx_train)
+model.eval()
+output = model.test(idx_test)
+
+# Test on GCN
+model = GCN(nfeat=features.shape[1], nclass=labels.max()+1, nhid=16, device=device)
+model = model.to(device)
+model.fit(features, perturbed_adj, labels, idx_train)
+model.eval()
+output = model.test(idx_test)
+```
+For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_gcn_jaccard.py) or run
+```
+python -m deeprobust.graph.examples.test_gcn_jaccrad.py
+```
