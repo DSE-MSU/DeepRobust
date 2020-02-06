@@ -10,7 +10,6 @@ from deeprobust.image.attack.fgsm import FGM
 from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.config import attack_params
 from deeprobust.image.utils import download_model
-import ipdb
 
 def parameter_parser():
     parser = argparse.ArgumentParser(description = "Run attack algorithms.")

@@ -6,7 +6,6 @@ import deeprobust.image.netmodels.resnet as resnet
 import deeprobust.image.netmodels.CNN as CNN
 from deeprobust.image.config import attack_params
 import matplotlib.pyplot as plt
-import ipdb
 
 model = resnet.ResNet18().to('cuda')
 print("Load network")
