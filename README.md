@@ -29,7 +29,7 @@ We would be glad if you find our work useful and cite the paper.
 
 
 # Usage
-##Image Attack
+## Image Attack
 1. Train model
 
     Example: Train a simple CNN model on MNIST dataset for 20 epoch on gpu.
