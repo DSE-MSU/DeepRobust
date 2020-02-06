@@ -2,8 +2,8 @@
 This is a re-implementation of One pixel attack.
 
 Reference:
-Akhtar, N., & Mian, A. (2018). 
-Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. 
+Akhtar, N., & Mian, A. (2018).
+Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey.
 IEEE Access, 6, 14410-14430.
 
 Reference code: https://github.com/DebangLi/one-pixel-attack-pytorch
@@ -40,18 +40,18 @@ class Onepixel(BaseAttack):
 		assert self.check_type_device(image, label)
 		assert self.parse_params(**kwargs)
 
-		return self.one_pixel(self.image, 
-						 self.label, 
-						 self.targeted_attack, 
-						 self.pixels, 
-						 self.maxiter, 
-						 self.popsize, 
+		return self.one_pixel(self.image,
+						 self.label,
+						 self.targeted_attack,
+						 self.pixels,
+						 self.maxiter,
+						 self.popsize,
 						 self.print_log)
 
 	def get_pred():
 		return self.adv_pred
-		
-	def parse_params(self, 
+
+	def parse_params(self,
 					 pixels = 1,
 					 maxiter = 100,
 					 popsize = 400,
@@ -68,7 +68,7 @@ class Onepixel(BaseAttack):
 		self.print_log = print_log
 		self.target = target
 		return True
-	
+
 	def one_pixel(self, img, label, targeted_attack = False, target = 0, pixels = 1, maxiter = 75, popsize = 400, print_log = False):
 		# img: 1*3*W*H tensor
 		# label: a number
@@ -108,7 +108,7 @@ class Onepixel(BaseAttack):
 		return [None]
 
 def perturb_image(xs, img):
-	
+
 	if xs.ndim < 2:
 		xs = np.array([xs])
 	batch = len(xs)
@@ -116,10 +116,10 @@ def perturb_image(xs, img):
 	xs = xs.astype(int)
 
 	count = 0
-	
+
 	for x in xs:
 		pixels = np.split(x, len(x)/5)
-		
+
 		for pixel in pixels:
 			x_pos, y_pos, r, g, b = pixel
 			imgs[count, 0, x_pos, y_pos] = (r/255.0-0.4914)/0.2023
