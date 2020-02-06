@@ -25,10 +25,10 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_
             r = list(range(0, target)) + list(range(target+1, classnum))
             target_label = random.choice(r)
             adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
-        
+
         elif(target_label >= 0):
             adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
-        
+
         else:
             adv_example = attackmethod.generate(data, target, **kwargs)
 
@@ -146,6 +146,12 @@ if __name__ == "__main__":
         except ValueError:
             args.batch_size = 1
 
+        try:
+            if (args.random_targeted == 0 and args.target_label == -1):
+                raise ValueError("No target label assigned. Random generate target for each input.")
+        except ValueError:
+            args.random_targeted = True
+
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
         attack_method = LBFGS(model, args.device)
@@ -159,6 +165,12 @@ if __name__ == "__main__":
                 raise ValueError("batch_size shouldn't be larger than 1.")
         except ValueError:
             args.batch_size = 1
+
+        try:
+            if (args.random_targeted == 0 and args.target_label == -1):
+                raise ValueError("No target label assigned. Random generate target for each input.")
+        except ValueError:
+            args.random_targeted = True
 
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
@@ -178,7 +190,17 @@ if __name__ == "__main__":
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
 
     elif(args.attack_method == "onepixel"):
-        from deeprobust.image.attack.onepixle import OnePixel
+        from deeprobust.image.attack.onepixel import Onepixel
+        attack_method = Onepixel(model, args.device)
+        try:
+            if (args.batch_size > 1):
+                raise ValueError("batch_size shouldn't be larger than 1.")
+        except ValueError:
+            args.batch_size = 1
+
+        utils.tab_printer(args)
+        test_loader = generate_dataloader(args.dataset, args.batch_size)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
 
     elif(args.attack_method == "Nattack"):
         pass
