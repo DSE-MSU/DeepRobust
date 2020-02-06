@@ -14,11 +14,12 @@ from copy import deepcopy
 from deeprobust.graph.rl.nipa_q_net_node import QNetNode, NStepQNetNode, node_greedy_actions
 from deeprobust.graph.rl.nstep_replay_mem import NstepReplayMem
 from deeprobust.graph.utils import loss_acc
+from itertools import count
 
 class NIPA(object):
 
     def __init__(self, env, features, labels, idx_train, idx_test,
-            list_action_space, ratio, reward_type='binary', batch_size=20,
+            list_action_space, ratio, reward_type='binary', batch_size=5,
             num_wrong=0, bilin_q=1, embed_dim=64, gm='mean_field',
             mlp_hidden=64, max_lv=1, save_dir='checkpoint_dqn', device=None):
 
@@ -65,8 +66,9 @@ class NIPA(object):
 
         self.eps_start = 1.0
         self.eps_end = 0.05
-        # self.eps_step = 100000
-        self.eps_step = 10000
+        self.eps_step = 100000
+        # self.eps_step = 10000
+        self.GAMMA = 0.999
         self.burn_in = 50
         self.step = 0
         self.pos = 0
@@ -81,6 +83,7 @@ class NIPA(object):
         self.eps = self.eps_end + max(0., (self.eps_start - self.eps_end)
                 * (self.eps_step - max(0., self.step)) / self.eps_step)
 
+        self.step += 1
         if random.random() < self.eps and not greedy:
             actions = self.env.uniformRandActions()
         else:
@@ -94,11 +97,6 @@ class NIPA(object):
             # actions = list(actions.cpu().numpy())
 
         return actions
-
-    def run_whole_simulation(self):
-        self.env.init_overall_steps()
-        while not self.env.isTerminal():
-            self.run_simulation()
 
     def run_simulation(self):
         self.env.setup()
@@ -119,9 +117,10 @@ class NIPA(object):
                 s_prime = self.env.cloneState()
 
             if self.env.isTerminal():
-                rewards = np.zeros(len(list_at), dtype=np.float32)
+                # rewards = np.zeros(len(list_at), dtype=np.float32)
+                rewards = self.env.rewards
                 s_prime = None
-                self.env.init_overall_steps()
+                # self.env.init_overall_steps()
 
             self.mem_pool.add_list(list_st, list_at, rewards, s_prime,
                                     [self.env.isTerminal()] * len(list_at), t)
@@ -160,46 +159,58 @@ class NIPA(object):
             #         f.write('] succ: %d\n' % (self.env.binary_rewards[i]))
             self.best_eval = acc
 
-    def train(self, episodes=10, num_steps=100000, lr=0.01):
+    def train(self, num_episodes=10, lr=0.01):
         optimizer = optim.Adam(self.net.parameters(), lr=lr)
-
         self.env.init_overall_steps()
         pbar = tqdm(range(self.burn_in), unit='batch')
         for p in pbar:
             self.run_simulation()
-
         self.mem_pool.print_count()
 
-        self.env.init_overall_steps()
-        pbar = tqdm(range(num_steps), unit='steps')
-        for self.step in pbar:
-            self.run_simulation()
-            if self.step % 123 == 0:
+        for i_episode in tqdm(range(num_episodes)):
+            self.env.init_overall_steps()
+
+            # pbar = tqdm(range(1000), unit='steps')
+
+            # for t in pbar:
+            for t in count():
+                self.run_simulation()
+
+                cur_time, list_st, list_at, list_rt, list_s_primes, list_term = self.mem_pool.sample(batch_size=self.batch_size)
+                list_target = torch.Tensor(list_rt).to(self.device)
+
+                if not list_term[0]:
+                    # target_nodes, _, picked_nodes = zip(*list_s_primes)
+                    actions = self.possible_actions(list_st, list_at, cur_time+1)
+                    _, q_rhs = self.old_net(cur_time + 1, list_s_primes, actions, greedy_acts=True)
+                    list_target += self.GAMMA * q_rhs
+
+                # list_target = list_target.view(-1, 1)
+                _, q_sa = self.net(cur_time, list_st, list_at)
+                # q_sa = torch.cat(q_sa, dim=0)
+                loss = F.mse_loss(q_sa, list_target)
+                # loss = torch.clamp(loss, -1, 1)
+                optimizer.zero_grad()
+                loss.backward()
+                # print([x[0] for x in self.named_parameters() if x[1].grad is None])
+                # for param in self.net.parameters():
+                #     if param.grad is None:
+                #         continue
+                #     param.grad.data.clamp_(-1, 1)
+                optimizer.step()
+
+                # pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+                if t % 20 == 0:
+                    print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+
+                if self.env.isTerminal():
+                    break
+
+            if i_episode % 1 == 0:
                 self.take_snapshot()
 
-            if self.step % 1000 == 0:
+            if i_episode % 10 == 0:
                 self.eval()
-
-            cur_time, list_st, list_at, list_rt, list_s_primes, list_term = self.mem_pool.sample(batch_size=self.batch_size)
-            list_target = torch.Tensor(list_rt).to(self.device)
-
-            if not list_term[0]:
-                # target_nodes, _, picked_nodes = zip(*list_s_primes)
-                actions = self.possible_actions(list_st, list_at, cur_time+1)
-                _, q_rhs = self.old_net(cur_time + 1, list_s_primes, actions, greedy_acts=True)
-                list_target += q_rhs
-
-            # list_target = list_target.view(-1, 1)
-            _, q_sa = self.net(cur_time, list_st, list_at)
-            # q_sa = torch.cat(q_sa, dim=0)
-            loss = F.mse_loss(q_sa, list_target)
-            loss = torch.clamp(loss, -1, 1)
-            optimizer.zero_grad()
-            # print([x[0] for x in self.named_parameters() if x[1].grad is None])
-            loss.backward()
-            optimizer.step()
-            pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
-            # print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
 
     def possible_actions(self, list_st, list_at, t):
         '''

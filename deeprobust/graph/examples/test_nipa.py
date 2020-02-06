@@ -106,7 +106,7 @@ agent = NIPA(env, features, labels, idx_train, idx_test, dict_of_lists, num_wron
 
 
 if args.phase == 'train':
-    agent.train(num_steps=args.num_steps, lr=args.learning_rate)
+    agent.train(num_episodes=10000, lr=args.learning_rate)
 else:
     agent.net.load_state_dict(torch.load(args.save_dir + '/epoch-best.model'))
     agent.eval(training=args.phase)
