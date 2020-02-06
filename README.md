@@ -1,6 +1,6 @@
 # deeprobust
 
-[Requirements](#requirements)
+[Environment](#environment)
 
 [List of Including Algorithms](#list-of-including-algorithms)
 
@@ -25,7 +25,7 @@ We would be glad if you find our work useful and cite the paper.
 }
 ```
 
-# Requirements
+# Environment
 * `python3`
 * `numpy`
 * `pytorch v1.2.0`
@@ -33,9 +33,9 @@ We would be glad if you find our work useful and cite the paper.
 * `matplotlib`
 
 # List of including algorithms
-[Image](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/image)
+[Image](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image)
 
-[Graph](https://github.com/I-am-Bot/DeepRobust/tree/master/deeprobust/graph)
+[Graph](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph)
 
 
 # Usage
