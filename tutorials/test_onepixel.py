@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("deeprobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.load_state_dict(torch.load("./trained_models/CIFAR10_ResNet18_epoch_50.pt"))
 model.eval()
 
 transform_val = transforms.Compose([

@@ -9,7 +9,7 @@ from deeprobust.image.netmodels.CNN import Net
 
 #initialize model
 model = Net()
-model.load_state_dict(torch.load("defense_model/mnist_pgdtraining_0.3.pt", map_location = torch.device('cuda')))
+model.load_state_dict(torch.load("trained_models/mnist_pgdtraining_0.3.pt", map_location = torch.device('cuda')))
 model.eval()
 print("----------model_parameters-----------")
 

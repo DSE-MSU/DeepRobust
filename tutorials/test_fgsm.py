@@ -15,7 +15,7 @@ def parameter_parser():
     parser = argparse.ArgumentParser(description = "Run attack algorithms.")
 
     parser.add_argument("--download destination",
-                        default = '~/lyx/projects/models/download',
+                        default = '~/trained_models/',
                         help = "choose destination to load the pretrained models.")
 
     parser.add_argument("--file name",

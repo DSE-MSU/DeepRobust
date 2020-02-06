@@ -19,7 +19,7 @@ logger.info("Start test cw attack")
 
 # load model
 model = Net()
-model.load_state_dict(torch.load("deeprobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
+model.load_state_dict(torch.load("./trained_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
 model.eval()
 
 xx = datasets.MNIST('deeprobust/image/data', download = False).data[1234]
@@ -32,7 +32,7 @@ yy = yy.float()
 
 
 attack = CarliniWagner(model, device='cuda')
-AdvExArray = attack.generate(xx, yy, target = 1, classnum = 10, **attack_params['CW_MNIST'])
+AdvExArray = attack.generate(xx, yy, target_label = 1, classnum = 10, **attack_params['CW_MNIST'])
 Adv = AdvExArray.clone()
 
 # test the result
