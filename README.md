@@ -32,6 +32,13 @@ We would be glad if you find our work useful and cite the paper.
 * `torchvision v0.4.0`
 * `matplotlib`
 
+# Setup
+```
+git clone https://github.com/DSE-MSU/DeepRobust.git
+cd DeepRobust
+python setup.py install
+```
+
 # List of including algorithms
 [Image](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image)
 
@@ -102,8 +109,8 @@ We would be glad if you find our work useful and cite the paper.
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=16,
                     with_relu=False, device=device)
-                    surrogate = surrogate.to(device)
-                    surrogate.fit(features, adj, labels, idx_train)
+    surrogate = surrogate.to(device)
+    surrogate.fit(features, adj, labels, idx_train)
     ```
 
 
