@@ -255,177 +255,165 @@ def eval_one_epoch(net, batch_generator,  DEVICE=torch.device('cuda:0'), AttackM
         adv_acc = adv_accuracy.mean if AttackMethod is not None else 0
     return clean_accuracy.mean, adv_acc
 
+class SGDOptimizerMaker(object):
 
-class YOPO(BaseDefense):
-    def __init__(self, model, device = 'cuda'):
-        if not torch.cuda.is_available():
-            print('CUDA not available, using cpu...')
-            self.device = 'cpu'
-        else:
-            self.device = device
+    def __init__(self, lr = 0.1, momentum = 0.9, weight_decay = 1e-4):
+        self.lr = lr
+        self.momentum = momentum
+        self.weight_decay = weight_decay
 
-        self.model = model.to(self.device)
+    def __call__(self, params):
+        return torch.optim.SGD(params, lr=self.lr, momentum=self.momentum, weight_decay=self.weight_decay)
 
-    def generate(self, train_loader, test_loader, **kwargs):
-        num_epochs = 40
-        val_interval = 1
-        self.weight_decay = 5e-4
+def main():
+    num_epochs = 40
+    val_interval = 1
+    weight_decay = 5e-4
 
-        inner_iters = 10
-        K = 5
-        sigma = 0.01
-        eps = 0.3
-        self.lr = 1e-2
-        self.momentum = 0.9
-        create_optimizer = SGDOptimizerMaker(lr =1e-2 / K, momentum = 0.9, weight_decay = weight_decay)
-        create_optimizer = torch.optim.SGD(params, lr=self.lr, momentum=self.momentum, weight_decay=self.weight_decay)
+    inner_iters = 10
+    K = 5
+    sigma = 0.01
+    eps = 0.3
+    lr = 1e-2
+    momentum = 0.9
+    create_optimizer = SGDOptimizerMaker(lr =1e-2 / K, momentum = 0.9, weight_decay = weight_decay)
 
-        create_lr_scheduler = PieceWiseConstantLrSchedulerMaker(milestones = [30, 35, 39], gamma = 0.1)
+    create_lr_scheduler = PieceWiseConstantLrSchedulerMaker(milestones = [30, 35, 39], gamma = 0.1)
 
-        create_loss_function = None
+    create_loss_function = None
 
-        create_attack_method = None
+    create_attack_method = None
 
-        create_evaluation_attack_method = \
-            IPGDAttackMethodMaker(eps = 0.3, sigma = 0.01, nb_iters = 40, norm = np.inf,
-                                mean=torch.tensor(
-                                    np.array([0]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis]),
-                                std=torch.tensor(np.array([1]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis]))
+    create_evaluation_attack_method = IPGDAttackMethodMaker(eps = 0.3, sigma = 0.01, nb_iters = 40, norm = np.inf,
+                                      mean=torch.tensor(np.array([0]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis]),
+                                      std=torch.tensor(np.array([1]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis]))
 
-        parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-        parser.add_argument('--model_dir',default = "./defense_model")
-        parser.add_argument('--resume', default=None, type=str, metavar='PATH',
-                        help='path to latest checkpoint (default: none)')
-        parser.add_argument('-b', '--batch_size', default=256, type=int,
-                        metavar='N', help='mini-batch size')
-        parser.add_argument('-d', type=int, default=0, help='Which gpu to use')
-        parser.add_argument('-adv_coef', default=1.0, type = float,
-                            help = 'Specify the weight for adversarial loss')
-        parser.add_argument('--auto-continue', default=False, action = 'store_true',
-                            help = 'Continue from the latest checkpoint')
-        args = parser.parse_args()
+    parser.add_argument('--model_dir',default = "./trained_models")
+    parser.add_argument('--resume', default=None, type=str, metavar='PATH',
+                    help='path to latest checkpoint (default: none)')
+    parser.add_argument('-b', '--batch_size', default=256, type=int,
+                    metavar='N', help='mini-batch size')
+    parser.add_argument('-d', type=int, default=0, help='Which gpu to use')
+    parser.add_argument('-adv_coef', default=1.0, type = float,
+                        help = 'Specify the weight for adversarial loss')
+    parser.add_argument('--auto-continue', default=False, action = 'store_true',
+                        help = 'Continue from the latest checkpoint')
+    args = parser.parse_args()
 
-        DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        net = YOPOCNN.Net()
-        net.to(DEVICE)
-        criterion = CrossEntropyWithWeightPenlty(net.other_layers, DEVICE, weight_decay)#.to(DEVICE)
-        optimizer = create_optimizer(net.other_layers.parameters())
-        lr_scheduler = create_lr_scheduler(optimizer)
+    net = YOPOCNN.Net()
+    net.to(DEVICE)
+    criterion = CrossEntropyWithWeightPenlty(net.other_layers, DEVICE, weight_decay)#.to(DEVICE)
+    optimizer = create_optimizer(net.other_layers.parameters())
+    lr_scheduler = create_lr_scheduler(optimizer)
 
-        Hamiltonian_func = Hamiltonian(net.layer_one, weight_decay)
-        layer_one_optimizer = optim.SGD(net.layer_one.parameters(), lr = lr_scheduler.get_lr()[0], momentum=0.9, weight_decay=5e-4)
-        lyaer_one_optimizer_lr_scheduler = optim.lr_scheduler.MultiStepLR(layer_one_optimizer,
-                                                                        milestones = [15, 19], gamma = 0.1)
-        LayerOneTrainer = FastGradientLayerOneTrainer(Hamiltonian_func, layer_one_optimizer,
-                                                    inner_iters, sigma, eps)
+    Hamiltonian_func = Hamiltonian(net.layer_one, weight_decay)
+    layer_one_optimizer = optim.SGD(net.layer_one.parameters(), lr = lr_scheduler.get_lr()[0], momentum=0.9, weight_decay=5e-4)
+    lyaer_one_optimizer_lr_scheduler = optim.lr_scheduler.MultiStepLR(layer_one_optimizer,
+                                                                    milestones = [15, 19], gamma = 0.1)
+    LayerOneTrainer = FastGradientLayerOneTrainer(Hamiltonian_func, layer_one_optimizer,
+                                                inner_iters, sigma, eps)
 
-        ds_train = utils.create_train_dataset(args.batch_size)
-        ds_val = utils.create_test_dataset(args.batch_size)
+    ds_train = utils.create_train_dataset(args.batch_size)
+    ds_val = utils.create_test_dataset(args.batch_size)
 
-        EvalAttack = create_evaluation_attack_method(DEVICE)
+    EvalAttack = create_evaluation_attack_method(DEVICE)
 
-        now_epoch = 0
+    now_epoch = 0
 
-        if args.auto_continue:
-            args.resume = os.path.join(args.model_dir, 'last.checkpoint')
-        if args.resume is not None and os.path.isfile(args.resume):
-            now_epoch = load_checkpoint(args.resume, net, optimizer,lr_scheduler)
+    if args.auto_continue:
+        args.resume = os.path.join(args.model_dir, 'last.checkpoint')
+    if args.resume is not None and os.path.isfile(args.resume):
+        now_epoch = load_checkpoint(args.resume, net, optimizer,lr_scheduler)
 
-        now_train_time = 0
-        while True:
-            if now_epoch > num_epochs:
-                break
-            now_epoch = now_epoch + 1
+    now_train_time = 0
+    while True:
+        if now_epoch > num_epochs:
+            break
+        now_epoch = now_epoch + 1
 
-            descrip_str = 'Training epoch:{}/{} -- lr:{}'.format(now_epoch, num_epochs,
-                                                                            lr_scheduler.get_lr()[0])
-            s_time = time.time()
+        descrip_str = 'Training epoch:{}/{} -- lr:{}'.format(now_epoch, num_epochs,
+                                                                        lr_scheduler.get_lr()[0])
+        s_time = time.time()
 
-            #train
-            acc, yopoacc = train_one_epoch(net, ds_train, optimizer, criterion, LayerOneTrainer, K,
-                            DEVICE, descrip_str)
+        #train
+        acc, yopoacc = train_one_epoch(net, ds_train, optimizer, eps, criterion, LayerOneTrainer, K,
+                        DEVICE, descrip_str)
 
-            now_train_time = now_train_time + time.time() - s_time
-            tb_train_dic = {'Acc':acc, 'YoPoAcc':yopoacc}
-            print(tb_train_dic)
+        now_train_time = now_train_time + time.time() - s_time
+        tb_train_dic = {'Acc':acc, 'YoPoAcc':yopoacc}
+        print(tb_train_dic)
 
-            # writer.add_scalars('Train', tb_train_dic, now_epoch)
-            # if val_interval > 0 and now_epoch % val_interval == 0:
-            #     acc, advacc = eval_one_epoch(net, ds_val, DEVICE, EvalAttack)
-            #     tb_val_dic = {'Acc': acc, 'AdvAcc': advacc}
-            #     writer.add_scalars('Val', tb_val_dic, now_epoch)
-            #     tb_val_dic['time'] = now_train_time
-            #     log_str = json.dumps(tb_val_dic)
-            #     with open('time.log', 'a') as f:
-            #         f.write(log_str+ '\n')
+        lr_scheduler.step()
+        lyaer_one_optimizer_lr_scheduler.step()
+        utils.save_checkpoint(now_epoch, net, optimizer, lr_scheduler,
+                        file_name = os.path.join(args.model_dir, 'epoch-{}.checkpoint'.format(now_epoch)))
 
-            lr_scheduler.step()
-            lyaer_one_optimizer_lr_scheduler.step()
-            utils.save_checkpoint(now_epoch, net, optimizer, lr_scheduler,
-                            file_name = os.path.join(args.model_dir, 'epoch-{}.checkpoint'.format(now_epoch)))
+def train_one_epoch(net, batch_generator, optimizer, eps,
+                    criterion, LayerOneTrainner, K,
+                    DEVICE=torch.device('cuda:0'),descrip_str='Training'):
+    '''
 
-    def train_one_epoch(net, batch_generator, optimizer,
-                        criterion, LayerOneTrainner, K,
-                        DEVICE=torch.device('cuda:0'),descrip_str='Training'):
-        '''
+    :param attack_freq:  Frequencies of training with adversarial examples. -1 indicates natural training
+    :param AttackMethod: the attack method, None represents natural training
+    :return:  None    #(clean_acc, adv_acc)
+    '''
+    net.train()
+    pbar = tqdm(batch_generator)
+    yofoacc = -1
+    cleanacc = -1
+    cleanloss = -1
+    pbar.set_description(descrip_str)
+    for i, (data, label) in enumerate(pbar):
+        data = data.to(DEVICE)
+        label = label.to(DEVICE)
 
-        :param attack_freq:  Frequencies of training with adversarial examples. -1 indicates natural training
-        :param AttackMethod: the attack method, None represents natural training
-        :return:  None    #(clean_acc, adv_acc)
-        '''
-        net.train()
-        pbar = tqdm(batch_generator)
-        yofoacc = -1
-        cleanacc = -1
-        cleanloss = -1
-        pbar.set_description(descrip_str)
-        for i, (data, label) in enumerate(pbar):
-            data = data.to(DEVICE)
-            label = label.to(DEVICE)
+        eta = torch.FloatTensor(*data.shape).uniform_(-eps, eps)
+        eta = eta.to(label.device)
+        eta.requires_grad_()
 
-            eta = torch.FloatTensor(*data.shape).uniform_(-eps, eps)
-            eta = eta.to(label.device)
-            eta.requires_grad_()
+        optimizer.zero_grad()
+        LayerOneTrainner.param_optimizer.zero_grad()
 
-            optimizer.zero_grad()
-            LayerOneTrainner.param_optimizer.zero_grad()
+        for j in range(K):
+            pbar_dic = OrderedDict()
+            TotalLoss = 0
 
-            for j in range(K):
-                pbar_dic = OrderedDict()
-                TotalLoss = 0
+            pred = net(data + eta.detach())
 
-                pred = net(data + eta.detach())
-
-                loss = criterion(pred, label)
-                TotalLoss = TotalLoss + loss
-                wgrad = net.conv1.weight.grad
-                TotalLoss.backward()
-                net.conv1.weight.grad = wgrad
+            loss = criterion(pred, label)
+            TotalLoss = TotalLoss + loss
+            wgrad = net.conv1.weight.grad
+            TotalLoss.backward()
+            net.conv1.weight.grad = wgrad
 
 
-                p = -1.0 * net.layer_one_out.grad
-                yofo_inp, eta = LayerOneTrainner.step(data, p, eta)
+            p = -1.0 * net.layer_one_out.grad
+            yofo_inp, eta = LayerOneTrainner.step(data, p, eta)
 
-                with torch.no_grad():
-                    if j == 0:
-                        acc = torch_accuracy(pred, label, (1,))
-                        cleanacc = acc[0].item()
-                        cleanloss = loss.item()
+            with torch.no_grad():
+                if j == 0:
+                    acc = torch_accuracy(pred, label, (1,))
+                    cleanacc = acc[0].item()
+                    cleanloss = loss.item()
 
-                    if j == K - 1:
-                        yofo_pred = net(yofo_inp)
-                        yofoacc = torch_accuracy(yofo_pred, label, (1,))[0].item()
+                if j == K - 1:
+                    yofo_pred = net(yofo_inp)
+                    yofoacc = torch_accuracy(yofo_pred, label, (1,))[0].item()
 
-            optimizer.step()
-            LayerOneTrainner.param_optimizer.step()
-            optimizer.zero_grad()
-            LayerOneTrainner.param_optimizer.zero_grad()
-            pbar_dic['Acc'] = '{:.2f}'.format(cleanacc)
-            pbar_dic['loss'] = '{:.2f}'.format(cleanloss)
-            pbar_dic['YoPoAcc'] = '{:.2f}'.format(yofoacc)
-            pbar.set_postfix(pbar_dic)
+        optimizer.step()
+        LayerOneTrainner.param_optimizer.step()
+        optimizer.zero_grad()
+        LayerOneTrainner.param_optimizer.zero_grad()
+        pbar_dic['Acc'] = '{:.2f}'.format(cleanacc)
+        pbar_dic['loss'] = '{:.2f}'.format(cleanloss)
+        pbar_dic['YoPoAcc'] = '{:.2f}'.format(yofoacc)
+        pbar.set_postfix(pbar_dic)
 
-        return cleanacc, yofoacc
+    return cleanacc, yofoacc
 
+if __name__ == "__main__":
+    main()

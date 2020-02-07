@@ -44,7 +44,7 @@ class FGSM(BaseAttack):
 
 def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
 
-    imageArray = image.cpu().numpy()
+    imageArray = image.cpu().detach().numpy()
     X_fgsm = torch.tensor(imageArray).to(device)
 
     #print(image.data)
