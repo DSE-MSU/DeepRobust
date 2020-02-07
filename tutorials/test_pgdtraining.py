@@ -4,7 +4,6 @@ import torch
 from torchvision import datasets, transforms
 from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.config import defense_params
-import ipdb
 
 
 """

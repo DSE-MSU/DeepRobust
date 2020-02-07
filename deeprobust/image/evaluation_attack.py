@@ -49,8 +49,11 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_
 def load_net(attack_model, filename, path):
     if(attack_model == "CNN"):
         from deeprobust.image.netmodels.CNN import Net
+        model = Net()
+    if(attack_model == "ResNet18"):
+        import deeprobust.image.netmodels.resnet as Net
+        model = Net.ResNet18()
 
-    model = Net()
     model.load_state_dict(torch.load(path + filename))
     model.eval()
     return model
@@ -68,6 +71,7 @@ def generate_dataloader(dataset, batch_size):
     elif(dataset == "CIFAR" or args.dataset == 'CIFAR10'):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('deeprobust/image/data', train = False,
+                        download = True,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -77,6 +81,7 @@ def generate_dataloader(dataset, batch_size):
     elif(dataset == "ImageNet"):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('deeprobust/image/data', train=False,
+                        download = True,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)

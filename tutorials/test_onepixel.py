@@ -6,12 +6,11 @@ import deeprobust.image.netmodels.resnet as resnet
 import deeprobust.image.netmodels.CNN as CNN
 from deeprobust.image.config import attack_params
 import matplotlib.pyplot as plt
-import ipdb
 
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("deeprobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+model.load_state_dict(torch.load("./trained_models/CIFAR10_ResNet18_epoch_50.pt"))
 model.eval()
 
 transform_val = transforms.Compose([
