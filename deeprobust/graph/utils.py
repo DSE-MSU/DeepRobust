@@ -107,12 +107,14 @@ def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
     return edge_index, edge_weight
 
 def normalize_adj_tensor(adj, sparse=False):
-    device = torch.device("cuda:0" if adj.is_cuda else "cpu")
+    device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
-        return normalize_sparse_tensor(adj)
-        # adj = to_scipy(adj)
-        # mx = normalize_adj(adj)
-        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+        # TODO if this is too slow, uncomment the following code,
+        # but you need to install torch_scatter
+        # return normalize_sparse_tensor(adj)
+        adj = to_scipy(adj)
+        mx = normalize_adj(adj)
+        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
         mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
@@ -155,12 +157,12 @@ def degree_normalize_sparse_tensor(adj, fill_value=1):
     return torch.sparse.FloatTensor(edge_index, values, shape)
 
 def degree_normalize_adj_tensor(adj, sparse=True):
-    device = torch.device("cuda:0" if adj.is_cuda else "cpu")
+    device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
-        return  degree_normalize_sparse_tensor(adj)
-        # adj = to_scipy(adj)
-        # mx = degree_normalize_adj(adj)
-        # return sparse_mx_to_torch_sparse_tensor(mx).to(device)
+        # return  degree_normalize_sparse_tensor(adj)
+        adj = to_scipy(adj)
+        mx = degree_normalize_adj(adj)
+        return sparse_mx_to_torch_sparse_tensor(mx).to(device)
     else:
         mx = adj + torch.eye(adj.shape[0]).to(device)
         rowsum = mx.sum(1)
