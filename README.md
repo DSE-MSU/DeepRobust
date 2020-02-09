@@ -9,6 +9,8 @@
 * [Image Attack and Defense](#image-attack-and-defense)
 
 * [Graph Attack and Defense](#graph-attack-and-defense)
+[Acknowledgement]($acknowledgement)
+
 
 For more details about attacks and defenses, you can read this paper.
 
@@ -198,4 +200,4 @@ For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-B
     ```
 
 ## Acknowledgement
-Some of the algorithms are refer to others' implementations. References can be found at the top of the file.
+Some of the algorithms are refer to paper authors' implementations. References can be found at the top of the file. Thanks to their outstanding works!
