@@ -196,3 +196,6 @@ For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-B
     ```
     python -m deeprobust.graph.examples.test_gcn_jaccrad.py
     ```
+
+## Acknowledgement
+Some of the algorithms are refer to others' implementations. References can be found at the top of the file.
