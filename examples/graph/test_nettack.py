@@ -3,10 +3,9 @@ import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 from deeprobust.graph.defense import GCN
-from deeprobust.graph.targeted_attack import FGSM
+from deeprobust.graph.targeted_attack import Nettack
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
-
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -36,28 +35,25 @@ adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, 
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
                 nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
 
-adj = adj.to(device)
-features = features.to(device)
-labels = labels.to(device)
 surrogate = surrogate.to(device)
 surrogate.fit(features, adj, labels, idx_train)
 
 # Setup Attack Model
 target_node = 0
-model = FGSM(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device=device)
+assert target_node in idx_unlabeled
+
+model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
 model = model.to(device)
 
 def main():
-    u = 0 # node to attack
-    assert u in idx_unlabeled
-
-    # train surrogate model
-
     degrees = torch.sparse.sum(adj, dim=0).to_dense()
-    n_perturbations = int(degrees[u]) # How many perturbations to perform. Default: Degree of the node
+    n_perturbations = int(degrees[target_node]) # How many perturbations to perform. Default: Degree of the node
 
-    modified_adj = model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
-    modified_adj = modified_adj.detach()
+    modified_adj = model.attack(features, adj, labels, target_node, n_perturbations)
+
+    modified_adj = normalize_adj(modified_adj)
+    modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
+    modified_adj = modified_adj.to(device)
 
     print('=== testing GCN on original(clean) graph ===')
     test(adj, target_node)
@@ -72,26 +68,17 @@ def test(adj, target_node):
               nclass=labels.max().item() + 1,
               dropout=0.5, device=device)
 
-    if args.cuda:
-        gcn = gcn.to(device)
+    gcn = gcn.to(device)
 
     gcn.fit(features, adj, labels, idx_train)
 
     gcn.eval()
-
-    try:
-        adj = normalize_adj_tensor(adj, sparse=True)
-    except:
-        adj = normalize_adj_tensor(adj)
-    output = gcn(features, adj)
-
+    output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
     print(f'probs: {probs.detach().cpu().numpy()}')
-    loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
 
     print("Test set results:",
-          "loss= {:.4f}".format(loss_test.item()),
           "accuracy= {:.4f}".format(acc_test.item()))
 
     return acc_test.item()

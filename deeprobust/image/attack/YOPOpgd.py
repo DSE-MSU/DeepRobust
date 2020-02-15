@@ -1,3 +1,7 @@
+
+'''
+Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+'''
 import numpy as np
 import torch
 import torch.nn as nn
@@ -103,3 +107,4 @@ class FASTPGD(BaseAttack):
         self._mean = self._mean.to(device)
         self._std = self._std.to(device)
         self.criterion = self.criterion.to(device)
+

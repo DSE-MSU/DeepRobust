@@ -26,12 +26,16 @@ class DeepFool(BaseAttack):
 
         assert self.parse_params(**kwargs)
 
-        return deepfool(self.model,
-                        self.image,
-                        self.num_classes,
-                        self.overshoot,
-                        self.max_iteration,
-                        self.device)
+        adv_img, self.r, self.ite =  deepfool(self.model,
+                                  self.image,
+                                  self.num_classes,
+                                  self.overshoot,
+                                  self.max_iteration,
+                                  self.device)
+        return adv_img
+
+    def getpert(self):
+        return self.r, self.ite
 
     def parse_params(self,
                      num_classes = 10,
@@ -112,5 +116,5 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
 
     r_tot = (1+overshoot)*r_tot
 
-    return pert_image
+    return pert_image, r_tot, i
 

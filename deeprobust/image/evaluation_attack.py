@@ -25,10 +25,10 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_
             r = list(range(0, target)) + list(range(target+1, classnum))
             target_label = random.choice(r)
             adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
-        
+
         elif(target_label >= 0):
             adv_example = attackmethod.generate(data, target, target_label = target_label, **kwargs)
-        
+
         else:
             adv_example = attackmethod.generate(data, target, **kwargs)
 
@@ -50,7 +50,11 @@ def load_net(attack_model, filename, path):
     if(attack_model == "CNN"):
         from deeprobust.image.netmodels.CNN import Net
 
-    model = Net()
+        model = Net()
+    if(attack_model == "ResNet18"):
+        import deeprobust.image.netmodels.resnet as Net
+        model = Net.ResNet18()
+
     model.load_state_dict(torch.load(path + filename))
     model.eval()
     return model
@@ -68,6 +72,7 @@ def generate_dataloader(dataset, batch_size):
     elif(dataset == "CIFAR" or args.dataset == 'CIFAR10'):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('deeprobust/image/data', train = False,
+                        download = True,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -77,6 +82,7 @@ def generate_dataloader(dataset, batch_size):
     elif(dataset == "ImageNet"):
         test_loader = torch.utils.data.DataLoader(
                         datasets.CIFAR10('deeprobust/image/data', train=False,
+                        download = True,
                         transform = transforms.Compose([transforms.ToTensor()])),
                         batch_size = args.batch_size,
                         shuffle = True)
@@ -146,6 +152,12 @@ if __name__ == "__main__":
         except ValueError:
             args.batch_size = 1
 
+        try:
+            if (args.random_targeted == 0 and args.target_label == -1):
+                raise ValueError("No target label assigned. Random generate target for each input.")
+        except ValueError:
+            args.random_targeted = True
+
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
         attack_method = LBFGS(model, args.device)
@@ -159,6 +171,12 @@ if __name__ == "__main__":
                 raise ValueError("batch_size shouldn't be larger than 1.")
         except ValueError:
             args.batch_size = 1
+
+        try:
+            if (args.random_targeted == 0 and args.target_label == -1):
+                raise ValueError("No target label assigned. Random generate target for each input.")
+        except ValueError:
+            args.random_targeted = True
 
         utils.tab_printer(args)
         test_loader = generate_dataloader(args.dataset, args.batch_size)
@@ -178,7 +196,17 @@ if __name__ == "__main__":
         run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
 
     elif(args.attack_method == "onepixel"):
-        from deeprobust.image.attack.onepixle import OnePixel
+        from deeprobust.image.attack.onepixel import Onepixel
+        attack_method = Onepixel(model, args.device)
+        try:
+            if (args.batch_size > 1):
+                raise ValueError("batch_size shouldn't be larger than 1.")
+        except ValueError:
+            args.batch_size = 1
+
+        utils.tab_printer(args)
+        test_loader = generate_dataloader(args.dataset, args.batch_size)
+        run_attack(attack_method, args.batch_size, args.batch_num, args.device, test_loader)
 
     elif(args.attack_method == "Nattack"):
         pass

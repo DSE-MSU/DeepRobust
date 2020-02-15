@@ -7,8 +7,6 @@ import torch.nn.functional as F
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
-import ipdb
-
 class PGD(BaseAttack):
 
     def __init__(self, model, device = 'cuda'):

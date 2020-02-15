@@ -5,23 +5,23 @@ import numpy as np
 import torch.nn.functional as F #233
 
 from deeprobust.image.attack.base_attack import BaseAttack
- 
+
 class LBFGS(BaseAttack):
 
-    def __init__(self, model, label, device = 'cuda' ):  
+    def __init__(self, model, label, device = 'cuda' ):
         super(LBFGS, self).__init__(model, device)
 
     def generate(self, image, label, target_label, **kwargs):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         self.target_label = target_label
-        adv_img, self.dist, self.loss = optimize(self.model, 
-                                       self.image, 
-                                       self.label, 
-                                       self.target_label, 
-                                       self.bounds, 
-                                       self.epsilon, 
-                                       self.maxiter, 
+        adv_img, self.dist, self.loss = optimize(self.model,
+                                       self.image,
+                                       self.label,
+                                       self.target_label,
+                                       self.bounds,
+                                       self.epsilon,
+                                       self.maxiter,
                                        self.class_num,
                                        self.device)
         return adv_img
@@ -37,10 +37,10 @@ class LBFGS(BaseAttack):
                      clip_min = 0,
                      class_num = 10,
                      epsilon = 1e-5,  #step of finding initial c
-                     maxiter = 20,    #maximum of iteration in lbfgs optimization  
+                     maxiter = 20,    #maximum of iteration in lbfgs optimization
                      ):
         self.epsilon = epsilon
-        self.maxiter = maxiter 
+        self.maxiter = maxiter
         self.class_num = class_num
         self.bounds = (clip_min, clip_max)
         return True
@@ -49,12 +49,12 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
     x_t = image
     x0 = image[0].to('cpu').detach().numpy()
     min_, max_ = bounds
-        
+
     target_dist = torch.tensor(target_label)
     target_dist = target_dist.unsqueeze_(0).long().to(device)
 
     # store the shape for later and operate on the flattened input
-        
+
     shape = x0.shape
     dtype = x0.dtype
     x0 = x0.flatten().astype(np.float64)
@@ -71,15 +71,15 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         return dist_squ **2
 
     def loss(x, c):
-        #calculate the target function 
+        #calculate the target function
         v1 = distance(x0,x)
-            
+
         x = torch.tensor(x.astype(dtype).reshape(shape))
         x = x.unsqueeze_(0).float().to(device)
 
         predict = model(x)
         v2 = F.nll_loss(predict, target_dist)
-            
+
         v = c * v1 + v2
         #print(v)
         return np.float64(v)
@@ -113,15 +113,15 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
                 m = 15,
                 maxiter = maxiter,
                 factr = 1e10,  #optimization accuracy
-                maxls = 5,      
+                maxls = 5,
                 epsilon = approx_grad_eps)
         print('finish optimization')
-          
+
         # LBFGS-B does not always exactly respect the boundaries
         if np.amax(optimize_output) > max_ or np.amin(optimize_output) < min_:   # pragma: no coverage
             logging.info('Input out of bounds (min, max = {}, {}). Performing manual clip.'.format(
                     np.amin(optimize_output), np.amax(optimize_output)))
-                
+
             optimize_output = np.clip(optimize_output, min_, max_)
 
         #optimize_output = optimize_output.reshape(shape).astype(dtype)
@@ -143,12 +143,12 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         x_new, is_adversarial = lbfgs_b(c)
         if is_adversarial == False:
             break
-        
+
     print('start binary search:')
     if is_adversarial == True:  # pragma: no cover
         print('Could not find an adversarial; maybe the model returns wrong gradients')
         return
-        
+
     print('c_high:',c)
 
     # binary search
@@ -158,20 +158,21 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         print(c_high,' ',c_low)
         c_half = (c_low + c_high) / 2
         x_new, is_adversarial = lbfgs_b(c_half)
-          
+
         if is_adversarial:
             c_low = c_half
         else:
             c_high = c_half
-        
+
     x_new, is_adversarial = lbfgs_b(c_low)
     dis = distance(x_new, x0)
     mintargetfunc = loss(x_new, c_low)
 
     x_new = x_new.astype(dtype)
     x_new = x_new.reshape(shape)
-    x_new = torch.from_numpy(x_new)
-        
+
+    x_new = torch.from_numpy(x_new).unsqueeze_(0).float().to(device)
+
     return x_new, dis, mintargetfunc
 
 

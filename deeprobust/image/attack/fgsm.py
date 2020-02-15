@@ -6,8 +6,6 @@ import torch.optim as optim
 import numpy as np
 from numpy import linalg as LA
 
-import ipdb
-
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class FGSM(BaseAttack):
@@ -46,7 +44,7 @@ class FGSM(BaseAttack):
 
 def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
 
-    imageArray = image.cpu().numpy()
+    imageArray = image.cpu().detach().numpy()
     X_fgsm = torch.tensor(imageArray).to(device)
 
     #print(image.data)
@@ -57,7 +55,7 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
     opt.zero_grad()
 
     loss = nn.CrossEntropyLoss()(model(X_fgsm), label)
-    
+
     loss.backward()
     #print(X_fgsm)
     #print(X_fgsm.grad)
