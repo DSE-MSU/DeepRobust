@@ -1,3 +1,12 @@
+'''
+    Adversarial Attacks on Neural Networks for Graph Data. ICML 2018.
+        https://arxiv.org/abs/1806.02371
+    Author's Implementation
+       https://github.com/Hanjun-Dai/graph_adversarial_attack
+    This part of code is adopted from the author's implementation but modified
+    to be integrated into the repository.
+'''
+
 import os
 import sys
 import numpy as np

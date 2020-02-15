@@ -1,3 +1,8 @@
+'''
+    This part of code is adopted from https://github.com/Hanjun-Dai/graph_adversarial_attack
+    but modified to be integrated into the repository.
+'''
+
 import random
 import numpy as np
 from deeprobust.graph.rl.nstep_replay_mem import *
