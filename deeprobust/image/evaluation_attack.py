@@ -49,6 +49,7 @@ def run_attack(attackmethod, batch_size, batch_num, device, test_loader, random_
 def load_net(attack_model, filename, path):
     if(attack_model == "CNN"):
         from deeprobust.image.netmodels.CNN import Net
+
         model = Net()
     if(attack_model == "ResNet18"):
         import deeprobust.image.netmodels.resnet as Net

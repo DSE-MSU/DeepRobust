@@ -107,6 +107,7 @@ def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
     return edge_index, edge_weight
 
 def normalize_adj_tensor(adj, sparse=False):
+
     device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
         # TODO if this is too slow, uncomment the following code,
@@ -157,6 +158,7 @@ def degree_normalize_sparse_tensor(adj, fill_value=1):
     return torch.sparse.FloatTensor(edge_index, values, shape)
 
 def degree_normalize_adj_tensor(adj, sparse=True):
+
     device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
         # return  degree_normalize_sparse_tensor(adj)

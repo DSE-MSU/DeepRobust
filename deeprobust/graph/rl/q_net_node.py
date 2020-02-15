@@ -6,8 +6,6 @@
     This part of code is adopted from the author's implementation but modified
     to be integrated into the repository.
 '''
-
-
 import os
 import sys
 import numpy as np

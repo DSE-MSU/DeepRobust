@@ -170,6 +170,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
 
     x_new = x_new.astype(dtype)
     x_new = x_new.reshape(shape)
+
     x_new = torch.from_numpy(x_new).unsqueeze_(0).float().to(device)
 
     return x_new, dis, mintargetfunc

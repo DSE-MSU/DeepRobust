@@ -3,7 +3,6 @@
     but modified to be integrated into the repository.
 '''
 
-
 import random
 import numpy as np
 

@@ -86,7 +86,6 @@ def test(model, device, test_loader):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
-
 def Thermometer(x, levels, flattened = False):
     """
 
@@ -161,7 +160,6 @@ if __name__ =='__main__':
     #TODO: change the channel according to the dataset.
     LEVELS = 10
     channel = 1
-
     model = Net(in_channel1 = channel * LEVELS, out_channel1= 32 * LEVELS, out_channel2= 64 * LEVELS).to(device)
     optimizer = optim.SGD(model.parameters(), lr = 0.0001, momentum = 0.2)
     logger.info('Load model.')

@@ -40,6 +40,7 @@ class Onepixel(BaseAttack):
 		assert self.check_type_device(image, label)
 		assert self.parse_params(**kwargs)
 
+
 		return self.one_pixel(self.image,
 						 self.label,
 						 self.targeted_attack,
@@ -50,8 +51,9 @@ class Onepixel(BaseAttack):
 
 	def get_pred():
 		return self.adv_pred
+	
+  def parse_params(self,
 
-	def parse_params(self,
 					 pixels = 1,
 					 maxiter = 100,
 					 popsize = 400,
@@ -68,6 +70,7 @@ class Onepixel(BaseAttack):
 		self.print_log = print_log
 		self.target = target
 		return True
+
 
 	def one_pixel(self, img, label, targeted_attack = False, target = 0, pixels = 1, maxiter = 75, popsize = 400, print_log = False):
 		# img: 1*3*W*H tensor

@@ -255,6 +255,7 @@ def eval_one_epoch(net, batch_generator,  DEVICE=torch.device('cuda:0'), AttackM
         adv_acc = adv_accuracy.mean if AttackMethod is not None else 0
     return clean_accuracy.mean, adv_acc
 
+
 class SGDOptimizerMaker(object):
 
     def __init__(self, lr = 0.1, momentum = 0.9, weight_decay = 1e-4):
