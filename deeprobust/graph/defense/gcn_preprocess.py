@@ -58,12 +58,13 @@ class GCNSVD(GCN):
 
 class GCNJaccard(GCN):
 
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
+    def __init__(self, nfeat, nhid, nclass, binary_feature=True, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
 
         super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
+        self.binary_feature = binary_feature
 
-    def fit(self, features, adj, labels, idx_train, threshold=0.01, train_iters=200, initialize=True, verbose=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, threshold=0.01, train_iters=200, initialize=True, verbose=True):
         self.threshold = threshold
         modified_adj = self.drop_dissimilar_edges(features, adj)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
@@ -71,7 +72,7 @@ class GCNJaccard(GCN):
         self.modified_adj = modified_adj
         self.features = features
         self.labels = labels
-        super().fit(features, modified_adj, labels, idx_train, train_iters=train_iters, initialize=initialize, verbose=verbose)
+        super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def test(self, idx_test):
         output = self.output
@@ -82,11 +83,13 @@ class GCNJaccard(GCN):
               "accuracy= {:.4f}".format(acc_test.item()))
 
     def drop_dissimilar_edges(self, features, adj):
+        if not sp.issparse(adj):
+            adj = sp.csr_matrix(adj)
         modified_adj = adj.copy().tolil()
         # preprocessing based on features
 
         print('=== GCN-Jaccrad ===')
-        isSparse = sp.issparse(features)
+        # isSparse = sp.issparse(features)
         edges = np.array(modified_adj.nonzero()).T
         removed_cnt = 0
         for edge in tqdm(edges):
@@ -95,8 +98,10 @@ class GCNJaccard(GCN):
             if n1 > n2:
                 continue
 
-            if isSparse:
-                J = self._jaccrad_similarity(features[n1], features[n2])
+            # if isSparse:
+            if self.binary_feature:
+                J = self._jaccard_similarity(features[n1], features[n2])
+
                 if J < self.threshold:
                     modified_adj[n1, n2] = 0
                     modified_adj[n2, n1] = 0
@@ -111,7 +116,7 @@ class GCNJaccard(GCN):
         print(f'removed {removed_cnt} edges in the original graph')
         return modified_adj
 
-    def _jaccrad_similarity(self, a, b):
+    def _jaccard_similarity(self, a, b):
         intersection = a.multiply(b).count_nonzero()
         J = intersection * 1.0 / (a.count_nonzero() + b.count_nonzero() - intersection)
         return J

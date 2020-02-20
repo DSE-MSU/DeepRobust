@@ -42,7 +42,7 @@ idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
 
-# adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
+adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Surrogate Model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=16,

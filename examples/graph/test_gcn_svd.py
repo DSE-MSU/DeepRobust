@@ -32,9 +32,9 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
 perturbed_adj = perturbed_data.adj
 
-# Setup Surrogate Model
+# Setup Defense Model
 model = GCNSVD(nfeat=features.shape[1], nclass=labels.max()+1,
-                nhid=16, dropout=0, with_relu=False, with_bias=True, device=device)
+                nhid=16, device=device)
 
 model = model.to(device)
 
