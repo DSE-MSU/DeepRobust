@@ -30,6 +30,8 @@ class BaseAttack(Module):
             check if the modified adjacency is symmetric and unweighted
         '''
         assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
+        assert adj.tocsr().max() == 1, "Max value should be 1!"
+        assert adj.tocsr().min() == 0, "Min value should be 0!"
 
     def save_adj(self, root=r'/tmp/', name='mod_adj'):
         assert self.modified_adj is not None, \

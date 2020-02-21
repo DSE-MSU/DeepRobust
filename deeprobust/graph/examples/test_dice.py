@@ -33,9 +33,6 @@ idx_unlabeled = np.union1d(idx_val, idx_test)
 # Setup Attack Model
 model = DICE()
 
-u = 0 # node to attack
-assert u in idx_unlabeled
-
 n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
 modified_adj = model.attack(adj, labels, n_perturbations)
