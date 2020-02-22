@@ -47,14 +47,6 @@ class GCNSVD(GCN):
 
         return U @ diag_S @ V
 
-    def test(self, idx_test):
-        output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
-        acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
-        print("Test set results:",
-              "loss= {:.4f}".format(loss_test.item()),
-              "accuracy= {:.4f}".format(acc_test.item()))
-
 
 class GCNJaccard(GCN):
 
@@ -73,14 +65,6 @@ class GCNJaccard(GCN):
         self.features = features
         self.labels = labels
         super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
-
-    def test(self, idx_test):
-        output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
-        acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
-        print("Test set results:",
-              "loss= {:.4f}".format(loss_test.item()),
-              "accuracy= {:.4f}".format(acc_test.item()))
 
     def drop_dissimilar_edges(self, features, adj):
         if not sp.issparse(adj):
