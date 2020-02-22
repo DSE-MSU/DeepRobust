@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')
 parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation rate')
+parser.add_argument('--k', type=int, default=15, help='Truncated Components.')
 
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
@@ -39,7 +40,7 @@ model = GCNSVD(nfeat=features.shape[1], nclass=labels.max()+1,
 model = model.to(device)
 
 print('=== testing GCN-Jaccard on perturbed graph ===')
-model.fit(features, perturbed_adj, labels, idx_train, verbose=True)
+model.fit(features, perturbed_adj, labels, idx_train, idx_val, k=args.k, verbose=True)
 model.eval()
 output = model.test(idx_test)
 

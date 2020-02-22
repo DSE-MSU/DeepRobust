@@ -181,13 +181,15 @@ class GCN(nn.Module):
         self.load_state_dict(weights)
 
     def test(self, idx_test):
-        # output = self.forward()
-        output = self.output
+        self.eval()
+        output = self.predict()
+        # output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
+        return acc_test
 
     def _set_parameters():
         # TODO
