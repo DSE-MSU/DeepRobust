@@ -8,7 +8,7 @@ from deeprobust.graph.utils import get_train_val_test, get_train_val_test_gcn
 
 class Dataset():
 
-    def __init__(self, root, name, setting='nettack', seed=None):
+    def __init__(self, root, name, setting='nettack', seed=None, require_mask=False):
         self.name = name.lower()
         self.setting = setting.lower()
 
@@ -21,10 +21,13 @@ class Dataset():
         self.root = osp.expanduser(osp.normpath(root))
         self.data_filename = osp.join(root, self.name)
         self.data_filename += '.npz'
+        self.require_mask = require_mask
 
         self.require_lcc = True if setting == 'nettack' else False
         self.adj, self.features, self.labels = self.load_data()
         self.idx_train, self.idx_val, self.idx_test = self.get_train_val_test()
+        if self.require_mask:
+            self.get_mask()
 
     def get_train_val_test(self):
 
@@ -105,6 +108,29 @@ class Dataset():
         return nodes_to_keep
 
     def __repr__(self):
-        return '{}()'.format(self.name)
+        return f'{self.name}(adj_shape={self.adj.shape}, feature_shape={self.features.shape})'
 
+    def get_mask(self):
+        idx_train, idx_val, idx_test = self.idx_train, self.idx_val, self.idx_test
+        labels = self.onehot(self.labels)
+
+        def get_mask(idx):
+            mask = np.zeros(labels.shape[0], dtype=np.bool)
+            mask[idx] = 1
+            return mask
+
+        def get_y(idx):
+            mx = np.zeros(labels.shape)
+            mx[idx] = labels[idx]
+            return mx
+
+        self.train_mask = get_mask(self.idx_train)
+        self.val_mask = get_mask(self.idx_val)
+        self.test_mask = get_mask(self.idx_test)
+        self.y_train, self.y_val, self.y_test = get_y(idx_train), get_y(idx_val), get_y(idx_test)
+
+    def onehot(self, labels):
+        eye = np.identity(labels.max() + 1)
+        onehot_mx = eye[labels]
+        return onehot_mx
 

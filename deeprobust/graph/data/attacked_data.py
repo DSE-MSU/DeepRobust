@@ -9,7 +9,7 @@ class PtbDataset:
         This class manages pre-attacked/perturbed adjacency matrix on different datasets
     '''
 
-    def __init__(self, root, name, attack_method='mettack', require_lcc=True, transform=None):
+    def __init__(self, root, name, attack_method='mettack', transform=None):
         assert attack_method == 'mettack', \
             'Currently the database only stores graphs perturbed by 5% mettack'
 
