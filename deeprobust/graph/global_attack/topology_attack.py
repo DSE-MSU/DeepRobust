@@ -50,21 +50,18 @@ class PGDAttack(BaseAttack):
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
         modified_adj = ori_adj
 
-        # for i in tqdm(range(perturbations), desc="Perturbing graph"):
+        victim_model.eval()
         epochs = 200
-        modified_adj = self.get_modified_adj(ori_adj)
-        adj_norm = utils.normalize_adj_tensor(modified_adj)
-        output = victim_model(ori_features, adj_norm)
-        loss = F.nll_loss(output[idx_train], labels[idx_train])
-        # get gradient
-        adj_grad = torch.autograd.grad(loss, self.adj_changes)[0]
+        for t in tqdm(range(epochs)):
+            modified_adj = self.get_modified_adj(ori_adj)
+            adj_norm = utils.normalize_adj_tensor(modified_adj)
+            output = victim_model(ori_features, adj_norm)
+            loss = F.nll_loss(output[idx_train], labels[idx_train])
+            adj_grad = torch.autograd.grad(loss, self.adj_changes)[0]
 
-        with torch.no_grad():
-            for t in tqdm(range(epochs)):
-                # projection
-                lr = 200 / np.sqrt(t+1)
-                self.adj_changes.data -= lr * adj_grad
-                self.projection(perturbations)
+            lr = 200 / np.sqrt(t+1)
+            self.adj_changes.data.add_(lr * adj_grad)
+            self.projection(perturbations)
 
         K = 20
         best_loss = 0
@@ -72,6 +69,7 @@ class PGDAttack(BaseAttack):
             s = self.adj_changes.cpu().numpy()
             for i in range(K):
                 sampled = np.random.binomial(1, s)
+
                 print(sampled.sum())
                 if sampled.sum() > perturbations:
                     continue
@@ -88,6 +86,7 @@ class PGDAttack(BaseAttack):
             self.modified_adj = self.get_modified_adj(ori_adj).detach()
 
     def projection(self, perturbations):
+        # projected = torch.clamp(self.adj_changes, 0, 1)
         if torch.clamp(self.adj_changes, 0, 1).sum() > perturbations:
             left = (self.adj_changes - 1).min()
             right = self.adj_changes.max()
@@ -97,14 +96,17 @@ class PGDAttack(BaseAttack):
             self.adj_changes.data.copy_(torch.clamp(self.adj_changes.data, min=0, max=1))
 
     def get_modified_adj(self, ori_adj):
+
         if self.complementary is None:
             self.complementary = (torch.ones_like(ori_adj) - torch.eye(self.nnodes).to(self.device) - ori_adj) - ori_adj
 
         m = torch.zeros((self.nnodes, self.nnodes)).to(self.device)
         tril_indices = torch.tril_indices(row=self.nnodes-1, col=self.nnodes-1, offset=0)
         m[tril_indices[0], tril_indices[1]] = self.adj_changes
-        m += m.t()
+        # m += m.t()
+        m = m + m.t()
         modified_adj = self.complementary * m + ori_adj
+
         return modified_adj
 
     def bisection(self, a, b, perturbations, epsilon):

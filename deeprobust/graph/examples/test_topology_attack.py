@@ -36,6 +36,8 @@ if device != 'cpu':
 
 data = Dataset(root='/tmp/', name=args.dataset, setting='nettack')
 adj, features, labels = data.adj, data.features, data.labels
+# features = normalize_feature(features)
+
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
@@ -51,12 +53,8 @@ victim_model = victim_model.to(device)
 victim_model.fit(features, adj, labels, idx_train)
 
 # Setup Attack Model
-if 'Self' in args.model:
+if 'CE' in args.model:
     lambda_ = 0
-if 'Train' in args.model:
-    lambda_ = 1
-if 'Both' in args.model:
-    lambda_ = 0.5
 
 if args.model == 'min-max':
     model = MetaApprox(model=surrogate, nnodes=adj.shape[0], feature_shape=features.shape, attack_structure=True, attack_features=False, device=device, lambda_=lambda_)
