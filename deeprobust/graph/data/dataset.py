@@ -12,15 +12,15 @@ class Dataset():
         self.name = name.lower()
         self.setting = setting.lower()
 
-        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs'], \
-            'Currently only support cora, citeseer, cora_ml, polblogs'
+        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed'], \
+            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed'
         assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
 
         self.seed = seed
         self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
         self.root = osp.expanduser(osp.normpath(root))
-        self.data_filename = osp.join(root, self.name)
-        self.data_filename += '.npz'
+        self.data_folder = osp.join(root, self.name)
+        self.data_filename = self.data_folder + '.npz'
         self.require_mask = require_mask
 
         self.require_lcc = True if setting == 'nettack' else False
@@ -37,9 +37,13 @@ class Dataset():
             return get_train_val_test_gcn(self.labels, seed=self.seed)
 
     def load_data(self):
+        print('Loading {} dataset...'.format(self.name))
+        if self.name == 'pubmed':
+            return self.load_pubmed()
+
         if not osp.exists(self.data_filename):
             self.download_npz()
-        print('Loading {} dataset...'.format(self.name))
+
         adj, features, labels = self.get_adj()
         return adj, features, labels
 
@@ -50,6 +54,52 @@ class Dataset():
         except:
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
 
+    def download_pubmed(self, name):
+        url = 'https://raw.githubusercontent.com/tkipf/gcn/master/gcn/data/'
+        try:
+            urllib.request.urlretrieve(url + name, osp.join(self.root, name))
+        except:
+            raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
+
+
+    def load_pubmed(self):
+        import sys
+        import pickle as pkl
+        import networkx as nx
+
+        dataset = 'pubmed'
+        names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph']
+        objects = []
+        for i in range(len(names)):
+            name = "ind.{}.{}".format(dataset, names[i])
+            data_filename = osp.join(self.root, name)
+
+            if not osp.exists(data_filename):
+                self.download_pubmed(name)
+
+            with open(data_filename, 'rb') as f:
+                if sys.version_info > (3, 0):
+                    objects.append(pkl.load(f, encoding='latin1'))
+                else:
+                    objects.append(pkl.load(f))
+
+        x, y, tx, ty, allx, ally, graph = tuple(objects)
+
+
+        test_idx_file = "ind.{}.test.index".format(dataset)
+        if not osp.exists(osp.join(self.root, test_idx_file)):
+            self.download_pubmed(test_idx_file)
+
+        test_idx_reorder = parse_index_file(osp.join(self.root, test_idx_file))
+        test_idx_range = np.sort(test_idx_reorder)
+
+        features = sp.vstack((allx, tx)).tolil()
+        features[test_idx_reorder, :] = features[test_idx_range, :]
+        adj = nx.adjacency_matrix(nx.from_dict_of_lists(graph))
+        labels = np.vstack((ally, ty))
+        labels[test_idx_reorder, :] = labels[test_idx_range, :]
+        labels = np.where(labels)[1]
+        return adj, features, labels
 
     def get_adj(self):
         adj, features, labels = self.load_npz(self.data_filename)
@@ -133,4 +183,11 @@ class Dataset():
         eye = np.identity(labels.max() + 1)
         onehot_mx = eye[labels]
         return onehot_mx
+
+def parse_index_file(filename):
+    """Parse index file."""
+    index = []
+    for line in open(filename):
+        index.append(int(line.strip()))
+    return index
 
