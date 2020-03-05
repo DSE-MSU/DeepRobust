@@ -10,6 +10,7 @@
 * [Image Attack and Defense](#image-attack-and-defense)
 
 * [Graph Attack and Defense](#graph-attack-and-defense)
+
 [Acknowledgement]($acknowledgement)
 
 
@@ -155,7 +156,7 @@ python setup.py install
     
 For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_mettack.py) or run 
     ```
-    python -m deeprobust.graph.examples.test_mettack.py
+    python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     ```
 
 ### Defending Against Graph Attacks
@@ -197,7 +198,7 @@ For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRo
     
 For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_gcn_jaccard.py) or run
     ```
-    python -m deeprobust.graph.examples.test_gcn_jaccrad.py
+    python examples/graph/test_gcn_jaccard.py --dataset cora
     ```
 
 ## Acknowledgement

@@ -4,6 +4,19 @@ git clone https://github.com/DSE-MSU/DeepRobust.git
 cd DeepRobust
 python setup.py install
 ```
+# Test Examples
+Test GCN on perturbed graph (5% metattack)
+```
+python examples/graph/test_gcn.py --dataset cora
+```
+Test GCN-Jaccard on perturbed graph (5% metattack)
+```
+python examples/graph/test_gcn_jaccard.py --dataset cora
+```
+Generate attack by yourself
+```
+python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05 
+```
 
 # Full README
 [click here](https://github.com/DSE-MSU/DeepRobust)
@@ -17,7 +30,7 @@ python setup.py install
 | NIPA | Global Attack | Structure | Poisoning |  Node Classification | [Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach](https://arxiv.org/pdf/1909.06543.pdf) |
 | FGSM | Targeted Attack<br>Global Attack | Structure<br>Features | Both | Node Classification | [Adversarial Attacks on Neural Networks for Graph Data](https://arxiv.org/pdf/1805.07984.pdf)|
 | PGD, Min-max | Global Attack | Structure | Both | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
-| DICE | Global Attack | Structure | Both |  Node Classification | [Adversarial Attacks on Graph Neural Networks via Meta Learning](https://openreview.net/pdf?id=Bylnx209YX) |
+| DICE | Global Attack | Structure | Both |  Node Classification | [Hiding individuals and communities in a social network](https://arxiv.org/abs/1608.00375)|
 | RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |
 
 
