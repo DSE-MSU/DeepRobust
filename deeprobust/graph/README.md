@@ -6,7 +6,7 @@ python setup.py install
 ```
 
 # Full README
-[click here](https://github.com/DSE-MSU/DeepRobust/edit/master/README.md)
+[click here](https://github.com/DSE-MSU/DeepRobust)
 
 # Attack Methods
 |   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Links |
