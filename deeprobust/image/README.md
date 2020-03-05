@@ -1,3 +1,13 @@
+# Setup
+```
+git clone https://github.com/DSE-MSU/DeepRobust.git
+cd DeepRobust
+python setup.py install
+```
+
+# Full README
+[click here](https://github.com/DSE-MSU/DeepRobust)
+
 # Attack Methods  
 |   Attack Methods   | Attack Type | Apply Domain | Links |
 |--------------------|-------------|--------------|------|
