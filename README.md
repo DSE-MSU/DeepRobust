@@ -35,6 +35,13 @@ cd DeepRobust
 python setup.py install
 ```
 
+# Test Examples
+
+```
+python examples/graph/test_gcn_jaccard.py --dataset cora
+python examples/image/evaluation_attack 
+```
+
 # Usage
 ## Image Attack and Defense
 1. Train model
@@ -94,7 +101,7 @@ python setup.py install
     defense.generate(train_loader, test_loader, **defense_params["PGDtraining_MNIST"])
     ```
 
-    More example code can be found in deeprobust/tutorials.
+    More example code can be found in deeprobust/examples.
 
 3. Use our evulation program to test attack algorithm against defense.
 
