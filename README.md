@@ -12,7 +12,7 @@ Usage
 
 * [Graph Attack and Defense](#graph-attack-and-defense)
 
-[Acknowledgement]($acknowledgement) 
+[Acknowledgement](#acknowledgement) 
 
 For more details about attacks and defenses, you can read the following papers.
 
@@ -22,11 +22,11 @@ For more details about attacks and defenses, you can read the following papers.
 
 
 
-# Environment
-* `python3`
-* `numpy`
-* `pytorch v1.2.0`
-* `torchvision v0.4.0`
+# Baisc Environment
+* `python >= 3.6`
+* `pytorch >= 1.2.0`
+
+see `setup.py` or `requirements.txt` for more information.
 
 # Installation
 ```
