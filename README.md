@@ -1,53 +1,46 @@
 
 # DeepRobust
 
-[Environment](#environment)
+DeepRobust is a pytorch adversarial library for attack and defense methods on images and graphs. 
+List of including algorithms can be found in [[Image Package]](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image) and [[Graph Package]](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph).
 
-[List of Including Algorithms](#list-of-including-algorithms)
+[Environment & Installation](#environment)
 
-[Usage](#usage)
+Usage
 
 * [Image Attack and Defense](#image-attack-and-defense)
 
 * [Graph Attack and Defense](#graph-attack-and-defense)
 
-[Acknowledgement]($acknowledgement)
+[Acknowledgement](#acknowledgement) 
 
+For more details about attacks and defenses, you can read the following papers.
 
-For more details about attacks and defenses, you can read this paper.
+[Adversarial Attacks and Defenses on Graphs: A Review and Empirical Study](https://arxiv.org/abs/2003.00653)
 
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
-We would be glad if you find our work useful and cite the paper.
 
-```
-@article{xu2019adversarial,
-  title={Adversarial attacks and defenses in images, graphs and text: A review},
-  author={Xu, Han and Ma, Yao and Liu, Haochen and Deb, Debayan and Liu, Hui and Tang, Jiliang and Jain, Anil},
-  journal={arXiv preprint arXiv:1909.08072},
-  year={2019}
-}
-```
 
-# Environment
-* `python3`
-* `numpy`
-* `pytorch v1.2.0`
-* `torchvision v0.4.0`
-* `matplotlib`
+# Baisc Environment
+* `python >= 3.6`
+* `pytorch >= 1.2.0`
 
-# Setup
+see `setup.py` or `requirements.txt` for more information.
+
+# Installation
 ```
 git clone https://github.com/DSE-MSU/DeepRobust.git
 cd DeepRobust
 python setup.py install
 ```
 
-# List of including algorithms
-[Image](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image)
+# Test Examples
 
-[Graph](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph)
-
+```
+python examples/graph/test_gcn_jaccard.py --dataset cora
+python examples/image/evaluation_attack 
+```
 
 # Usage
 ## Image Attack and Defense
@@ -108,7 +101,7 @@ python setup.py install
     defense.generate(train_loader, test_loader, **defense_params["PGDtraining_MNIST"])
     ```
 
-    More example code can be found in deeprobust/tutorials.
+    More example code can be found in deeprobust/examples.
 
 3. Use our evulation program to test attack algorithm against defense.
 
@@ -203,3 +196,26 @@ For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-B
 
 ## Acknowledgement
 Some of the algorithms are refer to paper authors' implementations. References can be found at the top of the file. Thanks to their outstanding works!
+
+<!----
+We would be glad if you find our work useful and cite the paper.
+
+'''
+@misc{jin2020adversarial,
+    title={Adversarial Attacks and Defenses on Graphs: A Review and Empirical Study},
+    author={Wei Jin and Yaxin Li and Han Xu and Yiqi Wang and Jiliang Tang},
+    year={2020},
+    eprint={2003.00653},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
+'''
+```
+@article{xu2019adversarial,
+  title={Adversarial attacks and defenses in images, graphs and text: A review},
+  author={Xu, Han and Ma, Yao and Liu, Haochen and Deb, Debayan and Liu, Hui and Tang, Jiliang and Jain, Anil},
+  journal={arXiv preprint arXiv:1909.08072},
+  year={2019}
+}
+```
+---->
