@@ -36,7 +36,7 @@ perturbed_adj = perturbed_data.adj
 
 # Setup RGCN Model
 model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1], nclass=labels.max()+1,
-                nhid=64, device=device)
+                nhid=32, device=device)
 
 model = model.to(device)
 

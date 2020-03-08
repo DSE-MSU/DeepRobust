@@ -23,13 +23,13 @@ import scipy.sparse as sp
 
 class PGDAttack(BaseAttack):
 
-    def __init__(self, model=None, nnodes=None, feature_shape=None, lr=0.1, attack_structure=True, attack_features=False, device='cpu'):
+    def __init__(self, model=None, nnodes=None, loss_type='CE', feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
 
         super(PGDAttack, self).__init__(model, nnodes, attack_structure, attack_features, device)
-        self.lr = lr
 
         assert attack_features or attack_structure, 'attack_features or attack_structure cannot be both False'
 
+        self.loss_type = loss_type
         self.modified_adj = None
         self.modified_features = None
 
@@ -48,7 +48,6 @@ class PGDAttack(BaseAttack):
 
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
-        modified_adj = ori_adj
 
         victim_model.eval()
         epochs = 200
@@ -56,15 +55,27 @@ class PGDAttack(BaseAttack):
             modified_adj = self.get_modified_adj(ori_adj)
             adj_norm = utils.normalize_adj_tensor(modified_adj)
             output = victim_model(ori_features, adj_norm)
-            loss = F.nll_loss(output[idx_train], labels[idx_train])
+            # loss = F.nll_loss(output[idx_train], labels[idx_train])
+            loss = self._loss(output[idx_train], labels[idx_train])
             adj_grad = torch.autograd.grad(loss, self.adj_changes)[0]
 
-            lr = 200 / np.sqrt(t+1)
-            self.adj_changes.data.add_(lr * adj_grad)
+            if self.loss_type == 'CE':
+                lr = 200 / np.sqrt(t+1)
+                self.adj_changes.data.add_(lr * adj_grad)
+
+            if self.loss_type == 'CW':
+                lr = 0.1 / np.sqrt(t+1)
+                self.adj_changes.data.add_(lr * adj_grad)
+
             self.projection(perturbations)
 
+        self.random_sample(ori_adj, ori_features, labels, idx_train, perturbations)
+        self.modified_adj = self.get_modified_adj(ori_adj).detach()
+
+    def random_sample(self, ori_adj, ori_features, labels, idx_train, perturbations):
         K = 20
-        best_loss = 0
+        best_loss = -1000
+        victim_model = self.surrogate
         with torch.no_grad():
             s = self.adj_changes.cpu().numpy()
             for i in range(K):
@@ -77,13 +88,26 @@ class PGDAttack(BaseAttack):
                 modified_adj = self.get_modified_adj(ori_adj)
                 adj_norm = utils.normalize_adj_tensor(modified_adj)
                 output = victim_model(ori_features, adj_norm)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
+                loss = self._loss(output[idx_train], labels[idx_train])
+                # loss = F.nll_loss(output[idx_train], labels[idx_train])
                 print(loss)
                 if best_loss < loss:
                     best_loss = loss
                     best_s = sampled
             self.adj_changes.data.copy_(torch.tensor(best_s))
-            self.modified_adj = self.get_modified_adj(ori_adj).detach()
+
+    def _loss(self, output, labels):
+        if self.loss_type == "CE":
+            loss = F.nll_loss(output, labels)
+        if self.loss_type == "CW":
+            onehot = utils.tensor2onehot(labels)
+            best_second_class = (output - 1000*onehot).argmax(1)
+            margin = output[np.arange(len(output)), labels] - \
+                   output[np.arange(len(output)), best_second_class]
+            k = 0
+            loss = -torch.clamp(margin, min=k).mean()
+            # loss = torch.clamp(margin.sum()+50, min=k)
+        return loss
 
     def projection(self, perturbations):
         # projected = torch.clamp(self.adj_changes, 0, 1)
@@ -126,4 +150,58 @@ class PGDAttack(BaseAttack):
                 a = miu
         # print("The value of root is : ","%.4f" % miu)
         return miu
+
+
+class MinMax(PGDAttack):
+
+    def __init__(self, model=None, nnodes=None, loss_type='CE', feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
+
+        super(MinMax, self).__init__(model, nnodes, loss_type, feature_shape, attack_structure, attack_features, device=device)
+
+
+    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations):
+        victim_model = self.surrogate
+
+        self.sparse_features = sp.issparse(ori_features)
+        ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
+
+        # optimizer
+        optimizer = optim.Adam(victim_model.parameters(), lr=0.01)
+
+        epochs = 200
+        victim_model.eval()
+        for t in tqdm(range(epochs)):
+            # update victim model
+            victim_model.train()
+            modified_adj = self.get_modified_adj(ori_adj)
+            adj_norm = utils.normalize_adj_tensor(modified_adj)
+            output = victim_model(ori_features, adj_norm)
+            loss = self._loss(output[idx_train], labels[idx_train])
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            # generate pgd attack
+            victim_model.eval()
+            modified_adj = self.get_modified_adj(ori_adj)
+            adj_norm = utils.normalize_adj_tensor(modified_adj)
+            output = victim_model(ori_features, adj_norm)
+            loss = self._loss(output[idx_train], labels[idx_train])
+            adj_grad = torch.autograd.grad(loss, self.adj_changes)[0]
+            # adj_grad = self.adj_changes.grad
+
+            if self.loss_type == 'CE':
+                lr = 200 / np.sqrt(t+1)
+                self.adj_changes.data.add_(lr * adj_grad)
+
+            if self.loss_type == 'CW':
+                lr = 0.1 / np.sqrt(t+1)
+                self.adj_changes.data.add_(lr * adj_grad)
+
+            # self.adj_changes.grad.zero_()
+            self.projection(perturbations)
+
+        self.random_sample(ori_adj, ori_features, labels, idx_train, perturbations)
+        self.modified_adj = self.get_modified_adj(ori_adj).detach()
 

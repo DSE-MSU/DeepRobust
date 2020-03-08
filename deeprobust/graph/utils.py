@@ -13,6 +13,10 @@ def encode_onehot(labels):
                              dtype=np.int32)
     return labels_onehot
 
+def tensor2onehot(labels):
+    eye = torch.eye(labels.max() + 1)
+    onehot_mx = eye[labels]
+    return onehot_mx.to(labels.device)
 
 def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=False, sparse=False, device='cpu'):
 
