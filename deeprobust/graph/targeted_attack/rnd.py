@@ -20,7 +20,7 @@ class RND(BaseAttack):
         """
         super(RND, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
-        assert not self.attack_features, 'RND does NOT support attacking features'
+        assert not self.attack_features, 'RND does NOT support attacking features except adding nodes'
 
     def attack(self, adj, labels, idx_train, target_node, n_perturbations):
         """
@@ -52,7 +52,8 @@ class RND(BaseAttack):
             modified_adj[changed_nodes, target_node] = 1
 
         self.check_adj(modified_adj)
-        return modified_adj
+        self.modified_adj = modified_adj
+        self.modified_features = modified_features
 
     def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_perturbations=10):
         """
@@ -84,7 +85,9 @@ class RND(BaseAttack):
 
         self.check_adj(modified_adj)
 
-        return modified_adj, modified_features
+        self.modified_adj = modified_adj
+        self.modified_features = modified_features
+        # return modified_adj, modified_features
 
     def reshape_mx(self, mx, shape):
         indices = mx.nonzero()

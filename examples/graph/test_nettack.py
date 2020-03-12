@@ -29,8 +29,6 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
-adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
-
 # Setup Surrogate model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
                 nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
@@ -46,22 +44,24 @@ model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_fe
 model = model.to(device)
 
 def main():
-    degrees = torch.sparse.sum(adj, dim=0).to_dense()
-    n_perturbations = int(degrees[target_node]) # How many perturbations to perform. Default: Degree of the node
+    degrees = adj.sum(0).A1
+    # How many perturbations to perform. Default: Degree of the node
+    n_perturbations = int(degrees[target_node])
 
+    # direct attack
     modified_adj = model.attack(features, adj, labels, target_node, n_perturbations)
-
-    modified_adj = normalize_adj(modified_adj)
-    modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
-    modified_adj = modified_adj.to(device)
+    # # indirect attack/ influencer attack
+    # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
+    modified_adj = model.modified_adj
+    modified_features = model.modified_features
 
     print('=== testing GCN on original(clean) graph ===')
-    test(adj, target_node)
+    test(adj, features, target_node)
 
     print('=== testing GCN on perturbed graph ===')
-    test(modified_adj, target_node)
+    test(modified_adj, modified_features, target_node)
 
-def test(adj, target_node):
+def test(adj, features, target_node):
     ''' test on GCN '''
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,

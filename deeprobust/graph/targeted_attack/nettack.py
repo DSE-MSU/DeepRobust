@@ -113,8 +113,6 @@ class Nettack(BaseAttack):
                 print("##### Attacking the node indirectly via {} influencer nodes #####".format(n_influencers))
             print("##### Performing {} perturbations #####".format(n_perturbations))
 
-        # ori_adj_scipy = to_scipy(ori_adj)
-        # modified_adj_scipy = to_scipy(modified_adj)
         if attack_structure:
             # Setup starting values of the likelihood ratio test.
             degree_sequence_start = self.ori_adj.sum(0).A1
@@ -228,8 +226,50 @@ class Nettack(BaseAttack):
                 self.structure_perturbations.append(())
                 surrogate_losses.append(best_feature_score)
 
-        return self.modified_adj
+        # return self.modified_adj, self.modified_features
 
+    def get_attacker_nodes(self, n=5, add_additional_nodes = False):
+        assert n < self.nnodes-1, "number of influencers cannot be >= number of nodes in the graph!"
+        neighbors = self.ori_adj[self.target_node].nonzero()[1]
+        assert self.target_node not in neighbors
+
+        potential_edges = np.column_stack((np.tile(self.target_node, len(neighbors)),neighbors)).astype("int32")
+
+        # The new A_hat_square_uv values that we would get if we removed the edge from u to each of the neighbors,
+        # respectively
+        a_hat_uv = self.compute_new_a_hat_uv(potential_edges, self.target_node)
+
+        # XW = self.compute_XW()
+        XW = self.modified_features @ self.W
+
+        # compute the struct scores for all neighbors
+
+        struct_scores = self.struct_score(a_hat_uv, XW)
+
+        if len(neighbors) >= n:  # do we have enough neighbors for the number of desired influencers?
+            influencer_nodes = neighbors[np.argsort(struct_scores)[:n]]
+            if add_additional_nodes:
+                return influencer_nodes, np.array([])
+            return influencer_nodes
+        else:
+            influencer_nodes = neighbors
+            if add_additional_nodes:  # Add additional influencers by connecting them to u first.
+                # Compute the set of possible additional influencers, i.e. all nodes except the ones
+                # that are already connected to u.
+                poss_add_infl = np.setdiff1d(np.setdiff1d(np.arange(self.nnodes),neighbors), self.target_node)
+                n_possible_additional = len(poss_add_infl)
+                n_additional_attackers = n-len(neighbors)
+                possible_edges = np.column_stack((np.tile(self.target_node, n_possible_additional), poss_add_infl))
+
+                # Compute the struct_scores for all possible additional influencers, and choose the one
+                # with the best struct score.
+                a_hat_uv_additional = self.compute_new_a_hat_uv(possible_edges)
+                additional_struct_scores = self.struct_score(a_hat_uv_additional, XW)
+                additional_influencers = poss_add_infl[np.argsort(additional_struct_scores)[-n_additional_attackers::]]
+
+                return influencer_nodes, additional_influencers
+            else:
+                return influencer_nodes
 
     def compute_logits(self):
         return (self.adj_norm @ self.adj_norm @ self.modified_features @ self.W)[self.target_node]
@@ -322,33 +362,6 @@ class Nettack(BaseAttack):
         self.potential_edges = []
         self.cooc_constraint = None
 
-    def compute_new_a_hat_uv(self, potential_edges, adj):
-        """
-        Compute the updated A_hat_square_uv entries that would result from inserting/deleting the input edges,
-        for every edge.
-
-        Parameters
-        ----------
-        potential_edges: np.array, shape [P,2], dtype int
-            The edges to check.
-
-        Returns
-        -------
-        sp.sparse_matrix: updated A_hat_square_u entries, a sparse PxN matrix, where P is len(possible_edges).
-        """
-        edges = np.array(adj.nonzero()).T
-        edges_set = {tuple(x) for x in edges}
-        A_hat_sq = self.adj_norm @ self.adj_norm
-        values_before = A_hat_sq[target_node].toarray()[0]
-        node_ixs = np.unique(edges[:, 0], return_index=True)[1]
-        twohop_ixs = np.array(A_hat_sq.nonzero()).T
-        degrees = self.modified_adj.sum(0).A1 + 1
-
-        ixs, vals = compute_new_a_hat_uv(edges, node_ixs, edges_set, twohop_ixs, values_before, degrees, potential_edges, target_node)
-        ixs_arr = np.array(ixs)
-        a_hat_uv = sp.coo_matrix((vals, (ixs_arr[:, 0], ixs_arr[:, 1])), shape=[len(potential_edges), self.nnodes])
-
-        return a_hat_uv
 
     def struct_score(self, a_hat_uv, XW):
         """
@@ -423,32 +436,6 @@ def compute_new_a_hat_uv(edge_ixs, node_nb_ixs, edges_set, twohop_ixs, values_be
     Compute the new values [A_hat_square]_u for every potential edge, where u is the target node. C.f. Theorem 5.1
     equation 17.
 
-    Parameters
-    ----------
-    edge_ixs: np.array, shape [E,2], where E is the number of edges in the graph.
-        The indices of the nodes connected by the edges in the input graph.
-    node_nb_ixs: np.array, shape [N,], dtype int
-        For each node, this gives the first index of edges associated to this node in the edge array (edge_ixs).
-        This will be used to quickly look up the neighbors of a node, since numba does not allow nested lists.
-    edges_set: set((e0, e1))
-        The set of edges in the input graph, i.e. e0 and e1 are two nodes connected by an edge
-    twohop_ixs: np.array, shape [T, 2], where T is the number of edges in A_tilde^2
-        The indices of nodes that are in the twohop neighborhood of each other, including self-loops.
-    values_before: np.array, shape [N,], the values in [A_hat]^2_uv to be updated.
-    degs: np.array, shape [N,], dtype int
-        The degree of the nodes in the input graph.
-    potential_edges: np.array, shape [P, 2], where P is the number of potential edges.
-        The potential edges to be evaluated. For each of these potential edges, this function will compute the values
-        in [A_hat]^2_uv that would result after inserting/removing this edge.
-    u: int
-        The target node
-
-    Returns
-    -------
-    return_ixs: List of tuples
-        The ixs in the [P, N] matrix of updated values that have changed
-    return_values:
-
     """
     N = degs.shape[0]
 
@@ -517,21 +504,6 @@ def compute_new_a_hat_uv(edge_ixs, node_nb_ixs, edges_set, twohop_ixs, values_be
 def filter_singletons(edges, adj):
     """
     Filter edges that, if removed, would turn one or more nodes into singleton nodes.
-
-    Parameters
-    ----------
-    edges: np.array, shape [P, 2], dtype int, where P is the number of input edges.
-        The potential edges.
-
-    adj: sp.sparse_matrix, shape [N,N]
-        The input adjacency matrix.
-
-    Returns
-    -------
-    np.array, shape [P, 2], dtype bool:
-        A binary vector of length len(edges), False values indicate that the edge at
-        the index  generates singleton edges, and should thus be avoided.
-
     """
 
 
@@ -550,21 +522,6 @@ def compute_alpha(n, S_d, d_min):
     """
     Approximate the alpha of a power law distribution.
 
-    Parameters
-    ----------
-    n: int or np.array of int
-        Number of entries that are larger than or equal to d_min
-
-    S_d: float or np.array of float
-         Sum of log degrees in the distribution that are larger than or equal to d_min
-
-    d_min: int
-        The minimum degree of nodes to consider
-
-    Returns
-    -------
-    alpha: float
-        The estimated alpha of the power law distribution
     """
 
     return n / (S_d - n * np.log(d_min - 0.5)) + 1
@@ -574,28 +531,6 @@ def update_Sx(S_old, n_old, d_old, d_new, d_min):
     """
     Update on the sum of log degrees S_d and n based on degree distribution resulting from inserting or deleting
     a single edge.
-
-    Parameters
-    ----------
-    S_old: float
-         Sum of log degrees in the distribution that are larger than or equal to d_min.
-
-    n_old: int
-        Number of entries in the old distribution that are larger than or equal to d_min.
-
-    d_old: np.array, shape [N,] dtype int
-        The old degree sequence.
-
-    d_new: np.array, shape [N,] dtype int
-        The new degree sequence
-
-    d_min: int
-        The minimum degree of nodes to consider
-
-    Returns
-    -------
-    new_S_d: float, the updated sum of log degrees in the distribution that are larger than or equal to d_min.
-    new_n: int, the updated number of entries in the old distribution that are larger than or equal to d_min.
     """
 
     old_in_range = d_old >= d_min
@@ -614,23 +549,6 @@ def compute_log_likelihood(n, alpha, S_d, d_min):
     """
     Compute log likelihood of the powerlaw fit.
 
-    Parameters
-    ----------
-    n: int
-        Number of entries in the old distribution that are larger than or equal to d_min.
-
-    alpha: float
-        The estimated alpha of the power law distribution
-
-    S_d: float
-         Sum of log degrees in the distribution that are larger than or equal to d_min.
-
-    d_min: int
-        The minimum degree of nodes to consider
-
-    Returns
-    -------
-    float: the estimated log likelihood
     """
 
     return n * np.log(alpha) + n * alpha * np.log(d_min) + (alpha + 1) * S_d

@@ -24,9 +24,9 @@ class FGSM(BaseAttack):
             pass
 
     def attack(self, features, adj, labels, idx_train, target_node, n_perturbations):
-        # adj: sp.csr_matrix
-        self.surrogate.eval()
+        # adj: torch.sparse
         modified_adj = deepcopy(adj).to_dense()
+        self.surrogate.eval()
         print(f'number of pertubations: {n_perturbations}')
         for i in range(n_perturbations):
             modified_row = modified_adj[target_node] + self.adj_changes
@@ -43,9 +43,14 @@ class FGSM(BaseAttack):
                 grad[target_node] = 0
                 grad_argmax = torch.argmax(grad)
 
-            modified_adj.data[target_node][grad_argmax] = -2*modified_row[grad_argmax] + 1
+            value = -2*modified_row[grad_argmax] + 1
+            modified_adj.data[target_node][grad_argmax] += value
+            modified_adj.data[grad_argmax][target_node] += value
 
             if self.attack_features:
                 pass
 
-        return modified_adj
+        modified_adj = modified_adj.detach()
+        self.check_adj(modified_adj)
+        self.modified_adj = modified_adj
+

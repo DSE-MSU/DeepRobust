@@ -43,19 +43,10 @@ degrees = adj.sum(0).A1
 n_perturbations = int(degrees[u]) # How many perturbations to perform. Default: Degree of the node
 
 # modified_adj = model.attack(adj, labels, idx_train, target_node, n_perturbations)
-modified_adj, modified_features = model.add_nodes(features, adj, labels, idx_train, target_node, n_added=10,
+model.add_nodes(features, adj, labels, idx_train, target_node, n_added=10,
                                n_perturbations=n_perturbations)
-
-adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
-adj = adj.to(device)
-features = features.to(device)
-labels = labels.to(device)
-
-# modified_adj = normalize_adj(modified_adj)
-modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
-modified_features = sparse_mx_to_torch_sparse_tensor(modified_features)
-modified_adj = modified_adj.to(device)
-modified_features = modified_features.to(device)
+modified_adj = model.modified_adj
+modified_features = model.modified_features
 
 def test(adj, features, target_node):
     ''' test on GCN '''
@@ -64,18 +55,17 @@ def test(adj, features, target_node):
               nclass=labels.max().item() + 1,
               dropout=0.5, device=device)
 
-    if args.cuda:
-        gcn = gcn.to(device)
+    gcn = gcn.to(device)
 
     gcn.fit(features, adj, labels, idx_train)
-
     gcn.eval()
-
-    output = gcn(gcn.features, gcn.adj_norm)
+    output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
     print(f'probs: {probs.detach().cpu().numpy()}')
-    loss_test = F.nll_loss(output[idx_test], labels[idx_test])
-    acc_test = accuracy(output[idx_test], labels[idx_test])
+
+    labels_tensor = torch.LongTensor(labels).to(device)
+    loss_test = F.nll_loss(output[idx_test], labels_tensor[idx_test])
+    acc_test = accuracy(output[idx_test], labels_tensor[idx_test])
 
     print("Test set results:",
           "loss= {:.4f}".format(loss_test.item()),
@@ -87,7 +77,10 @@ def main():
     print('=== testing GCN on original(clean) graph ===')
     test(adj, features, target_node)
     print('=== testing GCN on perturbed graph ===')
-    test(modified_adj, modified_features, target_node)
+    if modified_features is None:
+        test(modified_adj, features, target_node)
+    else:
+        test(modified_adj, modified_features, target_node)
 
 
 if __name__ == '__main__':

@@ -147,7 +147,7 @@ python examples/image/evaluation_attack
     modified_adj = model.modified_adj
     ```
     
-For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_mettack.py) or run 
+For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRobust/blob/master/examples/graph/test_mettack.py) or run 
     ```
     python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     ```
@@ -189,7 +189,7 @@ For more details please refer to [mettack.py](https://github.com/I-am-Bot/DeepRo
     output = model.test(idx_test)
     ```
     
-For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-Bot/DeepRobust/blob/master/deeprobust/graph/examples/test_gcn_jaccard.py) or run
+For more details please refer to [test_gcn_jaccard.py](https://github.com/I-am-Bot/DeepRobust/blob/master/examples/graph/test_gcn_jaccard.py) or run
     ```
     python examples/graph/test_gcn_jaccard.py --dataset cora
     ```

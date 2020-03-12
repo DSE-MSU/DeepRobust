@@ -52,20 +52,19 @@ def main():
     assert u in idx_unlabeled
 
     # train surrogate model
-
     degrees = torch.sparse.sum(adj, dim=0).to_dense()
     n_perturbations = int(degrees[u]) # How many perturbations to perform. Default: Degree of the node
 
-    modified_adj = model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
-    modified_adj = modified_adj.detach()
+    model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
+    modified_adj = model.modified_adj
 
     print('=== testing GCN on original(clean) graph ===')
-    test(adj, target_node)
+    test(adj, features, target_node)
 
     print('=== testing GCN on perturbed graph ===')
-    test(modified_adj, target_node)
+    test(modified_adj, features, target_node)
 
-def test(adj, target_node):
+def test(adj, features, target_node):
     ''' test on GCN '''
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
@@ -78,13 +77,7 @@ def test(adj, target_node):
     gcn.fit(features, adj, labels, idx_train)
 
     gcn.eval()
-
-    try:
-        adj = normalize_adj_tensor(adj, sparse=True)
-    except:
-        adj = normalize_adj_tensor(adj)
-    output = gcn(features, adj)
-
+    output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
     print(f'probs: {probs.detach().cpu().numpy()}')
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
