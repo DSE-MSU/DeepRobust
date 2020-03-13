@@ -17,8 +17,8 @@ from deeprobust.image.utils import adjust_learning_rate
 
 class TRADE(BaseDefense):
     def __init__(self, model, device):
+        device = torch.device("cpu" if not torch.cuda.is_available() else device)
         self.device = device
-        device = torch.device("cpu" if not torch.cuda.is_available())
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
@@ -27,7 +27,7 @@ class TRADE(BaseDefense):
         # settings
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
-        
+
         use_cuda = not self.no_cuda and torch.cuda.is_available()
         torch.manual_seed(self.seed)
 
@@ -67,7 +67,7 @@ class TRADE(BaseDefense):
                         os.path.join(model_dir, 'trade_model-nn-epoch{}.pt'.format(epoch)))
                 torch.save(optimizer.state_dict(),
                         os.path.join(model_dir, 'opt-nn-checkpoint_epoch{}.tar'.format(epoch)))
-    
+
     def parse_params(self,
                      epochs = 100,
                      lr = 0.01,
@@ -87,7 +87,7 @@ class TRADE(BaseDefense):
         self.epsilon = epsilon
         self.num_step = num_step
         self.beta = beta
-        self.seed = seed 
+        self.seed = seed
         self.log_interval = log_interval
         self.save_dir = save_dir
         self.save_freq = save_freq
@@ -144,7 +144,7 @@ class TRADE(BaseDefense):
         batch_size = len(x_natural)
         # generate adversarial example
         x_adv = x_natural.detach() + 0.001 * torch.randn(x_natural.shape).cuda().detach()
-        
+
         if distance == 'l_inf':
             for _ in range(perturb_steps):
                 x_adv.requires_grad_()
@@ -155,7 +155,7 @@ class TRADE(BaseDefense):
                 x_adv = x_adv.detach() + step_size * torch.sign(grad.detach())
                 x_adv = torch.min(torch.max(x_adv, x_natural - epsilon), x_natural + epsilon)
                 x_adv = torch.clamp(x_adv, 0.0, 1.0)
-        
+
         elif distance == 'l_2':
             delta = 0.001 * torch.randn(x_natural.shape).cuda().detach()
             delta = Variable(delta.data, requires_grad=True)
@@ -204,7 +204,7 @@ class TRADE(BaseDefense):
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
-            
+
             optimizer.zero_grad()
 
             # calculate robust loss
