@@ -12,7 +12,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 
 from deeprobust.image.defense.base_defense import BaseDefense
-from deeprobust.image.netmodels.CNNmodel import Net
+from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.utils import adjust_learning_rate
 
 class TRADE(BaseDefense):
