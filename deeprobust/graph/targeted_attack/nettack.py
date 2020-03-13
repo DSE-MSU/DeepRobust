@@ -56,8 +56,6 @@ class Nettack(BaseAttack):
         return W.detach().cpu().numpy()
 
     def attack(self, features, adj, labels, target_node, n_perturbations, direct=True, n_influencers= 0, ll_cutoff=0.004):
-
-    # def forward(self, features, adj, labels, idx_train, n_perturbations, target_node, direct=True, n_influencers=0, delta_cutoff=0.004, verbose=True):
         """
         Perform an attack on the surrogate model.
         """
@@ -118,8 +116,6 @@ class Nettack(BaseAttack):
             degree_sequence_start = self.ori_adj.sum(0).A1
             current_degree_sequence = self.modified_adj.sum(0).A1
             d_min = 2
-
-            # ll_orig, alpha_orig, n_orig, sum_log_degrees_original = degree_sequence_log_likelihood(original_degree_sequence, d_min)
 
             S_d_start = np.sum(np.log(degree_sequence_start[degree_sequence_start >= d_min]))
             current_S_d = np.sum(np.log(current_degree_sequence[current_degree_sequence >= d_min]))
@@ -235,23 +231,21 @@ class Nettack(BaseAttack):
 
         potential_edges = np.column_stack((np.tile(self.target_node, len(neighbors)),neighbors)).astype("int32")
 
-        # The new A_hat_square_uv values that we would get if we removed the edge from u to each of the neighbors,
-        # respectively
+        # The new A_hat_square_uv values that we would get if we removed the edge from u to each of the neighbors, respectively
         a_hat_uv = self.compute_new_a_hat_uv(potential_edges, self.target_node)
 
         # XW = self.compute_XW()
         XW = self.modified_features @ self.W
 
         # compute the struct scores for all neighbors
-
         struct_scores = self.struct_score(a_hat_uv, XW)
-
         if len(neighbors) >= n:  # do we have enough neighbors for the number of desired influencers?
             influencer_nodes = neighbors[np.argsort(struct_scores)[:n]]
             if add_additional_nodes:
                 return influencer_nodes, np.array([])
             return influencer_nodes
         else:
+
             influencer_nodes = neighbors
             if add_additional_nodes:  # Add additional influencers by connecting them to u first.
                 # Compute the set of possible additional influencers, i.e. all nodes except the ones
@@ -263,7 +257,7 @@ class Nettack(BaseAttack):
 
                 # Compute the struct_scores for all possible additional influencers, and choose the one
                 # with the best struct score.
-                a_hat_uv_additional = self.compute_new_a_hat_uv(possible_edges)
+                a_hat_uv_additional = self.compute_new_a_hat_uv(possible_edges, self.target_node)
                 additional_struct_scores = self.struct_score(a_hat_uv_additional, XW)
                 additional_influencers = poss_add_infl[np.argsort(additional_struct_scores)[-n_additional_attackers::]]
 
@@ -413,7 +407,7 @@ class Nettack(BaseAttack):
         degrees = self.modified_adj.sum(0).A1 + 1
 
         ixs, vals = compute_new_a_hat_uv(edges, node_ixs, edges_set, twohop_ixs, values_before, degrees,
-                                         potential_edges, target_node)
+                                         potential_edges.astype(np.int32), target_node)
         ixs_arr = np.array(ixs)
         a_hat_uv = sp.coo_matrix((vals, (ixs_arr[:, 0], ixs_arr[:, 1])), shape=[len(potential_edges), self.nnodes])
 

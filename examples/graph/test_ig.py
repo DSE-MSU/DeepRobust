@@ -3,17 +3,15 @@ import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 from deeprobust.graph.defense import GCN
-from deeprobust.graph.global_attack import DICE
+from deeprobust.graph.targeted_attack import IGAttack
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
-
 import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')
 parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation rate')
-
 
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
@@ -28,24 +26,40 @@ if args.cuda:
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
+# Setup Surrogate model
+surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
+
+surrogate = surrogate.to(device)
+surrogate.fit(features, adj, labels, idx_train)
+
 # Setup Attack Model
-model = DICE()
+target_node = 0
+assert target_node in idx_unlabeled
 
-n_perturbations = int(args.ptb_rate * (adj.sum()//2))
+model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
+model = model.to(device)
 
-modified_adj = model.attack(adj, labels, n_perturbations)
+def main():
+    degrees = adj.sum(0).A1
+    # How many perturbations to perform. Default: Degree of the node
+    n_perturbations = int(degrees[target_node])
 
-adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
+    modified_adj = model.attack(features, adj, labels, idx_train, target_node, n_perturbations, steps=10)
+    modified_adj = model.modified_adj
+    modified_features = model.modified_features
 
-modified_adj = normalize_adj(modified_adj)
-modified_adj = sparse_mx_to_torch_sparse_tensor(modified_adj)
-modified_adj = modified_adj.to(device)
+    print('=== testing GCN on original(clean) graph ===')
+    test(adj, features, target_node)
 
-def test(adj):
+    print('=== testing GCN on perturbed graph ===')
+    test(modified_adj, modified_features, target_node)
+
+def test(adj, features, target_node):
     ''' test on GCN '''
-    # adj = normalize_adj_tensor(adj)
     gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
@@ -53,25 +67,18 @@ def test(adj):
 
     gcn = gcn.to(device)
 
-    optimizer = optim.Adam(gcn.parameters(),
-                           lr=0.01, weight_decay=5e-4)
+    gcn.fit(features, adj, labels, idx_train)
 
-    gcn.fit(features, adj, labels, idx_train) # train without model picking
-    # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
-    output = gcn.output
-    loss_test = F.nll_loss(output[idx_test], labels[idx_test])
+    gcn.eval()
+    output = gcn.predict()
+    probs = torch.exp(output[[target_node]])[0]
+    print(f'probs: {probs.detach().cpu().numpy()}')
     acc_test = accuracy(output[idx_test], labels[idx_test])
+
     print("Test set results:",
-          "loss= {:.4f}".format(loss_test.item()),
           "accuracy= {:.4f}".format(acc_test.item()))
 
     return acc_test.item()
-
-def main():
-    print('=== testing GCN on original(clean) graph ===')
-    test(adj)
-    print('=== testing GCN on perturbed graph ===')
-    test(modified_adj)
 
 
 if __name__ == '__main__':

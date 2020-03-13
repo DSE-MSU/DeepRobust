@@ -67,7 +67,10 @@ class GCN(nn.Module):
         self.gc2 = GraphConvolution(nhid, nclass, with_bias=with_bias)
         self.dropout = dropout
         self.lr = lr
-        self.weight_decay = weight_decay
+        if not with_relu:
+            self.weight_decay = 0
+        else:
+            self.weight_decay = weight_decay
         self.with_relu = with_relu
         self.with_bias = with_bias
         self.output = None

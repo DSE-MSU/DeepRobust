@@ -86,7 +86,8 @@ for target_node in target_nodes:
     adversary = adversary.to(device)
     degrees = adj.sum(0).A1
     n_perturbations = int(degrees[target_node]) + 2
-    perturbed_adj = adversary.attack(features, adj, labels, target_node, n_perturbations)
+    adversary.attack(features, adj, labels, target_node, n_perturbations)
+    perturbed_adj = adversary.modified_adj
 
     model = GCN(nfeat=features.shape[1], nclass=labels.max()+1,
             nhid=16, dropout=0, with_relu=False, with_bias=True, device=device)

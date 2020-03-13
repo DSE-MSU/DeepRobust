@@ -52,6 +52,7 @@ def main():
     modified_adj = model.attack(features, adj, labels, target_node, n_perturbations)
     # # indirect attack/ influencer attack
     # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
+
     modified_adj = model.modified_adj
     modified_features = model.modified_features
 

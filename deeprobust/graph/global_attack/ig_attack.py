@@ -6,6 +6,7 @@
 '''
 
 import torch
+import torch.multiprocessing as mp
 from deeprobust.graph.global_attack import BaseAttack
 from torch.nn.parameter import Parameter
 from deeprobust.graph import utils
@@ -46,11 +47,12 @@ class IGAttack(BaseAttack):
         victim_model = self.surrogate
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
-        modified_adj = ori_adj
 
         victim_model.eval()
 
-        s_e = self.calc_importance_edge(ori_features, ori_adj, labels, idx_train, steps=10)
+        adj_norm = utils.normalize_adj_tensor(ori_adj)
+        s_e = self.calc_importance_edge(ori_features, adj_norm, labels, idx_train, steps=20)
+        s_f = self.calc_importance_feature(ori_features, adj_norm, labels, idx_train, steps=20)
 
         import ipdb
         ipdb.set_trace()
@@ -62,49 +64,80 @@ class IGAttack(BaseAttack):
         self.modified_adj = self.get_modified_adj(ori_adj).detach()
 
     def calc_importance_edge(self, features, adj, labels, idx_train, steps):
-        adj.requires_grad = True
+        adj_norm = utils.normalize_adj_tensor(adj)
+        adj_norm.requires_grad = True
         integrated_grad_list = []
-        for i in range(adj.shape[0]):
-            for j in range(adj.shape[1]):
-                if adj[i][j]:
-                    scaled_inputs = [(float(i)/ steps) * (adj - 0) for i in range(0, steps+1)]
+        for i in tqdm(range(adj.shape[0])):
+            for j in (range(adj.shape[1])):
+                if adj_norm[i][j]:
+                    scaled_inputs = [(float(k)/ steps) * (adj_norm - 0) for k in range(0, steps + 1)]
                 else:
-                    scaled_inputs = [-(float(i)/ steps) * (1 - adj) for i in range(0, steps + 1)]
+                    scaled_inputs = [-(float(k)/ steps) * (1 - adj_norm) for k in range(0, steps + 1)]
                 _sum = 0
+
+                # num_processes = steps
+                # # NOTE: this is required for the ``fork`` method to work
+                # self.surrogate.share_memory()
+                # processes = []
+                # for rank in range(num_processes):
+                #     p = mp.Process(target=self.get_gradient, args=(features, scaled_inputs[rank], adj_norm, labels, idx_train))
+                #     p.start()
+                #     processes.append(p)
+                # for p in processes:
+                #     p.join()
+
                 for new_adj in scaled_inputs:
-                    # TODO: whether to first normalize adj or
-                    adj_norm = utils.normalize_adj_tensor(new_adj)
-                    output = self.surrogate(features, adj_norm)
+                    output = self.surrogate(features, new_adj)
                     loss = F.nll_loss(output[idx_train], labels[idx_train])
-
-                    import ipdb
-                    ipdb.set_trace()
-
                     # adj_grad = torch.autograd.grad(loss, adj[i][j], allow_unused=True)[0]
-                    adj_grad = torch.autograd.grad(loss, adj, allow_unused=True)[0]
+                    adj_grad = torch.autograd.grad(loss, adj_norm)[0]
                     adj_grad = adj_grad[i][j]
                     _sum += adj_grad
 
-                avg_grads = _sum.mean()
-                integrated_grad_list.append(avg_grad)
-
-        return integrated_grad_list
-
-    def calc_importance_feature(self, input, steps):
-        integrated_grad_list = []
-        for i in range(input.shape[0]):
-            for j in range(input.shape[1]):
-                if input[i][j]:
-                    scaled_inputs = [(float(k)/ steps) * (input - 0) for k in ragen(0, steps+1)]
+                if adj_norm[i][j]:
+                    avg_grad = (adj_norm[i][j] - 0) * _sum.mean()
                 else:
-                    scaled_inputs = [-(float(k)/ steps) * (1 - input) for k in ragen(0, steps + 1)]
-
-                avg_grads = self.calc_gradient_feature(scaled_inputs, model, target_label_idx, cuda)
+                    avg_grad = (1 - adj_norm[i][j]) * _sum.mean()
                 integrated_grad_list.append(avg_grad)
 
         return integrated_grad_list
 
-    def calc_gradient_adj(self, inputs, feature):
+    def get_gradient(self, features, new_adj, adj_norm, labels, idx_train):
+        output = self.surrogate(features, new_adj)
+        loss = F.nll_loss(output[idx_train], labels[idx_train])
+        # adj_grad = torch.autograd.grad(loss, adj[i][j], allow_unused=True)[0]
+        adj_grad = torch.autograd.grad(loss, adj_norm)[0]
+        adj_grad = adj_grad[i][j]
+        self._sum += adj_grad
+
+    def calc_importance_feature(self, features, adj_norm, labels, idx_train, steps):
+        features.requires_grad = True
+        integrated_grad_list = []
+        for i in range(features.shape[0]):
+            for j in range(features.shape[1]):
+                if features[i][j]:
+                    scaled_inputs = [(float(k)/ steps) * (features - 0) for k in range(0, steps + 1)]
+                else:
+                    scaled_inputs = [-(float(k)/ steps) * (1 - features) for k in range(0, steps + 1)]
+                _sum = 0
+
+                for new_features in scaled_inputs:
+                    output = self.surrogate(new_features, adj_norm)
+                    loss = F.nll_loss(output[idx_train], labels[idx_train])
+                    # adj_grad = torch.autograd.grad(loss, adj[i][j], allow_unused=True)[0]
+                    feature_grad = torch.autograd.grad(loss, features, allow_unused=True)[0]
+                    feature_grad = feature_grad[i][j]
+                    _sum += feature_grad
+
+                if adj_norm[i][j]:
+                    avg_grad = (features[i][j] - 0) * _sum.mean()
+                else:
+                    avg_grad = (1 - features[i][j]) * _sum.mean()
+                integrated_grad_list.append(avg_grad)
+
+        return integrated_grad_list
+
+    def calc_gradient_adj(self, inputs, features):
         for adj in inputs:
             adj_norm = utils.normalize_adj_tensor(modified_adj)
             output = self.surrogate(features, adj_norm)
