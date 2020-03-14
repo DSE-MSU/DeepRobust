@@ -39,7 +39,7 @@ python setup.py install
 
 ```
 python examples/graph/test_gcn_jaccard.py --dataset cora
-python examples/image/evaluation_attack 
+python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
 ```
 
 # Usage
@@ -107,7 +107,7 @@ python examples/image/evaluation_attack
 
     Example:
     ```
-    python -m deeprobust.image.evaluation_attack 
+    python deeprobust/image/evaluation_attack.py
     ```
 
 ## Graph Attack and Defense 
