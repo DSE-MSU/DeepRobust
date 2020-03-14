@@ -14,7 +14,7 @@ class FGA(BaseAttack):
 
     def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='cpu'):
 
-        super(FGSM, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
+        super(FGA, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
         if self.attack_structure:
             self.adj_changes = Parameter(torch.FloatTensor(nnodes))
