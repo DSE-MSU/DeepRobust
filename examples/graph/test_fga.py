@@ -3,7 +3,7 @@ import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 from deeprobust.graph.defense import GCN
-from deeprobust.graph.targeted_attack import FGSM
+from deeprobust.graph.targeted_attack import FGA
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 
@@ -44,7 +44,7 @@ surrogate.fit(features, adj, labels, idx_train)
 
 # Setup Attack Model
 target_node = 0
-model = FGSM(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device=device)
+model = FGA(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device=device)
 model = model.to(device)
 
 def main():

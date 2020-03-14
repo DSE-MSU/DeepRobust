@@ -10,7 +10,7 @@ from copy import deepcopy
 from deeprobust.graph import utils
 import torch.nn.functional as F
 
-class FGSM(BaseAttack):
+class FGA(BaseAttack):
 
     def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='cpu'):
 
