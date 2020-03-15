@@ -1,6 +1,7 @@
 
 # DeepRobust
-![image](https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png)
+<div align=center><img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png"/></div>
+
 DeepRobust is a pytorch adversarial library for attack and defense methods on images and graphs. 
 List of including algorithms can be found in [[Image Package]](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/image) and [[Graph Package]](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph).
 
