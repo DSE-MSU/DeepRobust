@@ -22,7 +22,7 @@ For more details about attacks and defenses, you can read the following papers.
 
 
 
-# Baisc Environment
+# Basic Environment
 * `python >= 3.6`
 * `pytorch >= 1.2.0`
 
