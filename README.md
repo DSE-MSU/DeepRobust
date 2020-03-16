@@ -108,6 +108,8 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
 
     Example:
     ```
+    cd DeepRobust
+    python examples/image/test_train.py
     python deeprobust/image/evaluation_attack.py
     ```
 
