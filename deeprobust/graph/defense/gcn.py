@@ -7,7 +7,7 @@ from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from deeprobust.graph import utils
 from copy import deepcopy
-
+from sklearn.metrics import f1_score
 
 class GraphConvolution(Module):
     """
@@ -96,7 +96,7 @@ class GCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True, patience=500):
         '''
             train the gcn model, when idx_val is not None, pick the best model
             according to the validation loss
@@ -127,7 +127,10 @@ class GCN(nn.Module):
         if idx_val is None:
             self._train_without_val(labels, idx_train, train_iters, verbose)
         else:
-            self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
+            if patience < train_iters:
+                self._train_with_early_stopping(labels, idx_train, idx_val, train_iters, patience, verbose)
+            else:
+                self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
     def _train_without_val(self, labels, idx_train, train_iters, verbose):
         self.train()
@@ -183,6 +186,51 @@ class GCN(nn.Module):
             print('=== picking the best model according to the performance on validation ===')
         self.load_state_dict(weights)
 
+    def _train_with_early_stopping(self, labels, idx_train, idx_val, train_iters, patience, verbose):
+        if verbose:
+            print('=== training gcn model ===')
+        optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+
+        early_stopping = patience
+        best_loss_val = 100
+
+        for i in range(train_iters):
+            self.train()
+            optimizer.zero_grad()
+            output = self.forward(self.features, self.adj_norm)
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+            loss_train.backward()
+            optimizer.step()
+
+            if verbose and i % 10 == 0:
+                print('Epoch {}, training loss: {}'.format(i, loss_train.item()))
+
+            self.eval()
+            output = self.forward(self.features, self.adj_norm)
+
+            # def eval_class(output, labels):
+            #     preds = output.max(1)[1].type_as(labels)
+            #     return f1_score(labels.cpu().numpy(), preds.cpu().numpy(), average='micro') + \
+            #         f1_score(labels.cpu().numpy(), preds.cpu().numpy(), average='macro')
+
+            # perf_sum = eval_class(output[idx_val], labels[idx_val])
+            loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+
+            if best_loss_val > loss_val:
+                best_loss_val = loss_val
+                self.output = output
+                weights = deepcopy(self.state_dict())
+                patience = early_stopping
+            else:
+                patience -= 1
+            if i > early_stopping and patience <= 0:
+                break
+
+        if verbose:
+             # print(f'=== early stopping at {i}, val_acc = {best_acc_val} ===' )
+             print(f'=== early stopping at {i}, val_loss = {best_loss_val} ===' )
+        self.load_state_dict(weights)
+
     def test(self, idx_test):
         self.eval()
         output = self.predict()
@@ -200,6 +248,7 @@ class GCN(nn.Module):
 
     def predict(self, features=None, adj=None):
         '''By default, inputs are unnormalized data'''
+
         self.eval()
         if features is None and adj is None:
             return self.forward(self.features, self.adj_norm)

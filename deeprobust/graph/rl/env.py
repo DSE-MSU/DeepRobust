@@ -118,13 +118,14 @@ class ModifiedGraph(object):
             return None
 
     def get_possible_nodes(self, target_node):
-        connected = set()
-        connected = []
+        # connected = set()
+        connected = [target_node]
         for n1, n2 in self.edge_set:
             if n1 == target_node:
                 # connected.add(target_node)
-                connected.append(n1)
+                connected.append(n2)
         return np.setdiff1d(self.node_set, np.array(connected))
+
         # return self.node_set - connected
 
 class NodeAttackEnv(object):

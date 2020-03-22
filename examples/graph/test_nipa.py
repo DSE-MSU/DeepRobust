@@ -31,7 +31,7 @@ def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_
     return modified_adj, modified_features
 
 def generate_injected_features(features, n_added):
-    # TODO
+    # TODO not sure how to generate features of injected nodes
     features = features.tolil()
     avg = np.tile(features.mean(0), (n_added, 1))
     features[-n_added: ] = avg + np.random.normal(0, 1, (n_added, features.shape[1]))
@@ -42,7 +42,7 @@ def injecting_nodes(data):
         injecting nodes to adj, features, and assign labels to the injected nodes
     '''
     adj, features, labels = data.adj, data.features, data.labels
-    features = normalize_feature(features)
+    # features = normalize_feature(features)
     N = adj.shape[0]
     D = features.shape[1]
 
@@ -52,6 +52,8 @@ def injecting_nodes(data):
     data.adj = reshape_mx(adj, shape=(N+n_added, N+n_added))
     enlarged_features = reshape_mx(features, shape=(N+n_added, D))
     data.features = generate_injected_features(enlarged_features, n_added)
+    data.features = normalize_feature(data.features)
+
     injected_labels = np.random.choice(labels.max()+1, n_added)
     data.labels = np.hstack((labels, injected_labels))
 
@@ -64,15 +66,19 @@ def init_setup():
     StaticGraph.graph = nx.from_scipy_sparse_matrix(adj)
     dict_of_lists = nx.to_dict_of_lists(StaticGraph.graph)
 
-    # labels = torch.LongTensor(labels)
     idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
-    # black box setting
-    victim_model = load_victim_model(data, device=device, file_path=args.saved_model)
+    # gray box setting
+    adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
+    # Setup victim model
+    victim_model = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0.5, weight_decay=5e-4, device=device)
+
+    victim_model = victim_model.to(device)
+    victim_model.fit(features, adj, labels, idx_train, idx_val)
     setattr(victim_model, 'norm_tool',  GraphNormTool(normalize=True, gm='gcn', device=device))
 
-    adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
     output = victim_model.predict(features, adj)
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
@@ -98,13 +104,16 @@ device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
 env = NodeInjectionEnv(features, labels, idx_train, idx_val, dict_of_lists, victim_model, ratio=args.ratio, reward_type=args.reward_type)
 
-agent = NIPA(env, features, labels, idx_train, idx_test, dict_of_lists, num_wrong=0,
+agent = NIPA(env, features, labels, env.idx_train, idx_val, idx_test, dict_of_lists, num_wrong=0,
         ratio=args.ratio, reward_type=args.reward_type,
         batch_size=args.batch_size, save_dir=args.save_dir,
         bilin_q=args.bilin_q, embed_dim=args.latent_dim,
         mlp_hidden=args.mlp_hidden, max_lv=args.max_lv,
         gm=args.gm, device=device)
 
+
+print("Warning: NIPA is not ready. Haven't reproduced the performance yet")
+print('Warning: if you find the training process is too slow, you can uncomment line 119 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
 
 if args.phase == 'train':
     agent.train(num_episodes=10000, lr=args.learning_rate)

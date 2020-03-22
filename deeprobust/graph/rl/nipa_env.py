@@ -31,7 +31,6 @@ class NodeInjectionEnv(NodeAttackEnv):
         '''
         # super(NodeInjectionEnv, self).__init__(features, labels, all_targets, list_action_space, classifier, num_mod, reward_type)
         super(NodeInjectionEnv, self).__init__(features, labels, idx_val, dict_of_lists, classifier)
-
         self.parallel_size = parallel_size
 
         degrees = np.array([len(d) for n, d in dict_of_lists.items()])
@@ -69,7 +68,7 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.binary_rewards = None
         self.list_acc_of_all = []
 
-    def step(self, actions):
+    def step(self, actions, inference=False):
         '''
             run actions and get reward
         '''
@@ -94,22 +93,24 @@ class NodeInjectionEnv(NodeAttackEnv):
         self.n_steps += 1
         self.overall_steps += 1
 
-        if self.isActionFinished():
-            rewards = []
-            for i in (range(self.parallel_size)):
-                device = self.labels.device
-                extra_adj = self.modified_list[i].get_extra_adj(device=device)
-                adj = self.classifier.norm_tool.norm_extra(extra_adj)
-                labels = torch.cat((self.labels, self.modified_label_list[i]))
-                # self.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False)
-                self.classifier.fit(self.features, adj, labels, self.idx_train, normalize=False)
-                output = self.classifier(self.features, adj)
-                loss, acc = loss_acc(output, self.labels, self.idx_val)
-                # print(acc)
-                r = 1 if self.previous_acc[i] - acc > 0.01  else -1
-                self.previous_acc[i] = acc
-                rewards.append(r)
-                self.rewards = np.array(rewards).astype(np.float32)
+        if not inference:
+            if self.isActionFinished() :
+                rewards = []
+                for i in (range(self.parallel_size)):
+                    device = self.labels.device
+                    extra_adj = self.modified_list[i].get_extra_adj(device=device)
+                    adj = self.classifier.norm_tool.norm_extra(extra_adj)
+                    labels = torch.cat((self.labels, self.modified_label_list[i]))
+                    # self.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False)
+                    self.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False, patience=30)
+                    output = self.classifier(self.features, adj)
+                    loss, correct = loss_acc(output, self.labels, self.idx_val, avg_loss=False)
+                    acc = correct.sum()
+                    # r = 1 if self.previous_acc[i] - acc > 0.01  else -1
+                    r = 1 if self.previous_acc[i] - acc > 0  else -1
+                    self.previous_acc[i] = acc
+                    rewards.append(r)
+                    self.rewards = np.array(rewards).astype(np.float32)
 
 
     def sample_pos_rewards(self, num_samples):

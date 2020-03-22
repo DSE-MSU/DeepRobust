@@ -221,11 +221,11 @@ def to_scipy(tensor):
     if is_sparse_tensor(tensor):
         values = tensor._values()
         indices = tensor._indices()
-        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
+        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()), shape=tensor.shape)
     else:
         indices = tensor.nonzero().t()
         values = tensor[indices[0], indices[1]]
-        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
+        return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()), shape=tensor.shape)
 
 def is_sparse_tensor(tensor):
     # if hasattr(tensor, 'nnz'):

@@ -87,6 +87,7 @@ agent = Agent(env, features, labels, meta_list, attack_list, dict_of_lists, num_
         mlp_hidden=args.mlp_hidden, max_lv=args.max_lv,
         gm=args.gm, device=device)
 
+print('Warning: if you find the training process is too slow, you can uncomment line 119 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
 
 if args.phase == 'train':
     agent.train(num_steps=args.num_steps, lr=args.learning_rate)

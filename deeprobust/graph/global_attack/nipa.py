@@ -21,7 +21,7 @@ from itertools import count
 
 class NIPA(object):
 
-    def __init__(self, env, features, labels, idx_train, idx_test,
+    def __init__(self, env, features, labels, idx_train, idx_val, idx_test,
             list_action_space, ratio, reward_type='binary', batch_size=30,
             num_wrong=0, bilin_q=1, embed_dim=64, gm='mean_field',
             mlp_hidden=64, max_lv=1, save_dir='checkpoint_dqn', device=None):
@@ -32,6 +32,7 @@ class NIPA(object):
         self.labels = labels
         self.possible_labels = torch.arange(labels.max() + 1).to(labels.device)
         self.idx_train = idx_train
+        self.idx_val = idx_val
         self.idx_test = idx_test
         self.num_wrong = num_wrong
         self.list_action_space = list_action_space
@@ -54,8 +55,6 @@ class NIPA(object):
         self.mem_pool = NstepReplayMem(memory_size=500000, n_steps=3, balance_sample=reward_type == 'binary', model='nipa')
         self.env = env
 
-        # self.net = QNetNode(features, labels, list_action_space)
-        # self.old_net = QNetNode(features, labels, list_action_space)
         self.net = NStepQNetNode(3, features, labels, list_action_space, self.n_injected,
                           bilin_q=bilin_q, embed_dim=embed_dim, mlp_hidden=mlp_hidden,
                           max_lv=max_lv, gm=gm, device=device)
@@ -71,7 +70,7 @@ class NIPA(object):
         self.eps_end = 0.05
         # self.eps_step = 100000
         self.eps_step = 30000
-        self.GAMMA = 0.999
+        self.GAMMA = 0.9
         self.burn_in = 50
         self.step = 0
         self.pos = 0
@@ -92,13 +91,14 @@ class NIPA(object):
         else:
 
             cur_state = self.env.getStateRef()
-            list_at = self.env.uniformRandActions()
+            # list_at = self.env.uniformRandActions()
+            list_at = self.env.first_nodes if time_t == 1 else None
+
             actions = self.possible_actions(cur_state, list_at, time_t)
             actions, values = self.net(time_t, cur_state, actions, greedy_acts=True, is_inference=True)
 
-            assert len(actions) == len(list_at)
+            assert len(actions) == len(cur_state)
             # actions = list(actions.cpu().numpy())
-
         return actions
 
     def run_simulation(self):
@@ -115,12 +115,10 @@ class NIPA(object):
                 rewards = self.env.rewards
                 s_prime = self.env.cloneState()
             else:
-                # rewards = env.rewards
                 rewards = np.zeros(len(list_at), dtype=np.float32)
                 s_prime = self.env.cloneState()
 
             if self.env.isTerminal():
-                # rewards = np.zeros(len(list_at), dtype=np.float32)
                 rewards = self.env.rewards
                 s_prime = None
                 # self.env.init_overall_steps()
@@ -133,18 +131,23 @@ class NIPA(object):
         self.env.init_overall_steps()
         self.env.setup()
 
-        t = 0
-        while not self.env.isTerminal():
-            list_at = self.make_actions(t % 3, greedy=True)
-            self.env.step(list_at)
-            t += 1
+        for _ in count():
+            self.env.setup()
+            t = 0
+            while not self.env.isActionFinished():
+                list_at = self.make_actions(t, greedy=True)
+                # print(list_at)
+                self.env.step(list_at, inference=True)
+                t += 1
+            if self.env.isTerminal():
+                break
 
         device = self.labels.device
         extra_adj = self.env.modified_list[0].get_extra_adj(device=device)
         adj = self.env.classifier.norm_tool.norm_extra(extra_adj)
         labels = torch.cat((self.labels, self.env.modified_label_list[0]))
-        # self.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False)
-        self.env.classifier.fit(self.features, adj, labels, self.idx_train, normalize=False)
+
+        self.env.classifier.fit(self.features, adj, labels, self.idx_train, self.idx_val, normalize=False, patience=50)
         output = self.env.classifier(self.features, adj)
         loss, acc = loss_acc(output, self.labels, self.idx_test)
         print('\033[93m average test: acc %.5f\033[0m' % (acc))
@@ -173,9 +176,6 @@ class NIPA(object):
         for i_episode in tqdm(range(num_episodes)):
             self.env.init_overall_steps()
 
-            # pbar = tqdm(range(1000), unit='steps')
-
-            # for t in pbar:
             for t in count():
                 self.run_simulation()
 
@@ -189,12 +189,11 @@ class NIPA(object):
 
                 # list_target = list_target.view(-1, 1)
                 _, q_sa = self.net(cur_time, list_st, list_at)
-                # q_sa = torch.cat(q_sa, dim=0)
                 loss = F.mse_loss(q_sa, list_target)
                 loss = torch.clamp(loss, -1, 1)
                 optimizer.zero_grad()
                 loss.backward()
-                # print([x[0] for x in self.named_parameters() if x[1].grad is None])
+                # print([x[0] for x in self.nnamed_parameters() if x[1].grad is None])
                 # for param in self.net.parameters():
                 #     if param.grad is None:
                 #         continue
@@ -203,15 +202,18 @@ class NIPA(object):
 
                 # pbar.set_description('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
                 if t % 20 == 0:
-                    print('eps: %.5f, loss: %0.5f, q_val: %.5f' % (self.eps, loss, torch.mean(q_sa)) )
+                    print('eps: %.5f, loss: %0.5f, q_val: %.5f, list_target: %.5f' % (self.eps, loss, torch.mean(q_sa), torch.mean(list_target)) )
 
                 if self.env.isTerminal():
                     break
 
+                # if (t+1) % 50 == 0:
+                #     self.take_snapshot()
+
             if i_episode % 1 == 0:
                 self.take_snapshot()
 
-            if i_episode % 10 == 0:
+            if i_episode % 1 == 0:
                 self.eval()
 
     def possible_actions(self, list_st, list_at, t):
@@ -222,15 +224,15 @@ class NIPA(object):
         '''
         t = t % 3
         if t == 0:
-            return np.tile(self.injected_nodes, ((len(list_at), 1)))
+            return np.tile(self.injected_nodes, ((len(list_st), 1)))
 
         if t == 1:
             actions = []
             for i in range(len(list_at)):
-                a_prime = list_st[i][0].get_possible_nodes(list_at[0])
+                a_prime = list_st[i][0].get_possible_nodes(list_at[i])
                 actions.append(a_prime)
             return actions
 
         if t == 2:
-            return self.possible_labels.repeat((len(list_at), 1))
+            return self.possible_labels.repeat((len(list_st), 1))
 
