@@ -28,7 +28,6 @@ class DICE(BaseAttack):
         (train and test) available.
         """
         # adj: sp.csr_matrix
-        # adj: tensor sparse?
 
         print(f'number of pertubations: {n_perturbations}')
         modified_adj = adj.tolil()
@@ -47,22 +46,23 @@ class DICE(BaseAttack):
 
         n_insert = n_perturbations - n_remove
 
-        # sample edges to add
-        nonzero = nonzero
-        edges = self.random_sample_edges(adj, n_insert, exclude=nonzero)
-        for n1, n2 in edges:
-            modified_adj[n1, n2] += 1
-            modified_adj[n2, n1] += 1
+        # # sample edges to add
+        # nonzero = nonzero
+        # edges = self.random_sample_edges(adj, n_insert, exclude=nonzero)
+        # for n1, n2 in edges:
+        #     modified_adj[n1, n2] += 1
+        #     modified_adj[n2, n1] += 1
 
-        # for i in range(n_insert):
-        #     # select a node
-        #     node = np.random.randint(adj.shape[0])
-        #     possible_nodes = [x for x in range(adj.shape[0])
-        #                       if labels[x] != labels[node] and modified_adj[x, node] == 0]
-        #     # select another node
-        #     node2 = possible_nodes[np.random.randint(len(possible_nodes))]
-        #     modified_adj[node, node2] = 1
-        #     modified_adj[node2, node] = 1
+        # sample edges to add
+        for i in range(n_insert):
+            # select a node
+            node1 = np.random.randint(adj.shape[0])
+            possible_nodes = [x for x in range(adj.shape[0])
+                              if labels[x] != labels[node1] and modified_adj[x, node1] == 0]
+            # select another node
+            node2 = possible_nodes[np.random.randint(len(possible_nodes))]
+            modified_adj[node1, node2] = 1
+            modified_adj[node2, node1] = 1
 
         self.check_adj(modified_adj)
         return modified_adj
