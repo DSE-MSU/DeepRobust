@@ -29,7 +29,7 @@ class DICE(BaseAttack):
         """
         # adj: sp.csr_matrix
 
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
         modified_adj = adj.tolil()
 
         remove_or_insert = np.random.choice(2, n_perturbations)

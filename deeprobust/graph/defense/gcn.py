@@ -227,8 +227,7 @@ class GCN(nn.Module):
                 break
 
         if verbose:
-             # print(f'=== early stopping at {i}, val_acc = {best_acc_val} ===' )
-             print(f'=== early stopping at {i}, val_loss = {best_loss_val} ===' )
+             print('=== early stopping at {0}, loss_val = {1} ==='.format(i, best_loss_val) )
         self.load_state_dict(weights)
 
     def test(self, idx_test):

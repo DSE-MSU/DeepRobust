@@ -18,7 +18,7 @@ from deeprobust.graph.rl.nipa_config import args
 
 
 def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_perturbations=10):
-    print(f'number of pertubations: {n_perturbations}')
+    print('number of pertubations: %s' % n_perturbations)
     N = adj.shape[0]
     D = features.shape[1]
     modified_adj = reshape_mx(adj, shape=(N+n_added, N+n_added))
@@ -47,7 +47,7 @@ def injecting_nodes(data):
     D = features.shape[1]
 
     n_added = int(args.ratio * N)
-    print(f'number of injected nodes: {n_added}')
+    print('number of injected nodes: %s' % n_added)
 
     data.adj = reshape_mx(adj, shape=(N+n_added, N+n_added))
     enlarged_features = reshape_mx(features, shape=(N+n_added, D))

@@ -49,7 +49,7 @@ def main():
     n_perturbations = int(degrees[target_node])
 
     # direct attack
-    modified_adj = model.attack(features, adj, labels, target_node, n_perturbations)
+    model.attack(features, adj, labels, target_node, n_perturbations)
     # # indirect attack/ influencer attack
     # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
 
@@ -76,7 +76,7 @@ def test(adj, features, target_node):
     gcn.eval()
     output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
-    print(f'probs: {probs.detach().cpu().numpy()}')
+    print('probs: {}'.format(probs.detach().cpu().numpy()))
     acc_test = accuracy(output[idx_test], labels[idx_test])
 
     print("Test set results:",

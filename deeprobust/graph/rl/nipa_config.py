@@ -42,8 +42,8 @@ cmd_opt.add_argument('-mlp_hidden', type=int, default=64, help='mlp hidden layer
 
 
 args, _ = cmd_opt.parse_known_args()
-args.save_dir = f'./results/rl_s2v/{args.dataset}-gcn'
-args.saved_model = f'results/node_classification/{args.dataset}'
+args.save_dir = './results/rl_s2v/{}-gcn'.format(args.dataset)
+args.saved_model = 'results/node_classification/{}'.format(args.dataset)
 print(args)
 
 def build_kwargs(keys, arg_dict):

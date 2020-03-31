@@ -25,7 +25,7 @@ def test(features, adj, target_node):
 
     output = gcn(features, adj)
     probs = torch.exp(output[[target_node]])[0]
-    print(f'probs: {probs}')
+    print('probs: {}'.format(probs))
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
 

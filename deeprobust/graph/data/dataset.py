@@ -158,7 +158,7 @@ class Dataset():
         return nodes_to_keep
 
     def __repr__(self):
-        return f'{self.name}(adj_shape={self.adj.shape}, feature_shape={self.features.shape})'
+        return '{0}(adj_shape={1}, feature_shape={2})'.format(self.name, self.adj.shape, self.features.shape)
 
     def get_mask(self):
         idx_train, idx_val, idx_test = self.idx_train, self.idx_val, self.idx_test

@@ -48,7 +48,7 @@ def main():
     # How many perturbations to perform. Default: Degree of the node
     n_perturbations = int(degrees[target_node])
 
-    modified_adj = model.attack(features, adj, labels, idx_train, target_node, n_perturbations, steps=10)
+    model.attack(features, adj, labels, idx_train, target_node, n_perturbations, steps=10)
     modified_adj = model.modified_adj
     modified_features = model.modified_features
 
@@ -72,7 +72,7 @@ def test(adj, features, target_node):
     gcn.eval()
     output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
-    print(f'probs: {probs.detach().cpu().numpy()}')
+    print('probs: {}'.format(probs.detach().cpu().numpy()))
     acc_test = accuracy(output[idx_test], labels[idx_test])
 
     print("Test set results:",

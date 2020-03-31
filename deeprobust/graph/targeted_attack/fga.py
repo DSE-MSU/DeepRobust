@@ -27,7 +27,7 @@ class FGA(BaseAttack):
         # adj: torch.sparse
         modified_adj = deepcopy(adj).to_dense()
         self.surrogate.eval()
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
         for i in range(n_perturbations):
             modified_row = modified_adj[target_node] + self.adj_changes
             modified_adj[target_node] = modified_row

@@ -11,9 +11,9 @@ def load_victim_model(data, model_name='gcn', device='cpu', file_path=None):
     assert model_name == 'gcn', 'Currently only support gcn as victim model...'
     if file_path is None:
         # file_path = f'results/saved_models/{data.name}/{model_name}_checkpoint'
-        file_path = f'results/saved_models/{data.name}/{model_name}_checkpoint'
+        file_path = 'results/saved_models/{0}/{1}_checkpoint'.format(data.name, model_name)
     else:
-        file_path = osp.join(file_path, f'{model_name}_checkpoint')
+        file_path = osp.join(file_path, '{}_checkpoint'.format(model_name))
 
     # Setup victim model
     if osp.exists(file_path):
@@ -34,7 +34,7 @@ def train_victim_model(data, model_name='gcn', file_path=None, device='cpu'):
         Note that the attacker can only do black query to this model '''
 
     if file_path is None:
-        file_path = f'results/saved_models/{data.name}/'
+        file_path = f'results/saved_models/%s/' % data.name
 
     adj, features, labels = data.adj, data.features, data.labels
     idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
@@ -53,7 +53,7 @@ def train_victim_model(data, model_name='gcn', file_path=None, device='cpu'):
 
     # save the model
     if not osp.exists(file_path):
-        os.system(f'mkdir -p {file_path}')
+        os.system(f'mkdir -p %s' % file_path)
     torch.save(victim_model.state_dict(), osp.join(file_path, model_name + '_checkpoint'))
     victim_model.eval()
     return victim_model

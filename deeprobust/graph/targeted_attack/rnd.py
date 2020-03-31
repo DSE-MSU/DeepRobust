@@ -30,7 +30,7 @@ class RND(BaseAttack):
         """
         # adj: sp.csr_matrix
 
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
         modified_adj = adj.tolil()
 
         row = adj[target_node].todense().A1
@@ -62,7 +62,7 @@ class RND(BaseAttack):
         different from target node. As for the node feature, simply copy arbitary node
         """
         # adj: sp.csr_matrix
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
         N = adj.shape[0]
         D = features.shape[1]
         modified_adj = self.reshape_mx(adj, shape=(N+n_added, N+n_added))

@@ -32,7 +32,6 @@ class Random(BaseAttack):
         Randomly add or flip edges.
         """
         # adj: sp.csr_matrix
-        # print(f'number of pertubations: {n_perturbations}')
         modified_adj = adj.tolil()
 
         type = type.lower()
@@ -67,7 +66,7 @@ class Random(BaseAttack):
         """
         Randomly perturb features.
         """
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
 
         return modified_features
 
@@ -77,7 +76,7 @@ class Random(BaseAttack):
         """
         # adj: sp.csr_matrix
         # TODO
-        print(f'number of pertubations: {n_perturbations}')
+        print('number of pertubations: %s' % n_perturbations)
         raise NotImplementedError
 
         modified_adj = adj.tolil()

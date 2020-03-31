@@ -240,9 +240,9 @@ class Metattack(BaseMeta):
         else:
             attack_loss = self.lambda_ * loss_labeled + (1 - self.lambda_) * loss_unlabeled
 
-        print(f'GCN loss on unlabled data: {loss_test_val.item()}')
-        print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
-        print(f'attack loss: {attack_loss.item()}')
+        print('GCN loss on unlabled data: {}'.format(loss_test_val.item()))
+        print('GCN acc on unlabled data: {}'.format(utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()))
+        print('attack loss: {}'.format(attack_loss.item()))
 
         adj_grad, feature_grad = None, None
         if self.attack_structure:
@@ -376,8 +376,8 @@ class MetaApprox(BaseMeta):
                 self.feature_grad_sum += torch.autograd.grad(attack_loss, self.feature_changes, retain_graph=True)[0]
 
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
-        print(f'GCN loss on unlabled data: {loss_test_val.item()}')
-        print(f'GCN acc on unlabled data: {utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()}')
+        print('GCN loss on unlabled data: {}'.format(loss_test_val.item()))
+        print('GCN acc on unlabled data: {}'.format(utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()))
 
 
     def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):

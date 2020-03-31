@@ -23,8 +23,8 @@ For more details about attacks and defenses, you can read the following papers.
 
 
 
-# Baisc Environment
-* `python >= 3.6`
+# Basic Environment
+* `python >= 3.6` (python 3.5 should also work)
 * `pytorch >= 1.2.0`
 
 see `setup.py` or `requirements.txt` for more information.
