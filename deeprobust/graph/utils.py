@@ -200,12 +200,12 @@ def loss_acc(output, labels, targets, avg_loss=True):
     # return loss, correct / len(labels)
 
 def classification_margin(output, true_label):
+    '''probs_true_label - probs_best_second_class'''
     probs = torch.exp(output)
-    probs_true_label = probs[true_label]
+    probs_true_label = probs[true_label].clone()
     probs[true_label] = 0
     probs_best_second_class = probs[probs.argmax()]
     return (probs_true_label - probs_best_second_class).item()
-
 
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""

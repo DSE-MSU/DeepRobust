@@ -97,7 +97,7 @@ class GCNJaccard(GCN):
                     modified_adj[n1, n2] = 0
                     modified_adj[n2, n1] = 0
                     removed_cnt += 1
-        print('removed {} edges in the original graph' % removed_cnt)
+        print('removed %s edges in the original graph' % removed_cnt)
         return modified_adj
 
     def _jaccard_similarity(self, a, b):

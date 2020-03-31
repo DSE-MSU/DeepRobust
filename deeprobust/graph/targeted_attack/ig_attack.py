@@ -43,7 +43,6 @@ class IGAttack(BaseAttack):
         modified_features = ori_features.todense()
         adj, features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
 
-
         adj_norm = utils.normalize_adj_tensor(adj)
         s_e = np.zeros(adj.shape[1])
         s_f = np.zeros(features.shape[1])

@@ -7,6 +7,7 @@ from deeprobust.graph.targeted_attack import Nettack
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 import argparse
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=15, help='Random seed.')
@@ -81,14 +82,45 @@ def test(adj, features, target_node):
 
     return acc_test.item()
 
+def select_nodes():
+    '''
+    selecting nodes as reported in nettack paper:
+    (i) the 10 nodes with highest margin of classification, i.e. they are clearly correctly classified,
+    (ii) the 10 nodes with lowest margin (but still correctly classified) and
+    (iii) 20 more nodes randomly
+    '''
+
+    gcn = GCN(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device=device)
+    gcn = gcn.to(device)
+    gcn.fit(features, adj, labels, idx_train)
+    gcn.eval()
+    output = gcn.predict()
+
+    margin_dict = {}
+    for idx in idx_test:
+        margin = classification_margin(output[idx], labels[idx])
+        if margin < 0: # only keep the nodes correctly classified
+            continue
+        margin_dict[idx] = margin
+    sorted_margins = sorted(margin_dict.items(), key=lambda x:x[1], reverse=True)
+    high = [x for x, y in sorted_margins[: 10]]
+    low = [x for x, y in sorted_margins[-10: ]]
+    other = [x for x, y in sorted_margins[10: -10]]
+    other = np.random.choice(other, 20, replace=False).tolist()
+
+    return high + low + other
 
 def multi_test():
     # attack first 50 nodes in idx_test
-    num = 50
     cnt = 0
     degrees = adj.sum(0).A1
-    print('=== Attacking  %s nodes respectively ===' % num)
-    for target_node in (idx_test[: num]):
+    node_list = select_nodes()
+    num = len(node_list)
+    print('=== Attacking %s nodes respectively ===' % num)
+    for target_node in tqdm(node_list):
         n_perturbations = int(degrees[target_node])
         model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
         model = model.to(device)
@@ -113,7 +145,7 @@ def single_test(adj, features, target_node):
 
     gcn.eval()
     output = gcn.predict()
-    probs = torch.exp(output[[target_node]])[0]
+    probs = torch.exp(output[[target_node]])
     acc_test = accuracy(output[[target_node]], labels[target_node])
     # print("Test set results:", "accuracy= {:.4f}".format(acc_test.item()))
     return acc_test.item()
