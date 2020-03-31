@@ -52,13 +52,10 @@ def main():
     model.attack(features, adj, labels, target_node, n_perturbations)
     # # indirect attack/ influencer attack
     # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
-
     modified_adj = model.modified_adj
     modified_features = model.modified_features
-
     print('=== testing GCN on original(clean) graph ===')
     test(adj, features, target_node)
-
     print('=== testing GCN on perturbed graph ===')
     test(modified_adj, modified_features, target_node)
 
@@ -85,6 +82,44 @@ def test(adj, features, target_node):
     return acc_test.item()
 
 
+def multi_test():
+    # attack first 50 nodes in idx_test
+    num = 50
+    cnt = 0
+    degrees = adj.sum(0).A1
+    print('=== Attacking  %s nodes respectively ===' % num)
+    for target_node in (idx_test[: num]):
+        n_perturbations = int(degrees[target_node])
+        model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
+        model = model.to(device)
+        model.attack(features, adj, labels, target_node, n_perturbations, verbose=False)
+        modified_adj = model.modified_adj
+        modified_features = model.modified_features
+        acc = single_test(modified_adj, modified_features, target_node)
+        if acc == 0:
+            cnt += 1
+    print('misclassification rate : %s' % (cnt/num))
+
+def single_test(adj, features, target_node):
+    ''' test on GCN (poisoning attack)'''
+    gcn = GCN(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device=device)
+
+    gcn = gcn.to(device)
+
+    gcn.fit(features, adj, labels, idx_train)
+
+    gcn.eval()
+    output = gcn.predict()
+    probs = torch.exp(output[[target_node]])[0]
+    acc_test = accuracy(output[[target_node]], labels[target_node])
+    # print("Test set results:", "accuracy= {:.4f}".format(acc_test.item()))
+    return acc_test.item()
+
+
 if __name__ == '__main__':
     main()
+    multi_test()
 

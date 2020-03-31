@@ -30,20 +30,20 @@ class GCNSVD(GCN):
         super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def truncatedSVD(self, data, k=50):
-        print(f'=== GCN-SVD: rank={k} ===')
+        print('=== GCN-SVD: rank={} ==='.format(k))
         if sp.issparse(data):
             data = data.asfptype()
             U, S, V = sp.linalg.svds(data, k=k)
-            print(f"rank_after = {len(S.nonzero()[0])}")
+            print("rank_after = {}".format(len(S.nonzero()[0])))
             diag_S = np.diag(S)
         else:
             U, S, V = np.linalg.svd(data)
             U = U[:, :k]
             S = S[:k]
             V = V[:k, :]
-            print(f"rank_before = {len(S.nonzero()[0])}")
+            print("rank_before = {}".format(len(S.nonzero()[0])))
             diag_S = np.diag(S)
-            print(f"rank_after = {len(diag_S.nonzero()[0])}")
+            print("rank_after = {}".format(len(diag_S.nonzero()[0])))
 
         return U @ diag_S @ V
 
@@ -97,7 +97,7 @@ class GCNJaccard(GCN):
                     modified_adj[n1, n2] = 0
                     modified_adj[n2, n1] = 0
                     removed_cnt += 1
-        print(f'removed {removed_cnt} edges in the original graph')
+        print('removed {} edges in the original graph' % removed_cnt)
         return modified_adj
 
     def _jaccard_similarity(self, a, b):

@@ -55,7 +55,7 @@ class Nettack(BaseAttack):
         W = surrogate.gc1.weight @ surrogate.gc2.weight
         return W.detach().cpu().numpy()
 
-    def attack(self, features, adj, labels, target_node, n_perturbations, direct=True, n_influencers= 0, ll_cutoff=0.004):
+    def attack(self, features, adj, labels, target_node, n_perturbations, direct=True, n_influencers= 0, ll_cutoff=0.004, verbose=True):
         """
         Perform an attack on the surrogate model.
         """
@@ -96,7 +96,6 @@ class Nettack(BaseAttack):
         best_wrong_class = (logits - 1000*label_target_onehot).argmax()
         surrogate_losses = [logits[labels[target_node]] - logits[best_wrong_class]]
 
-        verbose=True
         if verbose:
             print("##### Starting attack #####")
             if attack_structure and attack_features:

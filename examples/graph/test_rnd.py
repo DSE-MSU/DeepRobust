@@ -61,7 +61,7 @@ def test(adj, features, target_node):
     gcn.eval()
     output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
-    print(f'probs: {probs.detach().cpu().numpy()}')
+    print('probs: {probs.detach().cpu().numpy()}')
 
     labels_tensor = torch.LongTensor(labels).to(device)
     loss_test = F.nll_loss(output[idx_test], labels_tensor[idx_test])

@@ -46,7 +46,7 @@ class Agent(object):
         self.batch_size = batch_size
         self.save_dir = save_dir
         if not osp.exists(save_dir):
-            os.system(f'mkdir -p {save_dir}')
+            os.system('mkdir -p {%s}' % save_dir)
 
         self.gm = gm
         self.device = device
