@@ -17,8 +17,8 @@ def train(model, data, device, maxepoch):
 
     if (model == 'CNN'):
         import deeprobust.image.netmodels.CNN as MODEL
-        from deeprobust.image.netmodels.CNN import Net
-        train_net = Net().to(device)
+        #from deeprobust.image.netmodels.CNN import Net
+        train_net = MODEL.Net().to(device)
 
     elif (model == 'ResNet18'):
         import deeprobust.image.netmodels.resnet as MODEL
