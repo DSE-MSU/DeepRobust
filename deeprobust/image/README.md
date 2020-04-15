@@ -38,5 +38,8 @@ python setup.py install
 - ImageNet
 
 # Support Networks
-- SimpleCNN
+- CNN
 - ResNet(ResNet18, ResNet34, ResNet50)
+- VGG
+- DenseNet
+
