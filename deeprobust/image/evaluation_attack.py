@@ -1,6 +1,8 @@
+import requests
 import torch
 from torchvision import datasets,models,transforms
 import torch.nn.functional as F
+import os
 
 import numpy as np
 import argparse
@@ -126,6 +128,17 @@ if __name__ == "__main__":
     # read arguments
     args = parameter_parser() # read argument and creat an argparse object
 
+    # download example model
+    example_model_path = './trained_models/MNIST_CNN_epoch_20.pt'
+    if not (os.path.exists('./trained_models')):
+        os.mkdir('./trained_models')
+        print('create path: ./trained_models')
+    model_url = "https://github.com/I-am-Bot/deeprobust_trained_model/blob/master/MNIST_CNN_epoch_20.pt?raw=true"
+    r = requests.get(model_url)
+    print('Downloading example model...')
+    with open(example_model_path,'wb') as f:
+        f.write(r.content)
+    print('Downloaded.')
     # load model
     model = load_net(args.attack_model, args.file_name, args.path)
 
