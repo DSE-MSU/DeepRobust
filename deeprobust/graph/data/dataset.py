@@ -17,7 +17,8 @@ class Dataset():
         assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
 
         self.seed = seed
-        self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
+        # self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
+        self.url =  'https://raw.githubusercontent.com/danielzuegner/gnn-meta-attack/master/data/%s.npz' % self.name
         self.root = osp.expanduser(osp.normpath(root))
         self.data_folder = osp.join(root, self.name)
         self.data_filename = self.data_folder + '.npz'
