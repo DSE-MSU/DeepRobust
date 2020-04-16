@@ -63,7 +63,10 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
         d = epsilon * X_fgsm.grad.data.sign()    
     elif order == 2:
         gradient = X_fgsm.grad
-        d = epsilon * gradient.data/LA.norm(gradient.data.cpu().numpy()) ##TODO wrong
+        d = torch.zeros(gradient.shape, device = device)
+        for i in range(gradient.shape[0]):
+            norm_grad = gradient[i].data/LA.norm(gradient[i].data.cpu().numpy())
+            d[i] = norm_grad * epsilon
     else:
         raise ValueError('Other p norms may need other algorithms')
 
