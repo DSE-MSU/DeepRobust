@@ -60,9 +60,10 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
     #print(X_fgsm)
     #print(X_fgsm.grad)
     if order == np.inf:
-        d = epsilon * X_fgsm.grad.data.sign()
-    elif order ==2:
-        d = epsilon * gradient.data()/LA.norm(gradient.data())
+        d = epsilon * X_fgsm.grad.data.sign()    
+    elif order == 2:
+        gradient = X_fgsm.grad
+        d = epsilon * gradient.data/LA.norm(gradient.data.cpu().numpy())
     else:
         raise ValueError('Other p norms may need other algorithms')
 
