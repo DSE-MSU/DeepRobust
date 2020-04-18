@@ -210,7 +210,8 @@ Left:original, classified as 6 Right:adversary, classified as 4
 ## Acknowledgement
 Some of the algorithms are refer to paper authors' implementations. References can be found at the top of the file. Thanks to their outstanding works!
 
-Implementation of network structure are refer to weiaicunzai's github. Original code can be found here.[https://github.com/weiaicunzai/pytorch-cifar100]
+Implementation of network structure are refer to weiaicunzai's github. Original code can be found here.
+[pytorch-cifar100](https://github.com/weiaicunzai/pytorch-cifar100)
 
 <!----
 We would be glad if you find our work useful and cite the paper.
