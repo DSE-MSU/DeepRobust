@@ -263,6 +263,25 @@ def get_train_val_test(nnodes, val_size=0.1, test_size=0.8, stratify=None, seed=
 
     return idx_train, idx_val, idx_test
 
+def get_train_test(nnodes, test_size=0.8, stratify=None, seed=None):
+    '''
+        This function returns training and test set without validation.
+        It can be used for settings of different label rates.
+    '''
+    assert stratify is not None, 'stratify cannot be None!'
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    idx = np.arange(nnodes)
+    train_size = 1 - test_size
+    idx_train, idx_test = train_test_split(idx, random_state=None,
+                                                train_size=train_size,
+                                                test_size=test_size,
+                                                stratify=stratify)
+
+    return idx_train, idx_test
+
 def get_train_val_test_gcn(labels, seed=None):
     '''
         This setting follows gcn, where we randomly sample 20 instances for each class
