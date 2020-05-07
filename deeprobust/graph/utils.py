@@ -305,6 +305,30 @@ def get_train_val_test_gcn(labels, seed=None):
     idx_test = idx_unlabeled[500: 1500]
     return idx_train, idx_val, idx_test
 
+def get_train_test_labelrate(labels, label_rate):
+    nclass = labels.max() + 1
+    train_size = int(round(len(labels) * label_rate / nclass))
+    print("=== train_size = %s ===" % train_size)
+    return get_train_test_each_class(labels, train_size=train_size)
+
+def get_train_test_each_class(labels, train_size):
+    '''
+        This setting follows gcn, where we randomly sample n instances for class,
+        where n=train_size
+    '''
+    idx = np.arange(len(labels))
+    nclass = labels.max() + 1
+    idx_train = []
+    idx_unlabeled = []
+    for i in range(nclass):
+        labels_i = idx[labels==i]
+        labels_i = np.random.permutation(labels_i)
+        idx_train = np.hstack((idx_train, labels_i[: train_size])).astype(np.int)
+        idx_unlabeled = np.hstack((idx_unlabeled, labels_i[train_size: ])).astype(np.int)
+
+    return np.random.permutation(idx_train), np.random.permutation(idx_unlabeled)
+
+
 def unravel_index(index, array_shape):
     rows = index // array_shape[1]
     cols = index % array_shape[1]
