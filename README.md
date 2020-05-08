@@ -62,6 +62,7 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     ```python
     from deeprobust.image.attack.pgd import PGD
     from deeprobust.image.config import attack_params
+    import torch
     import deeprobust.image.netmodels.resnet as resnet
     
     model = resnet.ResNet18().to('cuda')
