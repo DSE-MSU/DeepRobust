@@ -9,9 +9,9 @@ from torchvision import datasets, transforms
 import numpy as np
 from PIL import Image
 
-def train(model, data, device, maxepoch, data_path):
+def train(model, data, device, maxepoch, data_path, seed = 100):
 
-    torch.manual_seed(100)
+    torch.manual_seed(seed)
 
     train_loader, test_loader = feed_dataset(data, data_path)
 
