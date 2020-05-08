@@ -9,11 +9,11 @@ from torchvision import datasets, transforms
 import numpy as np
 from PIL import Image
 
-def train(model, data, device, maxepoch):
+def train(model, data, device, maxepoch, data_path):
 
     torch.manual_seed(100)
 
-    train_loader, test_loader = feed_dataset(data, 'deeprobust/image/data')
+    train_loader, test_loader = feed_dataset(data, data_path)
 
     if (model == 'CNN'):
         import deeprobust.image.netmodels.CNN as MODEL
