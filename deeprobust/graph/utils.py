@@ -6,12 +6,9 @@ import torch.sparse as ts
 import torch.nn.functional as F
 
 def encode_onehot(labels):
-    classes = set(labels)
-    classes_dict = {c: np.identity(len(classes))[i, :] for i, c in
-                    enumerate(classes)}
-    labels_onehot = np.array(list(map(classes_dict.get, labels)),
-                             dtype=np.int32)
-    return labels_onehot
+    eye = np.eye(labels.max() + 1)
+    onehot_mx = eye[labels]
+    return onehot_mx
 
 def tensor2onehot(labels):
     eye = torch.eye(labels.max() + 1)
@@ -309,9 +306,10 @@ def get_train_test_labelrate(labels, label_rate):
     nclass = labels.max() + 1
     train_size = int(round(len(labels) * label_rate / nclass))
     print("=== train_size = %s ===" % train_size)
-    return get_train_test_each_class(labels, train_size=train_size)
+    idx_train, idx_val, idx_test = get_splits_each_class(labels, train_size=train_size)
+    return idx_train, idx_test
 
-def get_train_test_each_class(labels, train_size):
+def get_splits_each_class(labels, train_size):
     '''
         This setting follows gcn, where we randomly sample n instances for class,
         where n=train_size
@@ -319,14 +317,17 @@ def get_train_test_each_class(labels, train_size):
     idx = np.arange(len(labels))
     nclass = labels.max() + 1
     idx_train = []
-    idx_unlabeled = []
+    idx_val = []
+    idx_test = []
     for i in range(nclass):
         labels_i = idx[labels==i]
         labels_i = np.random.permutation(labels_i)
         idx_train = np.hstack((idx_train, labels_i[: train_size])).astype(np.int)
-        idx_unlabeled = np.hstack((idx_unlabeled, labels_i[train_size: ])).astype(np.int)
+        idx_val = np.hstack((idx_val, labels_i[train_size: 2*train_size])).astype(np.int)
+        idx_test = np.hstack((idx_test, labels_i[2*train_size: ])).astype(np.int)
 
-    return np.random.permutation(idx_train), np.random.permutation(idx_unlabeled)
+    return np.random.permutation(idx_train), np.random.permutation(idx_val), \
+           np.random.permutation(idx_test)
 
 
 def unravel_index(index, array_shape):
