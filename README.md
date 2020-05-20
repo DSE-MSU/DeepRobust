@@ -23,7 +23,8 @@ For more details about attacks and defenses, you can read the following papers.
 
 [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
-
+If our work could help your research, please cite:
+[DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
 # Basic Environment
 * `python >= 3.6` (python 3.5 should also work)
