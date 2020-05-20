@@ -129,7 +129,7 @@ class ProGNN:
         normalized_adj = estimator.normalize()
 
         if args.lambda_:
-            loss_smooth_feat = feature_smoothing(estimator.estimated_adj, features)
+            loss_smooth_feat = self.feature_smoothing(estimator.estimated_adj, features)
         else:
             loss_smooth_feat = 0 * loss_l1
 

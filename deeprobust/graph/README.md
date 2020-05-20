@@ -38,9 +38,10 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
 |   Defense Methods   | Defense Type | Apply Domain | Links |
 |---------------------|--------------|--------------|------|
 | RGCN | Gaussian | Node Classification | [Robust Graph Convolutional Networks Against Adversarial Attacks](http://pengcui.thumedialab.com/papers/RGCN.pdf) |
-| GCN-Jaccard | Preprocessing | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|
-| GCN-SVD | Preprocessing | Node Classification | [All You Need is Low (Rank): Defending Against Adversarial Attacks on Graphs](https://dl.acm.org/doi/pdf/10.1145/3336191.3371789?download=true) |
- Adv-training | Adversarial Training | Node Classification | |
+| GCN-Jaccard | Graph Purifying | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|
+| GCN-SVD | Graph Purifying | Node Classification | [All You Need is Low (Rank): Defending Against Adversarial Attacks on Graphs](https://dl.acm.org/doi/pdf/10.1145/3336191.3371789?download=true) |
+| Adv-training | Adversarial Training | Node Classification | 
+| Pro-GNN | Preprocessing | Node Classification | [Graph Structure Learning for Robust Graph Neural Network]()|
 <!--| Adv-training | Adversarial Training | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
 -->
 <!--| Hidden-Adv-training | Adversarial Training | Node Classification<br>Graph Classification |[To be added]|
