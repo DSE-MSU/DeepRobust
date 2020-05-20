@@ -42,6 +42,8 @@ python setup.py install
 # Test Examples
 
 ```
+python examples/image/test_PGD.py
+python examples/image/test_pgdtraining.py
 python examples/graph/test_gcn_jaccard.py --dataset cora
 python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
 ```
