@@ -77,7 +77,7 @@ class PGDAttack(BaseAttack):
         best_loss = -1000
         victim_model = self.surrogate
         with torch.no_grad():
-            s = self.adj_changes.cpu().numpy()
+            s = self.adj_changes.cpu().detach().numpy()
             for i in range(K):
                 sampled = np.random.binomial(1, s)
 
