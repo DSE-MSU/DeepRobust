@@ -28,6 +28,7 @@ For more details about attacks and defenses, you can read the following papers.
 If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
+Find a adversarial paper list here: [Adversarial learning papers](https://github.com/I-am-Bot/Adversarial-Learning-Papers)
 # Basic Environment
 * `python >= 3.6` (python 3.5 should also work)
 * `pytorch >= 1.2.0`
