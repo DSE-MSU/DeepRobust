@@ -176,6 +176,8 @@ def degree_normalize_adj_tensor(adj, sparse=True):
     return mx
 
 def accuracy(output, labels):
+    if labels is int:
+        labels = [labels]
     if type(labels) is not torch.Tensor:
         labels = torch.LongTensor(labels)
     preds = output.max(1)[1].type_as(labels)

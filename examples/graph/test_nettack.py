@@ -26,6 +26,7 @@ if args.cuda:
 
 data = Dataset(root='/tmp/', name=args.dataset)
 adj, features, labels = data.adj, data.features, data.labels
+
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 idx_unlabeled = np.union1d(idx_val, idx_test)
@@ -55,6 +56,7 @@ def main():
     # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
     modified_adj = model.modified_adj
     modified_features = model.modified_features
+    print(model.structure_perturbations)
     print('=== testing GCN on original(clean) graph ===')
     test(adj, features, target_node)
     print('=== testing GCN on perturbed graph ===')
@@ -74,15 +76,15 @@ def test(adj, features, target_node):
     gcn.eval()
     output = gcn.predict()
     probs = torch.exp(output[[target_node]])[0]
-    print('probs: {}'.format(probs.detach().cpu().numpy()))
+    print('Target node probs: {}'.format(probs.detach().cpu().numpy()))
     acc_test = accuracy(output[idx_test], labels[idx_test])
 
-    print("Test set results:",
+    print("Overall test set results:",
           "accuracy= {:.4f}".format(acc_test.item()))
 
     return acc_test.item()
 
-def select_nodes():
+def select_nodes(target_gcn=None):
     '''
     selecting nodes as reported in nettack paper:
     (i) the 10 nodes with highest margin of classification, i.e. they are clearly correctly classified,
@@ -90,14 +92,15 @@ def select_nodes():
     (iii) 20 more nodes randomly
     '''
 
-    gcn = GCN(nfeat=features.shape[1],
-              nhid=16,
-              nclass=labels.max().item() + 1,
-              dropout=0.5, device=device)
-    gcn = gcn.to(device)
-    gcn.fit(features, adj, labels, idx_train)
-    gcn.eval()
-    output = gcn.predict()
+    if target_gcn is None:
+        target_gcn = GCN(nfeat=features.shape[1],
+                  nhid=16,
+                  nclass=labels.max().item() + 1,
+                  dropout=0.5, device=device)
+        target_gcn = target_gcn.to(device)
+        target_gcn.fit(features, adj, labels, idx_train)
+    target_gcn.eval()
+    output = target_gcn.predict()
 
     margin_dict = {}
     for idx in idx_test:
@@ -113,13 +116,13 @@ def select_nodes():
 
     return high + low + other
 
-def multi_test():
-    # attack first 50 nodes in idx_test
+def multi_test_poison():
+    # test on 40 nodes on poisoining attack
     cnt = 0
     degrees = adj.sum(0).A1
     node_list = select_nodes()
     num = len(node_list)
-    print('=== Attacking %s nodes respectively ===' % num)
+    print('=== [Poisoning] Attacking %s nodes respectively ===' % num)
     for target_node in tqdm(node_list):
         n_perturbations = int(degrees[target_node])
         model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
@@ -132,26 +135,61 @@ def multi_test():
             cnt += 1
     print('misclassification rate : %s' % (cnt/num))
 
-def single_test(adj, features, target_node):
-    ''' test on GCN (poisoning attack)'''
-    gcn = GCN(nfeat=features.shape[1],
+def single_test(adj, features, target_node, gcn=None):
+    if gcn is None:
+        # test on GCN (poisoning attack)
+        gcn = GCN(nfeat=features.shape[1],
+                  nhid=16,
+                  nclass=labels.max().item() + 1,
+                  dropout=0.5, device=device)
+
+        gcn = gcn.to(device)
+
+        gcn.fit(features, adj, labels, idx_train)
+        gcn.eval()
+        output = gcn.predict()
+    else:
+        # test on GCN (evasion attack)
+        output = gcn.predict(features, adj)
+    probs = torch.exp(output[[target_node]])
+
+    # acc_test = accuracy(output[[target_node]], labels[target_node])
+    acc_test = (output.argmax(1)[target_node] == labels[target_node])
+    return acc_test.item()
+
+def multi_test_evasion():
+    # test on 40 nodes on evasion attack
+    target_gcn = GCN(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
               dropout=0.5, device=device)
 
-    gcn = gcn.to(device)
+    target_gcn = target_gcn.to(device)
 
-    gcn.fit(features, adj, labels, idx_train)
+    target_gcn.fit(features, adj, labels, idx_train)
 
-    gcn.eval()
-    output = gcn.predict()
-    probs = torch.exp(output[[target_node]])
-    acc_test = accuracy(output[[target_node]], labels[target_node])
-    # print("Test set results:", "accuracy= {:.4f}".format(acc_test.item()))
-    return acc_test.item()
+    cnt = 0
+    degrees = adj.sum(0).A1
+    node_list = select_nodes(target_gcn)
+    num = len(node_list)
 
+    print('=== [Evasion] Attacking %s nodes respectively ===' % num)
+    for target_node in tqdm(node_list):
+        n_perturbations = int(degrees[target_node])
+        model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
+        model = model.to(device)
+        model.attack(features, adj, labels, target_node, n_perturbations, verbose=False)
+        modified_adj = model.modified_adj
+        modified_features = model.modified_features
+
+        acc = single_test(modified_adj, modified_features, target_node, gcn=target_gcn)
+        if acc == 0:
+            cnt += 1
+    print('misclassification rate : %s' % (cnt/num))
 
 if __name__ == '__main__':
     main()
-    multi_test()
+    multi_test_poison()
+    multi_test_evasion()
+
 
