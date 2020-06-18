@@ -80,7 +80,7 @@ def test(adj):
 
 
 def main():
-    model.attack(features, adj, labels, idx_train, perturbations)
+    model.attack(features, adj, labels, idx_train, perturbations, epochs=args.epochs)
     print('=== testing GCN on original(clean) graph ===')
     test(adj)
     modified_adj = model.modified_adj

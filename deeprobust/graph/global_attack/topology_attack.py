@@ -43,14 +43,13 @@ class PGDAttack(BaseAttack):
 
         self.complementary = None
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations):
+    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations, epochs=200):
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
 
         victim_model.eval()
-        epochs = 200
         for t in tqdm(range(epochs)):
             modified_adj = self.get_modified_adj(ori_adj)
             adj_norm = utils.normalize_adj_tensor(modified_adj)
