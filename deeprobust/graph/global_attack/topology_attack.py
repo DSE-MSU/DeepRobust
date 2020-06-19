@@ -1,9 +1,9 @@
-'''
+"""
     Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective
         https://arxiv.org/pdf/1906.04214.pdf
     Tensorflow Implementation:
         https://github.com/KaidiXu/GCN_ADV_Train
-'''
+"""
 
 import numpy as np
 import scipy.sparse as sp

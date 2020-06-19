@@ -1,9 +1,9 @@
-'''
+"""
     Adversarial Attacks on Graph Neural Networks via Meta Learning. ICLR 2019
         https://openreview.net/pdf?id=Bylnx209YX
     Author Tensorflow implementation:
         https://github.com/danielzuegner/gnn-meta-attack
-'''
+"""
 
 import math
 
