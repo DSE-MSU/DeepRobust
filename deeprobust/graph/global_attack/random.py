@@ -1,12 +1,8 @@
-import torch
-from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from copy import deepcopy
-from deeprobust.graph import utils
-import torch.nn.functional as F
-import numpy as np
 import random
-from copy import deepcopy
+
+import numpy as np
+
+from deeprobust.graph.global_attack import BaseAttack
 
 
 class Random(BaseAttack):
@@ -102,4 +98,3 @@ class Random(BaseAttack):
                 yield t
                 exclude.add(t)
                 exclude.add((t[1], t[0]))
-

@@ -1,9 +1,12 @@
+import os.path as osp
+
+import numpy as np
+import scipy.sparse as sp
 import torch
 from torch.nn.modules.module import Module
-import scipy.sparse as sp
+
 from deeprobust.graph import utils
-import os.path as osp
-import numpy as np
+
 
 class BaseAttack(Module):
 
@@ -56,5 +59,3 @@ class BaseAttack(Module):
             sp.save_npz(osp.join(root, name), sparse_features)
         else:
             sp.save_npz(osp.join(root, name), modified_features)
-
-

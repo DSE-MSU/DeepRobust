@@ -1,13 +1,10 @@
-import torch
-from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from copy import deepcopy
-from deeprobust.graph import utils
-import torch.nn.functional as F
-import numpy as np
-from copy import deepcopy
-import scipy.sparse as sp
 import random
+
+import numpy as np
+import scipy.sparse as sp
+
+from deeprobust.graph.global_attack import BaseAttack
+
 
 class DICE(BaseAttack):
 
@@ -88,4 +85,3 @@ class DICE(BaseAttack):
         '''
         itr = self.sample_forever(adj, exclude=exclude)
         return [next(itr) for _ in range(n)]
-
