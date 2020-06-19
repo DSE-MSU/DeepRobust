@@ -1,6 +1,8 @@
-from deeprobust.graph.global_attack import BaseAttack
-import numpy as np
 import random
+
+import numpy as np
+
+from deeprobust.graph.global_attack import BaseAttack
 
 
 class Random(BaseAttack):
@@ -96,4 +98,3 @@ class Random(BaseAttack):
                 yield t
                 exclude.add(t)
                 exclude.add((t[1], t[0]))
-

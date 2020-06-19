@@ -3,16 +3,20 @@ Still on testing stage. Haven't reproduced the performance yet.
 '''
 import os
 import os.path as osp
+import random
+from itertools import count
+
 import numpy as np
 import torch
-import random
 import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm
-from deeprobust.graph.rl.nipa_q_net_node import QNetNode, NStepQNetNode, node_greedy_actions
+
+from deeprobust.graph.rl.nipa_q_net_node import (NStepQNetNode, QNetNode,
+                                                 node_greedy_actions)
 from deeprobust.graph.rl.nstep_replay_mem import NstepReplayMem
 from deeprobust.graph.utils import loss_acc
-from itertools import count
+
 
 class NIPA(object):
 
@@ -230,4 +234,3 @@ class NIPA(object):
 
         if t == 2:
             return self.possible_labels.repeat((len(list_st), 1))
-

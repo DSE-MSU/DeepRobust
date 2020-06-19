@@ -1,7 +1,10 @@
-from deeprobust.graph.global_attack import BaseAttack
+import random
+
 import numpy as np
 import scipy.sparse as sp
-import random
+
+from deeprobust.graph.global_attack import BaseAttack
+
 
 class DICE(BaseAttack):
 
@@ -82,4 +85,3 @@ class DICE(BaseAttack):
         '''
         itr = self.sample_forever(adj, exclude=exclude)
         return [next(itr) for _ in range(n)]
-

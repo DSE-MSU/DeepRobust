@@ -5,15 +5,16 @@
         https://github.com/KaidiXu/GCN_ADV_Train
 '''
 
-import torch
-from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from deeprobust.graph import utils
-
-from torch.nn import functional as F
 import numpy as np
-from tqdm import tqdm
 import scipy.sparse as sp
+import torch
+from torch.nn import functional as F
+from torch.nn.parameter import Parameter
+from tqdm import tqdm
+
+from deeprobust.graph import utils
+from deeprobust.graph.global_attack import BaseAttack
+
 
 class IGAttack(BaseAttack):
 
@@ -154,4 +155,3 @@ class IGAttack(BaseAttack):
 
     def get_modified_features(self, ori_features):
         return ori_features + self.feature_changes
-

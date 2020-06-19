@@ -5,17 +5,19 @@
         https://github.com/danielzuegner/gnn-meta-attack
 '''
 
-import torch
-from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from deeprobust.graph import utils
+import math
 
+import numpy as np
+import scipy.sparse as sp
+import torch
 from torch import optim
 from torch.nn import functional as F
-import numpy as np
+from torch.nn.parameter import Parameter
 from tqdm import tqdm
-import math
-import scipy.sparse as sp
+
+from deeprobust.graph import utils
+from deeprobust.graph.global_attack import BaseAttack
+
 
 class BaseMeta(BaseAttack):
 
@@ -417,5 +419,3 @@ class MetaApprox(BaseMeta):
             self.modified_adj = self.get_modified_adj(ori_adj).detach()
         if self.attack_features:
             self.modified_features = self.get_modified_features(ori_features).detach()
-
-

@@ -5,16 +5,17 @@
         https://github.com/KaidiXu/GCN_ADV_Train
 '''
 
+import numpy as np
+import scipy.sparse as sp
 import torch
-from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from deeprobust.graph import utils
-
 from torch import optim
 from torch.nn import functional as F
-import numpy as np
+from torch.nn.parameter import Parameter
 from tqdm import tqdm
-import scipy.sparse as sp
+
+from deeprobust.graph import utils
+from deeprobust.graph.global_attack import BaseAttack
+
 
 class PGDAttack(BaseAttack):
 
@@ -198,4 +199,3 @@ class MinMax(PGDAttack):
 
         self.random_sample(ori_adj, ori_features, labels, idx_train, perturbations)
         self.modified_adj = self.get_modified_adj(ori_adj).detach()
-
