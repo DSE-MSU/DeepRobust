@@ -9,16 +9,11 @@ import torch
 from deeprobust.graph.global_attack import BaseAttack
 from torch.nn.parameter import Parameter
 from deeprobust.graph import utils
-import torch.nn.functional as F
-import numpy as np
-import scipy.sparse as sp
 
 from torch import optim
 from torch.nn import functional as F
-from torch.nn.modules.module import Module
 import numpy as np
 from tqdm import tqdm
-import math
 import scipy.sparse as sp
 
 class PGDAttack(BaseAttack):

@@ -1,11 +1,5 @@
-import torch
 from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from copy import deepcopy
-from deeprobust.graph import utils
-import torch.nn.functional as F
 import numpy as np
-from copy import deepcopy
 import scipy.sparse as sp
 import random
 

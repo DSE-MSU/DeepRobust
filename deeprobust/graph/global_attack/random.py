@@ -1,12 +1,6 @@
-import torch
 from deeprobust.graph.global_attack import BaseAttack
-from torch.nn.parameter import Parameter
-from copy import deepcopy
-from deeprobust.graph import utils
-import torch.nn.functional as F
 import numpy as np
 import random
-from copy import deepcopy
 
 
 class Random(BaseAttack):
