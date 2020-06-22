@@ -25,7 +25,21 @@ class BaseAttack(Module):
             self.nfeat = model.nfeat
             self.hidden_sizes = model.hidden_sizes
 
-    def attack(self):
+    def attack(self, ori_adj, n_perturbations, **kwargs):
+        """Generate an adversarial example.
+
+        Parameters
+        ----------
+        ori_adj : scipy.sparse.csr_matrix
+            Original (unperturbed) adjacency matrix.
+        n_perturbations : int
+            Number of edge removals/additions.
+
+        Returns
+        -------
+        None.
+
+        """
         pass
 
     def check_adj(self, adj):

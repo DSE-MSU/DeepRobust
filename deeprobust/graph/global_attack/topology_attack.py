@@ -39,7 +39,7 @@ class PGDAttack(BaseAttack):
 
         self.complementary = None
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, epochs=200):
+    def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, epochs=200, **kwargs):
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)
