@@ -15,12 +15,12 @@ class Random(BaseAttack):
         self.add_nodes = add_nodes
         assert not self.attack_features, 'RND does NOT support attacking features'
 
-    def attack(self, adj, n_perturbations, type='add'):
+    def attack(self, ori_adj, n_perturbations, type='add', **kwargs):
         '''
         type: 'add', 'remove', 'flip'
         '''
         if self.attack_structure:
-            modified_adj = self.perturb_adj(adj, n_perturbations, type)
+            modified_adj = self.perturb_adj(ori_adj, n_perturbations, type)
             return modified_adj
 
     def perturb_adj(self, adj, n_perturbations, type='add'):

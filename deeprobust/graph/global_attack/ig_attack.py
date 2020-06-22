@@ -37,7 +37,7 @@ class IGAttack(BaseAttack):
             self.feature_changes = Parameter(torch.FloatTensor(feature_shape))
             self.feature_changes.data.fill_(0)
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations):
+    def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, **kwargs):
         victim_model = self.surrogate
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
@@ -51,7 +51,7 @@ class IGAttack(BaseAttack):
         import ipdb
         ipdb.set_trace()
 
-        for t in tqdm(range(perturbations)):
+        for t in tqdm(range(n_perturbations)):
             modified_adj
 
         self.adj_changes.data.copy_(torch.tensor(best_s))

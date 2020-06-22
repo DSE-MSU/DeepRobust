@@ -39,7 +39,7 @@ class PGDAttack(BaseAttack):
 
         self.complementary = None
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations, epochs=200):
+    def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, epochs=200, **kwargs):
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)
@@ -62,12 +62,12 @@ class PGDAttack(BaseAttack):
                 lr = 0.1 / np.sqrt(t+1)
                 self.adj_changes.data.add_(lr * adj_grad)
 
-            self.projection(perturbations)
+            self.projection(n_perturbations)
 
-        self.random_sample(ori_adj, ori_features, labels, idx_train, perturbations)
+        self.random_sample(ori_adj, ori_features, labels, idx_train, n_perturbations)
         self.modified_adj = self.get_modified_adj(ori_adj).detach()
 
-    def random_sample(self, ori_adj, ori_features, labels, idx_train, perturbations):
+    def random_sample(self, ori_adj, ori_features, labels, idx_train, n_perturbations):
         K = 20
         best_loss = -1000
         victim_model = self.surrogate
@@ -77,7 +77,7 @@ class PGDAttack(BaseAttack):
                 sampled = np.random.binomial(1, s)
 
                 print(sampled.sum())
-                if sampled.sum() > perturbations:
+                if sampled.sum() > n_perturbations:
                     continue
                 self.adj_changes.data.copy_(torch.tensor(sampled))
                 modified_adj = self.get_modified_adj(ori_adj)
@@ -104,12 +104,12 @@ class PGDAttack(BaseAttack):
             # loss = torch.clamp(margin.sum()+50, min=k)
         return loss
 
-    def projection(self, perturbations):
+    def projection(self, n_perturbations):
         # projected = torch.clamp(self.adj_changes, 0, 1)
-        if torch.clamp(self.adj_changes, 0, 1).sum() > perturbations:
+        if torch.clamp(self.adj_changes, 0, 1).sum() > n_perturbations:
             left = (self.adj_changes - 1).min()
             right = self.adj_changes.max()
-            miu = self.bisection(left, right, perturbations, epsilon=1e-5)
+            miu = self.bisection(left, right, n_perturbations, epsilon=1e-5)
             self.adj_changes.data.copy_(torch.clamp(self.adj_changes.data - miu, min=0, max=1))
         else:
             self.adj_changes.data.copy_(torch.clamp(self.adj_changes.data, min=0, max=1))
@@ -128,9 +128,9 @@ class PGDAttack(BaseAttack):
 
         return modified_adj
 
-    def bisection(self, a, b, perturbations, epsilon):
+    def bisection(self, a, b, n_perturbations, epsilon):
         def func(x):
-            return torch.clamp(self.adj_changes-x, 0, 1).sum() - perturbations
+            return torch.clamp(self.adj_changes-x, 0, 1).sum() - n_perturbations
 
         miu = a
         while ((b-a) >= epsilon):
@@ -154,7 +154,7 @@ class MinMax(PGDAttack):
         super(MinMax, self).__init__(model, nnodes, loss_type, feature_shape, attack_structure, attack_features, device=device)
 
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, perturbations):
+    def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations):
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)
@@ -195,7 +195,7 @@ class MinMax(PGDAttack):
                 self.adj_changes.data.add_(lr * adj_grad)
 
             # self.adj_changes.grad.zero_()
-            self.projection(perturbations)
+            self.projection(n_perturbations)
 
-        self.random_sample(ori_adj, ori_features, labels, idx_train, perturbations)
+        self.random_sample(ori_adj, ori_features, labels, idx_train, n_perturbations)
         self.modified_adj = self.get_modified_adj(ori_adj).detach()

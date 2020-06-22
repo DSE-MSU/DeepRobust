@@ -19,20 +19,20 @@ class DICE(BaseAttack):
 
         assert not self.attack_features, 'DICE does NOT support attacking features'
 
-    def attack(self, adj, labels, n_perturbations):
+    def attack(self, ori_adj, labels, n_perturbations, **kwargs):
         """
         Delete internally, connect externally. This baseline has all true class labels
         (train and test) available.
         """
-        # adj: sp.csr_matrix
+        # ori_adj: sp.csr_matrix
 
         print('number of pertubations: %s' % n_perturbations)
-        modified_adj = adj.tolil()
+        modified_adj = ori_adj.tolil()
 
         remove_or_insert = np.random.choice(2, n_perturbations)
         n_remove = sum(remove_or_insert)
 
-        nonzero = set(zip(*adj.nonzero()))
+        nonzero = set(zip(*ori_adj.nonzero()))
         indices = sp.triu(modified_adj).nonzero()
         possible_indices = [x for x in zip(indices[0], indices[1])
                             if labels[x[0]] == labels[x[1]]]
@@ -53,8 +53,8 @@ class DICE(BaseAttack):
         # sample edges to add
         for i in range(n_insert):
             # select a node
-            node1 = np.random.randint(adj.shape[0])
-            possible_nodes = [x for x in range(adj.shape[0])
+            node1 = np.random.randint(ori_adj.shape[0])
+            possible_nodes = [x for x in range(ori_adj.shape[0])
                               if labels[x] != labels[node1] and modified_adj[x, node1] == 0]
             # select another node
             node2 = possible_nodes[np.random.randint(len(possible_nodes))]
