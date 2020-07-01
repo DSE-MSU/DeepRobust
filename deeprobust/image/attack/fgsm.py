@@ -9,12 +9,26 @@ from numpy import linalg as LA
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class FGSM(BaseAttack):
+"""
+This is the defination of FGSM attack.
 
+"""
     def __init__(self, model, device = 'cuda'):
 
         super(FGSM, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
+        """
+        Call this function to generate FGSM adversarial example.
+        
+        :param image: attack images
+        :param label: targer labels
+        :param **kwargs: user-defined parameters
+        
+        :type image: [N*C*H*W],floatTensor
+        :type label: int
+        """
+        
         label = label.type(torch.FloatTensor)
 
         ## check and parse parameters for attack
@@ -35,6 +49,10 @@ class FGSM(BaseAttack):
                      order = np.inf,
                      clip_max = None,
                      clip_min = None):
+        """
+        Parse the parameters in **kwargs. 
+        
+        """
         self.epsilon = epsilon
         self.order = order
         self.clip_max = clip_max
@@ -43,7 +61,29 @@ class FGSM(BaseAttack):
 
 
 def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
+"""
+This function is the fgsm attack algorithm.
 
+:param model: victim model
+:param image: original attack images 
+:param label: target labels
+:param epsilon: perturbation constraint
+:param order: constraint type
+:param clip_min: minimum pixel value
+:param clip_max: maximum pixel value
+:param device: device type, cpu or gpu
+
+:type image: [N*C*H*W],floatTensor
+:type label: int
+:type epsilon: float
+:type order: int
+:type clip_min: float
+:type clip_max: float
+:type device: string('cpu' or 'cuda')
+
+:return: perturbed images
+:rtype: [N*C*H*W], floatTensor
+"""
     imageArray = image.cpu().detach().numpy()
     X_fgsm = torch.tensor(imageArray).to(device)
 
