@@ -36,7 +36,7 @@ surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
                 nhid=16, dropout=0, with_relu=False, with_bias=False, device=device)
 
 surrogate = surrogate.to(device)
-surrogate.fit(features, adj, labels, idx_train)
+surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
 # Setup Attack Model
 target_node = 0
@@ -71,7 +71,7 @@ def test(adj, features, target_node):
 
     gcn = gcn.to(device)
 
-    gcn.fit(features, adj, labels, idx_train)
+    gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
     gcn.eval()
     output = gcn.predict()
@@ -98,7 +98,7 @@ def select_nodes(target_gcn=None):
                   nclass=labels.max().item() + 1,
                   dropout=0.5, device=device)
         target_gcn = target_gcn.to(device)
-        target_gcn.fit(features, adj, labels, idx_train)
+        target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
     target_gcn.eval()
     output = target_gcn.predict()
 
@@ -145,7 +145,7 @@ def single_test(adj, features, target_node, gcn=None):
 
         gcn = gcn.to(device)
 
-        gcn.fit(features, adj, labels, idx_train)
+        gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
         gcn.eval()
         output = gcn.predict()
     else:
@@ -166,7 +166,7 @@ def multi_test_evasion():
 
     target_gcn = target_gcn.to(device)
 
-    target_gcn.fit(features, adj, labels, idx_train)
+    target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
     cnt = 0
     degrees = adj.sum(0).A1

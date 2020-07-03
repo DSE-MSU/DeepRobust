@@ -3,10 +3,38 @@ import scipy.sparse as sp
 import os.path as osp
 import os
 import urllib.request
-
+import sys
+import pickle as pkl
+import networkx as nx
 from deeprobust.graph.utils import get_train_val_test, get_train_val_test_gcn
 
 class Dataset():
+    """Dataset class contains four citation network datasets "cora", "cora-ml", "citeseer" and "pubmed",
+    and one blog dataset "Polblogs".
+    The 'cora', 'cora-ml', 'poblogs' and 'citeseer' are downloaded from https://github.com/danielzuegner/gnn-meta-attack/tree/master/data, and 'pubmed' is from https://github.com/tkipf/gcn/tree/master/gcn/data.
+
+    Parameters
+    ----------
+    root :
+        root directory where the dataset should be saved.
+    name :
+        dataset name, it can be choosen from ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed']
+    setting :
+        there are two data splits settings. The 'nettack' setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The 'gcn' setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here 'gcn' setting is not a fixed split, i.e., different random seed would return different data splits)
+    seed :
+        random seed for splitting training/validation/test.
+    require_mask :
+        setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)
+
+    Examples
+    --------
+	We can first create an instance of the Dataset class and then take out its attributes.
+
+	>>> from deeprobust.graph.data import Dataset
+	>>> data = Dataset(root='/tmp/', name='cora')
+	>>> adj, features, labels = data.adj, data.features, data.labels
+	>>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    """
 
     def __init__(self, root, name, setting='nettack', seed=None, require_mask=False):
         self.name = name.lower()
@@ -31,7 +59,8 @@ class Dataset():
             self.get_mask()
 
     def get_train_val_test(self):
-
+        """Get training, validation, test splits according to self.setting (either 'nettack' or 'gcn').
+        """
         if self.setting == 'nettack':
             return get_train_val_test(nnodes=self.adj.shape[0], val_size=0.1, test_size=0.8, stratify=self.labels, seed=self.seed)
         if self.setting == 'gcn':
@@ -49,6 +78,8 @@ class Dataset():
         return adj, features, labels
 
     def download_npz(self):
+        """Download adjacen matrix npz file from self.url.
+        """
         print('Dowloading from {} to {}'.format(self.url, self.data_filename))
         try:
             urllib.request.urlretrieve(self.url, self.data_filename)
@@ -64,10 +95,6 @@ class Dataset():
 
 
     def load_pubmed(self):
-        import sys
-        import pickle as pkl
-        import networkx as nx
-
         dataset = 'pubmed'
         names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph']
         objects = []
@@ -150,6 +177,16 @@ class Dataset():
         return adj, features, labels
 
     def largest_connected_components(self, adj, n_components=1):
+        """Select k largest connected components.
+
+		Parameters
+		----------
+		adj : scipy.sparse.csr_matrix
+			input adjacency matrix
+		n_components : int
+			n largest connected components we want to select
+		"""
+
         _, component_indices = sp.csgraph.connected_components(adj)
         component_sizes = np.bincount(component_indices)
         components_to_keep = np.argsort(component_sizes)[::-1][:n_components]  # reverse order to sort descending
@@ -186,7 +223,6 @@ class Dataset():
         return onehot_mx
 
 def parse_index_file(filename):
-    """Parse index file."""
     index = []
     for line in open(filename):
         index.append(int(line.strip()))

@@ -10,8 +10,7 @@ from copy import deepcopy
 from sklearn.metrics import f1_score
 
 class GraphConvolution(Module):
-    """
-    Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
+    """Simple GCN layer, similar to https://github.com/tkipf/pygcn
     """
 
     def __init__(self, in_features, out_features, with_bias=True):
@@ -36,6 +35,8 @@ class GraphConvolution(Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
+        """ Graph Convolutional Layer forward function
+        """
         if input.data.is_sparse:
             support = torch.spmm(input, self.weight)
         else:
@@ -53,6 +54,47 @@ class GraphConvolution(Module):
 
 
 class GCN(nn.Module):
+    """ 2 Layer Graph Convolutional Network.
+
+    Parameters
+    ----------
+    nfeat : int
+        size of input feature dimension
+    nhid : int
+        number of hidden units
+    nclass : int
+        size of output dimension
+    dropout : float
+        dropout rate for GCN
+    lr : float
+        learning rate for GCN
+    weight_decay : float
+        weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
+    with_relu : bool
+        whether to use relu activation function. If False, GCN will be linearized.
+    with_bias: bool
+        whether to include bias term in GCN weights.
+    device: str
+        'cpu' or 'cuda'.
+
+    Examples
+    --------
+	We can first load dataset and then train GCN.
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> gcn = GCN(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device='cpu')
+    >>> gcn = gcn.to('cpu')
+    >>> gcn.fit(features, adj, labels, idx_train) # train without earlystopping
+    >>> gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train with earlystopping
+
+    """
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device=None):
 
@@ -80,9 +122,6 @@ class GCN(nn.Module):
         self.features = None
 
     def forward(self, x, adj):
-        '''
-            adj: normalized adjacency matrix
-        '''
         if self.with_relu:
             x = F.relu(self.gc1(x, adj))
         else:
@@ -93,14 +132,38 @@ class GCN(nn.Module):
         return F.log_softmax(x, dim=1)
 
     def initialize(self):
+        """Initialize parameters of GCN.
+        """
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
     def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True, patience=500):
-        '''
-            train the gcn model, when idx_val is not None, pick the best model
-            according to the validation loss
-        '''
+        """Train the gcn model, when idx_val is not None, pick the best model according to the validation loss.
+
+        Parameters
+        ----------
+        features :
+            node features
+        adj :
+            the adjacency matrix. The format could torch.tensor or scipy matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_val :
+            node validation indices. If not given (None), GCN training process will not adpot early stopping
+        train_iters : int
+            number of training epochs
+        initialize : bool
+            whether to initialize parameters before training
+        verbose : bool
+            whether to show verbose logs
+        normalize : bool
+            whether to normalize the input adjacency matrix.
+        patience : int
+            patience for early stopping, only valid when `idx_val` is given
+        """
+
         self.device = self.gc1.weight.device
         if initialize:
             self.initialize()
@@ -231,6 +294,13 @@ class GCN(nn.Module):
         self.load_state_dict(weights)
 
     def test(self, idx_test):
+        """Evaluate GCN performance on test set.
+
+        Parameters
+        ----------
+        idx_test :
+            node testing indices
+        """
         self.eval()
         output = self.predict()
         # output = self.output
@@ -241,12 +311,23 @@ class GCN(nn.Module):
               "accuracy= {:.4f}".format(acc_test.item()))
         return acc_test
 
-    def _set_parameters():
-        # TODO
-        pass
 
     def predict(self, features=None, adj=None):
-        '''By default, inputs are unnormalized data'''
+        """By default, the inputs should be unnormalized data
+
+        Parameters
+        ----------
+        features :
+            node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+        adj :
+            adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+
+
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of GCN
+        """
 
         self.eval()
         if features is None and adj is None:

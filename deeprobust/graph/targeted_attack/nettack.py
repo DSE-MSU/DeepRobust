@@ -1,4 +1,4 @@
-'''
+"""
     Adversarial Attacks on Neural Networks for Graph Data. KDD 2018.
         https://arxiv.org/pdf/1805.07984.pdf
     Author's Implementation
@@ -6,7 +6,7 @@
 
     Since pytorch does not have good enough support to the operations on sparse tensor,
 this part of code is heavily based on the author's implementation.
-'''
+"""
 
 import torch
 from deeprobust.graph.targeted_attack import BaseAttack
