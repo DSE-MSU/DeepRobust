@@ -8,8 +8,8 @@
 -->
 
 <p float="left">
-  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="450" />
-  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/graph_attack_example.png" width="400" /> 
+  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="430" />
+  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/graph_attack_example.png" width="380" /> 
 </p>
 
 DeepRobust is a pytorch adversarial library for attack and defense methods on images and graphs. 
