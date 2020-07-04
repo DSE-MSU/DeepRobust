@@ -1,9 +1,7 @@
 
 # DeepRobust
 
-<img src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "300" height = "200" alt="logo">
-
-<a href="https://github.com/DSE-MSU/DeepRobust/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/DSE-MSU/DeepRobust"></a>  <a href="https://github.com/DSE-MSU/DeepRobust/network/members" ><img alt="GitHub forks" src="https://img.shields.io/github/forks/DSE-MSU/DeepRobust"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/DSE-MSU/DeepRobust"> <a href="https://github.com/DSE-MSU/DeepRobust/issues"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/DSE-MSU/DeepRobust"></a> <img alt="GitHub" src="https://img.shields.io/github/license/DSE-MSU/DeepRobust">
+<img src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "330" height = "200" alt="logo"><a href="https://github.com/DSE-MSU/DeepRobust/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/DSE-MSU/DeepRobust"></a>  <a href="https://github.com/DSE-MSU/DeepRobust/network/members" ><img alt="GitHub forks" src="https://img.shields.io/github/forks/DSE-MSU/DeepRobust"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/DSE-MSU/DeepRobust"> <a href="https://github.com/DSE-MSU/DeepRobust/issues"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/DSE-MSU/DeepRobust"></a> <img alt="GitHub" src="https://img.shields.io/github/license/DSE-MSU/DeepRobust">
 
 <!-- <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/DSE-MSU/DeepRobust"> -->
 
