@@ -63,7 +63,8 @@ model.initialize()
 n_perturbations = int(0.01 * (adj.sum()//2))
 for i in range(100):
     # modified_adj = adversary.attack(features, adj)
-    modified_adj = adversary.attack(perturbed_adj, n_perturbations=n_perturbations, type='remove')
+    adversary.attack(perturbed_adj, n_perturbations=n_perturbations, type='remove')
+    modified_adj = adversary.modified_adj
     model.fit(features, modified_adj, labels, idx_train, train_iters=50, initialize=False)
 
 model.eval()

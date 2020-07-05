@@ -56,7 +56,8 @@ adv_train_model.initialize()
 n_perturbations = int(0.01 * (adj.sum()//2))
 for i in tqdm(range(100)):
     # modified_adj = adversary.attack(features, adj)
-    modified_adj = adversary.attack(adj, n_perturbations=n_perturbations, type='add')
+    adversary.attack(adj, n_perturbations=n_perturbations, type='add')
+    modified_adj = adversary.modified_adj
     adv_train_model.fit(features, modified_adj, labels, idx_train, train_iters=50, initialize=False)
 
 adv_train_model.eval()
