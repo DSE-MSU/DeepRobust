@@ -31,6 +31,26 @@ class FGA(BaseAttack):
     device: str
         'cpu' or 'cuda'
 
+    Examples
+    --------
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> from deeprobust.graph.targeted_attack import FGA
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # Setup Surrogate model
+    >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
+    >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = FGA(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device='cpu').to('cpu')
+    >>> # Attack
+    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5)
+    >>> modified_adj = model.modified_adj
+
     """
 
     def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):

@@ -24,7 +24,7 @@ from deeprobust.graph.rl.q_net_node import QNetNode, NStepQNetNode, node_greedy_
 from deeprobust.graph.rl.env import NodeAttackEnv
 from deeprobust.graph.rl.nstep_replay_mem import NstepReplayMem
 
-class Agent(object):
+class RLS2V(object):
     """ Reinforcement learning agent for RL-S2V attack.
 
     Parameters
@@ -52,6 +52,9 @@ class Agent(object):
     device: str
         'cpu' or 'cuda'
 
+    Examples
+    --------
+    See details in https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py
     """
 
     def __init__(self, env, features, labels, idx_meta, idx_test,

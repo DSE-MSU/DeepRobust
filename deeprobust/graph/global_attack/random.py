@@ -19,6 +19,17 @@ class Random(BaseAttack):
     device: str
         'cpu' or 'cuda'
 
+    Examples
+    --------
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.global_attack import Random
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> model = Random()
+    >>> model.attack(adj, n_perturbations=10)
+    >>> modified_adj = model.modified_adj
+
     """
 
     def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):

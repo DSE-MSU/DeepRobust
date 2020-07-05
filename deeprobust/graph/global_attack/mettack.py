@@ -146,9 +146,12 @@ class Metattack(BaseMeta):
     >>> from deeprobust.graph.data import Dataset
     >>> from deeprobust.graph.defense import GCN
     >>> from deeprobust.graph.global_attack import Metattack
+    >>> from deeprobust.graph.utils import preprocess
     >>> data = Dataset(root='/tmp/', name='cora')
     >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False) # conver to tensor
     >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> idx_unlabeled = np.union1d(idx_val, idx_test)
     >>> idx_unlabeled = np.union1d(idx_val, idx_test)
     >>> # Setup Surrogate model
     >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
@@ -376,8 +379,10 @@ class MetaApprox(BaseMeta):
     >>> from deeprobust.graph.data import Dataset
     >>> from deeprobust.graph.defense import GCN
     >>> from deeprobust.graph.global_attack import MetaApprox
+    >>> from deeprobust.graph.utils import preprocess
     >>> data = Dataset(root='/tmp/', name='cora')
     >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False) # conver to tensor
     >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     >>> idx_unlabeled = np.union1d(idx_val, idx_test)
     >>> # Setup Surrogate model
@@ -389,7 +394,7 @@ class MetaApprox(BaseMeta):
     >>> model = MetaApprox(surrogate, nnodes=adj.shape[0], feature_shape=features.shape,
             attack_structure=True, attack_features=False, device='cpu', lambda_=0).to('cpu')
     >>> # Attack
-    >>> model.attack(features, adj, labels, idx_train, idx_unlabeled, n_perturbations=10, ll_constraint=False)
+    >>> model.attack(features, adj, labels, idx_train, idx_unlabeled, n_perturbations=10, ll_constraint=True)
     >>> modified_adj = model.modified_adj
 
     """

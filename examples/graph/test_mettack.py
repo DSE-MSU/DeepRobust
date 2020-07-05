@@ -24,7 +24,8 @@ parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
 parser.add_argument('--dataset', type=str, default='citeseer', choices=['cora', 'cora_ml', 'citeseer', 'polblogs', 'pubmed'], help='dataset')
 parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation rate')
-parser.add_argument('--model', type=str, default='Meta-Self', choices=['A-Meta-Self', 'Meta-Self'], help='model variant')
+parser.add_argument('--model', type=str, default='Meta-Self',
+        choices=['Meta-Self', 'A-Meta-Self', 'Meta-Train', 'A-Meta-Train'], help='model variant')
 
 args = parser.parse_args()
 

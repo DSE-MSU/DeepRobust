@@ -12,8 +12,7 @@ from deeprobust.graph.rl.nipa_env import NodeInjectionEnv, GraphNormTool, Static
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.black_box import *
-# from deeprobust.graph.rl.nipa import NIPA
-from deeprobust.graph.global_attack.nipa import NIPA
+from deeprobust.graph.global_attack import NIPA
 from deeprobust.graph.rl.nipa_config import args
 
 

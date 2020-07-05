@@ -27,6 +27,24 @@ class RND(BaseAttack):
     device: str
         'cpu' or 'cuda'
 
+    Examples
+    --------
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.targeted_attack import RND
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = RND()
+    >>> # Attack
+    >>> model.attack(adj, labels, idx_train, target_node, n_perturbations=5)
+    >>> modified_adj = model.modified_adj
+    >>> # # You can also inject nodes
+    >>> # model.add_nodes(features, adj, labels, idx_train, target_node, n_added=10, n_perturbations=100)
+    >>> # modified_adj = model.modified_adj
+
     """
 
     def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
@@ -34,7 +52,7 @@ class RND(BaseAttack):
 
         assert not self.attack_features, 'RND does NOT support attacking features except adding nodes'
 
-    def attack(self, adj, labels, idx_train, target_node, n_perturbations, **kwargs):
+    def attack(self, ori_adj, labels, idx_train, target_node, n_perturbations, **kwargs):
         """
         Randomly sample nodes u whose lable is different from v and
         add the edge u,v to the graph structure. This baseline only
@@ -42,8 +60,6 @@ class RND(BaseAttack):
 
         Parameters
         ----------
-        ori_features : scipy.sparse.csr_matrix
-            Original (unperturbed) node feature matrix
         ori_adj : scipy.sparse.csr_matrix
             Original (unperturbed) adjacency matrix
         labels :
@@ -56,12 +72,12 @@ class RND(BaseAttack):
             Number of perturbations on the input graph. Perturbations could
             be edge removals/additions or feature removals/additions.
         """
-        # adj: sp.csr_matrix
+        # ori_adj: sp.csr_matrix
 
         print('number of pertubations: %s' % n_perturbations)
-        modified_adj = adj.tolil()
+        modified_adj = ori_adj.tolil()
 
-        row = adj[target_node].todense().A1
+        row = ori_adj[target_node].todense().A1
         diff_label_nodes = [x for x in idx_train if labels[x] != labels[target_node] \
                             and row[x] == 0]
         diff_label_nodes = np.random.permutation(diff_label_nodes)
@@ -72,7 +88,7 @@ class RND(BaseAttack):
             modified_adj[changed_nodes, target_node] = 1
         else:
             changed_nodes = diff_label_nodes
-            unlabeled_nodes = [x for x in range(adj.shape[0]) if x not in idx_train and row[x] == 0]
+            unlabeled_nodes = [x for x in range(ori_adj.shape[0]) if x not in idx_train and row[x] == 0]
             unlabeled_nodes = np.random.permutation(unlabeled_nodes)
             changed_nodes = np.concatenate([changed_nodes,
                             unlabeled_nodes[: n_perturbations-len(diff_label_nodes)]])
@@ -81,19 +97,19 @@ class RND(BaseAttack):
 
         self.check_adj(modified_adj)
         self.modified_adj = modified_adj
-        self.modified_features = modified_features
+        # self.modified_features = modified_features
 
-    def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_perturbations=10):
+    def add_nodes(self, features, ori_adj, labels, idx_train, target_node, n_added=1, n_perturbations=10, **kwargs):
         """
         For each added node, first connect the target node with added fake nodes.
         Then randomly connect the fake nodes with other nodes whose label is
         different from target node. As for the node feature, simply copy arbitary node
         """
-        # adj: sp.csr_matrix
+        # ori_adj: sp.csr_matrix
         print('number of pertubations: %s' % n_perturbations)
-        N = adj.shape[0]
+        N = ori_adj.shape[0]
         D = features.shape[1]
-        modified_adj = self.reshape_mx(adj, shape=(N+n_added, N+n_added))
+        modified_adj = self.reshape_mx(ori_adj, shape=(N+n_added, N+n_added))
         modified_features = self.reshape_mx(features, shape=(N+n_added, D))
 
         diff_labels = [l for l in range(labels.max()+1) if l != labels[target_node]]

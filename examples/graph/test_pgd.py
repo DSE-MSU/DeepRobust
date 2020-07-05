@@ -39,7 +39,6 @@ adj, features, labels = data.adj, data.features, data.labels
 # features = normalize_feature(features)
 
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-idx_unlabeled = np.union1d(idx_val, idx_test)
 
 perturbations = int(args.ptb_rate * (adj.sum()//2))
 

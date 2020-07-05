@@ -12,8 +12,7 @@ from deeprobust.graph.rl.env import NodeAttackEnv, GraphNormTool, StaticGraph
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.black_box import *
-# from deeprobust.graph.rl.rl_s2v import Agent
-from deeprobust.graph.targeted_attack.rl_s2v import Agent
+from deeprobust.graph.targeted_attack import RLS2V
 from deeprobust.graph.rl.rl_s2v_config import args
 import warnings
 
@@ -81,7 +80,7 @@ print( 'meta list ratio:', len(meta_list) / float(len(idx_valid)))
 device = torch.device('cuda') if args.ctx == 'gpu' else 'cpu'
 
 env = NodeAttackEnv(features, labels, total, dict_of_lists, victim_model, num_mod=args.num_mod, reward_type=args.reward_type)
-agent = Agent(env, features, labels, meta_list, attack_list, dict_of_lists, num_wrong=num_wrong,
+agent = RLS2V(env, features, labels, meta_list, attack_list, dict_of_lists, num_wrong=num_wrong,
         num_mod=args.num_mod, reward_type=args.reward_type,
         batch_size=args.batch_size, save_dir=args.save_dir,
         bilin_q=args.bilin_q, embed_dim=args.latent_dim,

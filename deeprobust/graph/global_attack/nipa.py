@@ -1,4 +1,7 @@
 """
+Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach. WWW 2020.
+https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf
+
 Still on testing stage. Haven't reproduced the performance yet.
 """
 
@@ -21,6 +24,7 @@ from deeprobust.graph.utils import loss_acc
 
 class NIPA(object):
     """ Reinforcement learning agent for NIPA attack.
+    https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf
 
     Parameters
     ----------
@@ -47,6 +51,9 @@ class NIPA(object):
     device: str
         'cpu' or 'cuda'
 
+    Examples
+    --------
+    See more details in https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nipa.py
     """
 
     def __init__(self, env, features, labels, idx_train, idx_val, idx_test,
