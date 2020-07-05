@@ -15,6 +15,7 @@ from deeprobust.graph.black_box import *
 # from deeprobust.graph.rl.rl_s2v import Agent
 from deeprobust.graph.targeted_attack.rl_s2v import Agent
 from deeprobust.graph.rl.rl_s2v_config import args
+import warnings
 
 
 def init_setup():
@@ -87,7 +88,7 @@ agent = Agent(env, features, labels, meta_list, attack_list, dict_of_lists, num_
         mlp_hidden=args.mlp_hidden, max_lv=args.max_lv,
         gm=args.gm, device=device)
 
-print('Warning: if you find the training process is too slow, you can uncomment line 119 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
+warnings.warn('if you find the training process is too slow, you can uncomment line 204 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
 
 if args.phase == 'train':
     agent.train(num_steps=args.num_steps, lr=args.learning_rate)

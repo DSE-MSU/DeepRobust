@@ -1,3 +1,12 @@
+"""
+    Adversarial Attacks on Neural Networks for Graph Data. ICML 2018.
+        https://arxiv.org/abs/1806.02371
+    Author's Implementation
+       https://github.com/Hanjun-Dai/graph_adversarial_attack
+    This part of code is adopted from the author's implementation but modified
+    to be integrated into the repository.
+"""
+
 import os
 import sys
 import os.path as osp
@@ -16,11 +25,40 @@ from deeprobust.graph.rl.env import NodeAttackEnv
 from deeprobust.graph.rl.nstep_replay_mem import NstepReplayMem
 
 class Agent(object):
+    """ Reinforcement learning agent for RL-S2V attack.
+
+    Parameters
+    ----------
+    env :
+        Node attack environment
+    features :
+        node features matrix
+    labels :
+        labels
+    idx_meta :
+        node meta indices
+    idx_test :
+        node test indices
+    list_action_space : list
+        list of action space
+    num_mod :
+        number of modification (perturbation) on the graph
+    reward_type : str
+        type of reward (e.g., 'binary')
+    batch_size :
+        batch size for training DQN
+    save_dir :
+        saving directory for model checkpoints
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, env, features, labels, idx_meta, idx_test,
             list_action_space, num_mod, reward_type, batch_size=10,
             num_wrong=0, bilin_q=1, embed_dim=64, gm='mean_field',
             mlp_hidden=64, max_lv=1, save_dir='checkpoint_dqn', device=None):
+
 
         assert device is not None, "'device' cannot be None, please specify it"
 
@@ -149,6 +187,9 @@ class Agent(object):
                     self.mem_pool.mem_cells[t].add(s_t, a_t, r, s_prime, term)
 
     def eval(self, training=True):
+        """Evaluate RL agent.
+        """
+
         self.env.setup(self.idx_meta)
         t = 0
 
@@ -175,6 +216,9 @@ class Agent(object):
             self.best_eval = acc
 
     def train(self, num_steps=100000, lr=0.001):
+        """Train RL agent.
+        """
+
         pbar = tqdm(range(self.burn_in), unit='batch')
 
         for p in pbar:

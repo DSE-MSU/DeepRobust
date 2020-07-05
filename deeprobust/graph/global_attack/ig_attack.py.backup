@@ -11,13 +11,30 @@ import torch
 from torch.nn import functional as F
 from torch.nn.parameter import Parameter
 from tqdm import tqdm
-
+import warnings
 from deeprobust.graph import utils
 from deeprobust.graph.global_attack import BaseAttack
 
 
 class IGAttack(BaseAttack):
+    """[Under Development] Untargeted Attack Version of IGAttack: IG-FGSM. Adversarial Examples on Graph Data: Deep Insights into Attack and Defense, https://arxiv.org/pdf/1903.01610.pdf.
 
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
     def __init__(self, model=None, nnodes=None, feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
 
         super(IGAttack, self).__init__(model, nnodes, attack_structure, attack_features, device)
@@ -38,12 +55,30 @@ class IGAttack(BaseAttack):
             self.feature_changes.data.fill_(0)
 
     def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, **kwargs):
+        """Generate perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        """
+
         victim_model = self.surrogate
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
 
         victim_model.eval()
 
+        warnings.warn('This process is extremely slow!')
         adj_norm = utils.normalize_adj_tensor(ori_adj)
         s_e = self.calc_importance_edge(ori_features, adj_norm, labels, idx_train, steps=20)
         s_f = self.calc_importance_feature(ori_features, adj_norm, labels, idx_train, steps=20)

@@ -34,7 +34,8 @@ model = Random()
 
 n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
-modified_adj = model.attack(adj, n_perturbations)
+model.attack(adj, n_perturbations)
+modified_adj = model.modified_adj
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
 adj = adj.to(device)

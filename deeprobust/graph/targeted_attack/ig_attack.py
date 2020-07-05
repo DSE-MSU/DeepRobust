@@ -1,9 +1,9 @@
-'''
+"""
     Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective
         https://arxiv.org/pdf/1906.04214.pdf
     Tensorflow Implementation:
         https://github.com/KaidiXu/GCN_ADV_Train
-'''
+"""
 
 import torch
 import torch.multiprocessing as mp
@@ -23,9 +23,47 @@ import math
 import scipy.sparse as sp
 
 class IGAttack(BaseAttack):
-    """IGAttack: IG-FGSM"""
+    """IGAttack: IG-FGSM. Adversarial Examples on Graph Data: Deep Insights into Attack and Defense, https://arxiv.org/pdf/1903.01610.pdf.
 
-    def __init__(self, model=None, nnodes=None, feature_shape=None, attack_structure=True, attack_features=True, device='cpu'):
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    Examples
+    --------
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> from deeprobust.graph.targeted_attack import IGAttack
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # Setup Surrogate model
+    >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
+    >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device='cpu').to('cpu')
+    >>> # Attack
+    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5, steps=10)
+    >>> modified_adj = model.modified_adj
+    >>> modified_features = model.modified_features
+
+    """
+
+    def __init__(self, model, nnodes=None, feature_shape=None, attack_structure=True, attack_features=True, device='cpu'):
 
         super(IGAttack, self).__init__(model, nnodes, attack_structure, attack_features, device)
 
@@ -35,7 +73,28 @@ class IGAttack(BaseAttack):
         self.modified_features = None
         self.target_node = None
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, steps=10):
+    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, steps=10, **kwargs):
+        """Generate perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        target_node : int
+            target node index to be attacked
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        steps : int
+            steps for computing integrated gradients
+        """
+
         self.surrogate.eval()
         self.target_node = target_node
 
@@ -69,6 +128,8 @@ class IGAttack(BaseAttack):
 
 
     def calc_importance_edge(self, features, adj_norm, labels, idx_train, steps):
+        """Calculate integrated gradient for edges
+        """
         baseline_add = adj_norm.clone()
         baseline_remove = adj_norm.clone()
         baseline_add.data[self.target_node] = 1
@@ -105,6 +166,8 @@ class IGAttack(BaseAttack):
         return integrated_grad_list
 
     def calc_importance_feature(self, features, adj_norm, labels, idx_train, steps):
+        """Calculate integrated gradient for features
+        """
         baseline_add = features.clone()
         baseline_remove = features.clone()
         baseline_add.data[self.target_node] = 1

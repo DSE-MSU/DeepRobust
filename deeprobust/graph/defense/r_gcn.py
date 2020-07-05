@@ -1,9 +1,9 @@
-'''
+"""
     Robust Graph Convolutional Networks Against Adversarial Attacks. KDD 2019.
         http://pengcui.thumedialab.com/papers/RGCN.pdf
     Author's Tensorflow implemention:
         https://github.com/thumanlab/nrlweb/tree/master/static/assets/download
-'''
+"""
 
 import torch.nn.functional as F
 import math
@@ -18,7 +18,7 @@ from copy import deepcopy
 # TODO sparse implementation
 
 class GGCL_F(Module):
-    """GGCL: the input is feature"""
+    """Graph Gaussian Convolution Layer (GGCL) when the input is feature"""
 
     def __init__(self, in_features, out_features, dropout=0.6):
         super(GGCL_F, self).__init__()
@@ -45,7 +45,7 @@ class GGCL_F(Module):
 
 class GGCL_D(Module):
 
-    """GGCL_D: the input is distribution"""
+    """Graph Gaussian Convolution Layer (GGCL) when the input is distribution"""
     def __init__(self, in_features, out_features, dropout):
         super(GGCL_D, self).__init__()
         self.in_features = in_features
@@ -73,6 +73,8 @@ class GGCL_D(Module):
 
 
 class GaussianConvolution(Module):
+    """[Deprecated] Alternative gaussion convolution layer.
+    """
 
     def __init__(self, in_features, out_features):
         super(GaussianConvolution, self).__init__()
@@ -116,6 +118,32 @@ class GaussianConvolution(Module):
 
 
 class RGCN(Module):
+    """Robust Graph Convolutional Networks Against Adversarial Attacks. KDD 2019.
+
+    Parameters
+    ----------
+    nnodes : int
+        number of nodes in the input grpah
+    nfeat : int
+        size of input feature dimension
+    nhid : int
+        number of hidden units
+    nclass : int
+        size of output dimension
+    gamma : float
+        hyper-parameter for RGCN. See more details in the paper.
+    beta1 : float
+        hyper-parameter for RGCN. See more details in the paper.
+    beta2 : float
+        hyper-parameter for RGCN. See more details in the paper.
+    lr : float
+        learning rate for GCN
+    dropout : float
+        dropout rate for GCN
+    device: str
+        'cpu' or 'cuda'.
+
+    """
 
     def __init__(self, nnodes, nfeat, nhid, nclass, gamma=1.0, beta1=5e-4, beta2=5e-4, lr=0.01, dropout=0.6, device='cpu'):
         super(RGCN, self).__init__()
@@ -148,7 +176,26 @@ class RGCN(Module):
         output = miu + self.gaussian.sample().to(self.device) * torch.sqrt(sigma + 1e-8)
         return F.log_softmax(output, dim=1)
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, verbose=True, **kwargs):
+        """Train RGCN.
+
+        Parameters
+        ----------
+        features :
+            node features
+        adj :
+            the adjacency matrix. The format could be torch.tensor or scipy matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_val :
+            node validation indices. If not given (None), GCN training process will not adpot early stopping
+        train_iters : int
+            number of training epochs
+        verbose : bool
+            whether to show verbose logs
+        """
 
         adj, features, labels = utils.to_tensor(adj.todense(), features.todense(), labels, device=self.device)
 
@@ -211,6 +258,8 @@ class RGCN(Module):
 
 
     def test(self, idx_test):
+        """Evaluate the peformance on test set
+        """
         # output = self.forward()
         output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])

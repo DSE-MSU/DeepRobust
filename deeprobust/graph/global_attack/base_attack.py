@@ -9,6 +9,22 @@ from deeprobust.graph import utils
 
 
 class BaseAttack(Module):
+    """Abstract base class for target attack classes.
+
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model, nnodes, attack_structure=True, attack_features=False, device='cpu'):
         super(BaseAttack, self).__init__()
@@ -26,7 +42,7 @@ class BaseAttack(Module):
             self.hidden_sizes = model.hidden_sizes
 
     def attack(self, ori_adj, n_perturbations, **kwargs):
-        """Generate an adversarial example.
+        """Generate attacks on the input graph.
 
         Parameters
         ----------
@@ -43,14 +59,27 @@ class BaseAttack(Module):
         pass
 
     def check_adj(self, adj):
-        '''
-            check if the modified adjacency is symmetric and unweighted
-        '''
+        """Check if the modified adjacency is symmetric and unweighted.
+        """
         assert np.abs(adj - adj.T).sum() == 0, "Input graph is not symmetric"
         assert adj.tocsr().max() == 1, "Max value should be 1!"
         assert adj.tocsr().min() == 0, "Min value should be 0!"
 
     def save_adj(self, root=r'/tmp/', name='mod_adj'):
+        """Save attacked adjacency matrix.
+
+        Parameters
+        ----------
+        root :
+            root directory where the variable should be saved
+        name : str
+            saved file name
+
+        Returns
+        -------
+        None.
+
+        """
         assert self.modified_adj is not None, \
                 'modified_adj is None! Please perturb the graph first.'
         name = name + '.npz'
@@ -63,6 +92,21 @@ class BaseAttack(Module):
             sp.save_npz(osp.join(root, name), modified_adj)
 
     def save_features(self, root=r'/tmp/', name='mod_features'):
+        """Save attacked node feature matrix.
+
+        Parameters
+        ----------
+        root :
+            root directory where the variable should be saved
+        name : str
+            saved file name
+
+        Returns
+        -------
+        None.
+
+        """
+
         assert self.modified_features is not None, \
                 'modified_features is None! Please perturb the graph first.'
         name = name + '.npz'

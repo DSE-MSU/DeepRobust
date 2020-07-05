@@ -1,29 +1,53 @@
 import random
-
 import numpy as np
 import scipy.sparse as sp
-
 from deeprobust.graph.global_attack import BaseAttack
 
-
 class DICE(BaseAttack):
+    """As is described in ADVERSARIAL ATTACKS ON GRAPH NEURAL NETWORKS VIA META LEARNING (ICLR'19),
+    'DICE (delete internally, connect externally) is a baseline where, for each perturbation,
+    we randomly choose whether to insert or remove an edge. Edges are only removed between
+    nodes from the same classes, and only inserted between nodes from different classes.
+
+    Parameters
+    ----------
+    model :
+        model to attack. Default `None`.
+    nnodes : int
+        number of nodes in the input graph
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
-        """
-        As is described in ADVERSARIAL ATTACKS ON GRAPH NEURAL NETWORKS VIA META LEARNING (ICLR'19),
-        'DICE (delete internally, connect externally) is a baseline where, for each perturbation,
-        we randomly choose whether to insert or remove an edge. Edges are only removed between
-        nodes from the same classes, and only inserted between nodes from different classes.
-        """
         super(DICE, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
         assert not self.attack_features, 'DICE does NOT support attacking features'
 
     def attack(self, ori_adj, labels, n_perturbations, **kwargs):
-        """
-        Delete internally, connect externally. This baseline has all true class labels
+        """Delete internally, connect externally. This baseline has all true class labels
         (train and test) available.
+
+        Parameters
+        ----------
+        ori_adj : scipy.sparse.csr_matrix
+            Original (unperturbed) adjacency matrix.
+        labels:
+            node labels
+        n_perturbations : int
+            Number of edge removals/additions.
+
+        Returns
+        -------
+        None.
+
         """
+
         # ori_adj: sp.csr_matrix
 
         print('number of pertubations: %s' % n_perturbations)
@@ -62,14 +86,13 @@ class DICE(BaseAttack):
             modified_adj[node2, node1] = 1
 
         self.check_adj(modified_adj)
-        return modified_adj
+        self.modified_adj = modified_adj
 
 
     def sample_forever(self, adj, exclude):
-        '''
-            'exclude' is a set which contains the edges we do not want to sample
-             and the edges already sampled
-        '''
+        """Randomly random sample edges from adjacency matrix, `exclude` is a set
+        which contains the edges we do not want to sample and the ones already sampled
+        """
         while True:
             # t = tuple(np.random.randint(0, adj.shape[0], 2))
             t = tuple(random.sample(range(0, adj.shape[0]), 2))
@@ -79,9 +102,5 @@ class DICE(BaseAttack):
                 exclude.add((t[1], t[0]))
 
     def random_sample_edges(self, adj, n, exclude):
-        '''
-            'exclude' is a set which contains the edges we do not want to sample
-             and the edges already sampled
-        '''
         itr = self.sample_forever(adj, exclude=exclude)
         return [next(itr) for _ in range(n)]

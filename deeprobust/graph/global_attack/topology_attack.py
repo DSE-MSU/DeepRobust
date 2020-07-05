@@ -18,6 +18,26 @@ from deeprobust.graph.global_attack import BaseAttack
 
 
 class PGDAttack(BaseAttack):
+    """PGD attack for graph data.
+
+    Parameters
+    ----------
+    model :
+        model to attack. Default `None`.
+    nnodes : int
+        number of nodes in the input graph
+    loss_type: str
+        attack loss type, chosen from ['CE', 'CW']
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model=None, nnodes=None, loss_type='CE', feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
 
@@ -40,6 +60,26 @@ class PGDAttack(BaseAttack):
         self.complementary = None
 
     def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations, epochs=200, **kwargs):
+        """Generate perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        epochs:
+            number of training epochs
+
+        """
+
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)
@@ -148,6 +188,26 @@ class PGDAttack(BaseAttack):
 
 
 class MinMax(PGDAttack):
+    """MinMax attack for graph data.
+
+    Parameters
+    ----------
+    model :
+        model to attack. Default `None`.
+    nnodes : int
+        number of nodes in the input graph
+    loss_type: str
+        attack loss type, chosen from ['CE', 'CW']
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model=None, nnodes=None, loss_type='CE', feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
 
@@ -155,6 +215,26 @@ class MinMax(PGDAttack):
 
 
     def attack(self, ori_features, ori_adj, labels, idx_train, n_perturbations):
+        """Generate perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        epochs:
+            number of training epochs
+
+        """
+
         victim_model = self.surrogate
 
         self.sparse_features = sp.issparse(ori_features)

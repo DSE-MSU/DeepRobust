@@ -12,13 +12,86 @@ import numpy as np
 
 
 class GCNSVD(GCN):
+    """GCNSVD is a 2 Layer Graph Convolutional Network with Truncated SVD as
+    preprocessing. See more details in All You Need Is Low (Rank): Defending
+    Against Adversarial Attacks on Graphs,
+    https://dl.acm.org/doi/abs/10.1145/3336191.3371789.
+
+    Parameters
+    ----------
+    nfeat : int
+        size of input feature dimension
+    nhid : int
+        number of hidden units
+    nclass : int
+        size of output dimension
+    dropout : float
+        dropout rate for GCN
+    lr : float
+        learning rate for GCN
+    weight_decay : float
+        weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
+    with_relu : bool
+        whether to use relu activation function. If False, GCN will be linearized.
+    with_bias: bool
+        whether to include bias term in GCN weights.
+    device: str
+        'cpu' or 'cuda'.
+
+    Examples
+    --------
+	We can first load dataset and then train GCNSVD.
+
+    >>> from deeprobust.graph.data import PtbDataset, Dataset
+    >>> from deeprobust.graph.defense import GCNSVD
+    >>> # load clean graph data
+    >>> data = Dataset(root='/tmp/', name='cora', seed=15)
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # load perturbed graph data
+    >>> perturbed_data = PtbDataset(root='/tmp/', name='cora')
+    >>> perturbed_adj = perturbed_data.adj
+    >>> # train defense model
+    >>> model = GCNSVD(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device='cpu').to('cpu')
+    >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val, k=20)
+
+    """
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
 
         super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, k=50, train_iters=200, initialize=True, verbose=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, k=50, train_iters=200, initialize=True, verbose=True, **kwargs):
+        """First perform rank-k approximation of adjacency matrix via
+        truncated SVD, and then train the gcn model on the processed graph,
+        when idx_val is not None, pick the best model according to
+        the validation loss.
+
+        Parameters
+        ----------
+        features :
+            node features
+        adj :
+            the adjacency matrix. The format could be torch.tensor or scipy matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_val :
+            node validation indices. If not given (None), GCN training process will not adpot early stopping
+        k : int
+            number of singular values and vectors to compute.
+        train_iters : int
+            number of training epochs
+        initialize : bool
+            whether to initialize parameters before training
+        verbose : bool
+            whether to show verbose logs
+        """
 
         modified_adj = self.truncatedSVD(adj, k=k)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
@@ -30,6 +103,20 @@ class GCNSVD(GCN):
         super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def truncatedSVD(self, data, k=50):
+        """Truncated SVD on input data.
+
+        Parameters
+        ----------
+        data :
+            input matrix to be decomposed
+        k : int
+            number of singular values and vectors to compute.
+
+        Returns
+        -------
+        numpy.array
+            reconstructed matrix.
+        """
         print('=== GCN-SVD: rank={} ==='.format(k))
         if sp.issparse(data):
             data = data.asfptype()
@@ -49,14 +136,87 @@ class GCNSVD(GCN):
 
 
 class GCNJaccard(GCN):
+    """GCNJaccard first preprocesses input graph via droppining dissimilar
+    edges and train a GCN based on the processed graph. See more details in
+    Adversarial Examples on Graph Data: Deep Insights into Attack and Defense,
+    https://arxiv.org/pdf/1903.01610.pdf.
 
+    Parameters
+    ----------
+    nfeat : int
+        size of input feature dimension
+    nhid : int
+        number of hidden units
+    nclass : int
+        size of output dimension
+    dropout : float
+        dropout rate for GCN
+    lr : float
+        learning rate for GCN
+    weight_decay : float
+        weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
+    with_relu : bool
+        whether to use relu activation function. If False, GCN will be linearized.
+    with_bias: bool
+        whether to include bias term in GCN weights.
+    device: str
+        'cpu' or 'cuda'.
+
+    Examples
+    --------
+	We can first load dataset and then train GCNJaccard.
+
+    >>> from deeprobust.graph.data import PtbDataset, Dataset
+    >>> from deeprobust.graph.defense import GCNJaccard
+    >>> # load clean graph data
+    >>> data = Dataset(root='/tmp/', name='cora', seed=15)
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # load perturbed graph data
+    >>> perturbed_data = PtbDataset(root='/tmp/', name='cora')
+    >>> perturbed_adj = perturbed_data.adj
+    >>> # train defense model
+    >>> model = GCNJaccard(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device='cpu').to('cpu')
+    >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.1)
+
+    """
     def __init__(self, nfeat, nhid, nclass, binary_feature=True, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):
 
         super(GCNJaccard, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
         self.binary_feature = binary_feature
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, threshold=0.01, train_iters=200, initialize=True, verbose=True):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, threshold=0.01, train_iters=200, initialize=True, verbose=True, **kwargs):
+        """First drop dissimilar edges with similarity smaller than given
+        threshold and then train the gcn model on the processed graph.
+        When idx_val is not None, pick the best model according to the
+        validation loss.
+
+        Parameters
+        ----------
+        features :
+            node features
+        adj :
+            the adjacency matrix. The format could be torch.tensor or scipy matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_val :
+            node validation indices. If not given (None), GCN training process will not adpot early stopping
+        threshold : int
+            similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.
+        train_iters : int
+            number of training epochs
+        initialize : bool
+            whether to initialize parameters before training
+        verbose : bool
+            whether to show verbose logs
+        """
+
         self.threshold = threshold
         modified_adj = self.drop_dissimilar_edges(features, adj)
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
@@ -67,6 +227,8 @@ class GCNJaccard(GCN):
         super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
     def drop_dissimilar_edges(self, features, adj):
+        """Drop dissimilar edges.
+        """
         if not sp.issparse(adj):
             adj = sp.csr_matrix(adj)
         modified_adj = adj.copy().tolil()

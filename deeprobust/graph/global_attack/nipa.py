@@ -20,6 +20,34 @@ from deeprobust.graph.utils import loss_acc
 
 
 class NIPA(object):
+    """ Reinforcement learning agent for NIPA attack.
+
+    Parameters
+    ----------
+    env :
+        Node attack environment
+    features :
+        node features matrix
+    labels :
+        labels
+    idx_meta :
+        node meta indices
+    idx_test :
+        node test indices
+    list_action_space : list
+        list of action space
+    num_mod :
+        number of modification (perturbation) on the graph
+    reward_type : str
+        type of reward (e.g., 'binary')
+    batch_size :
+        batch size for training DQN
+    save_dir :
+        saving directory for model checkpoints
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, env, features, labels, idx_train, idx_val, idx_test,
             list_action_space, ratio, reward_type='binary', batch_size=30,
@@ -128,6 +156,8 @@ class NIPA(object):
             t += 1
 
     def eval(self, training=True):
+        """Evaluate RL agent.
+        """
         self.env.init_overall_steps()
         self.env.setup()
 
@@ -166,6 +196,8 @@ class NIPA(object):
             self.best_eval = acc
 
     def train(self, num_episodes=10, lr=0.01):
+        """Train RL agent.
+        """
         optimizer = optim.Adam(self.net.parameters(), lr=lr)
         self.env.init_overall_steps()
         pbar = tqdm(range(self.burn_in), unit='batch')
@@ -217,11 +249,20 @@ class NIPA(object):
                 self.eval()
 
     def possible_actions(self, list_st, list_at, t):
-        '''
-            list_st: current state
-            list_at: current action
-            return: actions for next state
-        '''
+        """
+        Parameters
+        ----------
+        list_st:
+            current state
+        list_at:
+            current action
+
+        Returns
+        -------
+        list
+            actions for next state
+        """
+
         t = t % 3
         if t == 0:
             return np.tile(self.injected_nodes, ((len(list_st), 1)))

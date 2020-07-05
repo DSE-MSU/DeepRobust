@@ -4,8 +4,8 @@
     Author's Implementation
         https://github.com/danielzuegner/nettack
 
-    Since pytorch does not have good enough support to the operations on sparse tensor,
-this part of code is heavily based on the author's implementation.
+    Since pytorch does not have good enough support to the operations
+    on sparse tensor, this part of code is heavily based on the author's implementation.
 """
 
 import torch
@@ -24,6 +24,43 @@ from numba import jit
 from torch import spmm
 
 class Nettack(BaseAttack):
+    """Nettack.
+
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    Examples
+    --------
+
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> from deeprobust.graph.targeted_attack import Nettack
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # Setup Surrogate model
+    >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
+    >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = Nettack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device='cpu').to('cpu')
+    >>> # Attack
+    >>> model.attack(features, adj, labels, target_node, n_perturbations=5)
+    >>> modified_adj = model.modified_adj
+    >>> modified_features = model.modified_features
+
+    """
 
     def __init__(self, model, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
 
@@ -37,9 +74,9 @@ class Nettack(BaseAttack):
         self.cooc_constraint = None
 
     def filter_potential_singletons(self, modified_adj):
-        """
-        Computes a mask for entries potentially leading to singleton nodes, i.e. one of the two nodes corresponding to
-        the entry have degree 1 and there is an edge between the two nodes.
+        """Computes a mask for entries potentially leading to singleton nodes, i.e.
+        one of the two nodes corresponding to the entry have degree 1 and there
+        is an edge between the two nodes.
         """
 
         degrees = modified_adj.sum(0)
@@ -55,17 +92,44 @@ class Nettack(BaseAttack):
         W = surrogate.gc1.weight @ surrogate.gc2.weight
         return W.detach().cpu().numpy()
 
-    def attack(self, features, adj, labels, target_node, n_perturbations, direct=True, n_influencers= 0, ll_cutoff=0.004, verbose=True):
-        """
-        Perform an attack on the surrogate model.
+    def attack(self, features, adj, labels, target_node, n_perturbations, direct=True, n_influencers= 0, ll_cutoff=0.004, verbose=True, **kwargs):
+        """Generate perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features : torch.Tensor or scipy.sparse.csr_matrix
+            Origina (unperturbed) node feature matrix. Note that
+            torch.Tensor will be automatically transformed into
+            scipy.sparse.csr_matrix
+        ori_adj : torch.Tensor or scipy.sparse.csr_matrix
+            Original (unperturbed) adjacency matrix. Note that
+            torch.Tensor will be automatically transformed into
+            scipy.sparse.csr_matrix
+        labels :
+            node labels
+        target_node : int
+            target node index to be attacked
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        direct: bool
+            whether to conduct direct attack
+        n_influencers:
+            number of influencer nodes when performing indirect attack.
+            (setting `direct` to False). When `direct` is True, it would be ignored.
+        ll_cutoff : float
+            The critical value for the likelihood ratio test of the power law distributions.
+            See the Chi square distribution with one degree of freedom. Default value 0.004
+            corresponds to a p-value of roughly 0.95.
+        verbose : bool
+            whether to show verbose logs
         """
 
         if self.nnodes is None:
             self.nnodes = adj.shape[0]
 
         self.target_node = target_node
-        # ori_adj = adj
-        # modified_adj = deepcopy(adj)
+
         if type(adj) is torch.Tensor:
             self.ori_adj = utils.to_scipy(adj).tolil()
             self.modified_adj = utils.to_scipy(adj).tolil()
@@ -224,6 +288,9 @@ class Nettack(BaseAttack):
         # return self.modified_adj, self.modified_features
 
     def get_attacker_nodes(self, n=5, add_additional_nodes = False):
+        """Determine the influencer nodes to attack node i based on
+        the weights W and the attributes X.
+        """
         assert n < self.nnodes-1, "number of influencers cannot be >= number of nodes in the graph!"
         neighbors = self.ori_adj[self.target_node].nonzero()[1]
         assert self.target_node not in neighbors
@@ -272,8 +339,7 @@ class Nettack(BaseAttack):
         return (logits - 1000*label_u_onehot).argmax()
 
     def feature_scores(self):
-        """
-        Compute feature scores for all possible feature changes.
+        """Compute feature scores for all possible feature changes.
         """
 
         if self.cooc_constraint is None:
@@ -344,8 +410,7 @@ class Nettack(BaseAttack):
         return self.adj_norm.dot(self.adj_norm)[self.target_node].T.dot(self.W[:, label].reshape(1, -1))
 
     def reset(self):
-        """
-        Reset Nettack
+        """Reset Nettack
         """
         self.modified_adj = self.ori_adj.copy()
         self.modified_features = self.ori_features.copy()

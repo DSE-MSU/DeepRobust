@@ -1,8 +1,9 @@
-'''
+"""
     FGA: Fast Gradient Attack on Network Embedding (https://arxiv.org/pdf/1809.02797.pdf)
-    Similary to FGA, FGSM is mentioned in Zugner's paper,
+    Another very similar algorithm to mention here is FGSM (for graph data).
+    It is mentioned in Zugner's paper,
     Adversarial Attacks on Neural Networks for Graph Data, KDD'19
-'''
+"""
 
 import torch
 from deeprobust.graph.targeted_attack import BaseAttack
@@ -13,6 +14,24 @@ import torch.nn.functional as F
 import scipy.sparse as sp
 
 class FGA(BaseAttack):
+    """FGA/FGSM.
+
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu'):
 
@@ -28,12 +47,29 @@ class FGA(BaseAttack):
             self.feature_changes = Parameter(torch.FloatTensor(feature_shape))
             self.feature_changes.data.fill_(0)
 
-    def attack(self, features, adj, labels, idx_train, target_node, n_perturbations):
-        # adj: sp.csr_matrix
+    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, **kwargs):
+        """Generate perturbations on the input graph.
 
-        modified_adj = adj.todense()
-        features = features.todense()
-        modified_adj, features, labels = utils.to_tensor(modified_adj, features, labels, device=self.device)
+        Parameters
+        ----------
+        ori_features : scipy.sparse.csr_matrix
+            Original (unperturbed) adjacency matrix
+        ori_adj : scipy.sparse.csr_matrix
+            Original (unperturbed) node feature matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        target_node : int
+            target node index to be attacked
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        """
+
+        modified_adj = ori_adj.todense()
+        modified_features = ori_features.todense()
+        modified_adj, modified_features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
 
         self.surrogate.eval()
         print('number of pertubations: %s' % n_perturbations)
@@ -43,7 +79,7 @@ class FGA(BaseAttack):
             adj_norm = utils.normalize_adj_tensor(modified_adj)
 
             if self.attack_structure:
-                output = self.surrogate(features, adj_norm)
+                output = self.surrogate(modified_features, adj_norm)
                 loss = F.nll_loss(output[idx_train], labels[idx_train])
                 # acc_train = accuracy(output[idx_train], labels[idx_train])
                 grad = torch.autograd.grad(loss, self.adj_changes, retain_graph=True)[0]
@@ -62,5 +98,5 @@ class FGA(BaseAttack):
         modified_adj = sp.csr_matrix(modified_adj)
         self.check_adj(modified_adj)
         self.modified_adj = modified_adj
-        # self.features = features
+        # self.modified_features = modified_features
 

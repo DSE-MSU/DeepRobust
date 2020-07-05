@@ -137,7 +137,7 @@ class GCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True, patience=500):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True, patience=500, **kwargs):
         """Train the gcn model, when idx_val is not None, pick the best model according to the validation loss.
 
         Parameters
@@ -145,7 +145,7 @@ class GCN(nn.Module):
         features :
             node features
         adj :
-            the adjacency matrix. The format could torch.tensor or scipy matrix
+            the adjacency matrix. The format could be torch.tensor or scipy matrix
         labels :
             node labels
         idx_train :

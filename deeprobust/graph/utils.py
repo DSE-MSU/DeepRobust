@@ -6,16 +6,62 @@ import torch.sparse as ts
 import torch.nn.functional as F
 
 def encode_onehot(labels):
+    """Convert label to onehot format.
+
+    Parameters
+    ----------
+    labels : numpy.array
+        node labels
+
+    Returns
+    -------
+    numpy.array
+        onehot labels
+    """
     eye = np.eye(labels.max() + 1)
     onehot_mx = eye[labels]
     return onehot_mx
 
 def tensor2onehot(labels):
+    """Convert label tensor to label onehot tensor.
+
+    Parameters
+    ----------
+    labels : torch.LongTensor
+        node labels
+
+    Returns
+    -------
+    torch.LongTensor
+        onehot labels tensor
+
+    """
+
     eye = torch.eye(labels.max() + 1)
     onehot_mx = eye[labels]
     return onehot_mx.to(labels.device)
 
 def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=False, sparse=False, device='cpu'):
+    """Convert adj, features, labels from array or sparse matrix to
+    torch Tensor, and normalize the input data.
+
+    Parameters
+    ----------
+    adj : scipy.sparse.csr_matrix
+        the adjacency matrix.
+    features : scipy.sparse.csr_matrix
+        node features
+    labels : numpy.array
+        node labels
+    preprocess_adj : bool
+        whether to normalize the adjacency matrix
+    preprocess_feature :
+        whether to normalize the feature matrix
+    sparse : bool
+       whether to return sparse tensor
+    device : str
+        'cpu' or 'cuda'
+    """
 
     if preprocess_adj:
         adj_norm = normalize_adj(adj)
@@ -33,6 +79,20 @@ def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=F
     return adj.to(device), features.to(device), labels.to(device)
 
 def to_tensor(adj, features, labels=None, device='cpu'):
+    """Convert adj, features, labels from array or sparse matrix to
+    torch Tensor.
+
+    Parameters
+    ----------
+    adj : scipy.sparse.csr_matrix
+        the adjacency matrix.
+    features : scipy.sparse.csr_matrix
+        node features
+    labels : numpy.array
+        node labels
+    device : str
+        'cpu' or 'cuda'
+    """
     if sp.issparse(adj):
         adj = sparse_mx_to_torch_sparse_tensor(adj)
     else:
@@ -49,7 +109,18 @@ def to_tensor(adj, features, labels=None, device='cpu'):
         return adj.to(device), features.to(device), labels.to(device)
 
 def normalize_feature(mx):
-    """Row-normalize sparse matrix"""
+    """Row-normalize sparse matrix
+
+    Parameters
+    ----------
+    mx : scipy.sparse.csr_matrix
+        matrix to be normalized
+
+    Returns
+    -------
+    scipy.sprase.lil_matrix
+        normalized matrix
+    """
     if type(mx) is not sp.lil.lil_matrix:
         mx = mx.tolil()
     rowsum = np.array(mx.sum(1))
@@ -60,7 +131,21 @@ def normalize_feature(mx):
     return mx
 
 def normalize_adj(mx):
-    """Row-normalize sparse matrix"""
+    """Normalize sparse adjacency matrix,
+    A' = (D + I)^-1/2 * ( A + I ) * (D + I)^-1/2
+    Row-normalize sparse matrix
+
+    Parameters
+    ----------
+    mx : scipy.sparse.csr_matrix
+        matrix to be normalized
+
+    Returns
+    -------
+    scipy.sprase.lil_matrix
+        normalized matrix
+    """
+
     if type(mx) is not sp.lil.lil_matrix:
         mx = mx.tolil()
     if mx[0, 0] == 0 :
@@ -74,6 +159,8 @@ def normalize_adj(mx):
     return mx
 
 def normalize_sparse_tensor(adj, fill_value=1):
+    """Normalize sparse tensor. Need to import torch_scatter
+    """
     edge_index = adj._indices()
     edge_weight = adj._values()
     num_nodes= adj.size(0)
@@ -108,7 +195,8 @@ def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
     return edge_index, edge_weight
 
 def normalize_adj_tensor(adj, sparse=False):
-
+    """Normalize adjacency tensor matrix.
+    """
     device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
         # TODO if this is too slow, uncomment the following code,
@@ -141,6 +229,8 @@ def degree_normalize_adj(mx):
     return mx
 
 def degree_normalize_sparse_tensor(adj, fill_value=1):
+    """degree_normalize_sparse_tensor.
+    """
     edge_index = adj._indices()
     edge_weight = adj._values()
     num_nodes= adj.size(0)
@@ -159,6 +249,8 @@ def degree_normalize_sparse_tensor(adj, fill_value=1):
     return torch.sparse.FloatTensor(edge_index, values, shape)
 
 def degree_normalize_adj_tensor(adj, sparse=True):
+    """degree_normalize_adj_tensor.
+    """
 
     device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
@@ -176,6 +268,20 @@ def degree_normalize_adj_tensor(adj, sparse=True):
     return mx
 
 def accuracy(output, labels):
+    """Return accuracy of output compared to labels.
+
+    Parameters
+    ----------
+    output : torch.Tensor
+        output from model
+    labels : torch.Tensor or numpy.array
+        node labels
+
+    Returns
+    -------
+    float
+        accuracy
+    """
     if labels is int:
         labels = [labels]
     if type(labels) is not torch.Tensor:
@@ -199,7 +305,22 @@ def loss_acc(output, labels, targets, avg_loss=True):
     # return loss, correct / len(labels)
 
 def classification_margin(output, true_label):
-    '''probs_true_label - probs_best_second_class'''
+    """Calculate classification margin for outputs.
+    `probs_true_label - probs_best_second_class`
+
+    Parameters
+    ----------
+    output: torch.Tensor
+        output vector (1 dimension)
+    true_label: int
+        true label for this node
+
+    Returns
+    -------
+    list
+        classification margin for this node
+    """
+
     probs = torch.exp(output)
     probs_true_label = probs[true_label].clone()
     probs[true_label] = 0
@@ -216,7 +337,7 @@ def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     return torch.sparse.FloatTensor(indices, values, shape)
 
 def to_scipy(tensor):
-    """Convert a dense/sparse tensor to """
+    """Convert a dense/sparse tensor to scipy matrix"""
     if is_sparse_tensor(tensor):
         values = tensor._values()
         indices = tensor._indices()
@@ -227,6 +348,18 @@ def to_scipy(tensor):
         return sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()), shape=tensor.shape)
 
 def is_sparse_tensor(tensor):
+    """Check if a tensor is sparse tensor.
+
+    Parameters
+    ----------
+    tensor : torch.Tensor
+        given tensor
+
+    Returns
+    -------
+    bool
+        whether a tensor is sparse tensor
+    """
     # if hasattr(tensor, 'nnz'):
     if tensor.layout == torch.sparse_coo:
         return True
@@ -234,10 +367,32 @@ def is_sparse_tensor(tensor):
         return False
 
 def get_train_val_test(nnodes, val_size=0.1, test_size=0.8, stratify=None, seed=None):
-    '''
-        This setting follows nettack/mettack, where we split the nodes
-        into 10% training, 10% validation and 80% testing data
-    '''
+    """This setting follows nettack/mettack, where we split the nodes
+    into 10% training, 10% validation and 80% testing data
+
+    Parameters
+    ----------
+    nnodes : int
+        number of nodes in total
+    val_size : float
+        size of validation set
+    test_size : float
+        size of test set
+    stratify :
+        data is expected to split in a stratified fashion. So stratify should be labels.
+    seed : int or None
+        random seed
+
+    Returns
+    -------
+    idx_train :
+        node training indices
+    idx_val :
+        node validation indices
+    idx_test :
+        node test indices
+    """
+
     assert stratify is not None, 'stratify cannot be None!'
 
     if seed is not None:
@@ -263,10 +418,27 @@ def get_train_val_test(nnodes, val_size=0.1, test_size=0.8, stratify=None, seed=
     return idx_train, idx_val, idx_test
 
 def get_train_test(nnodes, test_size=0.8, stratify=None, seed=None):
-    '''
-        This function returns training and test set without validation.
-        It can be used for settings of different label rates.
-    '''
+    """This function returns training and test set without validation.
+    It can be used for settings of different label rates.
+
+    Parameters
+    ----------
+    nnodes : int
+        number of nodes in total
+    test_size : float
+        size of test set
+    stratify :
+        data is expected to split in a stratified fashion. So stratify should be labels.
+    seed : int or None
+        random seed
+
+    Returns
+    -------
+    idx_train :
+        node training indices
+    idx_test :
+        node test indices
+    """
     assert stratify is not None, 'stratify cannot be None!'
 
     if seed is not None:
@@ -282,10 +454,27 @@ def get_train_test(nnodes, test_size=0.8, stratify=None, seed=None):
     return idx_train, idx_test
 
 def get_train_val_test_gcn(labels, seed=None):
-    '''
-        This setting follows gcn, where we randomly sample 20 instances for each class
-        as training data, 500 instances as validation data, 1000 instances as test data.
-    '''
+    """This setting follows gcn, where we randomly sample 20 instances for each class
+    as training data, 500 instances as validation data, 1000 instances as test data.
+    Note here we are not using fixed splits. When random seed changes, the splits
+    will also change.
+
+    Parameters
+    ----------
+    labels : numpy.array
+        node labels
+    seed : int or None
+        random seed
+
+    Returns
+    -------
+    idx_train :
+        node training indices
+    idx_val :
+        node validation indices
+    idx_test :
+        node test indices
+    """
     if seed is not None:
         np.random.seed(seed)
 
@@ -305,6 +494,8 @@ def get_train_val_test_gcn(labels, seed=None):
     return idx_train, idx_val, idx_test
 
 def get_train_test_labelrate(labels, label_rate):
+    """Get train test according to given label rate.
+    """
     nclass = labels.max() + 1
     train_size = int(round(len(labels) * label_rate / nclass))
     print("=== train_size = %s ===" % train_size)
@@ -312,10 +503,8 @@ def get_train_test_labelrate(labels, label_rate):
     return idx_train, idx_test
 
 def get_splits_each_class(labels, train_size):
-    '''
-        This setting follows gcn, where we randomly sample n instances for class,
-        where n=train_size
-    '''
+    """We randomly sample n instances for class, where n = train_size.
+    """
     idx = np.arange(len(labels))
     nclass = labels.max() + 1
     idx_train = []
@@ -412,7 +601,6 @@ def degree_sequence_log_likelihood(degree_sequence, d_min):
     return ll, alpha, n, sum_log_degrees
 
 def updated_log_likelihood_for_edge_changes(node_pairs, adjacency_matrix, d_min):
-
     # For each node pair find out whether there is an edge or not in the input adjacency matrix.
 
     edge_entries_before = adjacency_matrix[node_pairs.T]
@@ -491,7 +679,7 @@ def ravel_multiple_indices(ixs, shape, reverse=False):
     return ixs[:, 0] * shape[1] + ixs[:, 1]
 
 def visualize(your_var):
-    '''visualize computation graph'''
+    """visualize computation graph"""
     from graphviz import Digraph
     import torch
     from torch.autograd import Variable

@@ -1,11 +1,11 @@
-'''
+"""
     Adversarial Attacks on Neural Networks for Graph Data. ICML 2018.
         https://arxiv.org/abs/1806.02371
     Author's Implementation
        https://github.com/Hanjun-Dai/graph_adversarial_attack
     This part of code is adopted from the author's implementation but modified
     to be integrated into the repository.
-'''
+"""
 
 import os
 import sys
@@ -75,6 +75,7 @@ class GraphNormTool(object):
 
 
 class ModifiedGraph(object):
+
     def __init__(self, directed_edges = None, weights = None):
         self.edge_set = set()  #(first, second)
         self.node_set = set(range(StaticGraph.get_gsize()[0]))
@@ -129,6 +130,9 @@ class ModifiedGraph(object):
         # return self.node_set - connected
 
 class NodeAttackEnv(object):
+    """Node attack environment. It executes an action and then change the
+    environment status (modify the graph).
+    """
 
     def __init__(self, features, labels, all_targets, list_action_space, classifier, num_mod=1, reward_type='binary'):
 
@@ -153,9 +157,8 @@ class NodeAttackEnv(object):
         self.list_acc_of_all = []
 
     def step(self, actions):
-        '''
-            run actions
-        '''
+        """run actions and get rewards
+        """
         if self.first_nodes is None: # pick the first node of edge
             assert self.n_steps % 2 == 0
             self.first_nodes = actions[:]

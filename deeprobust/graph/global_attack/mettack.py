@@ -6,7 +6,6 @@
 """
 
 import math
-
 import numpy as np
 import scipy.sparse as sp
 import torch
@@ -14,12 +13,33 @@ from torch import optim
 from torch.nn import functional as F
 from torch.nn.parameter import Parameter
 from tqdm import tqdm
-
 from deeprobust.graph import utils
 from deeprobust.graph.global_attack import BaseAttack
 
 
 class BaseMeta(BaseAttack):
+    """Abstract base class for meta attack. Adversarial Attacks on Graph Neural
+    Networks via Meta Learning, ICLR 2019,
+    https://openreview.net/pdf?id=Bylnx209YX
+
+    Parameters
+    ----------
+    model :
+        model to attack. Default `None`.
+    nnodes : int
+        number of nodes in the input graph
+    lambda_ : float
+        lambda_ is used to weight the two objectives in Eq. (10) in the paper.
+    feature_shape : tuple
+        shape of the input node features
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model=None, nnodes=None, feature_shape=None, lambda_=0.5, attack_structure=True, attack_features=False, device='cpu'):
 
@@ -116,6 +136,33 @@ class BaseMeta(BaseAttack):
 
 
 class Metattack(BaseMeta):
+    """Meta attack. Adversarial Attacks on Graph Neural Networks
+    via Meta Learning, ICLR 2019.
+
+    Examples
+    --------
+
+    >>> import numpy as np
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> from deeprobust.graph.global_attack import Metattack
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> idx_unlabeled = np.union1d(idx_val, idx_test)
+    >>> # Setup Surrogate model
+    >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
+    >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = Metattack(surrogate, nnodes=adj.shape[0], feature_shape=features.shape,
+            attack_structure=True, attack_features=False, device='cpu', lambda_=0).to('cpu')
+    >>> # Attack
+    >>> model.attack(features, adj, labels, idx_train, idx_unlabeled, n_perturbations=10, ll_constraint=False)
+    >>> modified_adj = model.modified_adj
+
+    """
 
     def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.1, momentum=0.9):
 
@@ -249,14 +296,41 @@ class Metattack(BaseMeta):
             feature_grad = torch.autograd.grad(attack_loss, self.feature_changes, retain_graph=True)[0]
         return adj_grad, feature_grad
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, n_perturbations, ll_constraint=True, ll_cutoff=0.004):
+        """Generate n_perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_unlabeled:
+            unlabeled nodes indices
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        ll_constraint: bool
+            whether to exert the likelihood ratio test constraint
+        ll_cutoff : float
+            The critical value for the likelihood ratio test of the power law distributions.
+            See the Chi square distribution with one degree of freedom. Default value 0.004
+            corresponds to a p-value of roughly 0.95. It would be ignored if `ll_constraint`
+            is False.
+
+        """
+
         self.sparse_features = sp.issparse(ori_features)
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
         labels_self_training = self.self_training_label(labels, idx_train)
         modified_adj = ori_adj
         modified_features = ori_features
 
-        for i in tqdm(range(perturbations), desc="Perturbing graph"):
+        for i in tqdm(range(n_perturbations), desc="Perturbing graph"):
             if self.attack_structure:
                 modified_adj = self.get_modified_adj(ori_adj)
 
@@ -292,6 +366,33 @@ class Metattack(BaseMeta):
 
 
 class MetaApprox(BaseMeta):
+    """Approximated version of Meta Attack. Adversarial Attacks on
+    Graph Neural Networks via Meta Learning, ICLR 2019.
+
+    Examples
+    --------
+
+    >>> import numpy as np
+    >>> from deeprobust.graph.data import Dataset
+    >>> from deeprobust.graph.defense import GCN
+    >>> from deeprobust.graph.global_attack import MetaApprox
+    >>> data = Dataset(root='/tmp/', name='cora')
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> idx_unlabeled = np.union1d(idx_val, idx_test)
+    >>> # Setup Surrogate model
+    >>> surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
+                    nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
+    >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    >>> # Setup Attack Model
+    >>> target_node = 0
+    >>> model = MetaApprox(surrogate, nnodes=adj.shape[0], feature_shape=features.shape,
+            attack_structure=True, attack_features=False, device='cpu', lambda_=0).to('cpu')
+    >>> # Attack
+    >>> model.attack(features, adj, labels, idx_train, idx_unlabeled, n_perturbations=10, ll_constraint=False)
+    >>> modified_adj = model.modified_adj
+
+    """
 
     def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.01):
 
@@ -378,14 +479,40 @@ class MetaApprox(BaseMeta):
         print('GCN acc on unlabled data: {}'.format(utils.accuracy(output[idx_unlabeled], labels[idx_unlabeled]).item()))
 
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, perturbations, ll_constraint=True, ll_cutoff=0.004):
+    def attack(self, ori_features, ori_adj, labels, idx_train, idx_unlabeled, n_perturbations, ll_constraint=True, ll_cutoff=0.004):
+        """Generate n_perturbations on the input graph.
+
+        Parameters
+        ----------
+        ori_features :
+            Original (unperturbed) node feature matrix
+        ori_adj :
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_unlabeled:
+            unlabeled nodes indices
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
+        ll_constraint: bool
+            whether to exert the likelihood ratio test constraint
+        ll_cutoff : float
+            The critical value for the likelihood ratio test of the power law distributions.
+            See the Chi square distribution with one degree of freedom. Default value 0.004
+            corresponds to a p-value of roughly 0.95. It would be ignored if `ll_constraint`
+            is False.
+
+        """
         ori_adj, ori_features, labels = utils.to_tensor(ori_adj, ori_features, labels, device=self.device)
         labels_self_training = self.self_training_label(labels, idx_train)
         self.sparse_features = sp.issparse(ori_features)
         modified_adj = ori_adj
         modified_features = ori_features
 
-        for i in tqdm(range(perturbations), desc="Perturbing graph"):
+        for i in tqdm(range(n_perturbations), desc="Perturbing graph"):
             self._initialize()
 
             if self.attack_structure:

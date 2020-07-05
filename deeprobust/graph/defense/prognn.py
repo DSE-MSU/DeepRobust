@@ -9,11 +9,20 @@ from deeprobust.graph.utils import accuracy
 from deeprobust.graph.defense.pgd import PGD, prox_operators
 
 class ProGNN:
+    """ ProGNN (Properties Graph Neural Network). See more details in Graph Structure Learning for Robust Graph Neural Networks, KDD 2020, https://arxiv.org/abs/2005.10203.
+
+    Parameters
+    ----------
+    model:
+        model: The backbone GNN model in ProGNN
+    args:
+        model configs
+    device: str
+        'cpu' or 'cuda'.
+
+    """
 
     def __init__(self, model, args, device):
-        '''
-        model: The backbone GNN model in ProGNN
-        '''
         self.device = device
         self.args = args
         self.best_val_acc = 0
@@ -23,7 +32,22 @@ class ProGNN:
         self.estimator = None
         self.model = model.to(device)
 
-    def fit(self, features, adj, labels, idx_train, idx_val):
+    def fit(self, features, adj, labels, idx_train, idx_val, **kwargs):
+        """Train Pro-GNN.
+
+        Parameters
+        ----------
+        features :
+            node features
+        adj :
+            the adjacency matrix. The format could be torch.tensor or scipy matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        idx_val :
+            node validation indices
+        """
         args = self.args
         self.optimizer = optim.Adam(self.model.parameters(),
                                lr=args.lr, weight_decay=args.weight_decay)
@@ -205,6 +229,8 @@ class ProGNN:
 
 
     def test(self, features, labels, idx_test):
+        """Evaluate the performance of ProGNN on test set
+        """
         print("\t=== testing ===")
         self.model.eval()
         adj = self.best_graph
@@ -237,6 +263,9 @@ class ProGNN:
 
 
 class EstimateAdj(nn.Module):
+    """Provide a pytorch parameter matrix for estimated
+    adjacency matrix and corresponding operations.
+    """
 
     def __init__(self, adj, symmetric=False):
         super(EstimateAdj, self).__init__()

@@ -7,8 +7,28 @@ import numpy as np
 import scipy.sparse as sp
 
 class PGD(Optimizer):
+    """Proximal gradient descent.
 
-    def __init__(self, params, proxs, lr=required, momentum=0, dampening=0, weight_decay=0, alphas=[]):
+    Parameters
+    ----------
+    params : iterable
+        iterable of parameters to optimize or dicts defining parameter groups
+    proxs : iterable
+        iterable of proximal operators
+    alpha : iterable
+        iterable of coefficients for proximal gradient descent
+    lr : float
+        learning rate
+    momentum : float
+        momentum factor (default: 0)
+    weight_decay : float
+        weight decay (L2 penalty) (default: 0)
+    dampening : float
+        dampening for momentum (default: 0)
+
+    """
+
+    def __init__(self, params, proxs, alphas, lr=required, momentum=0, dampening=0, weight_decay=0):
         defaults = dict(lr=lr, momentum=0, dampening=0,
                         weight_decay=0, nesterov=False)
 
@@ -45,15 +65,21 @@ class PGD(Optimizer):
 
 
 class ProxOperators():
+    """Proximal Operators.
+    """
 
     def __init__(self):
         self.nuclear_norm = None
 
     def prox_l1(self, data, alpha):
+        """Proximal operator for l1 norm.
+        """
         data = torch.mul(torch.sign(data), torch.clamp(torch.abs(data)-alpha, min=0))
         return data
 
     def prox_nuclear(self, data, alpha):
+        """Proximal operator for nuclear norm (trace norm).
+        """
         U, S, V = np.linalg.svd(data.cpu())
         U, S, V = torch.FloatTensor(U).cuda(), torch.FloatTensor(S).cuda(), torch.FloatTensor(V).cuda()
         self.nuclear_norm = S.sum()

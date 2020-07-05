@@ -9,24 +9,52 @@ from copy import deepcopy
 import scipy.sparse as sp
 
 class RND(BaseAttack):
+    """As is described in Adversarial Attacks on Neural Networks for Graph Data (KDD'19),
+    'Rnd is an attack in which we modify the structure of the graph. Given our target node v,
+    in each step we randomly sample nodes u whose lable is different from v and
+    add the edge u,v to the graph structure
+
+    Parameters
+    ----------
+    model :
+        model to attack
+    nnodes : int
+        number of nodes in the input graph
+    attack_structure : bool
+        whether to attack graph structure
+    attack_features : bool
+        whether to attack node features
+    device: str
+        'cpu' or 'cuda'
+
+    """
 
     def __init__(self, model=None, nnodes=None, attack_structure=True, attack_features=False, device='cpu'):
-        """
-        As is described in Adversarial Attacks on Neural Networks for Graph Data (KDD'19),
-        'Rnd is an attack in which we modify the structure of the graph. Given our target node v,
-        in each step we randomly sample nodes u whose lable is different from v and
-        add the edge u,v to the graph structure
-
-        """
         super(RND, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
         assert not self.attack_features, 'RND does NOT support attacking features except adding nodes'
 
-    def attack(self, adj, labels, idx_train, target_node, n_perturbations):
+    def attack(self, adj, labels, idx_train, target_node, n_perturbations, **kwargs):
         """
         Randomly sample nodes u whose lable is different from v and
         add the edge u,v to the graph structure. This baseline only
         has access to true class labels in training set
+
+        Parameters
+        ----------
+        ori_features : scipy.sparse.csr_matrix
+            Original (unperturbed) node feature matrix
+        ori_adj : scipy.sparse.csr_matrix
+            Original (unperturbed) adjacency matrix
+        labels :
+            node labels
+        idx_train :
+            node training indices
+        target_node : int
+            target node index to be attacked
+        n_perturbations : int
+            Number of perturbations on the input graph. Perturbations could
+            be edge removals/additions or feature removals/additions.
         """
         # adj: sp.csr_matrix
 

@@ -7,6 +7,20 @@ from deeprobust.graph.utils import preprocess
 import os
 
 def load_victim_model(data, model_name='gcn', device='cpu', file_path=None):
+    """load_victim_model.
+
+    Parameters
+    ----------
+    data : deeprobust.graph.Dataset
+        graph data
+    model_name : str
+        victime model name, e.g. ('gcn', 'deepwalk') But currently it only
+        supports gcn as victim model.
+    device : str
+        'cpu' or 'cuda'
+    file_path :
+        if given, the victim model will be loaded from this path.
+    """
 
     assert model_name == 'gcn', 'Currently only support gcn as victim model...'
     if file_path is None:
@@ -30,8 +44,9 @@ def load_victim_model(data, model_name='gcn', device='cpu', file_path=None):
     return victim_model
 
 def train_victim_model(data, model_name='gcn', file_path=None, device='cpu'):
-    ''' Train the victim model (target classifer) and save the model
-        Note that the attacker can only do black query to this model '''
+    """Train the victim model (target classifer) and save the model
+    Note that the attacker can only do black query to this model.
+    """
 
     if file_path is None:
         file_path = 'results/saved_models/%s/' % data.name

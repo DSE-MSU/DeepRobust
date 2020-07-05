@@ -1,7 +1,7 @@
-'''
+"""
     This part of code is adopted from https://github.com/Hanjun-Dai/graph_adversarial_attack
     but modified to be integrated into the repository.
-'''
+"""
 
 import os
 import sys
@@ -23,12 +23,14 @@ from deeprobust.graph import utils
 from deeprobust.graph.rl.env import *
 
 class NodeInjectionEnv(NodeAttackEnv):
+    """Node attack environment. It executes an action and then change the
+    environment status (modify the graph).
+    """
 
     def __init__(self, features, labels, idx_train, idx_val, dict_of_lists, classifier, ratio=0.01, parallel_size=1, reward_type='binary'):
-        '''
-            number of injected nodes: ratio*|V|
-            number of modifications: ratio*|V|*|D_avg|
-        '''
+        """number of injected nodes: ratio*|V|
+           number of modifications: ratio*|V|*|D_avg|
+        """
         # super(NodeInjectionEnv, self).__init__(features, labels, all_targets, list_action_space, classifier, num_mod, reward_type)
         super(NodeInjectionEnv, self).__init__(features, labels, idx_val, dict_of_lists, classifier)
         self.parallel_size = parallel_size

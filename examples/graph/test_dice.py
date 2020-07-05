@@ -35,7 +35,8 @@ model = DICE()
 
 n_perturbations = int(args.ptb_rate * (adj.sum()//2))
 
-modified_adj = model.attack(adj, labels, n_perturbations)
+model.attack(adj, labels, n_perturbations)
+modified_adj = model.modified_adj
 
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True, device=device)
 
