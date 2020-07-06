@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from deeprobust.graph.utils import accuracy
 from deeprobust.graph.defense.pgd import PGD, prox_operators
+import warnings
 
 class ProGNN:
     """ ProGNN (Properties Graph Neural Network). See more details in Graph Structure Learning for Robust Graph Neural Networks, KDD 2020, https://arxiv.org/abs/2005.10203.
@@ -19,6 +20,10 @@ class ProGNN:
         model configs
     device: str
         'cpu' or 'cuda'.
+
+    Examples
+    --------
+    See details in https://github.com/ChandlerBang/Pro-GNN.
 
     """
 
@@ -49,9 +54,10 @@ class ProGNN:
             node validation indices
         """
         args = self.args
+
         self.optimizer = optim.Adam(self.model.parameters(),
                                lr=args.lr, weight_decay=args.weight_decay)
-        estimator = EstimateAdj(adj, symmetric=args.symmetric).to(self.device)
+        estimator = EstimateAdj(adj, symmetric=args.symmetric, device=self.device).to(self.device)
         self.estimator = estimator
         self.optimizer_adj = optim.SGD(estimator.parameters(),
                               momentum=0.9, lr=args.lr_adj)
@@ -59,14 +65,16 @@ class ProGNN:
         self.optimizer_l1 = PGD(estimator.parameters(),
                         proxs=[prox_operators.prox_l1],
                         lr=args.lr_adj, alphas=[args.alpha])
-        if args.dataset == "pubmed":
-            self.optimizer_nuclear = PGD(estimator.parameters(),
-                      proxs=[prox_operators.prox_nuclear_cuda],
-                      lr=args.lr_adj, alphas=[args.beta])
-        else:
-            self.optimizer_nuclear = PGD(estimator.parameters(),
-                      proxs=[prox_operators.prox_nuclear],
-                      lr=args.lr_adj, alphas=[args.beta])
+
+        warnings.warn("If you find the nuclear proximal operator runs too slow on Pubmed, you can  uncomment line 67-71 and use prox_nuclear_cuda to perform the proximal on gpu.")
+        # if args.dataset == "pubmed":
+        #     self.optimizer_nuclear = PGD(estimator.parameters(),
+        #               proxs=[prox_operators.prox_nuclear_cuda],
+        #               lr=args.lr_adj, alphas=[args.beta])
+        # else:
+        self.optimizer_nuclear = PGD(estimator.parameters(),
+                  proxs=[prox_operators.prox_nuclear],
+                  lr=args.lr_adj, alphas=[args.beta])
 
         # Train model
         t_total = time.time()
@@ -267,12 +275,13 @@ class EstimateAdj(nn.Module):
     adjacency matrix and corresponding operations.
     """
 
-    def __init__(self, adj, symmetric=False):
+    def __init__(self, adj, symmetric=False, device='cpu'):
         super(EstimateAdj, self).__init__()
         n = len(adj)
         self.estimated_adj = nn.Parameter(torch.FloatTensor(n, n))
         self._init_estimation(adj)
         self.symmetric = symmetric
+        self.device = device
 
     def _init_estimation(self, adj):
         with torch.no_grad():
@@ -289,7 +298,7 @@ class EstimateAdj(nn.Module):
         else:
             adj = self.estimated_adj
 
-        normalized_adj = self._normalize(adj + torch.eye(adj.shape[0]).cuda())
+        normalized_adj = self._normalize(adj + torch.eye(adj.shape[0]).to(self.device))
         return normalized_adj
 
     def _normalize(self, mx):
