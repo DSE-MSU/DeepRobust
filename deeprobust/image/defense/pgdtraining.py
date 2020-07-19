@@ -1,10 +1,3 @@
-"""
-Reference:
-Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017).
-Towards Deep Learning Models Resistant to Adversarial Attacks.
-stat, 1050, 9.
-"""
-
 import os
 import torch
 import torch.nn as nn
@@ -20,6 +13,17 @@ from deeprobust.image.defense.base_defense import BaseDefense
 
 
 class PGDtraining(BaseDefense):
+    """
+    PGD adversarial training.
+    
+    References
+    ----------
+    Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017).
+    Towards Deep Learning Models Resistant to Adversarial Attacks.
+    stat, 1050, 9.
+    """
+
+
     def __init__(self, model, device):
         if not torch.cuda.is_available():
             print('CUDA not availiable, using cpu...')
@@ -30,8 +34,16 @@ class PGDtraining(BaseDefense):
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
-        """
-        Pgd defense process:
+        """Call this function to generate robust model.
+
+        Parameters
+        ----------
+        train_loader :
+            training data loader
+        test_loader :
+            testing data loader
+        kwargs :
+            kwargs
         """
         self.parse_params(**kwargs)
 
@@ -66,21 +78,28 @@ class PGDtraining(BaseDefense):
                      perturb_step_size = 0.01,
                      lr = 5e-4,
                      momentum = 0.1):
-        """
-        :param epoch : int
-            - pgd training epoch
-        :param save_dir : str
-            - directory path to save model
-        :param epsilon : float
-            - perturb constraint of pgd adversary example used to train defense model
-        :param num_steps : int
-            - the perturb
-        :param perturb_step_size : float
-            - step_size
-        :param lr : float
-            - learning rate for adversary training process
-        :param momentum : float
-            - parameter for optimizer in training process
+        """Parameter parser.
+
+        Parameters
+        ----------
+        epoch : int
+            epoch
+        save_dir : str
+            model dir
+        save_name : str
+            model name
+        save_model : bool
+            Whether to save model
+        epsilon : float
+            attack constraint
+        num_steps : int
+            PGD attack iteration time
+        perturb_step_size : float
+            perturb step size
+        lr : float
+            learning rate for adversary training process
+        momentum : float
+            momentum for optimizor
         """
         self.epoch = epoch
         self.save_model = True
@@ -94,8 +113,20 @@ class PGDtraining(BaseDefense):
 
     def train(self, device, train_loader, optimizer, epoch):
         """
-        Training process.
+        training process. 
+
+        Parameters
+        ----------
+        device :
+            device
+        train_loader :
+            training data loader
+        optimizer :
+            optimizer
+        epoch :
+            training epoch
         """
+ 
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
@@ -125,8 +156,16 @@ class PGDtraining(BaseDefense):
 
     def test(self, model, device, test_loader):
         """
-        Testing process.
+        testing process.
 
+        Parameters
+        ----------
+        model :
+            model
+        device :
+            device
+        test_loader :
+            testing dataloder
         """
         model.eval()
 

@@ -7,11 +7,27 @@ import torch.nn.functional as F #233
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class LBFGS(BaseAttack):
+    """
+    LBFGS is the first adversarial generating algorithm.    
+    """
+
 
     def __init__(self, model, label, device = 'cuda' ):
         super(LBFGS, self).__init__(model, device)
 
     def generate(self, image, label, target_label, **kwargs):
+        """
+        Call this function to generate adversarial examples.
+
+        Parameters
+        ----------
+        image :
+            original image
+        label :
+            target label
+        kwargs :
+            user defined paremeters
+        """
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         self.target_label = target_label
@@ -39,6 +55,22 @@ class LBFGS(BaseAttack):
                      epsilon = 1e-5,  #step of finding initial c
                      maxiter = 20,    #maximum of iteration in lbfgs optimization
                      ):
+        """
+        Parse the user defined parameters.
+
+        Parameters
+        ----------
+        clip_max :
+            maximum pixel value
+        clip_min :
+            minimum pixel value
+        class_num :
+            total number of class
+        epsilon :
+            step length for binary seach
+        maxiter :
+            maximum number of iterations
+        """
         self.epsilon = epsilon
         self.maxiter = maxiter
         self.class_num = class_num

@@ -1,7 +1,3 @@
-
-'''
-Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
-'''
 import numpy as np
 import torch
 import torch.nn as nn
@@ -12,6 +8,13 @@ import torch.nn.functional as F
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class FASTPGD(BaseAttack):
+    '''
+    This module is the adversarial example gererated algorithm in YOPO.
+    
+    References
+    ----------
+    Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+    '''
     # ImageNet pre-trained mean and std
     # _mean = torch.tensor(np.array([0.485, 0.456, 0.406]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis])
     # _std = torch.tensor(np.array([0.229, 0.224, 0.225]).astype(np.float32)[np.newaxis, :, np.newaxis, np.newaxis])

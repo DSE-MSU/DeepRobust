@@ -10,7 +10,7 @@ from deeprobust.image.attack.base_attack import BaseAttack
 
 class FGSM(BaseAttack):
     """
-    This is the defination of FGSM attack.
+    FGSM attack is an one step gradient descent method.
 
     """
     def __init__(self, model, device = 'cuda'):
@@ -18,15 +18,17 @@ class FGSM(BaseAttack):
         super(FGSM, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
-        """
-        Call this function to generate FGSM adversarial example.
-        
-        :param image: attack images
-        :param label: targer labels
-        :param **kwargs: user-defined parameters
-        
-        :type image: [N*C*H*W],floatTensor
-        :type label: int
+        """"
+        Call this function to generate FGSM adversarial examples.
+
+        Parameters
+        ----------
+        image :
+            original image
+        label :
+            target label
+        kwargs :
+            user defined paremeters
         """
         
         label = label.type(torch.FloatTensor)
@@ -50,7 +52,7 @@ class FGSM(BaseAttack):
                      clip_max = None,
                      clip_min = None):
         """
-        Parse the parameters in **kwargs. 
+        Parse the user defined parameters. 
         
         """
         self.epsilon = epsilon

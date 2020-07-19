@@ -2,6 +2,10 @@ from abc import ABCMeta
 import torch
 
 class BaseAttack(object):
+    """
+    Attack basic class.
+    """
+
 
     __metaclass__ = ABCMeta
 
@@ -11,7 +15,16 @@ class BaseAttack(object):
 
     def generate(self, image, label, **kwargs):
         """
-        :param x: input takes form (N, C, H, W)
+        Call this function to generate attack examples.
+
+        Parameters
+        ----------
+        image :
+            original image
+        label :
+            original label
+        kwargs :
+            user defined parameters
         """
         return input
 
@@ -19,6 +32,16 @@ class BaseAttack(object):
         return True
 
     def check_type_device(self, image, label):
+        """
+        Check device, match variable type to device type.
+
+        Parameters
+        ----------
+        image :
+            image
+        label :
+            label
+        """
 
         ################## devices
         if self.device == 'cuda':

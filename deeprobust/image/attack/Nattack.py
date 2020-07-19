@@ -8,6 +8,10 @@ from deeprobust.image.utils import onehot_like, arctanh
 
 
 class NATTACK(BaseAttack):
+    """
+    Nattack is a black box attack algorithm. 
+    """
+
 
     def __init__(self, model, device = 'cuda'):
         super(NATTACK, self).__init__(model, device)
@@ -15,6 +19,15 @@ class NATTACK(BaseAttack):
         self.device = device
 
     def generate(self, **kwargs):
+        """
+        Call this function to generate adversarial examples.
+
+        Parameters
+        ----------
+        kwargs :
+            user defined paremeters
+        """
+ 
         assert self.parse_params(**kwargs)
         return attack(self.model, self.dataloader, self.classnum,
                            self.clip_max, self.clip_min, self.epsilon,
@@ -34,6 +47,31 @@ class NATTACK(BaseAttack):
                      learning_rate = 2,
                      sigma = 0.1
                      ):
+        """parse_params.
+
+        Parameters
+        ----------
+        dataloader :
+            dataloader
+        classnum :
+            classnum
+        target_or_not :
+            target_or_not
+        clip_max :
+            maximum pixel value
+        clip_min :
+            minimum pixel value
+        epsilon :
+            perturb constraint    
+        population :
+            population
+        max_iterations :
+            maximum number of iterations
+        learning_rate :
+            learning rate
+        sigma :
+            sigma
+        """
 
         self.dataloader = dataloader
         self.classnum = classnum

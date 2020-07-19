@@ -1,10 +1,3 @@
-"""
-Reference:
-Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
-Intriguing properties of neural networks.
-In 2nd International Conference on Learning Representations, ICLR 2014.
-"""
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -20,6 +13,15 @@ from deeprobust.image.attack.fgsm import FGSM
 from deeprobust.image.defense.base_defense import BaseDefense
 
 class FGSMtraining(BaseDefense):
+   """
+   FGSM adversarial training.
+   
+   References
+   ----------
+   Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
+   Intriguing properties of neural networks.
+   """
+
     def __init__(self, model, device):
         if not torch.cuda.is_available():
             print('CUDA not availiable, using cpu...')
@@ -30,8 +32,16 @@ class FGSMtraining(BaseDefense):
         self.model = model
 
     def generate(self, train_loader, test_loader, **kwargs):
-        """
-        FGSM defense process:
+        """FGSM adversarial training process.
+
+        Parameters
+        ----------
+        train_loader :
+            training data loader
+        test_loader :
+            testing data loader
+        kwargs :
+            kwargs
         """
         self.parse_params(**kwargs)
         torch.manual_seed(100)
@@ -63,9 +73,25 @@ class FGSMtraining(BaseDefense):
                      epoch_num = 50,
                      lr_train = 0.005,
                      momentum = 0.1):
-        # """
-        # Set parameters for pgd training.
-        # """
+        """parse_params.
+
+        Parameters
+        ----------
+        save_dir :
+            dir 
+        save_model :
+            Whether to save model
+        save_name :
+            model name
+        epsilon :
+            attack perturbation constraint
+        epoch_num :
+            number of training epoch
+        lr_train :
+            training learning rate
+        momentum :
+            momentum for optimizor
+        """
         self.save_model = True
         self.save_dir = save_dir
         self.save_name = save_name
@@ -76,7 +102,18 @@ class FGSMtraining(BaseDefense):
 
     def train(self, device, train_loader, optimizer, epoch):
         """
-        Training process.
+        training process. 
+
+        Parameters
+        ----------
+        device :
+            device
+        train_loader :
+            training data loader
+        optimizer :
+            optimizer
+        epoch :
+            training epoch
         """
         self.model.train()
         correct = 0
@@ -108,8 +145,16 @@ class FGSMtraining(BaseDefense):
 
     def test(self, model, device, test_loader):
         """
-        Testing process.
+        testing process.
 
+        Parameters
+        ----------
+        model :
+            model
+        device :
+            device
+        test_loader :
+            testing dataloder
         """
         model.eval()
 

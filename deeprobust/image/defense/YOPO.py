@@ -1,5 +1,6 @@
 """
-Reference:
+References
+----------
 Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019).
 You only propagate once: Painless adversarial training using maximal principle.
 arXiv preprint arXiv:1905.00877.
@@ -78,9 +79,6 @@ def torch_accuracy(output, target, topk=(1,)) -> List[torch.Tensor]:
     return ans
 
 class AvgMeter(object):
-    '''
-    Computing mean
-    '''
     name = 'No name'
 
     def __init__(self, name='No name'):
@@ -123,9 +121,6 @@ def load_checkpoint(file_name, net = None, optimizer = None, lr_scheduler = None
 
 
 def make_symlink(source, link_name):
-    '''
-    Note: overwriting enabled!
-    '''
     if os.path.exists(link_name):
         #print("Link name already exist! Removing '{}' and overwriting".format(link_name))
         os.remove(link_name)
@@ -187,11 +182,6 @@ class FastGradientLayerOneTrainer(object):
         self.param_optimizer = param_optimizer
 
     def step(self, inp, p, eta):
-        '''
-        Perform Iterative Sign Gradient on eta
-
-        ret: inp + eta
-        '''
         p = p.detach()
 
         for i in range(self.inner_steps):
@@ -357,7 +347,6 @@ def train_one_epoch(net, batch_generator, optimizer, eps,
                     criterion, LayerOneTrainner, K,
                     DEVICE=torch.device('cuda:0'),descrip_str='Training'):
     '''
-
     :param attack_freq:  Frequencies of training with adversarial examples. -1 indicates natural training
     :param AttackMethod: the attack method, None represents natural training
     :return:  None    #(clean_acc, adv_acc)

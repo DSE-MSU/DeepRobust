@@ -1,5 +1,5 @@
 """
-This file include the following optimizer:
+This module include the following optimizer:
 1. differential_evolution: 
 The differential evolution global optimization algorithm
 https://github.com/scipy/scipy/blob/70e61dee181de23fdd8d893eaa9491100e2218d7/scipy/optimize/_differentialevolution.py
@@ -174,27 +174,7 @@ def differential_evolution(func, bounds, args=(), strategy='best1bin',
     values. This has the effect of widening the search radius, but slowing
     convergence.
     .. versionadded:: 0.15.0
-    Examples
-    --------
-    Let us consider the problem of minimizing the Rosenbrock function. This
-    function is implemented in `rosen` in `scipy.optimize`.
-    >>> from scipy.optimize import rosen, differential_evolution
-    >>> bounds = [(0,2), (0, 2), (0, 2), (0, 2), (0, 2)]
-    >>> result = differential_evolution(rosen, bounds)
-    >>> result.x, result.fun
-    (array([1., 1., 1., 1., 1.]), 1.9216496320061384e-19)
-    Next find the minimum of the Ackley function
-    (http://en.wikipedia.org/wiki/Test_functions_for_optimization).
-    >>> from scipy.optimize import differential_evolution
-    >>> import numpy as np
-    >>> def ackley(x):
-    ...     arg1 = -0.2 * np.sqrt(0.5 * (x[0] ** 2 + x[1] ** 2))
-    ...     arg2 = 0.5 * (np.cos(2. * np.pi * x[0]) + np.cos(2. * np.pi * x[1]))
-    ...     return -20. * np.exp(arg1) - np.exp(arg2) + 20. + np.e
-    >>> bounds = [(-5, 5), (-5, 5)]
-    >>> result = differential_evolution(ackley, bounds)
-    >>> result.x, result.fun
-    (array([ 0.,  0.]), 4.4408920985006262e-16)
+    
     References
     ----------
     .. [1] Storn, R and Price, K, Differential Evolution - a Simple and

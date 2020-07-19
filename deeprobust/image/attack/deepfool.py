@@ -7,12 +7,33 @@ from torch.autograd.gradcheck import zero_gradients
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class DeepFool(BaseAttack):
+    """DeepFool attack.
+    """
+
     def __init__(self, model, device = 'cuda' ):
         super(DeepFool, self).__init__(model, device)
         self.model = model
         self.device = device
 
     def generate(self, image, label, **kwargs):
+        """
+        Call this function to generate adversarial examples.
+
+        Parameters
+        ----------
+        image : 1*H*W*3
+            original image
+        label : int
+            target label
+        kwargs :
+            user defined paremeters
+       
+        Returns
+        -------
+        adv_img :
+            adversarial examples
+        """
+ 
 
         #check type device
         assert self.check_type_device(image, label)
@@ -41,27 +62,24 @@ class DeepFool(BaseAttack):
                      num_classes = 10,
                      overshoot = 0.02,
                      max_iteration = 50):
+        """
+        Parse the user defined parameters
+
+        Parameters
+        ----------
+        num_classes : int
+            limits the number of classes to test against. (default = 10)
+        overshoot : float
+            used as a termination criterion to prevent vanishing updates (default = 0.02).
+        max_iteration : int
+            maximum number of iteration for deepfool (default = 50)
+        """
         self.num_classes = num_classes
         self.overshoot = overshoot
         self.max_iteration = max_iteration
         return True
 
 def deepfool(model, image, num_classes, overshoot, max_iter, device):
-    """
-       :param image: 1*H*W*3
-            -a batch of Image
-       :param model:
-            -network (input: images, output: values of activation **BEFORE** softmax).
-       :param num_classes: int
-            -num_classes (limits the number of classes to test against, by default = 10)
-       :param overshoot: float
-            -used as a termination criterion to prevent vanishing updates (default = 0.02).
-       :param max_iter: int
-            -maximum number of iterations for deepfool (default = 50)
-       :return: tensor
-            -minimal perturbation that fools the classifier, number of iterations that it required, new estimated_label and perturbed image
-    """
-
     f_image = model.forward(image).data.cpu().numpy().flatten()
     output = (np.array(f_image)).flatten().argsort()[::-1]
 

@@ -1,13 +1,3 @@
-"""
-Carlini-Wagner attack 
-Carlini, N., & Wagner, D. (2017, May). 
-Towards evaluating the robustness of neural networks. 
-In 2017 ieee symposium on security and privacy (sp) (pp. 39-57). IEEE.
-https://arxiv.org/pdf/1608.04644.pdf
-
-This reimplementation is based on https://github.com/kkew3/pytorch-cw2
-"""
-
 import torch
 from torch import optim
 import torch.nn as nn
@@ -19,6 +9,16 @@ from deeprobust.image.utils import onehot_like
 from deeprobust.image.optimizer import AdamOptimizer
 
 class CarliniWagner(BaseAttack):
+    """
+    C&W attack is an effective method to calcuate high-confidence adversarial examples.
+    
+    References
+    ----------
+    .. [1] Carlini, N., & Wagner, D. (2017, May). Towards evaluating the robustness of neural networks. https://arxiv.org/pdf/1608.04644.pdf
+    
+    This reimplementation is based on https://github.com/kkew3/pytorch-cw2
+    """
+
 
     def __init__(self, model, device = 'cuda'):
         super(CarliniWagner, self).__init__(model, device)
@@ -26,6 +26,19 @@ class CarliniWagner(BaseAttack):
         self.device = device
     
     def generate(self, image, label, target_label, **kwargs):
+        """
+        Call this function to generate adversarial examples.
+
+        Parameters
+        ----------
+        image :
+            original image
+        label :
+            target label
+        kwargs :
+            user defined paremeters
+        """
+ 
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         self.target = target_label
@@ -52,6 +65,30 @@ class CarliniWagner(BaseAttack):
                      binary_search_steps = 5, 
                      learning_rate = 0.00001, 
                      abort_early = True):
+        """
+        Parse the user defined parameters.
+
+        Parameters
+        ----------
+        classnum :
+            number of class
+        confidence :
+            confidence
+        clip_max :
+            maximum pixel value
+        clip_min :
+            minimum pixel value
+        max_iterations :
+            maximum number of iterations
+        initial_const :
+            initialization of binary search
+        binary_search_steps :
+            step number of binary search
+        learning_rate :
+            learning rate
+        abort_early :
+            Set abort_early = True to allow early stop
+        """
 
         self.classnum = classnum
         self.confidence = confidence
@@ -65,19 +102,6 @@ class CarliniWagner(BaseAttack):
         return True
 
     def cw(self, model, image, label, target, confidence, clip_max, clip_min, max_iterations, initial_const, binary_search_steps, learning_rate):
-        """
-        parameters:
-        :param model: the target model to attack
-        :param image: original image to perturb
-        :param label: true label of original image
-        :param target: target class
-        :param confidence: 
-        :param clip_max, clip_min:
-        :param max_iterations: the maximum number of iteration in cw attack procedure
-        :param initial_const:
-        :param binary_search_steps:
-        :param learning_rate:
-        """
         #change the input image
         img_tanh = self.to_attack_space(image.cpu())
         img_ori ,_ = self.to_model_space(img_tanh)

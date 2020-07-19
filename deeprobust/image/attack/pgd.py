@@ -8,12 +8,28 @@ import torch.nn.functional as F
 from deeprobust.image.attack.base_attack import BaseAttack
 
 class PGD(BaseAttack):
+    """
+    This is the multi-step version of FGSM attack.
+    """
+
 
     def __init__(self, model, device = 'cuda'):
 
         super(PGD, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
+        """
+        Call this function to generate PGD adversarial examples.
+
+        Parameters
+        ----------
+        image :
+            original image
+        label :
+            target label
+        kwargs :
+            user defined paremeters
+        """
 
         ## check and parse parameters for attack
         label = label.type(torch.FloatTensor)
@@ -40,6 +56,23 @@ class PGD(BaseAttack):
                      clip_min = 0.0,
                      print_process = False
                      ):
+        """parse_params.
+
+        Parameters
+        ----------
+        epsilon :
+            perturbation constraint
+        num_steps :
+            iteration step
+        step_size :
+            step size
+        clip_max :
+            maximum pixel value
+        clip_min :
+            minimum pixel value
+        print_process :
+            whether to print out the log during optimization process, True or False print out the log during optimization process, True or False. 
+        """
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
@@ -57,7 +90,6 @@ def pgd_attack(model,
                   num_steps,
                   step_size,
                   print_process):
-
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
     #TODO: find a other way

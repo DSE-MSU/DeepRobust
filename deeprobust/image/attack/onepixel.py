@@ -1,12 +1,7 @@
 """
 This is a re-implementation of One pixel attack.
 
-Reference:
-Akhtar, N., & Mian, A. (2018).
-Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey.
-IEEE Access, 6, 14410-14430.
 
-Reference code: https://github.com/DebangLi/one-pixel-attack-pytorch
 """
 
 import numpy as np
@@ -28,15 +23,38 @@ from deeprobust.image.attack.base_attack import BaseAttack
 from deeprobust.image.utils import progress_bar
 
 class Onepixel(BaseAttack):
+	"""
+	Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.
+	
+	References
+	----------
+	Akhtar, N., & Mian, A. (2018).Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. IEEE Access, 6, 14410-14430.
+
+	Reference code: https://github.com/DebangLi/one-pixel-attack-pytorch
+	"""
+
 
 	def __init__(self, model, device = 'cuda'):
 
-		super(Onepixel, self).__init__(model, device)
+	    super(Onepixel, self).__init__(model, device)
 
 	def generate(self, image, label, **kwargs):
+		"""
+		Call this function to generate FGSM adversarial examples.
+
+		Parameters
+		----------
+		image :1*3*W*H
+		    original image
+		label :
+		    target label
+		kwargs :
+		    user defined paremeters
+		"""
+ 
 		label = label.type(torch.FloatTensor)
 
-        ## check and parse parameters for attack
+		## check and parse parameters for attack
 		assert self.check_type_device(image, label)
 		assert self.parse_params(**kwargs)
 
@@ -52,13 +70,33 @@ class Onepixel(BaseAttack):
 		return self.adv_pred
 	
 	def parse_params(self,
-					pixels = 1,
-					maxiter = 100,
-					popsize = 400,
-					samples = 100,
-					targeted_attack = False,
-					print_log = True,
-					target = 0):
+			 pixels = 1,
+			 maxiter = 100,
+			 popsize = 400,
+			 samples = 100,
+			 targeted_attack = False,
+			 print_log = True,
+			 target = 0):
+		"""
+		Parse the user-defined params.
+
+		Parameters
+		----------
+		pixels :
+		    maximum number of manipulated pixels 
+		maxiter :
+		    maximum number of iteration
+		popsize :
+		    population size
+		samples :
+		    samples
+		targeted_attack :
+		    targeted attack or not
+		print_log :
+		    Set print_log = True to print out details in the searching algorithm
+		target :
+		    target label (if targeted attack is set to be True)
+		"""
 		self.pixels = pixels
 		self.maxiter = maxiter
 		self.popsize = popsize
@@ -70,7 +108,6 @@ class Onepixel(BaseAttack):
 
 
 	def one_pixel(self, img, label, targeted_attack = False, target = 0, pixels = 1, maxiter = 75, popsize = 400, print_log = False):
-		# img: 1*3*W*H tensor
 		# label: a number
 
 		target_calss = target if targeted_attack else label

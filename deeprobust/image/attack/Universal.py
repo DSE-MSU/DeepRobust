@@ -47,13 +47,7 @@ def proj_lp(v, xi, p):
     return v
 
 def get_fooling_rate(data_list,v,model, device):
-    """
-    :data_list: list of image paths
-    :v: Noise Matrix
-    :model: target network
-    :device: PyTorch device
-    """
-    tf = data_input_init(0)[2]
+    f = data_input_init(0)[2]
     num_images = len(data_list)
 
     fooled=0.0
@@ -78,20 +72,36 @@ def get_fooling_rate(data_list,v,model, device):
 
 def universal_adversarial_perturbation(dataloader, model, device, xi=10, delta=0.2, max_iter_uni = 10, p=np.inf,
                                        num_classes=10, overshoot=0.02, max_iter_df=10,t_p = 0.2):
-    """
-    :data_list: list of image paths
-    :model: target network
-    :device: PyTorch Device
-    :param xi: controls the l_p magnitude of the perturbation
-    :param delta: controls the desired fooling rate (default = 80% fooling rate)
-    :param max_iter_uni: optional other termination criterion (maximum number of iteration, default = 10*num_images)
-    :param p: norm to be used (default = np.inf)
-    :param num_classes: For deepfool: num_classes (limits the number of classes to test against, by default = 10)
-    :param overshoot: For deepfool: used as a termination criterion to prevent vanishing updates (default = 0.02).
-    :param max_iter_df:For deepfool: maximum number of iterations for deepfool (default = 10)
-    :param t_p:For deepfool: truth perentage, for how many flipped labels in a batch.(default = 0.2)
+    """universal_adversarial_perturbation.
 
-    :return: the universal perturbation matrix.
+    Parameters
+    ----------
+    dataloader :
+        dataloader
+    model :
+        target model
+    device :
+        device
+    xi :
+        controls the l_p magnitude of the perturbation
+    delta :
+        controls the desired fooling rate (default = 80% fooling rate)
+    max_iter_uni :
+        maximum number of iteration (default = 10*num_images) 
+    p :
+        norm to be used (default = np.inf)
+    num_classes :
+        num_classes (default = 10)
+    overshoot :
+        to prevent vanishing updates (default = 0.02)
+    max_iter_df :
+        maximum number of iterations for deepfool (default = 10)
+    t_p :
+        truth percentage, for how many flipped labels in a batch. (default = 0.2)
+
+    Returns
+    -------
+        the universal perturbation matrix.
     """
     time_start = time.time()
     mean, std,tf = data_input_init(xi)
