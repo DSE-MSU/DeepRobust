@@ -2,6 +2,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
+import urllib.request
 
 import os
 
@@ -26,10 +27,12 @@ def create_test_dataset(batch_size = 128, root = '../data'):
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
     return testloader
 
-def download_model():
-
-
-    return model
+def download_model(url, file):
+    print('Dowloading from {} to {}'.format(url, file))
+    try:
+        urllib.request.urlretrieve(url, file)
+    except:
+        raise Exception("Download failed! Make sure you have stable Internet connection and enter the right name")
 
 def save_checkpoint(now_epoch, net, optimizer, lr_scheduler, file_name):
     checkpoint = {'epoch': now_epoch,

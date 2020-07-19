@@ -80,9 +80,13 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     ```python
     from deeprobust.image.attack.pgd import PGD
     from deeprobust.image.config import attack_params
+    from deeprobust.image.utils import download_model
     import torch
     import deeprobust.image.netmodels.resnet as resnet
     
+    URL = "https://github.com/I-am-Bot/deeprobust_model/raw/master/CIFAR10_ResNet18_epoch_50.pt"
+    download_model(URL, "./trained_models/CIFAR10_ResNet18_epoch_50.pt")
+
     model = resnet.ResNet18().to('cuda')
     model.load_state_dict(torch.load("./trained_models/CIFAR10_ResNet18_epoch_50.pt"))
     model.eval()
