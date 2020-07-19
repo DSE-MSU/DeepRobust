@@ -15,7 +15,7 @@ from deeprobust.image.defense.base_defense import BaseDefense
 class PGDtraining(BaseDefense):
     """
     PGD adversarial training.
-    
+
     References
     ----------
     Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017).
@@ -69,7 +69,7 @@ class PGDtraining(BaseDefense):
         return self.model
 
     def parse_params(self,
-                     epoch = 100,
+                     epoch_num = 100,
                      save_dir = "./defense_models",
                      save_name = "mnist_pgdtraining_0.3.pt",
                      save_model = True,
@@ -82,7 +82,7 @@ class PGDtraining(BaseDefense):
 
         Parameters
         ----------
-        epoch : int
+        epoch_num : int
             epoch
         save_dir : str
             model dir
@@ -101,7 +101,7 @@ class PGDtraining(BaseDefense):
         momentum : float
             momentum for optimizor
         """
-        self.epoch = epoch
+        self.epoch = epoch_num
         self.save_model = True
         self.save_dir = save_dir
         self.save_name = save_name
@@ -113,7 +113,7 @@ class PGDtraining(BaseDefense):
 
     def train(self, device, train_loader, optimizer, epoch):
         """
-        training process. 
+        training process.
 
         Parameters
         ----------
@@ -126,7 +126,7 @@ class PGDtraining(BaseDefense):
         epoch :
             training epoch
         """
- 
+
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
