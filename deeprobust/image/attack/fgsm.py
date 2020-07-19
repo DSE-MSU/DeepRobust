@@ -30,7 +30,7 @@ class FGSM(BaseAttack):
         kwargs :
             user defined paremeters
         """
-        
+
         label = label.type(torch.FloatTensor)
 
         ## check and parse parameters for attack
@@ -52,8 +52,27 @@ class FGSM(BaseAttack):
                      clip_max = None,
                      clip_min = None):
         """
-        Parse the user defined parameters. 
-        
+        Parse the user defined parameters.
+        :param model: victim model
+        :param image: original attack images
+        :param label: target labels
+        :param epsilon: perturbation constraint
+        :param order: constraint type
+        :param clip_min: minimum pixel value
+        :param clip_max: maximum pixel value
+        :param device: device type, cpu or gpu
+
+        :type image: [N*C*H*W],floatTensor
+        :type label: int
+        :type epsilon: float
+        :type order: int
+        :type clip_min: float
+        :type clip_max: float
+        :type device: string('cpu' or 'cuda')
+
+        :return: perturbed images
+        :rtype: [N*C*H*W], floatTensor
+
         """
         self.epsilon = epsilon
         self.order = order
@@ -63,29 +82,6 @@ class FGSM(BaseAttack):
 
 
 def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
-    """
-    This function is the fgsm attack algorithm.
-
-    :param model: victim model
-    :param image: original attack images 
-    :param label: target labels
-    :param epsilon: perturbation constraint
-    :param order: constraint type
-    :param clip_min: minimum pixel value
-    :param clip_max: maximum pixel value
-    :param device: device type, cpu or gpu
-
-    :type image: [N*C*H*W],floatTensor
-    :type label: int
-    :type epsilon: float
-    :type order: int
-    :type clip_min: float
-    :type clip_max: float
-    :type device: string('cpu' or 'cuda')
-
-    :return: perturbed images
-    :rtype: [N*C*H*W], floatTensor
-    """
     imageArray = image.cpu().detach().numpy()
     X_fgsm = torch.tensor(imageArray).to(device)
 
@@ -102,7 +98,7 @@ def fgm(model, image, label, epsilon, order, clip_min, clip_max, device):
     #print(X_fgsm)
     #print(X_fgsm.grad)
     if order == np.inf:
-        d = epsilon * X_fgsm.grad.data.sign()    
+        d = epsilon * X_fgsm.grad.data.sign()
     elif order == 2:
         gradient = X_fgsm.grad
         d = torch.zeros(gradient.shape, device = device)

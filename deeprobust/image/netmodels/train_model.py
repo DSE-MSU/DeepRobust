@@ -9,7 +9,7 @@ from torchvision import datasets, transforms
 import numpy as np
 from PIL import Image
 
-def train(model, data, device, maxepoch, data_path, seed = 100):
+def train(model, data, device, maxepoch, data_path = './', seed = 100):
 
     torch.manual_seed(seed)
 
@@ -41,7 +41,7 @@ def train(model, data, device, maxepoch, data_path, seed = 100):
         MODEL.train(train_net, device, train_loader, optimizer, epoch)
         MODEL.test(train_net, device, test_loader)
 
-        if (save_model and epoch %10 == 0):
+        if (save_model and (epoch %10 == 0 or epoch == maxepoch)):
             if os.path.isdir('./trained_models/'):
                 print('Save model.')
                 torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
