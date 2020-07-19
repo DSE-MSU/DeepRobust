@@ -13,16 +13,16 @@ from deeprobust.image.attack.fgsm import FGSM
 from deeprobust.image.defense.base_defense import BaseDefense
 
 class FGSMtraining(BaseDefense):
-   """
-   FGSM adversarial training.
+    """
+    FGSM adversarial training.
 
-   References
-   ----------
-   Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
-   Intriguing properties of neural networks.
-   """
+    References
+    ----------
+    Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
+    Intriguing properties of neural networks.
+    """
 
-   def __init__(self, model, device):
+    def __init__(self, model, device):
         if not torch.cuda.is_available():
             print('CUDA not availiable, using cpu...')
             self.device = 'cpu'
