@@ -41,7 +41,7 @@ Package API
    
    source/deeprobust.graph.global_attack
    source/deeprobust.graph.targeted_attack
-   soure/deeprobust.graph.defense
+   source/deeprobust.graph.defense
    source/deeprobust.graph.data
 
 Indices and tables
