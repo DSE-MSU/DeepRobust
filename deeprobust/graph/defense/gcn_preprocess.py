@@ -9,7 +9,7 @@ from deeprobust.graph.defense import GCN
 from tqdm import tqdm
 import scipy.sparse as sp
 import numpy as np
-
+from numba import njit
 
 class GCNSVD(GCN):
     """GCNSVD is a 2 Layer Graph Convolutional Network with Truncated SVD as
@@ -226,16 +226,34 @@ class GCNJaccard(GCN):
         self.labels = labels
         super().fit(features, modified_adj, labels, idx_train, idx_val, train_iters=train_iters, initialize=initialize, verbose=verbose)
 
-    def drop_dissimilar_edges(self, features, adj):
-        """Drop dissimilar edges.
+    def drop_dissimilar_edges(self, features, adj, metric='similarity'):
+        """Drop dissimilar edges.(Faster version using numba)
+        """
+        if not sp.issparse(adj):
+            adj = sp.csr_matrix(adj)
+
+        adj_triu = sp.triu(adj, format='csr')
+
+        if metric == 'distance':
+            removed_cnt = dropedge_dis(adj_triu.data, adj_triu.indptr, adj_triu.indices, features, threshold=self.threshold)
+        else:
+            if self.binary_feature:
+                removed_cnt = dropedge_jaccard(adj_triu.data, adj_triu.indptr, adj_triu.indices, features, threshold=self.threshold)
+            else:
+                removed_cnt = dropedge_cosine(adj_triu.data, adj_triu.indptr, adj_triu.indices, features, threshold=self.threshold)
+        print('removed %s edges in the original graph' % removed_cnt)
+        modified_adj = adj_triu + adj_triu.transpose()
+        return modified_adj
+
+    def _drop_dissimilar_edges(self, features, adj):
+        """Drop dissimilar edges. (Slower version)
         """
         if not sp.issparse(adj):
             adj = sp.csr_matrix(adj)
         modified_adj = adj.copy().tolil()
-        # preprocessing based on features
 
+        # preprocessing based on features
         print('=== GCN-Jaccrad ===')
-        # isSparse = sp.issparse(features)
         edges = np.array(modified_adj.nonzero()).T
         removed_cnt = 0
         for edge in tqdm(edges):
@@ -244,7 +262,6 @@ class GCNJaccard(GCN):
             if n1 > n2:
                 continue
 
-            # if isSparse:
             if self.binary_feature:
                 J = self._jaccard_similarity(features[n1], features[n2])
 
@@ -271,3 +288,76 @@ class GCNJaccard(GCN):
         inner_product = (features[n1] * features[n2]).sum()
         C = inner_product / np.sqrt(np.square(a).sum() + np.square(b).sum())
         return C
+
+def dropedge_jaccard(A, iA, jA, features, threshold):
+    removed_cnt = 0
+    for row in range(len(iA)-1):
+        for i in range(iA[row], iA[row+1]):
+            # print(row, jA[i], A[i])
+            n1 = row
+            n2 = jA[i]
+            a, b = features[n1], features[n2]
+            intersection = a.multiply(b).count_nonzero()
+            J = intersection * 1.0 / (a.count_nonzero() + b.count_nonzero() - intersection)
+
+            if J < threshold:
+                A[i] = 0
+                # A[n2, n1] = 0
+                removed_cnt += 1
+    return removed_cnt
+
+
+@njit
+def dropedge_cosine(A, iA, jA, features, threshold):
+    removed_cnt = 0
+    for row in range(len(iA)-1):
+        for i in range(iA[row], iA[row+1]):
+            # print(row, jA[i], A[i])
+            n1 = row
+            n2 = jA[i]
+            a, b = features[n1], features[n2]
+            inner_product = (a * b).sum()
+            C = inner_product / (np.sqrt(np.square(a).sum() + np.square(b).sum())+ 1e-6)
+
+            if C < threshold:
+                A[i] = 0
+                # A[n2, n1] = 0
+                removed_cnt += 1
+    return removed_cnt
+
+@njit
+def dropedge_dis(A, iA, jA, features, threshold):
+    removed_cnt = 0
+    for row in range(len(iA)-1):
+        for i in range(iA[row], iA[row+1]):
+            # print(row, jA[i], A[i])
+            n1 = row
+            n2 = jA[i]
+            C = np.linalg.norm(features[n1] - features[n2])
+            if C > threshold:
+                A[i] = 0
+                # A[n2, n1] = 0
+                removed_cnt += 1
+
+    return removed_cnt
+
+@njit
+def dropedge_both(A, iA, jA, features, threshold1=2.5, threshold2=0.01):
+    removed_cnt = 0
+    for row in range(len(iA)-1):
+        for i in range(iA[row], iA[row+1]):
+            # print(row, jA[i], A[i])
+            n1 = row
+            n2 = jA[i]
+            C1 = np.linalg.norm(features[n1] - features[n2])
+
+            a, b = features[n1], features[n2]
+            inner_product = (a * b).sum()
+            C2 = inner_product / (np.sqrt(np.square(a).sum() + np.square(b).sum())+ 1e-6)
+            if C1 > threshold1 or threshold2 < 0:
+                A[i] = 0
+                # A[n2, n1] = 0
+                removed_cnt += 1
+
+    return removed_cnt
+
