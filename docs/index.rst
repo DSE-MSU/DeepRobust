@@ -11,6 +11,19 @@ Starting to build your robust models with DeepRobust!
    :width: 313px
    :height: 119px
 
+DeepRobust is a pytorch adversarial learning library, which contains most popular attack and defense algorithms in image domain and graph domain.
+
+Installation
+============
+#. Activate virtual environment
+#. Install package
+   .. code-block:: none
+    $ git clone https://github.com/DSE-MSU/DeepRobust.git
+    $ cd DeepRobust
+    $ python setup.py install
+
+Package API
+===========
 .. toctree::
    :maxdepth: 1
    :caption: Image Package
