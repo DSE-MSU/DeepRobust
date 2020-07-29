@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.image.defense.YOPO &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.image.defense.YOPO</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.image.defense.YOPO</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is an implementation of adversarial training variant: YOPO.</span>
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Zhang, D., Zhang, T., Lu, Y., Zhu, Z., &amp; Dong, B. (2019).</span>
+<span class="sd">You only propagate once: Painless adversarial training using maximal principle.</span>
+<span class="sd">arXiv preprint arXiv:1905.00877.</span>
+
+<span class="sd">.. [2] Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">deeprobust.image.netmodels</span> <span class="kn">import</span> <span class="n">YOPOCNN</span>
+<span class="kn">from</span> <span class="nn">deeprobust.image</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">deeprobust.image.attack</span> <span class="kn">import</span> <span class="n">YOPOpgd</span>
+<span class="kn">from</span> <span class="nn">deeprobust.image.defense.base_defense</span> <span class="kn">import</span> <span class="n">BaseDefense</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">tensorboardX</span> <span class="kn">import</span> <span class="n">SummaryWriter</span>
+
+<span class="k">class</span> <span class="nc">PieceWiseConstantLrSchedulerMaker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milestones</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">gamma</span><span class="p">:</span><span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span> <span class="o">=</span> <span class="n">milestones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">MultiStepLR</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">milestones</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">IPGDAttackMethodMaker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">nb_iters</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_iters</span> <span class="o">=</span> <span class="n">nb_iters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">std</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">YOPOpgd</span><span class="o">.</span><span class="n">FASTPGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_iters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
+
+<div class="viewcode-block" id="torch_accuracy"><a class="viewcode-back" href="../../../../source/deeprobust.image.defense.html#deeprobust.image.defense.YOPO.torch_accuracy">[docs]</a><span class="k">def</span> <span class="nf">torch_accuracy</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,))</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    param output, target: should be torch Variable</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># assert isinstance(output, torch.cuda.Tensor), &#39;expecting Torch Tensor&#39;</span>
+    <span class="c1"># assert isinstance(target, torch.Tensor), &#39;expecting Torch Tensor&#39;</span>
+    <span class="c1"># print(type(output))</span>
+
+    <span class="n">topn</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">topk</span><span class="p">)</span>
+    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">pred</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">topn</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+
+    <span class="n">is_correct</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">pred</span><span class="p">))</span>
+
+    <span class="n">ans</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">topk</span><span class="p">:</span>
+        <span class="n">is_correct_i</span> <span class="o">=</span> <span class="n">is_correct</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ans</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_correct_i</span><span class="o">.</span><span class="n">mul_</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">ans</span></div>
+
+<span class="k">class</span> <span class="nc">AvgMeter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;No name&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;No name&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean_var</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">mean_var</span><span class="p">):</span>
+            <span class="n">mean_var</span> <span class="o">=</span> <span class="mf">1e6</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Avgmeter getting Nan!&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="n">mean_var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">+=</span> <span class="n">count</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sum</span> <span class="o">+=</span> <span class="n">mean_var</span> <span class="o">*</span> <span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sum</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span>
+
+<span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">net</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&gt; loading checkpoint &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+        <span class="n">check_point</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">net</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading network state dict&#39;</span><span class="p">)</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">check_point</span><span class="p">[</span><span class="s1">&#39;state_dict&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading optimizer state dict&#39;</span><span class="p">)</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">check_point</span><span class="p">[</span><span class="s1">&#39;optimizer_state_dict&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">lr_scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading lr_scheduler state dict&#39;</span><span class="p">)</span>
+            <span class="n">lr_scheduler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">check_point</span><span class="p">[</span><span class="s1">&#39;lr_scheduler_state_dict&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">check_point</span><span class="p">[</span><span class="s1">&#39;epoch&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&gt; no checkpoint found at &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">make_symlink</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">link_name</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">link_name</span><span class="p">):</span>
+        <span class="c1">#print(&quot;Link name already exist! Removing &#39;{}&#39; and overwriting&quot;.format(link_name))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">link_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">link_name</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Source path not exists&#39;</span><span class="p">)</span>
+    <span class="c1">#print(&#39;SymLink Wrong!&#39;)</span>
+
+<span class="k">def</span> <span class="nf">add_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Adding </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Hamiltonian"><a class="viewcode-back" href="../../../../source/deeprobust.image.defense.html#deeprobust.image.defense.YOPO.Hamiltonian">[docs]</a><span class="k">class</span> <span class="nc">Hamiltonian</span><span class="p">(</span><span class="n">_Loss</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">reg_cof</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Hamiltonian</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="n">layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_cof</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">H</span></div>
+
+<div class="viewcode-block" id="CrossEntropyWithWeightPenlty"><a class="viewcode-back" href="../../../../source/deeprobust.image.defense.html#deeprobust.image.defense.YOPO.CrossEntropyWithWeightPenlty">[docs]</a><span class="k">class</span> <span class="nc">CrossEntropyWithWeightPenlty</span><span class="p">(</span><span class="n">_Loss</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">reg_cof</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CrossEntropyWithWeightPenlty</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_cof</span> <span class="o">=</span> <span class="n">reg_cof</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="n">cross_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="n">weight_loss</span> <span class="o">=</span> <span class="n">cal_l2_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="p">)</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">cross_loss</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_cof</span> <span class="o">*</span> <span class="n">weight_loss</span>
+        <span class="k">return</span> <span class="n">loss</span></div>
+
+<span class="k">def</span> <span class="nf">cal_l2_norm</span><span class="p">(</span><span class="n">layer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+ <span class="n">loss</span> <span class="o">=</span> <span class="mf">0.</span>
+ <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+     <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span>
+         <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">param</span><span class="p">,)</span> <span class="o">**</span> <span class="mi">2</span>
+
+ <span class="k">return</span> <span class="n">loss</span>
+
+<span class="k">class</span> <span class="nc">FastGradientLayerOneTrainer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Hamiltonian_func</span><span class="p">,</span> <span class="n">param_optimizer</span><span class="p">,</span>
+                    <span class="n">inner_steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.008</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.03</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inner_steps</span> <span class="o">=</span> <span class="n">inner_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hamiltonian_func</span> <span class="o">=</span> <span class="n">Hamiltonian_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_optimizer</span> <span class="o">=</span> <span class="n">param_optimizer</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inner_steps</span><span class="p">):</span>
+            <span class="n">tmp_inp</span> <span class="o">=</span> <span class="n">inp</span> <span class="o">+</span> <span class="n">eta</span>
+            <span class="n">tmp_inp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">tmp_inp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hamiltonian_func</span><span class="p">(</span><span class="n">tmp_inp</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+            <span class="n">eta_grad_sign</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span>
+
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">-</span> <span class="n">eta_grad_sign</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
+
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">eta</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">inp</span> <span class="o">+</span> <span class="n">eta</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="n">inp</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">eta</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">eta</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+            <span class="n">eta</span><span class="o">.</span><span class="n">retain_grad</span><span class="p">()</span>
+
+        <span class="c1">#self.param_optimizer.zero_grad()</span>
+
+        <span class="n">yofo_inp</span> <span class="o">=</span> <span class="n">eta</span> <span class="o">+</span> <span class="n">inp</span>
+        <span class="n">yofo_inp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">yofo_inp</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hamiltonian_func</span><span class="p">(</span><span class="n">yofo_inp</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="c1">#self.param_optimizer.step()</span>
+        <span class="c1">#self.param_optimizer.zero_grad()</span>
+
+        <span class="k">return</span> <span class="n">yofo_inp</span><span class="p">,</span> <span class="n">eta</span>
+
+<span class="k">def</span> <span class="nf">eval_one_epoch</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">batch_generator</span><span class="p">,</span>  <span class="n">DEVICE</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">),</span> <span class="n">AttackMethod</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">batch_generator</span><span class="p">)</span>
+    <span class="n">clean_accuracy</span> <span class="o">=</span> <span class="n">AvgMeter</span><span class="p">()</span>
+    <span class="n">adv_accuracy</span> <span class="o">=</span> <span class="n">AvgMeter</span><span class="p">()</span>
+
+    <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s1">&#39;Evaluating&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">acc</span> <span class="o">=</span> <span class="n">torch_accuracy</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+            <span class="n">clean_accuracy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">AttackMethod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">adv_inp</span> <span class="o">=</span> <span class="n">AttackMethod</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">adv_inp</span><span class="p">)</span>
+                <span class="n">acc</span> <span class="o">=</span> <span class="n">torch_accuracy</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+                <span class="n">adv_accuracy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+        <span class="n">pbar_dic</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">pbar_dic</span><span class="p">[</span><span class="s1">&#39;CleanAcc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clean_accuracy</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="n">pbar_dic</span><span class="p">[</span><span class="s1">&#39;AdvAcc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">adv_accuracy</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+
+        <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">pbar_dic</span><span class="p">)</span>
+
+        <span class="n">adv_acc</span> <span class="o">=</span> <span class="n">adv_accuracy</span><span class="o">.</span><span class="n">mean</span> <span class="k">if</span> <span class="n">AttackMethod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">clean_accuracy</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">adv_acc</span>
+
+
+<span class="k">class</span> <span class="nc">SGDOptimizerMaker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span> <span class="o">=</span> <span class="n">weight_decay</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">momentum</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_decay</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">40</span>
+    <span class="n">val_interval</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">5e-4</span>
+
+    <span class="n">inner_iters</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.01</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.3</span>
+    <span class="n">lr</span> <span class="o">=</span> <span class="mf">1e-2</span>
+    <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">create_optimizer</span> <span class="o">=</span> <span class="n">SGDOptimizerMaker</span><span class="p">(</span><span class="n">lr</span> <span class="o">=</span><span class="mf">1e-2</span> <span class="o">/</span> <span class="n">K</span><span class="p">,</span> <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">weight_decay</span> <span class="o">=</span> <span class="n">weight_decay</span><span class="p">)</span>
+
+    <span class="n">create_lr_scheduler</span> <span class="o">=</span> <span class="n">PieceWiseConstantLrSchedulerMaker</span><span class="p">(</span><span class="n">milestones</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">39</span><span class="p">],</span> <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">create_loss_function</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">create_attack_method</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">create_evaluation_attack_method</span> <span class="o">=</span> <span class="n">IPGDAttackMethodMaker</span><span class="p">(</span><span class="n">eps</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">nb_iters</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                                      <span class="n">mean</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]),</span>
+                                      <span class="n">std</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]))</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--model_dir&#39;</span><span class="p">,</span><span class="n">default</span> <span class="o">=</span> <span class="s2">&quot;./trained_models&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--resume&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;path to latest checkpoint (default: none)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="s1">&#39;--batch_size&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                    <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;mini-batch size&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Which gpu to use&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-adv_coef&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">help</span> <span class="o">=</span> <span class="s1">&#39;Specify the weight for adversarial loss&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--auto-continue&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span> <span class="o">=</span> <span class="s1">&#39;Continue from the latest checkpoint&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+    <span class="n">net</span> <span class="o">=</span> <span class="n">YOPOCNN</span><span class="o">.</span><span class="n">Net</span><span class="p">()</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">CrossEntropyWithWeightPenlty</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">other_layers</span><span class="p">,</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">weight_decay</span><span class="p">)</span><span class="c1">#.to(DEVICE)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">create_optimizer</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">other_layers</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">create_lr_scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+
+    <span class="n">Hamiltonian_func</span> <span class="o">=</span> <span class="n">Hamiltonian</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">layer_one</span><span class="p">,</span> <span class="n">weight_decay</span><span class="p">)</span>
+    <span class="n">layer_one_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">layer_one</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span> <span class="o">=</span> <span class="n">lr_scheduler</span><span class="o">.</span><span class="n">get_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">)</span>
+    <span class="n">lyaer_one_optimizer_lr_scheduler</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">MultiStepLR</span><span class="p">(</span><span class="n">layer_one_optimizer</span><span class="p">,</span>
+                                                                    <span class="n">milestones</span> <span class="o">=</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">19</span><span class="p">],</span> <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">LayerOneTrainer</span> <span class="o">=</span> <span class="n">FastGradientLayerOneTrainer</span><span class="p">(</span><span class="n">Hamiltonian_func</span><span class="p">,</span> <span class="n">layer_one_optimizer</span><span class="p">,</span>
+                                                <span class="n">inner_iters</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+
+    <span class="n">ds_train</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_train_dataset</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+    <span class="n">ds_val</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_test_dataset</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="n">EvalAttack</span> <span class="o">=</span> <span class="n">create_evaluation_attack_method</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+    <span class="n">now_epoch</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">auto_continue</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">resume</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="s1">&#39;last.checkpoint&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">resume</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">):</span>
+        <span class="n">now_epoch</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">resume</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span><span class="n">lr_scheduler</span><span class="p">)</span>
+
+    <span class="n">now_train_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">now_epoch</span> <span class="o">&gt;</span> <span class="n">num_epochs</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">now_epoch</span> <span class="o">=</span> <span class="n">now_epoch</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">descrip_str</span> <span class="o">=</span> <span class="s1">&#39;Training epoch:</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> -- lr:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">now_epoch</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">,</span>
+                                                                        <span class="n">lr_scheduler</span><span class="o">.</span><span class="n">get_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">s_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1">#train</span>
+        <span class="n">acc</span><span class="p">,</span> <span class="n">yopoacc</span> <span class="o">=</span> <span class="n">train_one_epoch</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">ds_train</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">LayerOneTrainer</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span>
+                        <span class="n">DEVICE</span><span class="p">,</span> <span class="n">descrip_str</span><span class="p">)</span>
+
+        <span class="n">now_train_time</span> <span class="o">=</span> <span class="n">now_train_time</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">s_time</span>
+        <span class="n">tb_train_dic</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Acc&#39;</span><span class="p">:</span><span class="n">acc</span><span class="p">,</span> <span class="s1">&#39;YoPoAcc&#39;</span><span class="p">:</span><span class="n">yopoacc</span><span class="p">}</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tb_train_dic</span><span class="p">)</span>
+
+        <span class="n">lr_scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">lyaer_one_optimizer_lr_scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">save_checkpoint</span><span class="p">(</span><span class="n">now_epoch</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">lr_scheduler</span><span class="p">,</span>
+                        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">model_dir</span><span class="p">,</span> <span class="s1">&#39;epoch-</span><span class="si">{}</span><span class="s1">.checkpoint&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">now_epoch</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="train_one_epoch"><a class="viewcode-back" href="../../../../source/deeprobust.image.defense.html#deeprobust.image.defense.YOPO.train_one_epoch">[docs]</a><span class="k">def</span> <span class="nf">train_one_epoch</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">batch_generator</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span>
+                    <span class="n">criterion</span><span class="p">,</span> <span class="n">LayerOneTrainner</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span>
+                    <span class="n">DEVICE</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda:0&#39;</span><span class="p">),</span><span class="n">descrip_str</span><span class="o">=</span><span class="s1">&#39;Training&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    :param attack_freq:  Frequencies of training with adversarial examples. -1 indicates natural training</span>
+<span class="sd">    :param AttackMethod: the attack method, None represents natural training</span>
+<span class="sd">    :return:  None    #(clean_acc, adv_acc)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">batch_generator</span><span class="p">)</span>
+    <span class="n">yofoacc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">cleanacc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">cleanloss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="n">descrip_str</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pbar</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+        <span class="n">eta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="n">eps</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="n">eta</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">eta</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">LayerOneTrainner</span><span class="o">.</span><span class="n">param_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+            <span class="n">pbar_dic</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">TotalLoss</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">pred</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">data</span> <span class="o">+</span> <span class="n">eta</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+            <span class="n">TotalLoss</span> <span class="o">=</span> <span class="n">TotalLoss</span> <span class="o">+</span> <span class="n">loss</span>
+            <span class="n">wgrad</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span>
+            <span class="n">TotalLoss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">grad</span> <span class="o">=</span> <span class="n">wgrad</span>
+
+
+            <span class="n">p</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">net</span><span class="o">.</span><span class="n">layer_one_out</span><span class="o">.</span><span class="n">grad</span>
+            <span class="n">yofo_inp</span><span class="p">,</span> <span class="n">eta</span> <span class="o">=</span> <span class="n">LayerOneTrainner</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">acc</span> <span class="o">=</span> <span class="n">torch_accuracy</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+                    <span class="n">cleanacc</span> <span class="o">=</span> <span class="n">acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                    <span class="n">cleanloss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">K</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">yofo_pred</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">yofo_inp</span><span class="p">)</span>
+                    <span class="n">yofoacc</span> <span class="o">=</span> <span class="n">torch_accuracy</span><span class="p">(</span><span class="n">yofo_pred</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">LayerOneTrainner</span><span class="o">.</span><span class="n">param_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">LayerOneTrainner</span><span class="o">.</span><span class="n">param_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">pbar_dic</span><span class="p">[</span><span class="s1">&#39;Acc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cleanacc</span><span class="p">)</span>
+        <span class="n">pbar_dic</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cleanloss</span><span class="p">)</span>
+        <span class="n">pbar_dic</span><span class="p">[</span><span class="s1">&#39;YoPoAcc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yofoacc</span><span class="p">)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">pbar_dic</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cleanacc</span><span class="p">,</span> <span class="n">yofoacc</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

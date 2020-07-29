@@ -1,0 +1,537 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.image package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.image package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.image.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-image-package">
+<h1>deeprobust.image package<a class="headerlink" href="#deeprobust-image-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.BPDA">deeprobust.image.attack.BPDA module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.Nattack">deeprobust.image.attack.Nattack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.Universal">deeprobust.image.attack.Universal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.YOPOpgd">deeprobust.image.attack.YOPOpgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.base_attack">deeprobust.image.attack.base_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.cw">deeprobust.image.attack.cw module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.deepfool">deeprobust.image.attack.deepfool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.fgsm">deeprobust.image.attack.fgsm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.l2_attack">deeprobust.image.attack.l2_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.lbfgs">deeprobust.image.attack.lbfgs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.onepixel">deeprobust.image.attack.onepixel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack.pgd">deeprobust.image.attack.pgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.attack.html#module-deeprobust.image.attack">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.LIDclassifier">deeprobust.image.defense.LIDclassifier module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.TherEncoding">deeprobust.image.defense.TherEncoding module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.YOPO">deeprobust.image.defense.YOPO module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.base_defense">deeprobust.image.defense.base_defense module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.fast">deeprobust.image.defense.fast module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.fgsmtraining">deeprobust.image.defense.fgsmtraining module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.pgdtraining">deeprobust.image.defense.pgdtraining module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense.trades">deeprobust.image.defense.trades module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.defense.html#module-deeprobust.image.defense">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.CNN">deeprobust.image.netmodels.CNN module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.CNN_multilayer">deeprobust.image.netmodels.CNN_multilayer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.YOPOCNN">deeprobust.image.netmodels.YOPOCNN module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deeprobust.image.netmodels.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.densenet">deeprobust.image.netmodels.densenet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deeprobust.image.netmodels.html#id1">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.preact_resnet">deeprobust.image.netmodels.preact_resnet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.resnet">deeprobust.image.netmodels.resnet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deeprobust.image.netmodels.html#id2">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.train_model">deeprobust.image.netmodels.train_model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#deeprobust-image-netmodels-train-resnet-module">deeprobust.image.netmodels.train_resnet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels.vgg">deeprobust.image.netmodels.vgg module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deeprobust.image.netmodels.html#id3">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.image.netmodels.html#module-deeprobust.image.netmodels">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.config">
+<span id="deeprobust-image-config-module"></span><h2>deeprobust.image.config module<a class="headerlink" href="#module-deeprobust.image.config" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.evaluation_attack">
+<span id="deeprobust-image-evaluation-attack-module"></span><h2>deeprobust.image.evaluation_attack module<a class="headerlink" href="#module-deeprobust.image.evaluation_attack" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.optimizer">
+<span id="deeprobust-image-optimizer-module"></span><h2>deeprobust.image.optimizer module<a class="headerlink" href="#module-deeprobust.image.optimizer" title="Permalink to this headline">¶</a></h2>
+<p>This module include the following optimizer:
+1. differential_evolution:
+The differential evolution global optimization algorithm
+<a class="reference external" href="https://github.com/scipy/scipy/blob/70e61dee181de23fdd8d893eaa9491100e2218d7/scipy/optimize/_differentialevolution.py">https://github.com/scipy/scipy/blob/70e61dee181de23fdd8d893eaa9491100e2218d7/scipy/optimize/_differentialevolution.py</a></p>
+<p>modified by:
+<a class="reference external" href="https://github.com/DebangLi/one-pixel-attack-pytorch/blob/master/differential_evolution.py">https://github.com/DebangLi/one-pixel-attack-pytorch/blob/master/differential_evolution.py</a></p>
+<ol class="arabic simple" start="2">
+<li><p>Basic Adam Optimizer</p></li>
+</ol>
+<dl class="function">
+<dt id="deeprobust.image.optimizer.differential_evolution">
+<code class="sig-name descname">differential_evolution</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">bounds</em>, <em class="sig-param">args=()</em>, <em class="sig-param">strategy='best1bin'</em>, <em class="sig-param">maxiter=1000</em>, <em class="sig-param">popsize=15</em>, <em class="sig-param">tol=0.01</em>, <em class="sig-param">mutation=(0.5</em>, <em class="sig-param">1)</em>, <em class="sig-param">recombination=0.7</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">callback=None</em>, <em class="sig-param">disp=False</em>, <em class="sig-param">polish=True</em>, <em class="sig-param">init='latinhypercube'</em>, <em class="sig-param">atol=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/optimizer.html#differential_evolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.optimizer.differential_evolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the global minimum of a multivariate function.
+Differential Evolution is stochastic in nature (does not use gradient
+methods) to find the minimium, and can search large areas of candidate
+space, but often requires larger numbers of function evaluations than
+conventional gradient based techniques.
+The algorithm is due to Storn and Price <a class="footnote-reference brackets" href="#id3" id="id1">1</a>.
+:param func: The objective function to be minimized.  Must be in the form</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">*args)</span></code>, where <code class="docutils literal notranslate"><span class="pre">x</span></code> is the argument in the form of a 1-D array
+and <code class="docutils literal notranslate"><span class="pre">args</span></code> is a  tuple of any additional fixed parameters needed to
+completely specify the function.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (<em>sequence</em>) – Bounds for variables.  <code class="docutils literal notranslate"><span class="pre">(min,</span> <span class="pre">max)</span></code> pairs for each element in <code class="docutils literal notranslate"><span class="pre">x</span></code>,
+defining the lower and upper bounds for the optimizing argument of
+<cite>func</cite>. It is required to have <code class="docutils literal notranslate"><span class="pre">len(bounds)</span> <span class="pre">==</span> <span class="pre">len(x)</span></code>.
+<code class="docutils literal notranslate"><span class="pre">len(bounds)</span></code> is used to determine the number of parameters in <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>args</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Any additional fixed parameters needed to
+completely specify the objective function.</p></li>
+<li><p><strong>strategy</strong> (<em>str</em><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>The differential evolution strategy to use. Should be one of:</dt><dd><ul>
+<li><p>’best1bin’</p></li>
+<li><p>’best1exp’</p></li>
+<li><p>’rand1exp’</p></li>
+<li><p>’randtobest1exp’</p></li>
+<li><p>’currenttobest1exp’</p></li>
+<li><p>’best2exp’</p></li>
+<li><p>’rand2exp’</p></li>
+<li><p>’randtobest1bin’</p></li>
+<li><p>’currenttobest1bin’</p></li>
+<li><p>’best2bin’</p></li>
+<li><p>’rand2bin’</p></li>
+<li><p>’rand1bin’</p></li>
+</ul>
+</dd>
+</dl>
+<p>The default is ‘best1bin’.</p>
+</p></li>
+<li><p><strong>maxiter</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of generations over which the entire population is
+evolved. The maximum number of function evaluations (with no polishing)
+is: <code class="docutils literal notranslate"><span class="pre">(maxiter</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">popsize</span> <span class="pre">*</span> <span class="pre">len(x)</span></code></p></li>
+<li><p><strong>popsize</strong> (<em>int</em><em>, </em><em>optional</em>) – A multiplier for setting the total population size.  The population has
+<code class="docutils literal notranslate"><span class="pre">popsize</span> <span class="pre">*</span> <span class="pre">len(x)</span></code> individuals (unless the initial population is
+supplied via the <cite>init</cite> keyword).</p></li>
+<li><p><strong>tol</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative tolerance for convergence, the solving stops when
+<code class="docutils literal notranslate"><span class="pre">np.std(pop)</span> <span class="pre">&lt;=</span> <span class="pre">atol</span> <span class="pre">+</span> <span class="pre">tol</span> <span class="pre">*</span> <span class="pre">np.abs(np.mean(population_energies))</span></code>,
+where and <cite>atol</cite> and <cite>tol</cite> are the absolute and relative tolerance
+respectively.</p></li>
+<li><p><strong>mutation</strong> (<em>float</em><em> or </em><em>tuple</em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>optional</em>) – The mutation constant. In the literature this is also known as
+differential weight, being denoted by F.
+If specified as a float it should be in the range [0, 2].
+If specified as a tuple <code class="docutils literal notranslate"><span class="pre">(min,</span> <span class="pre">max)</span></code> dithering is employed. Dithering
+randomly changes the mutation constant on a generation by generation
+basis. The mutation constant for that generation is taken from
+<code class="docutils literal notranslate"><span class="pre">U[min,</span> <span class="pre">max)</span></code>. Dithering can help speed convergence significantly.
+Increasing the mutation constant increases the search radius, but will
+slow down convergence.</p></li>
+<li><p><strong>recombination</strong> (<em>float</em><em>, </em><em>optional</em>) – The recombination constant, should be in the range [0, 1]. In the
+literature this is also known as the crossover probability, being
+denoted by CR. Increasing this value allows a larger number of mutants
+to progress into the next generation, but at the risk of population
+stability.</p></li>
+<li><p><strong>seed</strong> (int or <cite>np.random.RandomState</cite>, optional) – If <cite>seed</cite> is not specified the <cite>np.RandomState</cite> singleton is used.
+If <cite>seed</cite> is an int, a new <cite>np.random.RandomState</cite> instance is used,
+seeded with seed.
+If <cite>seed</cite> is already a <cite>np.random.RandomState instance</cite>, then that
+<cite>np.random.RandomState</cite> instance is used.
+Specify <cite>seed</cite> for repeatable minimizations.</p></li>
+<li><p><strong>disp</strong> (<em>bool</em><em>, </em><em>optional</em>) – Display status messages</p></li>
+<li><p><strong>callback</strong> (callable, <cite>callback(xk, convergence=val)</cite>, optional) – A function to follow the progress of the minimization. <code class="docutils literal notranslate"><span class="pre">xk</span></code> is
+the current value of <code class="docutils literal notranslate"><span class="pre">x0</span></code>. <code class="docutils literal notranslate"><span class="pre">val</span></code> represents the fractional
+value of the population convergence.  When <code class="docutils literal notranslate"><span class="pre">val</span></code> is greater than one
+the function halts. If callback returns <cite>True</cite>, then the minimization
+is halted (any polishing is still carried out).</p></li>
+<li><p><strong>polish</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True (default), then <cite>scipy.optimize.minimize</cite> with the <cite>L-BFGS-B</cite>
+method is used to polish the best population member at the end, which
+can improve the minimization slightly.</p></li>
+<li><p><strong>init</strong> (<em>str</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – <p>Specify which type of population initialization is performed. Should be
+one of:</p>
+<blockquote>
+<div><ul>
+<li><p>’latinhypercube’</p></li>
+<li><p>’random’</p></li>
+<li><p>array specifying the initial population. The array should have
+shape <code class="docutils literal notranslate"><span class="pre">(M,</span> <span class="pre">len(x))</span></code>, where len(x) is the number of parameters.
+<cite>init</cite> is clipped to <cite>bounds</cite> before use.</p></li>
+</ul>
+</div></blockquote>
+<p>The default is ‘latinhypercube’. Latin Hypercube sampling tries to
+maximize coverage of the available parameter space. ‘random’
+initializes the population randomly - this has the drawback that
+clustering can occur, preventing the whole of parameter space being
+covered. Use of an array to specify a population subset could be used,
+for example, to create a tight bunch of initial guesses in an location
+where the solution is known to exist, thereby reducing time for
+convergence.</p>
+</p></li>
+<li><p><strong>atol</strong> (<em>float</em><em>, </em><em>optional</em>) – Absolute tolerance for convergence, the solving stops when
+<code class="docutils literal notranslate"><span class="pre">np.std(pop)</span> <span class="pre">&lt;=</span> <span class="pre">atol</span> <span class="pre">+</span> <span class="pre">tol</span> <span class="pre">*</span> <span class="pre">np.abs(np.mean(population_energies))</span></code>,
+where and <cite>atol</cite> and <cite>tol</cite> are the absolute and relative tolerance
+respectively.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>res</strong> – The optimization result represented as a <cite>OptimizeResult</cite> object.
+Important attributes are: <code class="docutils literal notranslate"><span class="pre">x</span></code> the solution array, <code class="docutils literal notranslate"><span class="pre">success</span></code> a
+Boolean flag indicating if the optimizer exited successfully and
+<code class="docutils literal notranslate"><span class="pre">message</span></code> which describes the cause of the termination. See
+<cite>OptimizeResult</cite> for a description of other attributes.  If <cite>polish</cite>
+was employed, and a lower minimum was obtained by the polishing, then
+OptimizeResult also contains the <code class="docutils literal notranslate"><span class="pre">jac</span></code> attribute.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>OptimizeResult</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Differential evolution is a stochastic population based method that is
+useful for global optimization problems. At each pass through the population
+the algorithm mutates each candidate solution by mixing with other candidate
+solutions to create a trial candidate. There are several strategies <a class="footnote-reference brackets" href="#id4" id="id2">2</a> for
+creating trial candidates, which suit some problems more than others. The
+‘best1bin’ strategy is a good starting point for many systems. In this
+strategy two members of the population are randomly chosen. Their difference
+is used to mutate the best member (the <cite>best</cite> in <cite>best1bin</cite>), <span class="math notranslate nohighlight">\(b_0\)</span>,
+so far:
+.. math:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">&#39; = b_0 + mutation * (population[rand0] - population[rand1])</span>
+</pre></div>
+</div>
+<p>A trial vector is then constructed. Starting with a randomly chosen ‘i’th
+parameter the trial is sequentially filled (in modulo) with parameters from
+<cite>b’</cite> or the original candidate. The choice of whether to use <cite>b’</cite> or the
+original candidate is made with a binomial distribution (the ‘bin’ in
+‘best1bin’) - a random number in [0, 1) is generated.  If this number is
+less than the <cite>recombination</cite> constant then the parameter is loaded from
+<cite>b’</cite>, otherwise it is loaded from the original candidate.  The final
+parameter is always loaded from <cite>b’</cite>.  Once the trial candidate is built
+its fitness is assessed. If the trial is better than the original candidate
+then it takes its place. If it is also better than the best overall
+candidate it also replaces that.
+To improve your chances of finding a global minimum use higher <cite>popsize</cite>
+values, with higher <cite>mutation</cite> and (dithering), but lower <cite>recombination</cite>
+values. This has the effect of widening the search radius, but slowing
+convergence.
+.. versionadded:: 0.15.0</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id3"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Storn, R and Price, K, Differential Evolution - a Simple and
+Efficient Heuristic for Global Optimization over Continuous Spaces,
+Journal of Global Optimization, 1997, 11, 341 - 359.</p>
+</dd>
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p><a class="reference external" href="http://www1.icsi.berkeley.edu/~storn/code.html">http://www1.icsi.berkeley.edu/~storn/code.html</a></p>
+</dd>
+<dt class="label" id="id5"><span class="brackets">3</span></dt>
+<dd><p><a class="reference external" href="http://en.wikipedia.org/wiki/Differential_evolution">http://en.wikipedia.org/wiki/Differential_evolution</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.optimizer.AdamOptimizer">
+<em class="property">class </em><code class="sig-name descname">AdamOptimizer</code><span class="sig-paren">(</span><em class="sig-param">shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/optimizer.html#AdamOptimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.optimizer.AdamOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic Adam optimizer implementation that can minimize w.r.t.
+a single variable.
+:param shape: shape of the variable w.r.t. which the loss should be minimized
+:type shape: tuple</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.utils">
+<span id="deeprobust-image-utils-module"></span><h2>deeprobust.image.utils module<a class="headerlink" href="#module-deeprobust.image.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="deeprobust.image.utils.adjust_learning_rate">
+<code class="sig-name descname">adjust_learning_rate</code><span class="sig-paren">(</span><em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em>, <em class="sig-param">learning_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#adjust_learning_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.adjust_learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>decrease the learning rate</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.utils.arctanh">
+<code class="sig-name descname">arctanh</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">eps=1e-06</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#arctanh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.arctanh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate arctanh(x)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.utils.create_train_dataset">
+<code class="sig-name descname">create_train_dataset</code><span class="sig-paren">(</span><em class="sig-param">batch_size=128</em>, <em class="sig-param">root='../data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#create_train_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.create_train_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create different training dataset</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.utils.make_symlink">
+<code class="sig-name descname">make_symlink</code><span class="sig-paren">(</span><em class="sig-param">source</em>, <em class="sig-param">link_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#make_symlink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.make_symlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note: overwriting enabled!</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.utils.onehot_like">
+<code class="sig-name descname">onehot_like</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">index</em>, <em class="sig-param">value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#onehot_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.onehot_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an array like a, with all values
+set to 0 except one.
+:param a: The returned one-hot array will have the same shape</p>
+<blockquote>
+<div><p>and dtype as this array</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – The index that should be set to <cite>value</cite></p></li>
+<li><p><strong>value</strong> (<em>single value compatible with a.dtype</em>) – The value to set at the given index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>One-hot array with the given value at the given
+location and zeros everywhere else.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.utils.tab_printer">
+<code class="sig-name descname">tab_printer</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/utils.html#tab_printer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.utils.tab_printer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to print the logs in a nice tabular format.
+input:</p>
+<blockquote>
+<div><p>param args: Parameters used for the model.</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.image" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

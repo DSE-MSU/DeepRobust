@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.global_attack.dice &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.graph.global_attack.dice</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.graph.global_attack.dice</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">BaseAttack</span>
+
+<div class="viewcode-block" id="DICE"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.dice.DICE">[docs]</a><span class="k">class</span> <span class="nc">DICE</span><span class="p">(</span><span class="n">BaseAttack</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;As is described in ADVERSARIAL ATTACKS ON GRAPH NEURAL NETWORKS VIA META LEARNING (ICLR&#39;19),</span>
+<span class="sd">    &#39;DICE (delete internally, connect externally) is a baseline where, for each perturbation,</span>
+<span class="sd">    we randomly choose whether to insert or remove an edge. Edges are only removed between</span>
+<span class="sd">    nodes from the same classes, and only inserted between nodes from different classes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model :</span>
+<span class="sd">        model to attack. Default `None`.</span>
+<span class="sd">    nnodes : int</span>
+<span class="sd">        number of nodes in the input graph</span>
+<span class="sd">    attack_structure : bool</span>
+<span class="sd">        whether to attack graph structure</span>
+<span class="sd">    attack_features : bool</span>
+<span class="sd">        whether to attack node features</span>
+<span class="sd">    device: str</span>
+<span class="sd">        &#39;cpu&#39; or &#39;cuda&#39;</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.global_attack import DICE</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">    &gt;&gt;&gt; model = DICE()</span>
+<span class="sd">    &gt;&gt;&gt; model.attack(adj, labels, n_perturbations=10)</span>
+<span class="sd">    &gt;&gt;&gt; modified_adj = model.modified_adj</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DICE</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">,</span> <span class="n">attack_structure</span><span class="o">=</span><span class="n">attack_structure</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="n">attack_features</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_features</span><span class="p">,</span> <span class="s1">&#39;DICE does NOT support attacking features&#39;</span>
+
+<div class="viewcode-block" id="DICE.attack"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.dice.DICE.attack">[docs]</a>    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete internally, connect externally. This baseline has all true class labels</span>
+<span class="sd">        (train and test) available.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ori_adj : scipy.sparse.csr_matrix</span>
+<span class="sd">            Original (unperturbed) adjacency matrix.</span>
+<span class="sd">        labels:</span>
+<span class="sd">            node labels</span>
+<span class="sd">        n_perturbations : int</span>
+<span class="sd">            Number of edge removals/additions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># ori_adj: sp.csr_matrix</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;number of pertubations: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">n_perturbations</span><span class="p">)</span>
+        <span class="n">modified_adj</span> <span class="o">=</span> <span class="n">ori_adj</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+
+        <span class="n">remove_or_insert</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">)</span>
+        <span class="n">n_remove</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">remove_or_insert</span><span class="p">)</span>
+
+        <span class="n">nonzero</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">ori_adj</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()))</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+        <span class="n">possible_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">==</span> <span class="n">labels</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]]</span>
+
+        <span class="n">remove_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">possible_indices</span><span class="p">)[:</span> <span class="n">n_remove</span><span class="p">]</span>
+        <span class="n">modified_adj</span><span class="p">[</span><span class="n">remove_indices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">remove_indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">modified_adj</span><span class="p">[</span><span class="n">remove_indices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">remove_indices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">n_insert</span> <span class="o">=</span> <span class="n">n_perturbations</span> <span class="o">-</span> <span class="n">n_remove</span>
+
+        <span class="c1"># # sample edges to add</span>
+        <span class="c1"># nonzero = nonzero</span>
+        <span class="c1"># edges = self.random_sample_edges(adj, n_insert, exclude=nonzero)</span>
+        <span class="c1"># for n1, n2 in edges:</span>
+        <span class="c1">#     modified_adj[n1, n2] += 1</span>
+        <span class="c1">#     modified_adj[n2, n1] += 1</span>
+
+        <span class="c1"># sample edges to add</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_insert</span><span class="p">):</span>
+            <span class="c1"># select a node</span>
+            <span class="n">node1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">ori_adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">possible_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ori_adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                              <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">!=</span> <span class="n">labels</span><span class="p">[</span><span class="n">node1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">modified_adj</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">node1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># select another node</span>
+            <span class="n">node2</span> <span class="o">=</span> <span class="n">possible_nodes</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">possible_nodes</span><span class="p">))]</span>
+            <span class="n">modified_adj</span><span class="p">[</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">modified_adj</span><span class="p">[</span><span class="n">node2</span><span class="p">,</span> <span class="n">node1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_adj</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">modified_adj</span></div>
+
+
+<div class="viewcode-block" id="DICE.sample_forever"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.dice.DICE.sample_forever">[docs]</a>    <span class="k">def</span> <span class="nf">sample_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Randomly random sample edges from adjacency matrix, `exclude` is a set</span>
+<span class="sd">        which contains the edges we do not want to sample and the ones already sampled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># t = tuple(np.random.randint(0, adj.shape[0], 2))</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">t</span>
+                <span class="n">exclude</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="n">exclude</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+    <span class="k">def</span> <span class="nf">random_sample_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
+        <span class="n">itr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_forever</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">itr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

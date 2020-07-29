@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.data.attacked_data &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.graph.data.attacked_data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.graph.data.attacked_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<div class="viewcode-block" id="PtbDataset"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.attacked_data.PtbDataset">[docs]</a><span class="k">class</span> <span class="nc">PtbDataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Dataset class manages pre-attacked adjacency matrix on different datasets. Currently only support metattack under 5% perturbation. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, https://github.com/danielzuegner/gnn-meta-attack. The attacked graphs are downloaded from https://github.com/ChandlerBang/pytorch-gnn-meta-attack/tree/master/pre-attacked.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root :</span>
+<span class="sd">        root directory where the dataset should be saved.</span>
+<span class="sd">    name :</span>
+<span class="sd">        dataset name. It can be choosen from [&#39;cora&#39;, &#39;citeseer&#39;, &#39;cora_ml&#39;, &#39;polblogs&#39;, &#39;pubmed&#39;]</span>
+<span class="sd">    attack_method :</span>
+<span class="sd">        currently this class only support metattack. User can pass &#39;meta&#39;, &#39;metattack&#39; or &#39;mettack&#39; since all of them will be interpreted as the same attack.</span>
+<span class="sd">    seed :</span>
+<span class="sd">        random seed for splitting training/validation/test.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset, PtbDataset</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_data = PtbDataset(root=&#39;/tmp/&#39;,</span>
+<span class="sd">                            name=&#39;cora&#39;,</span>
+<span class="sd">                            attack_method=&#39;meta&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attack_method</span><span class="o">=</span><span class="s1">&#39;mettack&#39;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">attack_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;mettack&#39;</span><span class="p">,</span> <span class="s1">&#39;metattack&#39;</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">],</span> \
+            <span class="s1">&#39;Currently the database only stores graphs perturbed by 5% mettack&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span> <span class="s1">&#39;polblogs&#39;</span><span class="p">],</span> \
+            <span class="s1">&#39;Currently only support cora, citeseer, polblogs&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span> <span class="o">=</span> <span class="s1">&#39;mettack&#39;</span> <span class="c1"># attack_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/ChandlerBang/pytorch-gnn-meta-attack/master/pre-attacked/</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_0.05.npz&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_0.05.npz&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_npz</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">{}</span><span class="s1"> dataset perturbed by 0.05 mettack...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;the adjacency matrix is perturbed, using the data splits under seed 15(default seed for deeprobust.graph.data.Dataset), so if you are going to verify the attacking performance, you should use the same data splits&#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">adj</span>
+
+    <span class="k">def</span> <span class="nf">download_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dowloading from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;Download failed! Make sure you have</span>
+<span class="s1">                    stable Internet connection and enter the right name&#39;&#39;&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PrePtbDataset"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.attacked_data.PrePtbDataset">[docs]</a><span class="k">class</span> <span class="nc">PrePtbDataset</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Dataset class manages pre-attacked adjacency matrix on different datasets. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, https://github.com/danielzuegner/gnn-meta-attack. The attacked graphs are downloaded from https://github.com/ChandlerBang/Pro-GNN/tree/master/meta.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root :</span>
+<span class="sd">        root directory where the dataset should be saved.</span>
+<span class="sd">    name :</span>
+<span class="sd">        dataset name. It can be choosen from [&#39;cora&#39;, &#39;citeseer&#39;, &#39;polblogs&#39;, &#39;pubmed&#39;]</span>
+<span class="sd">    attack_method :</span>
+<span class="sd">        currently this class only support metattack and  nettack. Note &#39;meta&#39;, &#39;metattack&#39; or &#39;mettack&#39; will be interpreted as the same attack.</span>
+<span class="sd">    seed :</span>
+<span class="sd">        random seed for splitting training/validation/test.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset, PrePtbDataset</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">    &gt;&gt;&gt; # Load meta attacked data</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_data = PrePtbDataset(root=&#39;/tmp/&#39;,</span>
+<span class="sd">                            name=&#39;cora&#39;,</span>
+<span class="sd">                            attack_method=&#39;meta&#39;,</span>
+<span class="sd">                            ptb_rate=0.05)</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
+<span class="sd">    &gt;&gt;&gt; # Load nettacked data</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_data = PrePtbDataset(root=&#39;/tmp/&#39;,</span>
+<span class="sd">                            name=&#39;cora&#39;,</span>
+<span class="sd">                            attack_method=&#39;nettack&#39;,</span>
+<span class="sd">                            ptb_rate=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
+<span class="sd">    &gt;&gt;&gt; target_nodes = perturbed_data.target_nodes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attack_method</span><span class="o">=</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="n">ptb_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">attack_method</span> <span class="o">==</span> <span class="s1">&#39;mettack&#39;</span> <span class="ow">or</span> <span class="n">attack_method</span> <span class="o">==</span> <span class="s1">&#39;metattack&#39;</span><span class="p">:</span>
+            <span class="n">attack_method</span> <span class="o">=</span> <span class="s1">&#39;meta&#39;</span>
+
+        <span class="k">assert</span> <span class="n">attack_method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="s1">&#39;nettack&#39;</span><span class="p">],</span> \
+            <span class="s1">&#39; Currently the database only stores graphs perturbed by metattack, nettack&#39;</span>
+        <span class="c1"># assert attack_method in [&#39;meta&#39;], \</span>
+        <span class="c1">#     &#39; Currently the database only stores graphs perturbed by metattack. Will update nettack soon.&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span> <span class="s1">&#39;polblogs&#39;</span><span class="p">,</span> <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="s1">&#39;cora_ml&#39;</span><span class="p">],</span> \
+            <span class="s1">&#39;Currently only support cora, citeseer, pubmed, polblogs, cora_ml&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span> <span class="o">=</span> <span class="n">attack_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptb_rate</span> <span class="o">=</span> <span class="n">ptb_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/ChandlerBang/Pro-GNN/master/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_adj_</span><span class="si">{}</span><span class="s1">.npz&#39;</span><span class="o">.</span>\
+                <span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptb_rate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_adj_</span><span class="si">{}</span><span class="s1">.npz&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptb_rate</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_nodes</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_npz</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">{}</span><span class="s1"> dataset perturbed by </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptb_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span> <span class="o">==</span> <span class="s1">&#39;meta&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;the pre-attacked graph is perturbed, using the data splits under seed 15 (default seed), so if you are going to verify the attacking performance, you should use the same data splits.&quot;</span><span class="p">)</span>
+            <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_method</span> <span class="o">==</span> <span class="s1">&#39;nettack&#39;</span><span class="p">:</span>
+            <span class="c1"># assert True, &quot;Will update pre-attacked data by nettack soon&quot;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;the pre-attacked graph is perturbed, using the data splits under seed 15 (default seed), so if you are going to verify the attacking performance, you should use the same seed (15).&quot;</span><span class="p">)</span>
+            <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_target_nodes</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">adj</span>
+
+<div class="viewcode-block" id="PrePtbDataset.get_target_nodes"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.attacked_data.PrePtbDataset.get_target_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.&quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/ChandlerBang/Pro-GNN/master/nettack/</span><span class="si">{}</span><span class="s1">_nettacked_nodes.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">json_file</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_nettacked_nodes.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">json_file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json_file</span><span class="p">)</span>
+        <span class="c1"># with open(f&#39;/mnt/home/jinwei2/Projects/nettack/{dataset}_nettacked_nodes.json&#39;, &#39;r&#39;) as f:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">idx</span><span class="p">[</span><span class="s2">&quot;attacked_test_nodes&quot;</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dowloading from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Download failed! Make sure you have </span><span class="se">\</span>
+<span class="s2">                    stable Internet connection and enter the right name&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">download_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dowloading from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Download failed! Make sure you have </span><span class="se">\</span>
+<span class="s2">                    stable Internet connection and enter the right name&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">RandomAttack</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;RandomAttack&#39;</span>
+
+    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;random attack: ratio=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ratio</span><span class="p">)</span>
+        <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_add_edges</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">ratio</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">modified_adj</span>
+
+    <span class="k">def</span> <span class="nf">_random_add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">add_ratio</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">sample_zero_forever</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+            <span class="n">nonzero_or_sampled</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">mat</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()))</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nonzero_or_sampled</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">t</span>
+                    <span class="n">nonzero_or_sampled</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                    <span class="n">nonzero_or_sampled</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="k">def</span> <span class="nf">sample_zero_n</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+            <span class="n">itr</span> <span class="o">=</span> <span class="n">sample_zero_forever</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">itr</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">adj</span> <span class="o">-</span> <span class="n">adj</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Input graph is not symmetric&quot;</span>
+        <span class="n">non_zeros</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">adj</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">]</span> <span class="c1"># (x, y)</span>
+
+        <span class="n">added</span> <span class="o">=</span> <span class="n">sample_zero_n</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">add_ratio</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">non_zeros</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">added</span><span class="p">:</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">adj</span><span class="p">[</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">adj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span>
+            <span class="n">attack_method</span><span class="o">=</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span>
+            <span class="n">ptb_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

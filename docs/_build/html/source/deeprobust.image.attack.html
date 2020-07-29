@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.image.attack package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprobust.image.defense package" href="deeprobust.image.defense.html" />
+    <link rel="prev" title="Starting to build your robust models with DeepRobust!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.image.attack package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.BPDA">deeprobust.image.attack.BPDA module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.Nattack">deeprobust.image.attack.Nattack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.Universal">deeprobust.image.attack.Universal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.YOPOpgd">deeprobust.image.attack.YOPOpgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.base_attack">deeprobust.image.attack.base_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.cw">deeprobust.image.attack.cw module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.deepfool">deeprobust.image.attack.deepfool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.fgsm">deeprobust.image.attack.fgsm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.l2_attack">deeprobust.image.attack.l2_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.lbfgs">deeprobust.image.attack.lbfgs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.onepixel">deeprobust.image.attack.onepixel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack.pgd">deeprobust.image.attack.pgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.attack">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.image.attack package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.image.attack.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-image-attack-package">
+<h1>deeprobust.image.attack package<a class="headerlink" href="#deeprobust-image-attack-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.attack.BPDA">
+<span id="deeprobust-image-attack-bpda-module"></span><h2>deeprobust.image.attack.BPDA module<a class="headerlink" href="#module-deeprobust.image.attack.BPDA" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/lordwarlock/Pytorch-BPDA/blob/master/bpda.py">https://github.com/lordwarlock/Pytorch-BPDA/blob/master/bpda.py</a></p>
+</div>
+<div class="section" id="module-deeprobust.image.attack.Nattack">
+<span id="deeprobust-image-attack-nattack-module"></span><h2>deeprobust.image.attack.Nattack module<a class="headerlink" href="#module-deeprobust.image.attack.Nattack" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.Nattack.NATTACK">
+<em class="property">class </em><code class="sig-name descname">NATTACK</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/Nattack.html#NATTACK"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.Nattack.NATTACK" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nattack is a black box attack algorithm.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.Nattack.NATTACK.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/Nattack.html#NATTACK.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.Nattack.NATTACK.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – user defined paremeters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.Nattack.NATTACK.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">dataloader</em>, <em class="sig-param">classnum</em>, <em class="sig-param">target_or_not=False</em>, <em class="sig-param">clip_max=1</em>, <em class="sig-param">clip_min=0</em>, <em class="sig-param">epsilon=0.2</em>, <em class="sig-param">population=300</em>, <em class="sig-param">max_iterations=400</em>, <em class="sig-param">learning_rate=2</em>, <em class="sig-param">sigma=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/Nattack.html#NATTACK.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.Nattack.NATTACK.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>parse_params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataloader</strong> – dataloader</p></li>
+<li><p><strong>classnum</strong> – classnum</p></li>
+<li><p><strong>target_or_not</strong> – target_or_not</p></li>
+<li><p><strong>clip_max</strong> – maximum pixel value</p></li>
+<li><p><strong>clip_min</strong> – minimum pixel value</p></li>
+<li><p><strong>epsilon</strong> – perturb constraint</p></li>
+<li><p><strong>population</strong> – population</p></li>
+<li><p><strong>max_iterations</strong> – maximum number of iterations</p></li>
+<li><p><strong>learning_rate</strong> – learning rate</p></li>
+<li><p><strong>sigma</strong> – sigma</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.Universal">
+<span id="deeprobust-image-attack-universal-module"></span><h2>deeprobust.image.attack.Universal module<a class="headerlink" href="#module-deeprobust.image.attack.Universal" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/ferjad/Universal_Adversarial_Perturbation_pytorch">https://github.com/ferjad/Universal_Adversarial_Perturbation_pytorch</a></p>
+<dl class="function">
+<dt id="deeprobust.image.attack.Universal.universal_adversarial_perturbation">
+<code class="sig-name descname">universal_adversarial_perturbation</code><span class="sig-paren">(</span><em class="sig-param">dataloader</em>, <em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">xi=10</em>, <em class="sig-param">delta=0.2</em>, <em class="sig-param">max_iter_uni=10</em>, <em class="sig-param">p=inf</em>, <em class="sig-param">num_classes=10</em>, <em class="sig-param">overshoot=0.02</em>, <em class="sig-param">max_iter_df=10</em>, <em class="sig-param">t_p=0.2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/Universal.html#universal_adversarial_perturbation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.Universal.universal_adversarial_perturbation" title="Permalink to this definition">¶</a></dt>
+<dd><p>universal_adversarial_perturbation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataloader</strong> – dataloader</p></li>
+<li><p><strong>model</strong> – target model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>xi</strong> – controls the l_p magnitude of the perturbation</p></li>
+<li><p><strong>delta</strong> – controls the desired fooling rate (default = 80% fooling rate)</p></li>
+<li><p><strong>max_iter_uni</strong> – maximum number of iteration (default = 10*num_images)</p></li>
+<li><p><strong>p</strong> – norm to be used (default = np.inf)</p></li>
+<li><p><strong>num_classes</strong> – num_classes (default = 10)</p></li>
+<li><p><strong>overshoot</strong> – to prevent vanishing updates (default = 0.02)</p></li>
+<li><p><strong>max_iter_df</strong> – maximum number of iterations for deepfool (default = 10)</p></li>
+<li><p><strong>t_p</strong> – truth percentage, for how many flipped labels in a batch. (default = 0.2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>the universal perturbation matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.YOPOpgd">
+<span id="deeprobust-image-attack-yopopgd-module"></span><h2>deeprobust.image.attack.YOPOpgd module<a class="headerlink" href="#module-deeprobust.image.attack.YOPOpgd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.YOPOpgd.FASTPGD">
+<em class="property">class </em><code class="sig-name descname">FASTPGD</code><span class="sig-paren">(</span><em class="sig-param">eps=0.023529411764705882</em>, <em class="sig-param">sigma=0.011764705882352941</em>, <em class="sig-param">nb_iter=20</em>, <em class="sig-param">norm=inf</em>, <em class="sig-param">DEVICE=torch.device</em>, <em class="sig-param">mean=torch.tensor</em>, <em class="sig-param">std=torch.tensor</em>, <em class="sig-param">random_start=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/YOPOpgd.html#FASTPGD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.YOPOpgd.FASTPGD" title="Permalink to this definition">¶</a></dt>
+<dd><p>This module is the adversarial example gererated algorithm in YOPO.</p>
+<p class="rubric">References</p>
+<p>Original code: <a class="reference external" href="https://github.com/a1600012888/YOPO-You-Only-Propagate-Once">https://github.com/a1600012888/YOPO-You-Only-Propagate-Once</a></p>
+<dl class="method">
+<dt id="deeprobust.image.attack.YOPOpgd.FASTPGD.single_attack">
+<code class="sig-name descname">single_attack</code><span class="sig-paren">(</span><em class="sig-param">net</em>, <em class="sig-param">inp</em>, <em class="sig-param">label</em>, <em class="sig-param">eta</em>, <em class="sig-param">target=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/YOPOpgd.html#FASTPGD.single_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.YOPOpgd.FASTPGD.single_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the original image and the perturbation computed so far, computes
+a new perturbation.
+:param net:
+:param inp: original image
+:param label:
+:param eta: perturbation computed so far
+:return: a new perturbation</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.base_attack">
+<span id="deeprobust-image-attack-base-attack-module"></span><h2>deeprobust.image.attack.base_attack module<a class="headerlink" href="#module-deeprobust.image.attack.base_attack" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.base_attack.BaseAttack">
+<em class="property">class </em><code class="sig-name descname">BaseAttack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/base_attack.html#BaseAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.base_attack.BaseAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attack basic class.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.base_attack.BaseAttack.check_type_device">
+<code class="sig-name descname">check_type_device</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/base_attack.html#BaseAttack.check_type_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.base_attack.BaseAttack.check_type_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check device, match variable type to device type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – image</p></li>
+<li><p><strong>label</strong> – label</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.base_attack.BaseAttack.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/base_attack.html#BaseAttack.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.base_attack.BaseAttack.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate attack examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – original image</p></li>
+<li><p><strong>label</strong> – original label</p></li>
+<li><p><strong>kwargs</strong> – user defined parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.cw">
+<span id="deeprobust-image-attack-cw-module"></span><h2>deeprobust.image.attack.cw module<a class="headerlink" href="#module-deeprobust.image.attack.cw" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.cw.CarliniWagner">
+<em class="property">class </em><code class="sig-name descname">CarliniWagner</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner" title="Permalink to this definition">¶</a></dt>
+<dd><p>C&amp;W attack is an effective method to calcuate high-confidence adversarial examples.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Carlini, N., &amp; Wagner, D. (2017, May). Towards evaluating the robustness of neural networks. <a class="reference external" href="https://arxiv.org/pdf/1608.04644.pdf">https://arxiv.org/pdf/1608.04644.pdf</a></p>
+</dd>
+</dl>
+<p>This reimplementation is based on <a class="reference external" href="https://github.com/kkew3/pytorch-cw2">https://github.com/kkew3/pytorch-cw2</a></p>
+<p class="rubric">Examples</p>
+<p>from deeprobust.image.attack.cw import CarliniWagner
+from deeprobust.image.netmodels.CNN import Net
+from deeprobust.image.config import attack_params</p>
+<p>model = Net()
+model.load_state_dict(torch.load(“./trained_models/MNIST_CNN_epoch_20.pt”, map_location = torch.device(‘cuda’)))
+model.eval()</p>
+<p>x,y = datasets.MNIST()
+attack = CarliniWagner(model, device=’cuda’)
+AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, <a href="#id2"><span class="problematic" id="id3">**</span></a>attack_params[‘CW_MNIST])</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.cw.CarliniWagner.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">target_label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – original image</p></li>
+<li><p><strong>label</strong> – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.cw.CarliniWagner.loss_function">
+<code class="sig-name descname">loss_function</code><span class="sig-paren">(</span><em class="sig-param">x_p</em>, <em class="sig-param">const</em>, <em class="sig-param">target</em>, <em class="sig-param">reconstructed_original</em>, <em class="sig-param">confidence</em>, <em class="sig-param">min_</em>, <em class="sig-param">max_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner.loss_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner.loss_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the loss and the gradient of the loss w.r.t. x,
+assuming that logits = model(x).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.cw.CarliniWagner.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">classnum=10</em>, <em class="sig-param">confidence=0.0001</em>, <em class="sig-param">clip_max=1</em>, <em class="sig-param">clip_min=0</em>, <em class="sig-param">max_iterations=1000</em>, <em class="sig-param">initial_const=0.01</em>, <em class="sig-param">binary_search_steps=5</em>, <em class="sig-param">learning_rate=1e-05</em>, <em class="sig-param">abort_early=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the user defined parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classnum</strong> – number of class</p></li>
+<li><p><strong>confidence</strong> – confidence</p></li>
+<li><p><strong>clip_max</strong> – maximum pixel value</p></li>
+<li><p><strong>clip_min</strong> – minimum pixel value</p></li>
+<li><p><strong>max_iterations</strong> – maximum number of iterations</p></li>
+<li><p><strong>initial_const</strong> – initialization of binary search</p></li>
+<li><p><strong>binary_search_steps</strong> – step number of binary search</p></li>
+<li><p><strong>learning_rate</strong> – learning rate</p></li>
+<li><p><strong>abort_early</strong> – Set abort_early = True to allow early stop</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.cw.CarliniWagner.pending_f">
+<code class="sig-name descname">pending_f</code><span class="sig-paren">(</span><em class="sig-param">x_p</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner.pending_f"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner.pending_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pending is the loss function is less than 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.cw.CarliniWagner.to_model_space">
+<code class="sig-name descname">to_model_space</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/cw.html#CarliniWagner.to_model_space"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.cw.CarliniWagner.to_model_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms an input from the attack space
+to the model space. This transformation and
+the returned gradient are elementwise.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.deepfool">
+<span id="deeprobust-image-attack-deepfool-module"></span><h2>deeprobust.image.attack.deepfool module<a class="headerlink" href="#module-deeprobust.image.attack.deepfool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.deepfool.DeepFool">
+<em class="property">class </em><code class="sig-name descname">DeepFool</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/deepfool.html#DeepFool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.deepfool.DeepFool" title="Permalink to this definition">¶</a></dt>
+<dd><p>DeepFool attack.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.deepfool.DeepFool.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/deepfool.html#DeepFool.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.deepfool.DeepFool.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>1*H*W*3</em>) – original image</p></li>
+<li><p><strong>label</strong> (<em>int</em>) – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>adversarial examples</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>adv_img</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.deepfool.DeepFool.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">num_classes=10</em>, <em class="sig-param">overshoot=0.02</em>, <em class="sig-param">max_iteration=50</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/deepfool.html#DeepFool.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.deepfool.DeepFool.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the user defined parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_classes</strong> (<em>int</em>) – limits the number of classes to test against. (default = 10)</p></li>
+<li><p><strong>overshoot</strong> (<em>float</em>) – used as a termination criterion to prevent vanishing updates (default = 0.02).</p></li>
+<li><p><strong>max_iteration</strong> (<em>int</em>) – maximum number of iteration for deepfool (default = 50)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.fgsm">
+<span id="deeprobust-image-attack-fgsm-module"></span><h2>deeprobust.image.attack.fgsm module<a class="headerlink" href="#module-deeprobust.image.attack.fgsm" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.fgsm.FGSM">
+<em class="property">class </em><code class="sig-name descname">FGSM</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/fgsm.html#FGSM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.fgsm.FGSM" title="Permalink to this definition">¶</a></dt>
+<dd><p>FGSM attack is an one step gradient descent method.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.fgsm.FGSM.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/fgsm.html#FGSM.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.fgsm.FGSM.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Call this function to generate FGSM adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – original image</p></li>
+<li><p><strong>label</strong> – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.fgsm.FGSM.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">epsilon=0.2</em>, <em class="sig-param">order=inf</em>, <em class="sig-param">clip_max=None</em>, <em class="sig-param">clip_min=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/fgsm.html#FGSM.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.fgsm.FGSM.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the user defined parameters.
+:param model: victim model
+:param image: original attack images
+:param label: target labels
+:param epsilon: perturbation constraint
+:param order: constraint type
+:param clip_min: minimum pixel value
+:param clip_max: maximum pixel value
+:param device: device type, cpu or gpu</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>perturbed images</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[N*C*H*W], floatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.l2_attack">
+<span id="deeprobust-image-attack-l2-attack-module"></span><h2>deeprobust.image.attack.l2_attack module<a class="headerlink" href="#module-deeprobust.image.attack.l2_attack" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.attack.lbfgs">
+<span id="deeprobust-image-attack-lbfgs-module"></span><h2>deeprobust.image.attack.lbfgs module<a class="headerlink" href="#module-deeprobust.image.attack.lbfgs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.lbfgs.LBFGS">
+<em class="property">class </em><code class="sig-name descname">LBFGS</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">label</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/lbfgs.html#LBFGS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.lbfgs.LBFGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>LBFGS is the first adversarial generating algorithm.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.lbfgs.LBFGS.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">target_label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/lbfgs.html#LBFGS.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.lbfgs.LBFGS.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – original image</p></li>
+<li><p><strong>label</strong> – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.lbfgs.LBFGS.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">clip_max=1</em>, <em class="sig-param">clip_min=0</em>, <em class="sig-param">class_num=10</em>, <em class="sig-param">epsilon=1e-05</em>, <em class="sig-param">maxiter=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/lbfgs.html#LBFGS.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.lbfgs.LBFGS.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the user defined parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clip_max</strong> – maximum pixel value</p></li>
+<li><p><strong>clip_min</strong> – minimum pixel value</p></li>
+<li><p><strong>class_num</strong> – total number of class</p></li>
+<li><p><strong>epsilon</strong> – step length for binary seach</p></li>
+<li><p><strong>maxiter</strong> – maximum number of iterations</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.onepixel">
+<span id="deeprobust-image-attack-onepixel-module"></span><h2>deeprobust.image.attack.onepixel module<a class="headerlink" href="#module-deeprobust.image.attack.onepixel" title="Permalink to this headline">¶</a></h2>
+<p>This is a re-implementation of One pixel attack.</p>
+<dl class="class">
+<dt id="deeprobust.image.attack.onepixel.Onepixel">
+<em class="property">class </em><code class="sig-name descname">Onepixel</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/onepixel.html#Onepixel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.onepixel.Onepixel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.</p>
+<p class="rubric">References</p>
+<p>Akhtar, N., &amp; Mian, A. (2018).Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. IEEE Access, 6, 14410-14430.</p>
+<p>Reference code: <a class="reference external" href="https://github.com/DebangLi/one-pixel-attack-pytorch">https://github.com/DebangLi/one-pixel-attack-pytorch</a></p>
+<dl class="method">
+<dt id="deeprobust.image.attack.onepixel.Onepixel.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/onepixel.html#Onepixel.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.onepixel.Onepixel.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate FGSM adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>1*3*W*H</em>) – original image</p></li>
+<li><p><strong>label</strong> – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.onepixel.Onepixel.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">pixels=1</em>, <em class="sig-param">maxiter=100</em>, <em class="sig-param">popsize=400</em>, <em class="sig-param">samples=100</em>, <em class="sig-param">targeted_attack=False</em>, <em class="sig-param">print_log=True</em>, <em class="sig-param">target=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/onepixel.html#Onepixel.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.onepixel.Onepixel.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the user-defined params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pixels</strong> – maximum number of manipulated pixels</p></li>
+<li><p><strong>maxiter</strong> – maximum number of iteration</p></li>
+<li><p><strong>popsize</strong> – population size</p></li>
+<li><p><strong>samples</strong> – samples</p></li>
+<li><p><strong>targeted_attack</strong> – targeted attack or not</p></li>
+<li><p><strong>print_log</strong> – Set print_log = True to print out details in the searching algorithm</p></li>
+<li><p><strong>target</strong> – target label (if targeted attack is set to be True)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack.pgd">
+<span id="deeprobust-image-attack-pgd-module"></span><h2>deeprobust.image.attack.pgd module<a class="headerlink" href="#module-deeprobust.image.attack.pgd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.image.attack.pgd.PGD">
+<em class="property">class </em><code class="sig-name descname">PGD</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/pgd.html#PGD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.pgd.PGD" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the multi-step version of FGSM attack.</p>
+<dl class="method">
+<dt id="deeprobust.image.attack.pgd.PGD.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">label</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/pgd.html#PGD.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.pgd.PGD.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function to generate PGD adversarial examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> – original image</p></li>
+<li><p><strong>label</strong> – target label</p></li>
+<li><p><strong>kwargs</strong> – user defined paremeters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.attack.pgd.PGD.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">epsilon=0.03</em>, <em class="sig-param">num_steps=40</em>, <em class="sig-param">step_size=0.01</em>, <em class="sig-param">clip_max=1.0</em>, <em class="sig-param">clip_min=0.0</em>, <em class="sig-param">print_process=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/attack/pgd.html#PGD.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.attack.pgd.PGD.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>parse_params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epsilon</strong> – perturbation constraint</p></li>
+<li><p><strong>num_steps</strong> – iteration step</p></li>
+<li><p><strong>step_size</strong> – step size</p></li>
+<li><p><strong>clip_max</strong> – maximum pixel value</p></li>
+<li><p><strong>clip_min</strong> – minimum pixel value</p></li>
+<li><p><strong>print_process</strong> – whether to print out the log during optimization process, True or False print out the log during optimization process, True or False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.attack">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.image.attack" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deeprobust.image.defense.html" class="btn btn-neutral float-right" title="deeprobust.image.defense package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral float-left" title="Starting to build your robust models with DeepRobust!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

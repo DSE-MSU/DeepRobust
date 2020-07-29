@@ -1,0 +1,642 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.graph package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.graph.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-graph-package">
+<h1>deeprobust.graph package<a class="headerlink" href="#deeprobust-graph-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.data.html#module-deeprobust.graph.data.attacked_data">deeprobust.graph.data.attacked_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.data.html#module-deeprobust.graph.data.dataset">deeprobust.graph.data.dataset module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.data.html#module-deeprobust.graph.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.defense.html">deeprobust.graph.defense package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.adv_training">deeprobust.graph.defense.adv_training module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.gcn">deeprobust.graph.defense.gcn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.gcn_preprocess">deeprobust.graph.defense.gcn_preprocess module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.pgd">deeprobust.graph.defense.pgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.prognn">deeprobust.graph.defense.prognn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense.r_gcn">deeprobust.graph.defense.r_gcn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.defense.html#module-deeprobust.graph.defense">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.base_attack">deeprobust.graph.global_attack.base_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.dice">deeprobust.graph.global_attack.dice module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.mettack">deeprobust.graph.global_attack.mettack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.nipa">deeprobust.graph.global_attack.nipa module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.random">deeprobust.graph.global_attack.random module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack.topology_attack">deeprobust.graph.global_attack.topology_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.global_attack.html#module-deeprobust.graph.global_attack">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.rl.html">deeprobust.graph.rl package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.env">deeprobust.graph.rl.env module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.nipa_config">deeprobust.graph.rl.nipa_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.nipa_env">deeprobust.graph.rl.nipa_env module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.nipa_nstep_replay_mem">deeprobust.graph.rl.nipa_nstep_replay_mem module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.nipa_q_net_node">deeprobust.graph.rl.nipa_q_net_node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.nstep_replay_mem">deeprobust.graph.rl.nstep_replay_mem module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.q_net_node">deeprobust.graph.rl.q_net_node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.rl_s2v_config">deeprobust.graph.rl.rl_s2v_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl.rl_s2v_env">deeprobust.graph.rl.rl_s2v_env module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.rl.html#module-deeprobust.graph.rl">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.base_attack">deeprobust.graph.targeted_attack.base_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.fga">deeprobust.graph.targeted_attack.fga module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.ig_attack">deeprobust.graph.targeted_attack.ig_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.nettack">deeprobust.graph.targeted_attack.nettack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.rl_s2v">deeprobust.graph.targeted_attack.rl_s2v module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack.rnd">deeprobust.graph.targeted_attack.rnd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deeprobust.graph.targeted_attack.html#module-deeprobust.graph.targeted_attack">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.graph.black_box">
+<span id="deeprobust-graph-black-box-module"></span><h2>deeprobust.graph.black_box module<a class="headerlink" href="#module-deeprobust.graph.black_box" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="deeprobust.graph.black_box.load_victim_model">
+<code class="sig-name descname">load_victim_model</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">model_name='gcn'</em>, <em class="sig-param">device='cpu'</em>, <em class="sig-param">file_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/black_box.html#load_victim_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.black_box.load_victim_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>load_victim_model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>deeprobust.graph.Dataset</em>) – graph data</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – victime model name, e.g. (‘gcn’, ‘deepwalk’) But currently it only
+supports gcn as victim model.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+<li><p><strong>file_path</strong> – if given, the victim model will be loaded from this path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.black_box.train_victim_model">
+<code class="sig-name descname">train_victim_model</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">model_name='gcn'</em>, <em class="sig-param">file_path=None</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/black_box.html#train_victim_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.black_box.train_victim_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the victim model (target classifer) and save the model
+Note that the attacker can only do black query to this model.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.utils">
+<span id="deeprobust-graph-utils-module"></span><h2>deeprobust.graph.utils module<a class="headerlink" href="#module-deeprobust.graph.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="deeprobust.graph.utils.accuracy">
+<code class="sig-name descname">accuracy</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return accuracy of output compared to labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>torch.Tensor</em>) – output from model</p></li>
+<li><p><strong>labels</strong> (<em>torch.Tensor</em><em> or </em><em>numpy.array</em>) – node labels</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>accuracy</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.classification_margin">
+<code class="sig-name descname">classification_margin</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">true_label</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#classification_margin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.classification_margin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate classification margin for outputs.
+<cite>probs_true_label - probs_best_second_class</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> (<em>torch.Tensor</em>) – output vector (1 dimension)</p></li>
+<li><p><strong>true_label</strong> (<em>int</em>) – true label for this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>classification margin for this node</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.degree_normalize_adj">
+<code class="sig-name descname">degree_normalize_adj</code><span class="sig-paren">(</span><em class="sig-param">mx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#degree_normalize_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.degree_normalize_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Row-normalize sparse matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.degree_normalize_adj_tensor">
+<code class="sig-name descname">degree_normalize_adj_tensor</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">sparse=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#degree_normalize_adj_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.degree_normalize_adj_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>degree_normalize_adj_tensor.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.degree_normalize_sparse_tensor">
+<code class="sig-name descname">degree_normalize_sparse_tensor</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">fill_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#degree_normalize_sparse_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.degree_normalize_sparse_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>degree_normalize_sparse_tensor.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.degree_sequence_log_likelihood">
+<code class="sig-name descname">degree_sequence_log_likelihood</code><span class="sig-paren">(</span><em class="sig-param">degree_sequence</em>, <em class="sig-param">d_min</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#degree_sequence_log_likelihood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.degree_sequence_log_likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the (maximum) log likelihood of the Powerlaw distribution fit on a degree distribution.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.encode_onehot">
+<code class="sig-name descname">encode_onehot</code><span class="sig-paren">(</span><em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#encode_onehot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.encode_onehot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert label to onehot format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>numpy.array</em>) – node labels</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>onehot labels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.get_splits_each_class">
+<code class="sig-name descname">get_splits_each_class</code><span class="sig-paren">(</span><em class="sig-param">labels</em>, <em class="sig-param">train_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#get_splits_each_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.get_splits_each_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>We randomly sample n instances for class, where n = train_size.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.get_train_test">
+<code class="sig-name descname">get_train_test</code><span class="sig-paren">(</span><em class="sig-param">nnodes</em>, <em class="sig-param">test_size=0.8</em>, <em class="sig-param">stratify=None</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#get_train_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.get_train_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns training and test set without validation.
+It can be used for settings of different label rates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in total</p></li>
+<li><p><strong>test_size</strong> (<em>float</em>) – size of test set</p></li>
+<li><p><strong>stratify</strong> – data is expected to split in a stratified fashion. So stratify should be labels.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em>) – random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>idx_train</em> – node training indices</p></li>
+<li><p><em>idx_test</em> – node test indices</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.get_train_test_labelrate">
+<code class="sig-name descname">get_train_test_labelrate</code><span class="sig-paren">(</span><em class="sig-param">labels</em>, <em class="sig-param">label_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#get_train_test_labelrate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.get_train_test_labelrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get train test according to given label rate.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.get_train_val_test">
+<code class="sig-name descname">get_train_val_test</code><span class="sig-paren">(</span><em class="sig-param">nnodes</em>, <em class="sig-param">val_size=0.1</em>, <em class="sig-param">test_size=0.8</em>, <em class="sig-param">stratify=None</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#get_train_val_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.get_train_val_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This setting follows nettack/mettack, where we split the nodes
+into 10% training, 10% validation and 80% testing data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in total</p></li>
+<li><p><strong>val_size</strong> (<em>float</em>) – size of validation set</p></li>
+<li><p><strong>test_size</strong> (<em>float</em>) – size of test set</p></li>
+<li><p><strong>stratify</strong> – data is expected to split in a stratified fashion. So stratify should be labels.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em>) – random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>idx_train</em> – node training indices</p></li>
+<li><p><em>idx_val</em> – node validation indices</p></li>
+<li><p><em>idx_test</em> – node test indices</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.get_train_val_test_gcn">
+<code class="sig-name descname">get_train_val_test_gcn</code><span class="sig-paren">(</span><em class="sig-param">labels</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#get_train_val_test_gcn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.get_train_val_test_gcn" title="Permalink to this definition">¶</a></dt>
+<dd><p>This setting follows gcn, where we randomly sample 20 instances for each class
+as training data, 500 instances as validation data, 1000 instances as test data.
+Note here we are not using fixed splits. When random seed changes, the splits
+will also change.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>numpy.array</em>) – node labels</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em>) – random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>idx_train</em> – node training indices</p></li>
+<li><p><em>idx_val</em> – node validation indices</p></li>
+<li><p><em>idx_test</em> – node test indices</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.is_sparse_tensor">
+<code class="sig-name descname">is_sparse_tensor</code><span class="sig-paren">(</span><em class="sig-param">tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#is_sparse_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.is_sparse_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a tensor is sparse tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tensor</strong> (<em>torch.Tensor</em>) – given tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>whether a tensor is sparse tensor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.likelihood_ratio_filter">
+<code class="sig-name descname">likelihood_ratio_filter</code><span class="sig-paren">(</span><em class="sig-param">node_pairs</em>, <em class="sig-param">modified_adjacency</em>, <em class="sig-param">original_adjacency</em>, <em class="sig-param">d_min</em>, <em class="sig-param">threshold=0.004</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#likelihood_ratio_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.likelihood_ratio_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter the input node pairs based on the likelihood ratio test proposed by Zügner et al. 2018, see
+<a class="reference external" href="https://dl.acm.org/citation.cfm?id=3220078">https://dl.acm.org/citation.cfm?id=3220078</a>. In essence, for each node pair return 1 if adding/removing the edge
+between the two nodes does not violate the unnoticeability constraint, and return 0 otherwise. Assumes unweighted
+and undirected graphs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.normalize_adj">
+<code class="sig-name descname">normalize_adj</code><span class="sig-paren">(</span><em class="sig-param">mx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#normalize_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.normalize_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize sparse adjacency matrix,
+A’ = (D + I)^-1/2 * ( A + I ) * (D + I)^-1/2
+Row-normalize sparse matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mx</strong> (<em>scipy.sparse.csr_matrix</em>) – matrix to be normalized</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>scipy.sprase.lil_matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.normalize_adj_tensor">
+<code class="sig-name descname">normalize_adj_tensor</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">sparse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#normalize_adj_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.normalize_adj_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize adjacency tensor matrix.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.normalize_feature">
+<code class="sig-name descname">normalize_feature</code><span class="sig-paren">(</span><em class="sig-param">mx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#normalize_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.normalize_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Row-normalize sparse matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mx</strong> (<em>scipy.sparse.csr_matrix</em>) – matrix to be normalized</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>scipy.sprase.lil_matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.normalize_sparse_tensor">
+<code class="sig-name descname">normalize_sparse_tensor</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">fill_value=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#normalize_sparse_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.normalize_sparse_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize sparse tensor. Need to import torch_scatter</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.preprocess">
+<code class="sig-name descname">preprocess</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">features</em>, <em class="sig-param">labels</em>, <em class="sig-param">preprocess_adj=False</em>, <em class="sig-param">preprocess_feature=False</em>, <em class="sig-param">sparse=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert adj, features, labels from array or sparse matrix to
+torch Tensor, and normalize the input data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> (<em>scipy.sparse.csr_matrix</em>) – the adjacency matrix.</p></li>
+<li><p><strong>features</strong> (<em>scipy.sparse.csr_matrix</em>) – node features</p></li>
+<li><p><strong>labels</strong> (<em>numpy.array</em>) – node labels</p></li>
+<li><p><strong>preprocess_adj</strong> (<em>bool</em>) – whether to normalize the adjacency matrix</p></li>
+<li><p><strong>preprocess_feature</strong> – whether to normalize the feature matrix</p></li>
+<li><p><strong>sparse</strong> (<em>bool</em>) – whether to return sparse tensor</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.ravel_multiple_indices">
+<code class="sig-name descname">ravel_multiple_indices</code><span class="sig-paren">(</span><em class="sig-param">ixs</em>, <em class="sig-param">shape</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#ravel_multiple_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.ravel_multiple_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Flattens” multiple 2D input indices into indices on the flattened matrix, similar to np.ravel_multi_index.
+Does the same as ravel_index but for multiple indices at once.
+:param ixs: The array of n indices that will be flattened.
+:type ixs: array of ints shape (n, 2)
+:param shape: The shape of the corresponding matrix.
+:type shape: list or tuple of ints of length 2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The indices on the flattened matrix corresponding to the 2D input indices.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array of n ints between 0 and shape[0]*shape[1]-1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.sparse_mx_to_torch_sparse_tensor">
+<code class="sig-name descname">sparse_mx_to_torch_sparse_tensor</code><span class="sig-paren">(</span><em class="sig-param">sparse_mx</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#sparse_mx_to_torch_sparse_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.sparse_mx_to_torch_sparse_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a scipy sparse matrix to a torch sparse tensor.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.tensor2onehot">
+<code class="sig-name descname">tensor2onehot</code><span class="sig-paren">(</span><em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#tensor2onehot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.tensor2onehot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert label tensor to label onehot tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>labels</strong> (<em>torch.LongTensor</em>) – node labels</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>onehot labels tensor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.LongTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.to_scipy">
+<code class="sig-name descname">to_scipy</code><span class="sig-paren">(</span><em class="sig-param">tensor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#to_scipy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.to_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a dense/sparse tensor to scipy matrix</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.to_tensor">
+<code class="sig-name descname">to_tensor</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">features</em>, <em class="sig-param">labels=None</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#to_tensor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.to_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert adj, features, labels from array or sparse matrix to
+torch Tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> (<em>scipy.sparse.csr_matrix</em>) – the adjacency matrix.</p></li>
+<li><p><strong>features</strong> (<em>scipy.sparse.csr_matrix</em>) – node features</p></li>
+<li><p><strong>labels</strong> (<em>numpy.array</em>) – node labels</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.visualize">
+<code class="sig-name descname">visualize</code><span class="sig-paren">(</span><em class="sig-param">your_var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#visualize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>visualize computation graph</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.graph" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
