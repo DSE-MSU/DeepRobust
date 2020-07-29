@@ -15,17 +15,16 @@ import sys
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 # sys.path.append('/home/jinwei/Laboratory/api')
-sys.path.append('../..')
-
+sys.path.append('/Users/yaxinli/Desktop/MSU/DeepRobust')
 
 # -- Project information -----------------------------------------------------
 
-project = 'DeepRobust'
-copyright = ''
-author = 'Yaxin Li, Wei Jin, Han Xu'
+project = 'x'
+copyright = '2020, x'
+author = 'x'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = 'x'
 
 
 # -- General configuration ---------------------------------------------------
@@ -34,8 +33,7 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.autosummary',
-              'sphinx.ext.mathjax', ]
-
+        ]
 # extensions = ['sphinx.ext.napoleon']
 autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX',
                         ]
