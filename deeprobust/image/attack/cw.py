@@ -11,12 +11,27 @@ from deeprobust.image.optimizer import AdamOptimizer
 class CarliniWagner(BaseAttack):
     """
     C&W attack is an effective method to calcuate high-confidence adversarial examples.
-    
+
     References
     ----------
     .. [1] Carlini, N., & Wagner, D. (2017, May). Towards evaluating the robustness of neural networks. https://arxiv.org/pdf/1608.04644.pdf
-    
+
     This reimplementation is based on https://github.com/kkew3/pytorch-cw2
+
+    Examples
+    --------
+    from deeprobust.image.attack.cw import CarliniWagner
+    from deeprobust.image.netmodels.CNN import Net
+    from deeprobust.image.config import attack_params
+
+    model = Net()
+    model.load_state_dict(torch.load("./trained_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
+    model.eval()
+
+    x,y = datasets.MNIST()
+    attack = CarliniWagner(model, device='cuda')
+    AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, **attack_params['CW_MNIST])
+
     """
 
 
@@ -24,7 +39,7 @@ class CarliniWagner(BaseAttack):
         super(CarliniWagner, self).__init__(model, device)
         self.model = model
         self.device = device
-    
+
     def generate(self, image, label, target_label, **kwargs):
         """
         Call this function to generate adversarial examples.
@@ -38,12 +53,12 @@ class CarliniWagner(BaseAttack):
         kwargs :
             user defined paremeters
         """
- 
+
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         self.target = target_label
-        return self.cw(self.model, 
-                  self.image, 
+        return self.cw(self.model,
+                  self.image,
                   self.label,
                   self.target,
                   self.confidence,
@@ -57,13 +72,13 @@ class CarliniWagner(BaseAttack):
 
     def parse_params(self,
                      classnum = 10,
-                     confidence = 1e-4, 
-                     clip_max = 1, 
-                     clip_min = 0, 
-                     max_iterations = 1000, 
-                     initial_const = 1e-2, 
-                     binary_search_steps = 5, 
-                     learning_rate = 0.00001, 
+                     confidence = 1e-4,
+                     clip_max = 1,
+                     clip_min = 0,
+                     max_iterations = 1000,
+                     initial_const = 1e-2,
+                     binary_search_steps = 5,
+                     learning_rate = 0.00001,
                      abort_early = True):
         """
         Parse the user defined parameters.
@@ -120,7 +135,7 @@ class CarliniWagner(BaseAttack):
             w = torch.from_numpy(img_tanh.numpy())
 
             optimizer = AdamOptimizer(img_tanh.shape)
-            
+
             is_adversarial = False
 
             for iteration in range(max_iterations):
@@ -129,7 +144,7 @@ class CarliniWagner(BaseAttack):
                 img_adv, adv_grid = self.to_model_space(w)
                 img_adv = img_adv.to(self.device)
                 img_adv.requires_grad = True
-                
+
                 #output of the layer before softmax
                 output = model.get_logits(img_adv)
 
@@ -138,17 +153,17 @@ class CarliniWagner(BaseAttack):
 
                 #calculate loss function and gradient of loss funcition on x
                 loss, loss_grad = self.loss_function(
-                    img_adv, c, self.target, img_ori, self.confidence, self.clip_min, self.clip_max 
+                    img_adv, c, self.target, img_ori, self.confidence, self.clip_min, self.clip_max
                 )
 
-               
+
                 #calculate gradient of loss function on w
                 gradient = adv_grid.to(self.device) * loss_grad.to(self.device)
                 w = w + torch.from_numpy(optimizer(gradient.cpu().detach().numpy(), learning_rate)).float()
-                
+
                 if is_adversarial:
                     found_adv = True
-            
+
             #do binary search on c
             if found_adv:
                 c_high = c
@@ -159,7 +174,7 @@ class CarliniWagner(BaseAttack):
                 c *= 10
             else:
                 c = (c_high + c_low) / 2
-        
+
             if (step % 10 == 0):
                 print("iteration:{:.0f},loss:{:.4f}".format(step,loss))
 
@@ -172,7 +187,7 @@ class CarliniWagner(BaseAttack):
                 if not (loss <= 0.9999 * last_loss):
                     break
                 last_loss = loss
-        
+
 
         return img_adv.detach()
 
@@ -188,9 +203,9 @@ class CarliniWagner(BaseAttack):
         ## find the largest class except the target class
         targetlabel_mask = (torch.from_numpy(onehot_like(np.zeros(self.classnum), target))).double()
         secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).to(self.device)
-        
+
         secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy())
-      
+
         is_adv_loss = logits[0][secondlargest] - logits[0][target]
 
         # is_adv is True as soon as the is_adv_loss goes below 0
@@ -211,11 +226,11 @@ class CarliniWagner(BaseAttack):
 
 
         squared_l2_distance_grad = (2 / s ** 2) * (x_p - reconstructed_original)
-        
+
         #print(is_adv_loss_grad)
         total_loss_grad = squared_l2_distance_grad + const * is_adv_loss_grad
         return total_loss, total_loss_grad
-    
+
     def pending_f(self, x_p):
         """Pending is the loss function is less than 0
         """
@@ -223,7 +238,7 @@ class CarliniWagner(BaseAttack):
         secondlargest_mask = torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask
         targetlabel_mask = targetlabel_mask.to(self.device)
         secondlargest_mask = secondlargest_mask.to(self.device)
-        
+
         Zx_i = np.max((self.model.get_logits(x_p).double().to(self.device) * secondlargest_mask).cpu().detach().numpy())
         Zx_t = np.max((self.model.get_logits(x_p).double().to(self.device) * targetlabel_mask).cpu().detach().numpy())
 
@@ -264,5 +279,5 @@ class CarliniWagner(BaseAttack):
         grad = grad * b
         return x, grad
 
-    
-    
+
+

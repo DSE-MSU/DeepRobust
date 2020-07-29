@@ -1,3 +1,6 @@
+"""
+https://github.com/ferjad/Universal_Adversarial_Perturbation_pytorch
+"""
 from deeprobust.image.attack import deepfool
 import torch.nn as nn
 import torch.nn.functional as F
@@ -87,7 +90,7 @@ def universal_adversarial_perturbation(dataloader, model, device, xi=10, delta=0
     delta :
         controls the desired fooling rate (default = 80% fooling rate)
     max_iter_uni :
-        maximum number of iteration (default = 10*num_images) 
+        maximum number of iteration (default = 10*num_images)
     p :
         norm to be used (default = np.inf)
     num_classes :

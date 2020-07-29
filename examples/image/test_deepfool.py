@@ -23,7 +23,10 @@ CIFAR10
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
-model.load_state_dict(torch.load("deeprobust/image/save_models/CIFAR10_ResNet18_epoch_50.pt"))
+"""
+Change the model directory here
+"""
+model.load_state_dict(torch.load("./trained_models/CIFAR10_ResNet18_epoch_20.pt"))
 model.eval()
 
 # load dataset

@@ -1,3 +1,6 @@
+"""
+https://github.com/lordwarlock/Pytorch-BPDA/blob/master/bpda.py
+"""
 import torch
 import torch.nn as nn
 import torchvision.models as models

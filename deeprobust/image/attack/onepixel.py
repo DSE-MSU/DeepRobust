@@ -25,7 +25,7 @@ from deeprobust.image.utils import progress_bar
 class Onepixel(BaseAttack):
 	"""
 	Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.
-	
+
 	References
 	----------
 	Akhtar, N., & Mian, A. (2018).Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. IEEE Access, 6, 14410-14430.
@@ -51,7 +51,7 @@ class Onepixel(BaseAttack):
 		kwargs :
 		    user defined paremeters
 		"""
- 
+
 		label = label.type(torch.FloatTensor)
 
 		## check and parse parameters for attack
@@ -68,7 +68,7 @@ class Onepixel(BaseAttack):
 
 	def get_pred():
 		return self.adv_pred
-	
+
 	def parse_params(self,
 			 pixels = 1,
 			 maxiter = 100,
@@ -83,7 +83,7 @@ class Onepixel(BaseAttack):
 		Parameters
 		----------
 		pixels :
-		    maximum number of manipulated pixels 
+		    maximum number of manipulated pixels
 		maxiter :
 		    maximum number of iteration
 		popsize :
@@ -140,7 +140,7 @@ class Onepixel(BaseAttack):
 		predicted_class = np.argmax(predicted_probs)
 
 		if (not targeted_attack and predicted_class != label) or (targeted_attack and predicted_class == target_calss):
-			self.adv_pred = predict_class
+			self.adv_pred = predicted_class
 			return attack_image
 		return [None]
 

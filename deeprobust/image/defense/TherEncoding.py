@@ -49,7 +49,7 @@ def train(model, device, train_loader, optimizer, epoch):
         pred = output.argmax(dim = 1, keepdim = True)
         correct += pred.eq(target.view_as(pred)).sum().item()
 
-        print(pred,target)
+        #print(pred,target)
         #print every 10
         if batch_idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(

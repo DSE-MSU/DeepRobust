@@ -9,7 +9,7 @@ from torchvision import datasets, transforms
 import numpy as np
 from PIL import Image
 
-def train(model, data, device, maxepoch, data_path = './', seed = 100):
+def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, seed = 100):
 
     torch.manual_seed(seed)
 
@@ -32,6 +32,25 @@ def train(model, data, device, maxepoch, data_path = './', seed = 100):
         import deeprobust.image.netmodels.resnet as MODEL
         train_net = MODEL.ResNet50().to(device)
 
+    elif (model == 'densenet'):
+        import deeprobust.image.netmodels.densenet as MODEL
+        train_net = MODEL.densenet_cifar().to(device)
+
+    elif (model == 'vgg11'):
+        import deeprobust.image.netmodels.vgg as MODEL
+        train_net = MODEL.VGG('VGG11').to(device)
+    elif (model == 'vgg13'):
+        import deeprobust.image.netmodels.vgg as MODEL
+        train_net = MODEL.VGG('VGG13').to(device)
+    elif (model == 'vgg16'):
+        import deeprobust.image.netmodels.vgg as MODEL
+        train_net = MODEL.VGG('VGG16').to(device)
+    elif (model == 'vgg19'):
+        import deeprobust.image.netmodels.vgg as MODEL
+        train_net = MODEL.VGG('VGG19').to(device)
+
+
+
     optimizer = optim.SGD(train_net.parameters(), lr=0.01, momentum=0.5)
 
     save_model = True
@@ -41,7 +60,7 @@ def train(model, data, device, maxepoch, data_path = './', seed = 100):
         MODEL.train(train_net, device, train_loader, optimizer, epoch)
         MODEL.test(train_net, device, test_loader)
 
-        if (save_model and (epoch %10 == 0 or epoch == maxepoch)):
+        if (save_model and (epoch % (save_per_epoch) == 0 or epoch == maxepoch)):
             if os.path.isdir('./trained_models/'):
                 print('Save model.')
                 torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")

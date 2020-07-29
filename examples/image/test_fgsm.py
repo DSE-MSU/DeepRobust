@@ -32,13 +32,16 @@ model.load_state_dict(torch.load(args.destination + args.filename))
 model.eval()
 print("Finish loading network.")
 
-xx = datasets.MNIST('deeprobust/image/data', download = False).data[999:1000].to('cuda')
+xx = datasets.MNIST('./', download = False).data[999:1000].to('cuda')
 xx = xx.unsqueeze_(1).float()/255
-print(xx.size())
+#print(xx.size())
 
-## Set Targetå
-yy = datasets.MNIST('deeprobust/image/data', download = False).targets[999:1000].to('cuda')
+## Set Target
+yy = datasets.MNIST('./', download = False).targets[999:1000].to('cuda')
 
+"""
+Generate adversarial examples
+"""
 
 F1 = FGSM(model, device = "cuda")       ### or cuda
 AdvExArray = F1.generate(xx, yy, **attack_params['FGSM_MNIST'])
@@ -49,7 +52,10 @@ predict0= predict0.argmax(dim=1, keepdim=True)
 predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)
 
+print("original prediction:")
 print(predict0)
+
+print("attack prediction:")
 print(predict1)
 
 xx = xx.cpu().detach().numpy()
