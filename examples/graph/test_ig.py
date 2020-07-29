@@ -156,14 +156,14 @@ def single_test(adj, features, target_node, gcn=None):
 
 def multi_test_evasion():
     # test on 40 nodes on evasion attack
-    target_gcn = GCN(nfeat=features.shape[1],
-              nhid=16,
-              nclass=labels.max().item() + 1,
-              dropout=0.5, device=device)
+    # target_gcn = GCN(nfeat=features.shape[1],
+    #           nhid=16,
+    #           nclass=labels.max().item() + 1,
+    #           dropout=0.5, device=device)
+    # target_gcn = target_gcn.to(device)
+    # target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
-    target_gcn = target_gcn.to(device)
-
-    target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
+    target_gcn = surrogate
 
     cnt = 0
     degrees = adj.sum(0).A1
@@ -186,7 +186,7 @@ def multi_test_evasion():
 
 if __name__ == '__main__':
     # main()
-    # multi_test_poison()
     multi_test_evasion()
+    multi_test_poison()
 
 

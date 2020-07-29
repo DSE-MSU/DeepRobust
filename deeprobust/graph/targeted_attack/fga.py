@@ -48,7 +48,7 @@ class FGA(BaseAttack):
     >>> target_node = 0
     >>> model = FGA(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device='cpu').to('cpu')
     >>> # Attack
-    >>> model.attack(features, adj, labels, target_node, n_perturbations=5)
+    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5)
     >>> modified_adj = model.modified_adj
 
     """
@@ -57,9 +57,6 @@ class FGA(BaseAttack):
 
         super(FGA, self).__init__(model, nnodes, attack_structure=attack_structure, attack_features=attack_features, device=device)
 
-        if self.attack_structure:
-            self.adj_changes = Parameter(torch.FloatTensor(nnodes))
-            self.adj_changes.data.fill_(0)
 
         assert not self.attack_features, "not support attacking features"
 
@@ -67,7 +64,7 @@ class FGA(BaseAttack):
             self.feature_changes = Parameter(torch.FloatTensor(feature_shape))
             self.feature_changes.data.fill_(0)
 
-    def attack(self, ori_features, ori_adj, labels, target_node, n_perturbations, **kwargs):
+    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, verbose=False, **kwargs):
         """Generate perturbations on the input graph.
 
         Parameters
@@ -78,6 +75,8 @@ class FGA(BaseAttack):
             Original (unperturbed) node feature matrix
         labels :
             node labels
+        idx_train:
+            training node indices
         target_node : int
             target node index to be attacked
         n_perturbations : int
@@ -90,23 +89,26 @@ class FGA(BaseAttack):
         modified_adj, modified_features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
 
         self.surrogate.eval()
-        print('number of pertubations: %s' % n_perturbations)
-        pseudo_labels = self.surrogate.predict().detach().argmax(1)
+        if verbose == True:
+            print('number of pertubations: %s' % n_perturbations)
 
+        pseudo_labels = self.surrogate.predict().detach().argmax(1)
+        pseudo_labels[idx_train] = labels[idx_train]
+
+        modified_adj.requires_grad = True
         for i in range(n_perturbations):
-            modified_row = modified_adj[target_node] + self.adj_changes
-            modified_adj[target_node] = modified_row
             adj_norm = utils.normalize_adj_tensor(modified_adj)
 
             if self.attack_structure:
                 output = self.surrogate(modified_features, adj_norm)
                 loss = F.nll_loss(output[[target_node]], pseudo_labels[[target_node]])
-                grad = torch.autograd.grad(loss, self.adj_changes, retain_graph=True)[0]
-                grad = grad * (-2*modified_row + 1)
-                grad[target_node] = 0
+                grad = torch.autograd.grad(loss, modified_adj)[0]
+                # bidirection
+                grad = (grad[target_node] + grad[:, target_node]) * (-2*modified_adj[target_node] + 1)
+                grad[target_node] = -10
                 grad_argmax = torch.argmax(grad)
 
-            value = -2*modified_row[grad_argmax] + 1
+            value = -2*modified_adj[target_node][grad_argmax] + 1
             modified_adj.data[target_node][grad_argmax] += value
             modified_adj.data[grad_argmax][target_node] += value
 
@@ -118,4 +120,5 @@ class FGA(BaseAttack):
         self.check_adj(modified_adj)
         self.modified_adj = modified_adj
         # self.modified_features = modified_features
+
 

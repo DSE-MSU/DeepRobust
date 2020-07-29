@@ -30,8 +30,6 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 idx_unlabeled = np.union1d(idx_val, idx_test)
 
-# adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False, sparse=True)
-
 # Setup Surrogate model
 surrogate = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,
                 nhid=16, device=device)
@@ -51,7 +49,7 @@ def main():
     degrees = adj.sum(0).A1
     n_perturbations = int(degrees[u]) # How many perturbations to perform. Default: Degree of the node
 
-    model.attack(features, adj, labels, target_node, n_perturbations)
+    model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
 
     print('=== testing GCN on original(clean) graph ===')
     test(adj, features, target_node)
@@ -82,23 +80,6 @@ def test(adj, features, target_node):
 
     return acc_test.item()
 
-def single_test(adj, features, target_node):
-    ''' test on GCN (poisoning attack)'''
-    gcn = GCN(nfeat=features.shape[1],
-              nhid=16,
-              nclass=labels.max().item() + 1,
-              dropout=0.5, device=device)
-
-    gcn = gcn.to(device)
-
-    gcn.fit(features, adj, labels, idx_train)
-
-    gcn.eval()
-    output = gcn.predict()
-    probs = torch.exp(output[[target_node]])
-    acc_test = accuracy(output[[target_node]], labels[target_node])
-    # print("Test set results:", "accuracy= {:.4f}".format(acc_test.item()))
-    return acc_test.item()
 
 def select_nodes(target_gcn=None):
     '''
@@ -143,7 +124,7 @@ def multi_test_poison():
         n_perturbations = int(degrees[target_node])
         model = FGA(surrogate, nnodes=adj.shape[0], device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations)
+        model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
         modified_adj = model.modified_adj
         acc = single_test(modified_adj, features, target_node)
         if acc == 0:
@@ -174,15 +155,15 @@ def single_test(adj, features, target_node, gcn=None):
 
 def multi_test_evasion():
     # test on 40 nodes on evasion attack
-    target_gcn = GCN(nfeat=features.shape[1],
-              nhid=16,
-              nclass=labels.max().item() + 1,
-              dropout=0.5, device=device)
+    # target_gcn = GCN(nfeat=features.shape[1],
+    #           nhid=16,
+    #           nclass=labels.max().item() + 1,
+    #           dropout=0.5, device=device)
 
-    target_gcn = target_gcn.to(device)
+    # target_gcn = target_gcn.to(device)
+    # target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
-    target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
-
+    target_gcn = surrogate
     cnt = 0
     degrees = adj.sum(0).A1
     node_list = select_nodes(target_gcn)
@@ -193,7 +174,7 @@ def multi_test_evasion():
         n_perturbations = int(degrees[target_node])
         model = FGA(surrogate, nnodes=adj.shape[0], device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations)
+        model.attack(features, adj, labels, idx_train, target_node, n_perturbations)
         modified_adj = model.modified_adj
 
         acc = single_test(modified_adj, features, target_node, gcn=target_gcn)

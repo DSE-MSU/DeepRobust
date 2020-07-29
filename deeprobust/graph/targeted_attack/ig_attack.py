@@ -55,7 +55,7 @@ class IGAttack(BaseAttack):
     >>> target_node = 0
     >>> model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device='cpu').to('cpu')
     >>> # Attack
-    >>> model.attack(features, adj, labels, target_node, n_perturbations=5, steps=10)
+    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5, steps=10)
     >>> modified_adj = model.modified_adj
     >>> modified_features = model.modified_features
 
@@ -71,7 +71,7 @@ class IGAttack(BaseAttack):
         self.modified_features = None
         self.target_node = None
 
-    def attack(self, ori_features, ori_adj, labels, target_node, n_perturbations, steps=10, **kwargs):
+    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, steps=10, **kwargs):
         """Generate perturbations on the input graph.
 
         Parameters
@@ -82,6 +82,8 @@ class IGAttack(BaseAttack):
             Original (unperturbed) adjacency matrix
         labels :
             node labels
+        idx_train:
+            training nodes indices
         target_node : int
             target node index to be attacked
         n_perturbations : int
@@ -94,13 +96,16 @@ class IGAttack(BaseAttack):
         self.surrogate.eval()
         self.target_node = target_node
 
-        self.pseudo_labels = self.surrogate.predict().detach().argmax(1)
 
         modified_adj = ori_adj.todense()
         modified_features = ori_features.todense()
         adj, features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
-
         adj_norm = utils.normalize_adj_tensor(adj)
+
+        pseudo_labels = self.surrogate.predict().detach().argmax(1)
+        pseudo_labels[idx_train] = labels[idx_train]
+        self.pseudo_labels = pseudo_labels
+
         s_e = np.zeros(adj.shape[1])
         s_f = np.zeros(features.shape[1])
         if self.attack_structure:
@@ -111,6 +116,7 @@ class IGAttack(BaseAttack):
         for t in (range(n_perturbations)):
             s_e_max = np.argmax(s_e)
             s_f_max = np.argmax(s_f)
+
             if s_e[s_e_max] >= s_f[s_f_max]:
                 value = np.abs(1 - modified_adj[target_node, s_e_max])
                 modified_adj[target_node, s_e_max] = value
@@ -124,9 +130,10 @@ class IGAttack(BaseAttack):
         self.modified_features = sp.csr_matrix(modified_features)
         self.check_adj(modified_adj)
 
-
     def calc_importance_edge(self, features, adj_norm, labels, steps):
-        """Calculate integrated gradient for edges
+        """Calculate integrated gradient for edges. Although I think the the gradient should be
+        with respect to adj instead of adj_norm, but the calculation is too time-consuming. So I
+        finally decided to calculate the gradient of loss with respect to adj_norm
         """
         baseline_add = adj_norm.clone()
         baseline_remove = adj_norm.clone()
@@ -157,11 +164,13 @@ class IGAttack(BaseAttack):
                 avg_grad = (1 - adj_norm[i][j]) * _sum.mean()
 
             integrated_grad_list.append(avg_grad.detach().item())
+
         integrated_grad_list[i] = 0
         # make impossible perturbation to be negative
         integrated_grad_list = np.array(integrated_grad_list)
         adj = (adj_norm > 0).cpu().numpy()
         integrated_grad_list = (-2 * adj[self.target_node] + 1) * integrated_grad_list
+        integrated_grad_list[self.target_node] = -10
         return integrated_grad_list
 
     def calc_importance_feature(self, features, adj_norm, labels, steps):
