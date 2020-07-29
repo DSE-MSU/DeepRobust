@@ -1,9 +1,18 @@
 
-# DeepRobust
+[contributing-image]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
+[contributing-url]: https://github.com/rusty1s/pytorch_geometric/blob/master/CONTRIBUTING.md
 
-<img src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "340" alt="logo">
+
+<p align="center">
+<img center src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "450" alt="logo">
+</p>
+
+---------------------
 
 <a href="https://github.com/DSE-MSU/DeepRobust/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/DSE-MSU/DeepRobust"></a>  <a href="https://github.com/DSE-MSU/DeepRobust/network/members" ><img alt="GitHub forks" src="https://img.shields.io/github/forks/DSE-MSU/DeepRobust"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/DSE-MSU/DeepRobust"> <a href="https://github.com/DSE-MSU/DeepRobust/issues"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/DSE-MSU/DeepRobust"></a> <img alt="GitHub" src="https://img.shields.io/github/license/DSE-MSU/DeepRobust">
+[![Contributing][contributing-image]][contributing-url]
+
+
 
 <!-- <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/DSE-MSU/DeepRobust"> -->
 
@@ -11,7 +20,9 @@
 <div align=center><img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="500"/></div>
 <div align=center><img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/graph_attack_example.png" width="00" /></div>
 -->
-DeepRobust is a pytorch adversarial library for attack and defense methods on images and graphs. 
+**[Documentation](https://deeprobust.readthedocs.io/en/latest/)** | **[Paper](https://arxiv.org/abs/2005.06149)** | **[Samples](https://github.com/DSE-MSU/DeepRobust/tree/master/examples)**
+
+DeepRobust is a Pytorch adversarial library for attack and defense methods on images and graphs. 
 
 <p float="left">
   <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="430" />
@@ -31,15 +42,15 @@ Usage
 [Acknowledgement](#acknowledgement) 
 
 For more details about attacks and defenses, you can read the following papers.
-
-[Adversarial Attacks and Defenses on Graphs: A Review and Empirical Study](https://arxiv.org/abs/2003.00653)
-
-[Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
-
-Find a adversarial paper list here: [Adversarial learning papers](https://github.com/I-am-Bot/Adversarial-Learning-Papers)
+* [Adversarial Attacks and Defenses on Graphs: A Review and Empirical Study](https://arxiv.org/abs/2003.00653)
+* [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
 If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
+
+# Changelog
+* [07/2020] Add [documentation](https://deeprobust.readthedocs.io/en/latest/) page!
+* [06/2020] Add docstring to both image and graph package
 
 # Basic Environment
 * `python >= 3.6` (python 3.5 should also work)
