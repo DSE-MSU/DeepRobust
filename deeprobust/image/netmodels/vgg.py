@@ -1,4 +1,12 @@
-'''VGG11/13/16/19 in Pytorch.'''
+"""
+This is an implementation of VGG net.
+
+Reference
+---------
+..[1]Simonyan, Karen, and Andrew Zisserman. "Very deep convolutional networks for large-scale image recognition." arXiv preprint arXiv:1409.1556 (2014).
+..[2]Original implementation: https://github.com/kuangliu/pytorch-cifar
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,6 +20,9 @@ cfg = {
 
 
 class VGG(nn.Module):
+    """VGG.
+    """
+
     def __init__(self, vgg_name):
         super(VGG, self).__init__()
         self.features = self._make_layers(cfg[vgg_name])
@@ -40,6 +51,17 @@ class VGG(nn.Module):
 
 
 def test(model, device, test_loader):
+    """test.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    test_loader :
+        test_loader
+    """
     model.eval()
 
     test_loss = 0
@@ -61,6 +83,21 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
 
 def train(model, device, train_loader, optimizer, epoch):
+    """train.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    train_loader :
+        train_loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
+    """
     model.train()
 
     # lr = util.adjust_learning_rate(optimizer, epoch, args) # don't need it if we use Adam

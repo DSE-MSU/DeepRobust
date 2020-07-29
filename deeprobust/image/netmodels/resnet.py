@@ -1,31 +1,14 @@
 '''
 Properly implemented ResNet-s for CIFAR10 as described in paper [1].
 
-The implementation and structure of this file is hugely influenced by [2]
-which is implemented for ImageNet and doesn't have option A for identity.
-Moreover, most of the implementations on the web is copy-paste from
-torchvision's resnet and has wrong number of params.
+This implementation is from Yerlan Idelbayev.
 
-Proper ResNet-s for CIFAR10 (for fair comparision and etc.) has following
-number of layers and parameters:
-
-name      | layers | params
-ResNet20  |    20  | 0.27M
-ResNet32  |    32  | 0.46M
-ResNet44  |    44  | 0.66M
-ResNet56  |    56  | 0.85M
-ResNet110 |   110  |  1.7M
-ResNet1202|  1202  | 19.4m
-
-which this implementation indeed has.
-
-Reference:
-[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
+Reference
+---------
+..[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
     Deep Residual Learning for Image Recognition. arXiv:1512.03385
-[2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
+..[2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 
-If you use this implementation in you work, please don't forget to mention the
-author, Yerlan Idelbayev.
 '''
 
 import torch
@@ -88,6 +71,17 @@ class Bottleneck(nn.Module):
 
 class Net(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
+        """__init__.
+
+        Parameters
+        ----------
+        block :
+            block
+        num_blocks :
+            num_blocks
+        num_classes :
+            num_classes
+        """
         super(Net, self).__init__()
         self.in_planes = 64
 

@@ -1,3 +1,12 @@
+"""
+This is the implementation of fgsm training.
+
+References
+ ----------
+..[1]Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
+Intriguing properties of neural networks.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -15,11 +24,6 @@ from deeprobust.image.defense.base_defense import BaseDefense
 class FGSMtraining(BaseDefense):
     """
     FGSM adversarial training.
-
-    References
-    ----------
-    Szegedy, C., Zaremba, W., Sutskever, I., Estrach, J. B., Erhan, D., Goodfellow, I., & Fergus, R. (2014, January).
-    Intriguing properties of neural networks.
     """
 
     def __init__(self, model, device):
@@ -190,6 +194,19 @@ class FGSMtraining(BaseDefense):
             100. * correct_adv / len(test_loader.dataset)))
 
     def adv_data(self, data, output, ep = 0.3, num_steps = 40):
+        """Generate adversarial data for training.
+
+        Parameters
+        ----------
+        data :
+            data
+        output :
+            output
+        ep :
+            epsilon, perturbation budget.
+        num_steps :
+            iteration steps
+        """
         # """
         # Generate input(adversarial) data for training.
 

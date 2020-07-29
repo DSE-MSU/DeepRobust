@@ -1,3 +1,7 @@
+"""
+This is the base class for most of defense model.
+"""
+
 from abc import ABCMeta
 import torch
 

@@ -1,3 +1,7 @@
+"""
+This function help to train model of different archtecture easily. Select model archtecture and training data, then output corresponding model.
+
+"""
 from __future__ import print_function
 import os
 import argparse
@@ -10,6 +14,30 @@ import numpy as np
 from PIL import Image
 
 def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, seed = 100):
+    """train.
+
+    Parameters
+    ----------
+    model :
+        model(option:'CNN', 'ResNet18', 'ResNet34', 'ResNet50', 'densenet', 'vgg11', 'vgg13', 'vgg16', 'vgg19')
+    data :
+        data(option:'MNIST','CIFAR10')
+    device :
+        device(option:'cpu', 'cuda')
+    maxepoch :
+        training epoch
+    data_path :
+        data path(default = './')
+    save_per_epoch :
+        save_per_epoch(default = 10)
+    seed :
+        seed
+    
+    Examples
+    --------
+    >>>import deeprobust.image.netmodels.train_model as trainmodel
+    >>>trainmodel.train('CNN', 'MNIST', 'cuda', 20)
+    """
 
     torch.manual_seed(seed)
 

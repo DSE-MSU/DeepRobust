@@ -1,3 +1,11 @@
+"""
+This is an implementation of adversarial training variant: fast
+
+References
+----------
+.. [1] Wong, Eric, Leslie Rice, and J. Zico Kolter. "Fast is better than free: Revisiting adversarial training." arXiv preprint arXiv:2001.03994 (2020).
+"""
+
 import os
 
 import numpy as np
