@@ -34,7 +34,7 @@ release = '1.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.autosummary',
-              'sphinx.ext.mathjax', ]
+              'sphinx.ext.mathjax', 'sphinx.ext.viewcode', 'sphinx.ext.githubpages' ]
 
 # extensions = ['sphinx.ext.napoleon']
 autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX',

@@ -15,12 +15,14 @@ DeepRobust is a pytorch adversarial learning library, which contains most popula
 
 Installation
 ============
-#. Activate virtual environment
+#. Activate your virtual environment
+
 #. Install package
-   .. code-block:: none
-    $ git clone https://github.com/DSE-MSU/DeepRobust.git
-    $ cd DeepRobust
-    $ python setup.py install
+    .. code-block:: none
+    
+       $ git clone https://github.com/DSE-MSU/DeepRobust.git
+       $ cd DeepRobust
+       $ python setup.py install
 
 Package API
 ===========
