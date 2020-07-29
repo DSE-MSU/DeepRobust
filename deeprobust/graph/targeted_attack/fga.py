@@ -48,7 +48,7 @@ class FGA(BaseAttack):
     >>> target_node = 0
     >>> model = FGA(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=False, device='cpu').to('cpu')
     >>> # Attack
-    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5)
+    >>> model.attack(features, adj, labels, target_node, n_perturbations=5)
     >>> modified_adj = model.modified_adj
 
     """
@@ -67,7 +67,7 @@ class FGA(BaseAttack):
             self.feature_changes = Parameter(torch.FloatTensor(feature_shape))
             self.feature_changes.data.fill_(0)
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, **kwargs):
+    def attack(self, ori_features, ori_adj, labels, target_node, n_perturbations, **kwargs):
         """Generate perturbations on the input graph.
 
         Parameters
@@ -78,8 +78,6 @@ class FGA(BaseAttack):
             Original (unperturbed) node feature matrix
         labels :
             node labels
-        idx_train :
-            node training indices
         target_node : int
             target node index to be attacked
         n_perturbations : int
@@ -93,6 +91,8 @@ class FGA(BaseAttack):
 
         self.surrogate.eval()
         print('number of pertubations: %s' % n_perturbations)
+        pseudo_labels = self.surrogate.predict().detach().argmax(1)
+
         for i in range(n_perturbations):
             modified_row = modified_adj[target_node] + self.adj_changes
             modified_adj[target_node] = modified_row
@@ -100,8 +100,7 @@ class FGA(BaseAttack):
 
             if self.attack_structure:
                 output = self.surrogate(modified_features, adj_norm)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
-                # acc_train = accuracy(output[idx_train], labels[idx_train])
+                loss = F.nll_loss(output[[target_node]], pseudo_labels[[target_node]])
                 grad = torch.autograd.grad(loss, self.adj_changes, retain_graph=True)[0]
                 grad = grad * (-2*modified_row + 1)
                 grad[target_node] = 0

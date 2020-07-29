@@ -14,6 +14,7 @@ from deeprobust.graph.data import Dataset
 from deeprobust.graph.black_box import *
 from deeprobust.graph.global_attack import NIPA
 from deeprobust.graph.rl.nipa_config import args
+import warnings
 
 
 def add_nodes(self, features, adj, labels, idx_train, target_node, n_added=1, n_perturbations=10):
@@ -111,8 +112,8 @@ agent = NIPA(env, features, labels, env.idx_train, idx_val, idx_test, dict_of_li
         gm=args.gm, device=device)
 
 
-print("Warning: NIPA is not ready. Haven't reproduced the performance yet")
-print('Warning: if you find the training process is too slow, you can uncomment line 119 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
+warnings.warn("NIPA is not ready. Haven't reproduced the performance yet")
+warnings.warn('If you find the training process is too slow, you can uncomment line 207 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
 
 if args.phase == 'train':
     agent.train(num_episodes=10000, lr=args.learning_rate)

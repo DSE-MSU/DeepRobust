@@ -1,8 +1,6 @@
 """
-    Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective
-        https://arxiv.org/pdf/1906.04214.pdf
-    Tensorflow Implementation:
-        https://github.com/KaidiXu/GCN_ADV_Train
+    Adversarial Examples on Graph Data: Deep Insights into Attack and Defense
+        https://arxiv.org/pdf/1903.01610.pdf
 """
 
 import torch
@@ -57,7 +55,7 @@ class IGAttack(BaseAttack):
     >>> target_node = 0
     >>> model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device='cpu').to('cpu')
     >>> # Attack
-    >>> model.attack(features, adj, labels, idx_train, target_node, n_perturbations=5, steps=10)
+    >>> model.attack(features, adj, labels, target_node, n_perturbations=5, steps=10)
     >>> modified_adj = model.modified_adj
     >>> modified_features = model.modified_features
 
@@ -73,7 +71,7 @@ class IGAttack(BaseAttack):
         self.modified_features = None
         self.target_node = None
 
-    def attack(self, ori_features, ori_adj, labels, idx_train, target_node, n_perturbations, steps=10, **kwargs):
+    def attack(self, ori_features, ori_adj, labels, target_node, n_perturbations, steps=10, **kwargs):
         """Generate perturbations on the input graph.
 
         Parameters
@@ -84,8 +82,6 @@ class IGAttack(BaseAttack):
             Original (unperturbed) adjacency matrix
         labels :
             node labels
-        idx_train :
-            node training indices
         target_node : int
             target node index to be attacked
         n_perturbations : int
@@ -98,6 +94,8 @@ class IGAttack(BaseAttack):
         self.surrogate.eval()
         self.target_node = target_node
 
+        self.pseudo_labels = self.surrogate.predict().detach().argmax(1)
+
         modified_adj = ori_adj.todense()
         modified_features = ori_features.todense()
         adj, features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
@@ -106,9 +104,9 @@ class IGAttack(BaseAttack):
         s_e = np.zeros(adj.shape[1])
         s_f = np.zeros(features.shape[1])
         if self.attack_structure:
-            s_e = self.calc_importance_edge(features, adj_norm, labels, idx_train, steps)
+            s_e = self.calc_importance_edge(features, adj_norm, labels, steps)
         if self.attack_features:
-            s_f = self.calc_importance_feature(features, adj_norm, labels, idx_train, steps)
+            s_f = self.calc_importance_feature(features, adj_norm, labels, steps)
 
         for t in (range(n_perturbations)):
             s_e_max = np.argmax(s_e)
@@ -127,7 +125,7 @@ class IGAttack(BaseAttack):
         self.check_adj(modified_adj)
 
 
-    def calc_importance_edge(self, features, adj_norm, labels, idx_train, steps):
+    def calc_importance_edge(self, features, adj_norm, labels, steps):
         """Calculate integrated gradient for edges
         """
         baseline_add = adj_norm.clone()
@@ -147,7 +145,8 @@ class IGAttack(BaseAttack):
 
             for new_adj in scaled_inputs:
                 output = self.surrogate(features, new_adj)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
+                loss = F.nll_loss(output[[self.target_node]],
+                        self.pseudo_labels[[self.target_node]])
                 adj_grad = torch.autograd.grad(loss, adj_norm)[0]
                 adj_grad = adj_grad[i][j]
                 _sum += adj_grad
@@ -165,7 +164,7 @@ class IGAttack(BaseAttack):
         integrated_grad_list = (-2 * adj[self.target_node] + 1) * integrated_grad_list
         return integrated_grad_list
 
-    def calc_importance_feature(self, features, adj_norm, labels, idx_train, steps):
+    def calc_importance_feature(self, features, adj_norm, labels, steps):
         """Calculate integrated gradient for features
         """
         baseline_add = features.clone()
@@ -185,7 +184,9 @@ class IGAttack(BaseAttack):
 
             for new_features in scaled_inputs:
                 output = self.surrogate(new_features, adj_norm)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
+                loss = F.nll_loss(output[[self.target_node]],
+                        self.pseudo_labels[[self.target_node]])
+
                 feature_grad = torch.autograd.grad(loss, features)[0]
                 feature_grad = feature_grad[i][j]
                 _sum += feature_grad
