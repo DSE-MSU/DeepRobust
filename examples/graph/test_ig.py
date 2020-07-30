@@ -124,7 +124,7 @@ def multi_test_poison():
         n_perturbations = int(degrees[target_node])
         model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations, steps=20)
+        model.attack(features, adj, labels, idx_train, target_node, n_perturbations, steps=20)
         modified_adj = model.modified_adj
         modified_features = model.modified_features
         acc = single_test(modified_adj, modified_features, target_node)
@@ -175,7 +175,7 @@ def multi_test_evasion():
         n_perturbations = int(degrees[target_node])
         model = IGAttack(surrogate, nnodes=adj.shape[0], attack_structure=True, attack_features=True, device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations, steps=20)
+        model.attack(features, adj, labels, idx_train, target_node, n_perturbations, steps=20)
         modified_adj = model.modified_adj
         modified_features = model.modified_features
 
@@ -185,8 +185,8 @@ def multi_test_evasion():
     print('misclassification rate : %s' % (cnt/num))
 
 if __name__ == '__main__':
-    # main()
-    multi_test_evasion()
+    main()
+    # multi_test_evasion()
     multi_test_poison()
 
 
