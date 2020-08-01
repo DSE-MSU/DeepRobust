@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Starting to build your robust models with DeepRobust!
+Start building your robust models with DeepRobust!
 ================================
 .. comments original size: 626*238
 
