@@ -20,17 +20,18 @@ class CarliniWagner(BaseAttack):
 
     Examples
     --------
-    from deeprobust.image.attack.cw import CarliniWagner
-    from deeprobust.image.netmodels.CNN import Net
-    from deeprobust.image.config import attack_params
+    
+    >>> from deeprobust.image.attack.cw import CarliniWagner
+    >>> from deeprobust.image.netmodels.CNN import Net
+    >>> from deeprobust.image.config import attack_params
 
-    model = Net()
-    model.load_state_dict(torch.load("./trained_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
-    model.eval()
+    >>> model = Net()
+    >>> model.load_state_dict(torch.load("./trained_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cuda')))
+    >>> model.eval()
 
-    x,y = datasets.MNIST()
-    attack = CarliniWagner(model, device='cuda')
-    AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, **attack_params['CW_MNIST])
+    >>> x,y = datasets.MNIST()
+    >>> attack = CarliniWagner(model, device='cuda')
+    >>> AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, **attack_params['CW_MNIST])
 
     """
 
