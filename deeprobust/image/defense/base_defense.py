@@ -1,7 +1,3 @@
-"""
-This is the base class for most of defense model.
-"""
-
 from abc import ABCMeta
 import torch
 
@@ -20,7 +16,6 @@ class BaseDefense(object):
     def parse_params(self, **kwargs):
         """
         Parse user defined parameters
-
         """
         return True
 
@@ -46,15 +41,22 @@ class BaseDefense(object):
         Parameters
         ----------
         train_loader :
-            train_loader
+            training data
         optimizer :
-            optimizer
+            training optimizer
         epoch :
-            epoch
+            training epoch
         """
         return True
 
     def test(self, test_loader):
+        """test.
+
+        Parameters
+        ----------
+        test_loader :
+            testing data
+        """
         return True
     def adv_data(self, model, data, target, **kwargs):
         """
@@ -66,9 +68,9 @@ class BaseDefense(object):
         model :
             victim model
         data :
-            data
+            original data
         target :
-            target
+            target labels
         kwargs :
             parameters
         """
@@ -78,12 +80,13 @@ class BaseDefense(object):
         """
         Calculate training loss. 
         Overide this function to customize loss.
+        
         Parameters
         ----------
         output :
-            output
+            model outputs
         target :
-            target
+            true labels
         """
         return True
 
