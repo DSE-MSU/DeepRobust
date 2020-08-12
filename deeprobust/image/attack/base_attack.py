@@ -3,9 +3,8 @@ import torch
 
 class BaseAttack(object):
     """
-    Attack basic class.
+    Attack base class.
     """
-
 
     __metaclass__ = ABCMeta
 
@@ -15,7 +14,7 @@ class BaseAttack(object):
 
     def generate(self, image, label, **kwargs):
         """
-        Call this function to generate attack examples.
+        Overide this function for the main body of attack algorithm.
 
         Parameters
         ----------
@@ -29,6 +28,9 @@ class BaseAttack(object):
         return input
 
     def parse_params(self, **kwargs):
+        """
+        Parse user defined parameters.
+        """
         return True
 
     def check_type_device(self, image, label):
