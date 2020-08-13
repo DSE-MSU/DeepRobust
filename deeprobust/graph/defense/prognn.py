@@ -66,12 +66,13 @@ class ProGNN:
                         proxs=[prox_operators.prox_l1],
                         lr=args.lr_adj, alphas=[args.alpha])
 
-        warnings.warn("If you find the nuclear proximal operator runs too slow on Pubmed, you can  uncomment line 67-71 and use prox_nuclear_cuda to perform the proximal on gpu.")
+        # warnings.warn("If you find the nuclear proximal operator runs too slow on Pubmed, you can  uncomment line 67-71 and use prox_nuclear_cuda to perform the proximal on gpu.")
         # if args.dataset == "pubmed":
         #     self.optimizer_nuclear = PGD(estimator.parameters(),
         #               proxs=[prox_operators.prox_nuclear_cuda],
         #               lr=args.lr_adj, alphas=[args.beta])
         # else:
+        warnings.warn("If you find the nuclear proximal operator runs too slow, you can modify line 77 to use prox_operators.prox_nuclear_cuda instead of prox_operators.prox_nuclear to perform the proximal on GPU. See details in https://github.com/ChandlerBang/Pro-GNN/issues/1")
         self.optimizer_nuclear = PGD(estimator.parameters(),
                   proxs=[prox_operators.prox_nuclear],
                   lr=args.lr_adj, alphas=[args.beta])
