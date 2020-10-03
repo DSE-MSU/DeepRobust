@@ -1,0 +1,1236 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.targeted_attack package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprobust.graph.data package" href="deeprobust.graph.data.html" />
+    <link rel="prev" title="deeprobust.graph.global_attack package" href="deeprobust.graph.global_attack.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.graph.targeted_attack package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.base_attack">deeprobust.graph.targeted_attack.base_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.fga">deeprobust.graph.targeted_attack.fga module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.ig_attack">deeprobust.graph.targeted_attack.ig_attack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.nettack">deeprobust.graph.targeted_attack.nettack module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.rl_s2v">deeprobust.graph.targeted_attack.rl_s2v module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack.rnd">deeprobust.graph.targeted_attack.rnd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.graph.targeted_attack package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.graph.targeted_attack.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-graph-targeted-attack-package">
+<h1>deeprobust.graph.targeted_attack package<a class="headerlink" href="#deeprobust-graph-targeted-attack-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.base_attack">
+<span id="deeprobust-graph-targeted-attack-base-attack-module"></span><h2>deeprobust.graph.targeted_attack.base_attack module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.base_attack" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.base_attack.BaseAttack">
+<em class="property">class </em><code class="sig-name descname">BaseAttack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.base_attack.BaseAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for target attack classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.base_attack.BaseAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.base_attack.BaseAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix.</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.base_attack.BaseAttack.check_adj">
+<code class="sig-name descname">check_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.check_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.base_attack.BaseAttack.check_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the modified adjacency is symmetric and unweighted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.base_attack.BaseAttack.save_adj">
+<code class="sig-name descname">save_adj</code><span class="sig-paren">(</span><em class="sig-param">root='/tmp/'</em>, <em class="sig-param">name='mod_adj'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.save_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.base_attack.BaseAttack.save_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save attacked adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the variable should be saved</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – saved file name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.base_attack.BaseAttack.save_features">
+<code class="sig-name descname">save_features</code><span class="sig-paren">(</span><em class="sig-param">root='/tmp/'</em>, <em class="sig-param">name='mod_features'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.save_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.base_attack.BaseAttack.save_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save attacked node feature matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the variable should be saved</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – saved file name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.fga">
+<span id="deeprobust-graph-targeted-attack-fga-module"></span><h2>deeprobust.graph.targeted_attack.fga module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.fga" title="Permalink to this headline">¶</a></h2>
+<p>FGA: Fast Gradient Attack on Network Embedding (<a class="reference external" href="https://arxiv.org/pdf/1809.02797.pdf">https://arxiv.org/pdf/1809.02797.pdf</a>)
+Another very similar algorithm to mention here is FGSM (for graph data).
+It is mentioned in Zugner’s paper,
+Adversarial Attacks on Neural Networks for Graph Data, KDD’19</p>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.fga.FGA">
+<em class="property">class </em><code class="sig-name descname">FGA</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes</em>, <em class="sig-param">feature_shape=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.fga.FGA" title="Permalink to this definition">¶</a></dt>
+<dd><p>FGA/FGSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>feature_shape</strong> (<em>tuple</em>) – shape of the input node features</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">FGA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">FGA</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.fga.FGA.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.fga.FGA.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) node feature matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.ig_attack">
+<span id="deeprobust-graph-targeted-attack-ig-attack-module"></span><h2>deeprobust.graph.targeted_attack.ig_attack module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.ig_attack" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective</dt><dd><p><a class="reference external" href="https://arxiv.org/pdf/1906.04214.pdf">https://arxiv.org/pdf/1906.04214.pdf</a></p>
+</dd>
+<dt>Tensorflow Implementation:</dt><dd><p><a class="reference external" href="https://github.com/KaidiXu/GCN_ADV_Train">https://github.com/KaidiXu/GCN_ADV_Train</a></p>
+</dd>
+</dl>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack">
+<em class="property">class </em><code class="sig-name descname">IGAttack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">feature_shape=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=True</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>IGAttack: IG-FGSM. Adversarial Examples on Graph Data: Deep Insights into Attack and Defense, <a class="reference external" href="https://arxiv.org/pdf/1903.01610.pdf">https://arxiv.org/pdf/1903.01610.pdf</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>feature_shape</strong> (<em>tuple</em>) – shape of the input node features</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">IGAttack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">IGAttack</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_features</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">steps=10</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> – Original (unperturbed) node feature matrix</p></li>
+<li><p><strong>ori_adj</strong> – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – steps for computing integrated gradients</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge">
+<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for edges</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature">
+<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for features</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.nettack">
+<span id="deeprobust-graph-targeted-attack-nettack-module"></span><h2>deeprobust.graph.targeted_attack.nettack module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.nettack" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>Adversarial Attacks on Neural Networks for Graph Data. KDD 2018.</dt><dd><p><a class="reference external" href="https://arxiv.org/pdf/1805.07984.pdf">https://arxiv.org/pdf/1805.07984.pdf</a></p>
+</dd>
+<dt>Author’s Implementation</dt><dd><p><a class="reference external" href="https://github.com/danielzuegner/nettack">https://github.com/danielzuegner/nettack</a></p>
+</dd>
+</dl>
+<p>Since pytorch does not have good enough support to the operations
+on sparse tensor, this part of code is heavily based on the author’s implementation.</p>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack">
+<em class="property">class </em><code class="sig-name descname">Nettack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nettack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">Nettack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Nettack</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_features</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">direct=True</em>, <em class="sig-param">n_influencers=0</em>, <em class="sig-param">ll_cutoff=0.004</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> (<em>torch.Tensor</em><em> or </em><em>scipy.sparse.csr_matrix</em>) – Origina (unperturbed) node feature matrix. Note that
+torch.Tensor will be automatically transformed into
+scipy.sparse.csr_matrix</p></li>
+<li><p><strong>ori_adj</strong> (<em>torch.Tensor</em><em> or </em><em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix. Note that
+torch.Tensor will be automatically transformed into
+scipy.sparse.csr_matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+<li><p><strong>direct</strong> (<em>bool</em>) – whether to conduct direct attack</p></li>
+<li><p><strong>n_influencers</strong> – number of influencer nodes when performing indirect attack.
+(setting <cite>direct</cite> to False). When <cite>direct</cite> is True, it would be ignored.</p></li>
+<li><p><strong>ll_cutoff</strong> (<em>float</em>) – The critical value for the likelihood ratio test of the power law distributions.
+See the Chi square distribution with one degree of freedom. Default value 0.004
+corresponds to a p-value of roughly 0.95.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.compute_cooccurrence_constraint">
+<code class="sig-name descname">compute_cooccurrence_constraint</code><span class="sig-paren">(</span><em class="sig-param">nodes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.compute_cooccurrence_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.compute_cooccurrence_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Co-occurrence constraint as described in the paper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>np.array</em>) – Nodes whose features are considered for change</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Binary matrix of dimension len(nodes) x D. A 1 in entry n,d indicates that
+we are allowed to add feature d to the features of node n.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array [len(nodes), D], dtype bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.compute_new_a_hat_uv">
+<code class="sig-name descname">compute_new_a_hat_uv</code><span class="sig-paren">(</span><em class="sig-param">potential_edges</em>, <em class="sig-param">target_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.compute_new_a_hat_uv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.compute_new_a_hat_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the updated A_hat_square_uv entries that would result from inserting/deleting the input edges,
+for every edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>potential_edges</strong> (<em>np.array</em><em>, </em><em>shape</em><em> [</em><em>P</em><em>,</em><em>2</em><em>]</em><em>, </em><em>dtype int</em>) – The edges to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sp.sparse_matrix</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>updated A_hat_square_u entries, a sparse PxN matrix, where P is len(possible_edges)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.feature_scores">
+<code class="sig-name descname">feature_scores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.feature_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.feature_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute feature scores for all possible feature changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.filter_potential_singletons">
+<code class="sig-name descname">filter_potential_singletons</code><span class="sig-paren">(</span><em class="sig-param">modified_adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.filter_potential_singletons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.filter_potential_singletons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a mask for entries potentially leading to singleton nodes, i.e.
+one of the two nodes corresponding to the entry have degree 1 and there
+is an edge between the two nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.get_attacker_nodes">
+<code class="sig-name descname">get_attacker_nodes</code><span class="sig-paren">(</span><em class="sig-param">n=5</em>, <em class="sig-param">add_additional_nodes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.get_attacker_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.get_attacker_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the influencer nodes to attack node i based on
+the weights W and the attributes X.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset Nettack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.nettack.Nettack.struct_score">
+<code class="sig-name descname">struct_score</code><span class="sig-paren">(</span><em class="sig-param">a_hat_uv</em>, <em class="sig-param">XW</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.struct_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.Nettack.struct_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute structure scores, cf. Eq. 15 in the paper</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a_hat_uv</strong> (<em>sp.sparse_matrix</em><em>, </em><em>shape</em><em> [</em><em>P</em><em>,</em><em>2</em><em>]</em>) – Entries of matrix A_hat^2_u for each potential edge (see paper for explanation)</p></li>
+<li><p><strong>XW</strong> (<em>sp.sparse_matrix</em><em>, </em><em>shape</em><em> [</em><em>N</em><em>, </em><em>K</em><em>]</em><em>, </em><em>dtype float</em>) – The class logits for each node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The struct score for every row in a_hat_uv</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array [P,]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.targeted_attack.nettack.compute_alpha">
+<code class="sig-name descname">compute_alpha</code><span class="sig-paren">(</span><em class="sig-param">n</em>, <em class="sig-param">S_d</em>, <em class="sig-param">d_min</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#compute_alpha"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.compute_alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Approximate the alpha of a power law distribution.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.targeted_attack.nettack.compute_log_likelihood">
+<code class="sig-name descname">compute_log_likelihood</code><span class="sig-paren">(</span><em class="sig-param">n</em>, <em class="sig-param">alpha</em>, <em class="sig-param">S_d</em>, <em class="sig-param">d_min</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#compute_log_likelihood"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.compute_log_likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute log likelihood of the powerlaw fit.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="deeprobust.graph.targeted_attack.nettack.compute_new_a_hat_uv">
+<code class="sig-name descname">compute_new_a_hat_uv</code><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#compute_new_a_hat_uv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.compute_new_a_hat_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the new values [A_hat_square]_u for every potential edge, where u is the target node. C.f. Theorem 5.1
+equation 17.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.targeted_attack.nettack.filter_singletons">
+<code class="sig-name descname">filter_singletons</code><span class="sig-paren">(</span><em class="sig-param">edges</em>, <em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#filter_singletons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.filter_singletons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter edges that, if removed, would turn one or more nodes into singleton nodes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.targeted_attack.nettack.update_Sx">
+<code class="sig-name descname">update_Sx</code><span class="sig-paren">(</span><em class="sig-param">S_old</em>, <em class="sig-param">n_old</em>, <em class="sig-param">d_old</em>, <em class="sig-param">d_new</em>, <em class="sig-param">d_min</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#update_Sx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.nettack.update_Sx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update on the sum of log degrees S_d and n based on degree distribution resulting from inserting or deleting
+a single edge.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.rl_s2v">
+<span id="deeprobust-graph-targeted-attack-rl-s2v-module"></span><h2>deeprobust.graph.targeted_attack.rl_s2v module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.rl_s2v" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>Adversarial Attacks on Neural Networks for Graph Data. ICML 2018.</dt><dd><p><a class="reference external" href="https://arxiv.org/abs/1806.02371">https://arxiv.org/abs/1806.02371</a></p>
+</dd>
+<dt>Author’s Implementation</dt><dd><p><a class="reference external" href="https://github.com/Hanjun-Dai/graph_adversarial_attack">https://github.com/Hanjun-Dai/graph_adversarial_attack</a></p>
+</dd>
+</dl>
+<p>This part of code is adopted from the author’s implementation but modified
+to be integrated into the repository.</p>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.rl_s2v.RLS2V">
+<em class="property">class </em><code class="sig-name descname">RLS2V</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">features</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_meta</em>, <em class="sig-param">idx_test</em>, <em class="sig-param">list_action_space</em>, <em class="sig-param">num_mod</em>, <em class="sig-param">reward_type</em>, <em class="sig-param">batch_size=10</em>, <em class="sig-param">num_wrong=0</em>, <em class="sig-param">bilin_q=1</em>, <em class="sig-param">embed_dim=64</em>, <em class="sig-param">gm='mean_field'</em>, <em class="sig-param">mlp_hidden=64</em>, <em class="sig-param">max_lv=1</em>, <em class="sig-param">save_dir='checkpoint_dqn'</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rl_s2v.RLS2V" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reinforcement learning agent for RL-S2V attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> – Node attack environment</p></li>
+<li><p><strong>features</strong> – node features matrix</p></li>
+<li><p><strong>labels</strong> – labels</p></li>
+<li><p><strong>idx_meta</strong> – node meta indices</p></li>
+<li><p><strong>idx_test</strong> – node test indices</p></li>
+<li><p><strong>list_action_space</strong> (<em>list</em>) – list of action space</p></li>
+<li><p><strong>num_mod</strong> – number of modification (perturbation) on the graph</p></li>
+<li><p><strong>reward_type</strong> (<em>str</em>) – type of reward (e.g., ‘binary’)</p></li>
+<li><p><strong>batch_size</strong> – batch size for training DQN</p></li>
+<li><p><strong>save_dir</strong> – saving directory for model checkpoints</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>See details in <a class="reference external" href="https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py">https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py</a></p>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.rl_s2v.RLS2V.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">training=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rl_s2v.RLS2V.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate RL agent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.rl_s2v.RLS2V.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">num_steps=100000</em>, <em class="sig-param">lr=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rl_s2v.RLS2V.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train RL agent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack.rnd">
+<span id="deeprobust-graph-targeted-attack-rnd-module"></span><h2>deeprobust.graph.targeted_attack.rnd module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.rnd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.rnd.RND">
+<em class="property">class </em><code class="sig-name descname">RND</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rnd.RND" title="Permalink to this definition">¶</a></dt>
+<dd><p>As is described in Adversarial Attacks on Neural Networks for Graph Data (KDD’19),
+‘Rnd is an attack in which we modify the structure of the graph. Given our target node v,
+in each step we randomly sample nodes u whose lable is different from v and
+add the edge u,v to the graph structure</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">RND</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RND</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># # You can also inject nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># model.add_nodes(features, adj, labels, idx_train, target_node, n_added=10, n_perturbations=100)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># modified_adj = model.modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.rnd.RND.add_nodes">
+<code class="sig-name descname">add_nodes</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_added=1</em>, <em class="sig-param">n_perturbations=10</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rnd.RND.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each added node, first connect the target node with added fake nodes.
+Then randomly connect the fake nodes with other nodes whose label is
+different from target node. As for the node feature, simply copy arbitary node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.rnd.RND.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rnd.RND.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly sample nodes u whose lable is different from v and
+add the edge u,v to the graph structure. This baseline only
+has access to true class labels in training set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.targeted_attack">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.graph.targeted_attack" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.BaseAttack">
+<em class="property">class </em><code class="sig-name descname">BaseAttack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.BaseAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for target attack classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.BaseAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.BaseAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix.</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.BaseAttack.check_adj">
+<code class="sig-name descname">check_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.check_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.BaseAttack.check_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the modified adjacency is symmetric and unweighted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.BaseAttack.save_adj">
+<code class="sig-name descname">save_adj</code><span class="sig-paren">(</span><em class="sig-param">root='/tmp/'</em>, <em class="sig-param">name='mod_adj'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.save_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.BaseAttack.save_adj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save attacked adjacency matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the variable should be saved</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – saved file name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.BaseAttack.save_features">
+<code class="sig-name descname">save_features</code><span class="sig-paren">(</span><em class="sig-param">root='/tmp/'</em>, <em class="sig-param">name='mod_features'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/base_attack.html#BaseAttack.save_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.BaseAttack.save_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save attacked node feature matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the variable should be saved</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – saved file name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.FGA">
+<em class="property">class </em><code class="sig-name descname">FGA</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes</em>, <em class="sig-param">feature_shape=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.FGA" title="Permalink to this definition">¶</a></dt>
+<dd><p>FGA/FGSM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>feature_shape</strong> (<em>tuple</em>) – shape of the input node features</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">FGA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">FGA</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.FGA.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.FGA.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) node feature matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.RND">
+<em class="property">class </em><code class="sig-name descname">RND</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RND" title="Permalink to this definition">¶</a></dt>
+<dd><p>As is described in Adversarial Attacks on Neural Networks for Graph Data (KDD’19),
+‘Rnd is an attack in which we modify the structure of the graph. Given our target node v,
+in each step we randomly sample nodes u whose lable is different from v and
+add the edge u,v to the graph structure</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">RND</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RND</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># # You can also inject nodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># model.add_nodes(features, adj, labels, idx_train, target_node, n_added=10, n_perturbations=100)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># modified_adj = model.modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.RND.add_nodes">
+<code class="sig-name descname">add_nodes</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_added=1</em>, <em class="sig-param">n_perturbations=10</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RND.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each added node, first connect the target node with added fake nodes.
+Then randomly connect the fake nodes with other nodes whose label is
+different from target node. As for the node feature, simply copy arbitary node</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.RND.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rnd.html#RND.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RND.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly sample nodes u whose lable is different from v and
+add the edge u,v to the graph structure. This baseline only
+has access to true class labels in training set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.Nettack">
+<em class="property">class </em><code class="sig-name descname">Nettack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nettack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">Nettack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Nettack</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_features</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">direct=True</em>, <em class="sig-param">n_influencers=0</em>, <em class="sig-param">ll_cutoff=0.004</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> (<em>torch.Tensor</em><em> or </em><em>scipy.sparse.csr_matrix</em>) – Origina (unperturbed) node feature matrix. Note that
+torch.Tensor will be automatically transformed into
+scipy.sparse.csr_matrix</p></li>
+<li><p><strong>ori_adj</strong> (<em>torch.Tensor</em><em> or </em><em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix. Note that
+torch.Tensor will be automatically transformed into
+scipy.sparse.csr_matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+<li><p><strong>direct</strong> (<em>bool</em>) – whether to conduct direct attack</p></li>
+<li><p><strong>n_influencers</strong> – number of influencer nodes when performing indirect attack.
+(setting <cite>direct</cite> to False). When <cite>direct</cite> is True, it would be ignored.</p></li>
+<li><p><strong>ll_cutoff</strong> (<em>float</em>) – The critical value for the likelihood ratio test of the power law distributions.
+See the Chi square distribution with one degree of freedom. Default value 0.004
+corresponds to a p-value of roughly 0.95.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.compute_cooccurrence_constraint">
+<code class="sig-name descname">compute_cooccurrence_constraint</code><span class="sig-paren">(</span><em class="sig-param">nodes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.compute_cooccurrence_constraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.compute_cooccurrence_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Co-occurrence constraint as described in the paper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>np.array</em>) – Nodes whose features are considered for change</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Binary matrix of dimension len(nodes) x D. A 1 in entry n,d indicates that
+we are allowed to add feature d to the features of node n.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array [len(nodes), D], dtype bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.compute_new_a_hat_uv">
+<code class="sig-name descname">compute_new_a_hat_uv</code><span class="sig-paren">(</span><em class="sig-param">potential_edges</em>, <em class="sig-param">target_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.compute_new_a_hat_uv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.compute_new_a_hat_uv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the updated A_hat_square_uv entries that would result from inserting/deleting the input edges,
+for every edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>potential_edges</strong> (<em>np.array</em><em>, </em><em>shape</em><em> [</em><em>P</em><em>,</em><em>2</em><em>]</em><em>, </em><em>dtype int</em>) – The edges to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>sp.sparse_matrix</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>updated A_hat_square_u entries, a sparse PxN matrix, where P is len(possible_edges)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.feature_scores">
+<code class="sig-name descname">feature_scores</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.feature_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.feature_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute feature scores for all possible feature changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.filter_potential_singletons">
+<code class="sig-name descname">filter_potential_singletons</code><span class="sig-paren">(</span><em class="sig-param">modified_adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.filter_potential_singletons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.filter_potential_singletons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a mask for entries potentially leading to singleton nodes, i.e.
+one of the two nodes corresponding to the entry have degree 1 and there
+is an edge between the two nodes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.get_attacker_nodes">
+<code class="sig-name descname">get_attacker_nodes</code><span class="sig-paren">(</span><em class="sig-param">n=5</em>, <em class="sig-param">add_additional_nodes=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.get_attacker_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.get_attacker_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the influencer nodes to attack node i based on
+the weights W and the attributes X.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset Nettack</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.Nettack.struct_score">
+<code class="sig-name descname">struct_score</code><span class="sig-paren">(</span><em class="sig-param">a_hat_uv</em>, <em class="sig-param">XW</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/nettack.html#Nettack.struct_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.Nettack.struct_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute structure scores, cf. Eq. 15 in the paper</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a_hat_uv</strong> (<em>sp.sparse_matrix</em><em>, </em><em>shape</em><em> [</em><em>P</em><em>,</em><em>2</em><em>]</em>) – Entries of matrix A_hat^2_u for each potential edge (see paper for explanation)</p></li>
+<li><p><strong>XW</strong> (<em>sp.sparse_matrix</em><em>, </em><em>shape</em><em> [</em><em>N</em><em>, </em><em>K</em><em>]</em><em>, </em><em>dtype float</em>) – The class logits for each node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The struct score for every row in a_hat_uv</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array [P,]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.IGAttack">
+<em class="property">class </em><code class="sig-name descname">IGAttack</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">feature_shape=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=True</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>IGAttack: IG-FGSM. Adversarial Examples on Graph Data: Deep Insights into Attack and Defense, <a class="reference external" href="https://arxiv.org/pdf/1903.01610.pdf">https://arxiv.org/pdf/1903.01610.pdf</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model to attack</p></li>
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input graph</p></li>
+<li><p><strong>feature_shape</strong> (<em>tuple</em>) – shape of the input node features</p></li>
+<li><p><strong>attack_structure</strong> (<em>bool</em>) – whether to attack graph structure</p></li>
+<li><p><strong>attack_features</strong> (<em>bool</em>) – whether to attack node features</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">IGAttack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Surrogate model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span> <span class="o">=</span> <span class="n">GCN</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span>
+<span class="go">                nhid=16, dropout=0, with_relu=False, with_bias=False, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">surrogate</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Setup Attack Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_node</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">IGAttack</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Attack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_features</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.IGAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">steps=10</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate perturbations on the input graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_features</strong> – Original (unperturbed) node feature matrix</p></li>
+<li><p><strong>ori_adj</strong> – Original (unperturbed) adjacency matrix</p></li>
+<li><p><strong>labels</strong> – node labels</p></li>
+<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
+<li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
+be edge removals/additions or feature removals/additions.</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – steps for computing integrated gradients</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.IGAttack.calc_importance_edge">
+<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for edges</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature">
+<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for features</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.targeted_attack.RLS2V">
+<em class="property">class </em><code class="sig-name descname">RLS2V</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">features</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_meta</em>, <em class="sig-param">idx_test</em>, <em class="sig-param">list_action_space</em>, <em class="sig-param">num_mod</em>, <em class="sig-param">reward_type</em>, <em class="sig-param">batch_size=10</em>, <em class="sig-param">num_wrong=0</em>, <em class="sig-param">bilin_q=1</em>, <em class="sig-param">embed_dim=64</em>, <em class="sig-param">gm='mean_field'</em>, <em class="sig-param">mlp_hidden=64</em>, <em class="sig-param">max_lv=1</em>, <em class="sig-param">save_dir='checkpoint_dqn'</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RLS2V" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reinforcement learning agent for RL-S2V attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> – Node attack environment</p></li>
+<li><p><strong>features</strong> – node features matrix</p></li>
+<li><p><strong>labels</strong> – labels</p></li>
+<li><p><strong>idx_meta</strong> – node meta indices</p></li>
+<li><p><strong>idx_test</strong> – node test indices</p></li>
+<li><p><strong>list_action_space</strong> (<em>list</em>) – list of action space</p></li>
+<li><p><strong>num_mod</strong> – number of modification (perturbation) on the graph</p></li>
+<li><p><strong>reward_type</strong> (<em>str</em>) – type of reward (e.g., ‘binary’)</p></li>
+<li><p><strong>batch_size</strong> – batch size for training DQN</p></li>
+<li><p><strong>save_dir</strong> – saving directory for model checkpoints</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>See details in <a class="reference external" href="https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py">https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py</a></p>
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.RLS2V.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">training=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RLS2V.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate RL agent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.targeted_attack.RLS2V.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">num_steps=100000</em>, <em class="sig-param">lr=0.001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.RLS2V.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train RL agent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deeprobust.graph.data.html" class="btn btn-neutral float-right" title="deeprobust.graph.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="deeprobust.graph.global_attack.html" class="btn btn-neutral float-left" title="deeprobust.graph.global_attack package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

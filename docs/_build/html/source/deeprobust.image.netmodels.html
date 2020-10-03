@@ -1,0 +1,568 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.image.netmodels package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprobust.graph.global_attack package" href="deeprobust.graph.global_attack.html" />
+    <link rel="prev" title="deeprobust.image.defense package" href="deeprobust.image.defense.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.image.netmodels package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.CNN">deeprobust.image.netmodels.CNN module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.CNN_multilayer">deeprobust.image.netmodels.CNN_multilayer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.YOPOCNN">deeprobust.image.netmodels.YOPOCNN module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.densenet">deeprobust.image.netmodels.densenet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.preact_resnet">deeprobust.image.netmodels.preact_resnet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.resnet">deeprobust.image.netmodels.resnet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.train_model">deeprobust.image.netmodels.train_model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deeprobust-image-netmodels-train-resnet-module">deeprobust.image.netmodels.train_resnet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels.vgg">deeprobust.image.netmodels.vgg module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.image.netmodels">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.image.netmodels package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.image.netmodels.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-image-netmodels-package">
+<h1>deeprobust.image.netmodels package<a class="headerlink" href="#deeprobust-image-netmodels-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.CNN">
+<span id="deeprobust-image-netmodels-cnn-module"></span><h2>deeprobust.image.netmodels.CNN module<a class="headerlink" href="#module-deeprobust.image.netmodels.CNN" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementatio of a Convolution Neural Network with 2 Convolutional layer.</p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.CNN.Net">
+<em class="property">class </em><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">in_channel1=1</em>, <em class="sig-param">out_channel1=32</em>, <em class="sig-param">out_channel2=64</em>, <em class="sig-param">H=28</em>, <em class="sig-param">W=28</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN.html#Net"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN.Net" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model counterparts.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.CNN.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device(option:’cpu’, ‘cuda’)</p></li>
+<li><p><strong>test_loader</strong> – testing data loader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.CNN.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device(option:’cpu’,’cuda’)</p></li>
+<li><p><strong>train_loader</strong> – training data loader</p></li>
+<li><p><strong>optimizer</strong> – optimizer</p></li>
+<li><p><strong>epoch</strong> – epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.CNN_multilayer">
+<span id="deeprobust-image-netmodels-cnn-multilayer-module"></span><h2>deeprobust.image.netmodels.CNN_multilayer module<a class="headerlink" href="#module-deeprobust.image.netmodels.CNN_multilayer" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementation of Convolution Neural Network with multi conv layer.</p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.CNN_multilayer.Net">
+<em class="property">class </em><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">in_channel1=1</em>, <em class="sig-param">out_channel1=32</em>, <em class="sig-param">out_channel2=64</em>, <em class="sig-param">H=28</em>, <em class="sig-param">W=28</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN_multilayer.html#Net"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN_multilayer.Net" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.CNN_multilayer.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN_multilayer.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN_multilayer.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>test_loader</strong> – test_loader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.CNN_multilayer.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/CNN_multilayer.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.CNN_multilayer.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>train_loader</strong> – train_loader</p></li>
+<li><p><strong>optimizer</strong> – optimizer</p></li>
+<li><p><strong>epoch</strong> – epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.YOPOCNN">
+<span id="deeprobust-image-netmodels-yopocnn-module"></span><h2>deeprobust.image.netmodels.YOPOCNN module<a class="headerlink" href="#module-deeprobust.image.netmodels.YOPOCNN" title="Permalink to this headline">¶</a></h2>
+<p>Model for YOPO.</p>
+<div class="section" id="reference">
+<h3>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h3>
+<p>..[1]https://github.com/a1600012888/YOPO-You-Only-Propagate-Once</p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.YOPOCNN.Net">
+<em class="property">class </em><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">drop=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/YOPOCNN.html#Net"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.YOPOCNN.Net" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.densenet">
+<span id="deeprobust-image-netmodels-densenet-module"></span><h2>deeprobust.image.netmodels.densenet module<a class="headerlink" href="#module-deeprobust.image.netmodels.densenet" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementation of DenseNet model.</p>
+<div class="section" id="id1">
+<h3>Reference<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>..[1]Huang, Gao, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q. Weinberger. “Densely connected convolutional networks.” In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 4700-4708. 2017.
+..[2]Original implementation: <a class="reference external" href="https://github.com/kuangliu/pytorch-cifar">https://github.com/kuangliu/pytorch-cifar</a></p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.densenet.Bottleneck">
+<em class="property">class </em><code class="sig-name descname">Bottleneck</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">growth_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#Bottleneck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.Bottleneck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.densenet.DenseNet">
+<em class="property">class </em><code class="sig-name descname">DenseNet</code><span class="sig-paren">(</span><em class="sig-param">block</em>, <em class="sig-param">nblocks</em>, <em class="sig-param">growth_rate=12</em>, <em class="sig-param">reduction=0.5</em>, <em class="sig-param">num_classes=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#DenseNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.DenseNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>DenseNet.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.DenseNet121">
+<code class="sig-name descname">DenseNet121</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#DenseNet121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.DenseNet121" title="Permalink to this definition">¶</a></dt>
+<dd><p>DenseNet121.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.DenseNet161">
+<code class="sig-name descname">DenseNet161</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#DenseNet161"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.DenseNet161" title="Permalink to this definition">¶</a></dt>
+<dd><p>DenseNet161.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.DenseNet169">
+<code class="sig-name descname">DenseNet169</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#DenseNet169"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.DenseNet169" title="Permalink to this definition">¶</a></dt>
+<dd><p>DenseNet169.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.DenseNet201">
+<code class="sig-name descname">DenseNet201</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#DenseNet201"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.DenseNet201" title="Permalink to this definition">¶</a></dt>
+<dd><p>DenseNet201.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.densenet.Transition">
+<em class="property">class </em><code class="sig-name descname">Transition</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">out_planes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#Transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.Transition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.densenet_cifar">
+<code class="sig-name descname">densenet_cifar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#densenet_cifar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.densenet_cifar" title="Permalink to this definition">¶</a></dt>
+<dd><p>densenet_cifar.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>test_loader</strong> – test_loader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.densenet.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/densenet.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.densenet.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>train_loader</strong> – train_loader</p></li>
+<li><p><strong>optimizer</strong> – optimizer</p></li>
+<li><p><strong>epoch</strong> – epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.preact_resnet">
+<span id="deeprobust-image-netmodels-preact-resnet-module"></span><h2>deeprobust.image.netmodels.preact_resnet module<a class="headerlink" href="#module-deeprobust.image.netmodels.preact_resnet" title="Permalink to this headline">¶</a></h2>
+<p>This is an reimplementaiton of Pre-activation ResNet.</p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.preact_resnet.PreActBlock">
+<em class="property">class </em><code class="sig-name descname">PreActBlock</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">planes</em>, <em class="sig-param">stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/preact_resnet.html#PreActBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.preact_resnet.PreActBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-activation version of the BasicBlock.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.preact_resnet.PreActBottleneck">
+<em class="property">class </em><code class="sig-name descname">PreActBottleneck</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">planes</em>, <em class="sig-param">stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/preact_resnet.html#PreActBottleneck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.preact_resnet.PreActBottleneck" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-activation version of the original Bottleneck module.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.preact_resnet.PreActResNet">
+<em class="property">class </em><code class="sig-name descname">PreActResNet</code><span class="sig-paren">(</span><em class="sig-param">block</em>, <em class="sig-param">num_blocks</em>, <em class="sig-param">num_classes=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/preact_resnet.html#PreActResNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.preact_resnet.PreActResNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>PreActResNet.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.preact_resnet.PreActResNet18">
+<code class="sig-name descname">PreActResNet18</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/preact_resnet.html#PreActResNet18"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.preact_resnet.PreActResNet18" title="Permalink to this definition">¶</a></dt>
+<dd><p>PreActResNet18.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.resnet">
+<span id="deeprobust-image-netmodels-resnet-module"></span><h2>deeprobust.image.netmodels.resnet module<a class="headerlink" href="#module-deeprobust.image.netmodels.resnet" title="Permalink to this headline">¶</a></h2>
+<p>Properly implemented ResNet-s for CIFAR10 as described in paper [1].</p>
+<p>This implementation is from Yerlan Idelbayev.</p>
+<div class="section" id="id2">
+<h3>Reference<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt>..[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun</dt><dd><p>Deep Residual Learning for Image Recognition. arXiv:1512.03385</p>
+</dd>
+</dl>
+<p>..[2] <a class="reference external" href="https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py">https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py</a></p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.resnet.BasicBlock">
+<em class="property">class </em><code class="sig-name descname">BasicBlock</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">planes</em>, <em class="sig-param">stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/resnet.html#BasicBlock"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.resnet.BasicBlock" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.resnet.Bottleneck">
+<em class="property">class </em><code class="sig-name descname">Bottleneck</code><span class="sig-paren">(</span><em class="sig-param">in_planes</em>, <em class="sig-param">planes</em>, <em class="sig-param">stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/resnet.html#Bottleneck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.resnet.Bottleneck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.image.netmodels.resnet.Net">
+<em class="property">class </em><code class="sig-name descname">Net</code><span class="sig-paren">(</span><em class="sig-param">block</em>, <em class="sig-param">num_blocks</em>, <em class="sig-param">num_classes=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/resnet.html#Net"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.resnet.Net" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.train_model">
+<span id="deeprobust-image-netmodels-train-model-module"></span><h2>deeprobust.image.netmodels.train_model module<a class="headerlink" href="#module-deeprobust.image.netmodels.train_model" title="Permalink to this headline">¶</a></h2>
+<p>This function help to train model of different archtecture easily. Select model archtecture and training data, then output corresponding model.</p>
+<dl class="function">
+<dt id="deeprobust.image.netmodels.train_model.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">data</em>, <em class="sig-param">device</em>, <em class="sig-param">maxepoch</em>, <em class="sig-param">data_path='./'</em>, <em class="sig-param">save_per_epoch=10</em>, <em class="sig-param">seed=100</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/train_model.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.train_model.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model(option:’CNN’, ‘ResNet18’, ‘ResNet34’, ‘ResNet50’, ‘densenet’, ‘vgg11’, ‘vgg13’, ‘vgg16’, ‘vgg19’)</p></li>
+<li><p><strong>data</strong> – data(option:’MNIST’,’CIFAR10’)</p></li>
+<li><p><strong>device</strong> – device(option:’cpu’, ‘cuda’)</p></li>
+<li><p><strong>maxepoch</strong> – training epoch</p></li>
+<li><p><strong>data_path</strong> – data path(default = ‘./’)</p></li>
+<li><p><strong>save_per_epoch</strong> – save_per_epoch(default = 10)</p></li>
+<li><p><strong>seed</strong> – seed</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>&gt;&gt;&gt;import deeprobust.image.netmodels.train_model as trainmodel
+&gt;&gt;&gt;trainmodel.train(‘CNN’, ‘MNIST’, ‘cuda’, 20)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="deeprobust-image-netmodels-train-resnet-module">
+<h2>deeprobust.image.netmodels.train_resnet module<a class="headerlink" href="#deeprobust-image-netmodels-train-resnet-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels.vgg">
+<span id="deeprobust-image-netmodels-vgg-module"></span><h2>deeprobust.image.netmodels.vgg module<a class="headerlink" href="#module-deeprobust.image.netmodels.vgg" title="Permalink to this headline">¶</a></h2>
+<p>This is an implementation of VGG net.</p>
+<div class="section" id="id3">
+<h3>Reference<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>..[1]Simonyan, Karen, and Andrew Zisserman. “Very deep convolutional networks for large-scale image recognition.” arXiv preprint arXiv:1409.1556 (2014).
+..[2]Original implementation: https://github.com/kuangliu/pytorch-cifar</p>
+<dl class="class">
+<dt id="deeprobust.image.netmodels.vgg.VGG">
+<em class="property">class </em><code class="sig-name descname">VGG</code><span class="sig-paren">(</span><em class="sig-param">vgg_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/vgg.html#VGG"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.vgg.VGG" title="Permalink to this definition">¶</a></dt>
+<dd><p>VGG.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.vgg.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/vgg.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.vgg.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>test_loader</strong> – test_loader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.image.netmodels.vgg.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/netmodels/vgg.html#train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.netmodels.vgg.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – model</p></li>
+<li><p><strong>device</strong> – device</p></li>
+<li><p><strong>train_loader</strong> – train_loader</p></li>
+<li><p><strong>optimizer</strong> – optimizer</p></li>
+<li><p><strong>epoch</strong> – epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-deeprobust.image.netmodels">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.image.netmodels" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deeprobust.graph.global_attack.html" class="btn btn-neutral float-right" title="deeprobust.graph.global_attack package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="deeprobust.image.defense.html" class="btn btn-neutral float-left" title="deeprobust.image.defense package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

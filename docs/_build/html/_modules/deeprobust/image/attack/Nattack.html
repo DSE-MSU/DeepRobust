@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.image.attack.Nattack &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.image.attack.Nattack</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.image.attack.Nattack</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">deeprobust.image.attack.base_attack</span> <span class="kn">import</span> <span class="n">BaseAttack</span>
+<span class="kn">from</span> <span class="nn">deeprobust.image.utils</span> <span class="kn">import</span> <span class="n">onehot_like</span><span class="p">,</span> <span class="n">arctanh</span>
+
+
+<div class="viewcode-block" id="NATTACK"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.Nattack.NATTACK">[docs]</a><span class="k">class</span> <span class="nc">NATTACK</span><span class="p">(</span><span class="n">BaseAttack</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Nattack is a black box attack algorithm. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NATTACK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+<div class="viewcode-block" id="NATTACK.generate"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.Nattack.NATTACK.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this function to generate adversarial examples.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs :</span>
+<span class="sd">            user defined paremeters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+ 
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">attack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataloader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">classnum</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">clip_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_or_not</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_type_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataloader</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NATTACK.parse_params"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.Nattack.NATTACK.parse_params">[docs]</a>    <span class="k">def</span> <span class="nf">parse_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">dataloader</span><span class="p">,</span>
+                     <span class="n">classnum</span><span class="p">,</span>
+                     <span class="n">target_or_not</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                     <span class="n">clip_max</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                     <span class="n">clip_min</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                     <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+                     <span class="n">population</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+                     <span class="n">max_iterations</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+                     <span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                     <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.1</span>
+                     <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;parse_params.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataloader :</span>
+<span class="sd">            dataloader</span>
+<span class="sd">        classnum :</span>
+<span class="sd">            classnum</span>
+<span class="sd">        target_or_not :</span>
+<span class="sd">            target_or_not</span>
+<span class="sd">        clip_max :</span>
+<span class="sd">            maximum pixel value</span>
+<span class="sd">        clip_min :</span>
+<span class="sd">            minimum pixel value</span>
+<span class="sd">        epsilon :</span>
+<span class="sd">            perturb constraint    </span>
+<span class="sd">        population :</span>
+<span class="sd">            population</span>
+<span class="sd">        max_iterations :</span>
+<span class="sd">            maximum number of iterations</span>
+<span class="sd">        learning_rate :</span>
+<span class="sd">            learning rate</span>
+<span class="sd">        sigma :</span>
+<span class="sd">            sigma</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">dataloader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classnum</span> <span class="o">=</span> <span class="n">classnum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_or_not</span> <span class="o">=</span> <span class="n">target_or_not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_max</span> <span class="o">=</span> <span class="n">clip_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span> <span class="o">=</span> <span class="n">clip_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span> <span class="o">=</span> <span class="n">max_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+<span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">loader</span><span class="p">,</span> <span class="n">classnum</span><span class="p">,</span> <span class="n">clip_max</span><span class="p">,</span> <span class="n">clip_min</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">target_or_not</span><span class="p">):</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1">: </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;log_nattack&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start attack.&#39;</span><span class="p">)</span>
+
+    <span class="c1">#initialization</span>
+    <span class="n">totalImages</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">succImages</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">faillist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">successlist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">printlist</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">loader</span><span class="p">):</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;attack picture No. &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># chanel</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># length</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># width</span>
+
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">arctanh</span><span class="p">((</span><span class="n">inputs</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1">#mu = torch.from_numpy(np.random.randn(1, c, l, w) * 0.001).float()  # random initialize mean</span>
+        <span class="n">predict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
+        <span class="c1">## skip wrongly classified samples</span>
+        <span class="k">if</span>  <span class="n">predict</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">!=</span> <span class="n">targets</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;skip the wrong example &#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">totalImages</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1">## finding most possible mean</span>
+        <span class="k">for</span> <span class="n">runstep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iterations</span><span class="p">):</span>
+
+            <span class="c1"># sample points from normal distribution</span>
+            <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">mu</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">eps</span>
+
+            <span class="c1"># calculate g_z</span>
+            <span class="n">g_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="c1"># testing whether exists successful attack every 10 iterations.</span>
+            <span class="k">if</span> <span class="n">runstep</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="n">realdist</span> <span class="o">=</span> <span class="n">g_z</span> <span class="o">-</span> <span class="n">inputs</span>
+
+                <span class="n">realclipdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">realdist</span><span class="p">,</span> <span class="o">-</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+                <span class="n">realclipinput</span> <span class="o">=</span> <span class="n">realclipdist</span> <span class="o">+</span> <span class="n">inputs</span>
+
+                <span class="n">info</span> <span class="o">=</span> <span class="s1">&#39;inputs.shape__&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+                <span class="n">predict</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">realclipinput</span><span class="p">)</span>
+
+                <span class="c1">#pending attack</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">target_or_not</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">predict</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">targets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">realclipdist</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">epsilon</span><span class="p">):</span>
+                        <span class="n">succImages</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;succeed attack Images: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">succImages</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;     totalImages: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">totalImages</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;steps: &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">runstep</span><span class="p">))</span>
+                        <span class="n">successlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="n">printlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">runstep</span><span class="p">)</span>
+                        <span class="k">break</span>
+
+            <span class="c1"># calculate distance</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">g_z</span> <span class="o">-</span> <span class="n">inputs</span>
+            <span class="n">clipdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="o">-</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span>
+            <span class="n">proj_g_z</span> <span class="o">=</span> <span class="n">inputs</span> <span class="o">+</span> <span class="n">clipdist</span>
+            <span class="n">proj_g_z</span> <span class="o">=</span> <span class="n">proj_g_z</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">proj_g_z</span><span class="p">)</span>
+
+            <span class="c1"># get cw loss on sampled images</span>
+            <span class="n">target_onehot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="n">classnum</span><span class="p">))</span>
+            <span class="n">target_onehot</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">targets</span><span class="p">]</span><span class="o">=</span><span class="mf">1.</span>
+            <span class="n">real</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_onehot</span> <span class="o">*</span> <span class="n">outputs</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">other</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">target_onehot</span><span class="p">)</span> <span class="o">*</span> <span class="n">outputs</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">target_onehot</span> <span class="o">*</span> <span class="mf">10000.</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">loss1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">real</span> <span class="o">-</span> <span class="n">other</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span> <span class="mf">1e10</span><span class="p">)</span>
+            <span class="n">Reward</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">loss1</span>
+
+            <span class="c1"># update mean by nes</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="p">((</span><span class="n">Reward</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Reward</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">Reward</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-7</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">((</span><span class="n">learning_rate</span><span class="o">/</span><span class="p">(</span><span class="n">population</span><span class="o">*</span><span class="n">sigma</span><span class="p">))</span> <span class="o">*</span>
+                                               <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">eps</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">population</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">A</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+            <span class="n">faillist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed:&#39;</span><span class="p">,</span><span class="n">faillist</span><span class="o">.</span><span class="fm">__len__</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;....................................&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#print(&#39;succeed:&#39;,successlist.__len__())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;....................................&#39;</span><span class="p">)</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

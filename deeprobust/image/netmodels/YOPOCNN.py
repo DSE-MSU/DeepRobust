@@ -1,3 +1,12 @@
+"""
+Model for YOPO.
+
+Reference
+---------
+..[1]https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+
+"""
+
 from collections import OrderedDict
 import torch.nn as nn
 

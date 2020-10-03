@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.data package &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="deeprobust.graph.targeted_attack package" href="deeprobust.graph.targeted_attack.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.graph.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.data.attacked_data">deeprobust.graph.data.attacked_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.data.dataset">deeprobust.graph.data.dataset module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.data">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>deeprobust.graph.data package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/source/deeprobust.graph.data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deeprobust-graph-data-package">
+<h1>deeprobust.graph.data package<a class="headerlink" href="#deeprobust-graph-data-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-deeprobust.graph.data.attacked_data">
+<span id="deeprobust-graph-data-attacked-data-module"></span><h2>deeprobust.graph.data.attacked_data module<a class="headerlink" href="#module-deeprobust.graph.data.attacked_data" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.data.attacked_data.PrePtbDataset">
+<em class="property">class </em><code class="sig-name descname">PrePtbDataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">attack_method='meta'</em>, <em class="sig-param">ptb_rate=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PrePtbDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.attacked_data.PrePtbDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class manages pre-attacked adjacency matrix on different datasets. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack">https://github.com/danielzuegner/gnn-meta-attack</a>. The attacked graphs are downloaded from <a class="reference external" href="https://github.com/ChandlerBang/Pro-GNN/tree/master/meta">https://github.com/ChandlerBang/Pro-GNN/tree/master/meta</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name. It can be choosen from [‘cora’, ‘citeseer’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>attack_method</strong> – currently this class only support metattack and  nettack. Note ‘meta’, ‘metattack’ or ‘mettack’ will be interpreted as the same attack.</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load meta attacked data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;meta&#39;,</span>
+<span class="go">                        ptb_rate=0.05)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load nettacked data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;nettack&#39;,</span>
+<span class="go">                        ptb_rate=1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_nodes</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">target_nodes</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.data.attacked_data.PrePtbDataset.get_target_nodes">
+<code class="sig-name descname">get_target_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PrePtbDataset.get_target_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.attacked_data.PrePtbDataset.get_target_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.attacked_data.PtbDataset">
+<em class="property">class </em><code class="sig-name descname">PtbDataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">attack_method='mettack'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PtbDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.attacked_data.PtbDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class manages pre-attacked adjacency matrix on different datasets. Currently only support metattack under 5% perturbation. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack">https://github.com/danielzuegner/gnn-meta-attack</a>. The attacked graphs are downloaded from <a class="reference external" href="https://github.com/ChandlerBang/pytorch-gnn-meta-attack/tree/master/pre-attacked">https://github.com/ChandlerBang/pytorch-gnn-meta-attack/tree/master/pre-attacked</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name. It can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>attack_method</strong> – currently this class only support metattack. User can pass ‘meta’, ‘metattack’ or ‘mettack’ since all of them will be interpreted as the same attack.</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;meta&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.data.dataset">
+<span id="deeprobust-graph-data-dataset-module"></span><h2>deeprobust.graph.data.dataset module<a class="headerlink" href="#module-deeprobust.graph.data.dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.data.dataset.Dataset">
+<em class="property">class </em><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">setting='nettack'</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">require_mask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class contains four citation network datasets “cora”, “cora-ml”, “citeseer” and “pubmed”,
+and one blog dataset “Polblogs”.
+The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded from <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack/tree/master/data">https://github.com/danielzuegner/gnn-meta-attack/tree/master/data</a>, and ‘pubmed’ is from <a class="reference external" href="https://github.com/tkipf/gcn/tree/master/gcn/data">https://github.com/tkipf/gcn/tree/master/gcn/data</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>setting</strong> – there are two data splits settings. The ‘nettack’ setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e., different random seed would return different data splits)</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+<li><p><strong>require_mask</strong> – setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first create an instance of the Dataset class and then take out its attributes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.data.dataset.Dataset.download_npz">
+<code class="sig-name descname">download_npz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.download_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset.download_npz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download adjacen matrix npz file from self.url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.dataset.Dataset.get_train_val_test">
+<code class="sig-name descname">get_train_val_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.get_train_val_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset.get_train_val_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get training, validation, test splits according to self.setting (either ‘nettack’ or ‘gcn’).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.dataset.Dataset.largest_connected_components">
+<code class="sig-name descname">largest_connected_components</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_components=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.largest_connected_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset.largest_connected_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select k largest connected components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> (<em>scipy.sparse.csr_matrix</em>) – input adjacency matrix</p></li>
+<li><p><strong>n_components</strong> (<em>int</em>) – n largest connected components we want to select</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-deeprobust.graph.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-deeprobust.graph.data" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="deeprobust.graph.data.Dataset">
+<em class="property">class </em><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">setting='nettack'</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">require_mask=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class contains four citation network datasets “cora”, “cora-ml”, “citeseer” and “pubmed”,
+and one blog dataset “Polblogs”.
+The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded from <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack/tree/master/data">https://github.com/danielzuegner/gnn-meta-attack/tree/master/data</a>, and ‘pubmed’ is from <a class="reference external" href="https://github.com/tkipf/gcn/tree/master/gcn/data">https://github.com/tkipf/gcn/tree/master/gcn/data</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>setting</strong> – there are two data splits settings. The ‘nettack’ setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e., different random seed would return different data splits)</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+<li><p><strong>require_mask</strong> – setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first create an instance of the Dataset class and then take out its attributes.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.data.Dataset.download_npz">
+<code class="sig-name descname">download_npz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.download_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset.download_npz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download adjacen matrix npz file from self.url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.Dataset.get_train_val_test">
+<code class="sig-name descname">get_train_val_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.get_train_val_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset.get_train_val_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get training, validation, test splits according to self.setting (either ‘nettack’ or ‘gcn’).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.Dataset.largest_connected_components">
+<code class="sig-name descname">largest_connected_components</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_components=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.largest_connected_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset.largest_connected_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select k largest connected components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> (<em>scipy.sparse.csr_matrix</em>) – input adjacency matrix</p></li>
+<li><p><strong>n_components</strong> (<em>int</em>) – n largest connected components we want to select</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.PtbDataset">
+<em class="property">class </em><code class="sig-name descname">PtbDataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">attack_method='mettack'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PtbDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.PtbDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class manages pre-attacked adjacency matrix on different datasets. Currently only support metattack under 5% perturbation. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack">https://github.com/danielzuegner/gnn-meta-attack</a>. The attacked graphs are downloaded from <a class="reference external" href="https://github.com/ChandlerBang/pytorch-gnn-meta-attack/tree/master/pre-attacked">https://github.com/ChandlerBang/pytorch-gnn-meta-attack/tree/master/pre-attacked</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name. It can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>attack_method</strong> – currently this class only support metattack. User can pass ‘meta’, ‘metattack’ or ‘mettack’ since all of them will be interpreted as the same attack.</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;meta&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.PrePtbDataset">
+<em class="property">class </em><code class="sig-name descname">PrePtbDataset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">attack_method='meta'</em>, <em class="sig-param">ptb_rate=0.05</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PrePtbDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.PrePtbDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset class manages pre-attacked adjacency matrix on different datasets. Note metattack is generated by deeprobust/graph/global_attack/metattack.py. While PrePtbDataset provides pre-attacked graph generate by Zugner, <a class="reference external" href="https://github.com/danielzuegner/gnn-meta-attack">https://github.com/danielzuegner/gnn-meta-attack</a>. The attacked graphs are downloaded from <a class="reference external" href="https://github.com/ChandlerBang/Pro-GNN/tree/master/meta">https://github.com/ChandlerBang/Pro-GNN/tree/master/meta</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> – dataset name. It can be choosen from [‘cora’, ‘citeseer’, ‘polblogs’, ‘pubmed’]</p></li>
+<li><p><strong>attack_method</strong> – currently this class only support metattack and  nettack. Note ‘meta’, ‘metattack’ or ‘mettack’ will be interpreted as the same attack.</p></li>
+<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load meta attacked data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;meta&#39;,</span>
+<span class="go">                        ptb_rate=0.05)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load nettacked data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+<span class="go">                        name=&#39;cora&#39;,</span>
+<span class="go">                        attack_method=&#39;nettack&#39;,</span>
+<span class="go">                        ptb_rate=1.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">target_nodes</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">target_nodes</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.data.PrePtbDataset.get_target_nodes">
+<code class="sig-name descname">get_target_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/attacked_data.html#PrePtbDataset.get_target_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.PrePtbDataset.get_target_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="deeprobust.graph.targeted_attack.html" class="btn btn-neutral float-left" title="deeprobust.graph.targeted_attack package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,6 +1,8 @@
 """
-Reference: 
-Zhang, H., Yu, Y., Jiao, J., Xing, E., El Ghaoui, L., & Jordan, M. (2019, May). 
+This is an implementation of [1]
+References
+---------
+.. [1] Zhang, H., Yu, Y., Jiao, J., Xing, E., El Ghaoui, L., & Jordan, M. (2019, May). 
 Theoretically Principled Trade-off between Robustness and Accuracy. 
 In International Conference on Machine Learning (pp. 7472-7482).
 
@@ -21,6 +23,9 @@ from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.utils import adjust_learning_rate
 
 class TRADES(BaseDefense):
+    """TRADES.
+    """
+
     def __init__(self, model, device = 'cuda'):
         if not torch.cuda.is_available():
             print('CUDA not available, using cpu...')
@@ -31,6 +36,17 @@ class TRADES(BaseDefense):
         self.model = model.to(self.device)
 
     def generate(self, train_loader, test_loader, **kwargs):
+        """generate robust model.
+
+        Parameters
+        ----------
+        train_loader :
+            train_loader
+        test_loader :
+            test_loader
+        kwargs :
+            kwargs
+        """
         
         self.parse_params(**kwargs)
         

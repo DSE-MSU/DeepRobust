@@ -1,3 +1,11 @@
+"""
+This is an implementation of Thermometer Encoding.
+
+References
+----------
+.. [1] Buckman, Jacob, Aurko Roy, Colin Raffel, and Ian Goodfellow. "Thermometer encoding: One hot way to resist adversarial examples." In International Conference on Learning Representations. 2018.
+"""
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -21,6 +29,21 @@ import logging
 #     """
 
 def train(model, device, train_loader, optimizer, epoch):
+    """training process.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    train_loader :
+        training data loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
+    """
     logger.info('trainging')
     model.train()
     correct = 0
@@ -88,8 +111,9 @@ def test(model, device, test_loader):
 
 def Thermometer(x, levels, flattened = False):
     """
-
-    Output: Thermometer Encoding of the input.
+    Output
+    ------
+    Thermometer Encoding of the input.
     """
 
     onehot = one_hot(x, levels)
@@ -100,7 +124,9 @@ def Thermometer(x, levels, flattened = False):
 
 def one_hot(x, levels):
     """
-    Output: One hot Encoding of the input.
+    Output
+    ------
+    One hot Encoding of the input.
     """
 
     batch_size, channel, H, W = x.size()

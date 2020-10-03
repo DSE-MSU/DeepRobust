@@ -97,15 +97,20 @@ class ProxOperators():
         # print("nuclear norm: %.4f" % self.nuclear_norm)
 
         S = torch.clamp(S-alpha, min=0)
-        indices = torch.tensor(range(0, U.shape[0]),range(0, U.shape[0])).cuda()
-        values = S
-        diag_S = torch.sparse.FloatTensor(indices, values, torch.Size(U.shape))
+
         # diag_S = torch.diag(torch.clamp(S-alpha, min=0))
-        U = torch.spmm(U, diag_S)
+        # U = torch.spmm(U, diag_S)
+        # V = torch.matmul(U, V)
+
+        # make diag_S sparse matrix
+        indices = torch.tensor((range(0, len(S)), range(0, len(S)))).cuda()
+        values = S
+        diag_S = torch.sparse.FloatTensor(indices, values, torch.Size((len(S), len(S))))
+        V = torch.spmm(diag_S, V)
         V = torch.matmul(U, V)
         return V
 
-    def prox_nuclear_truncated(self, data, alpha, k=200):
+    def prox_nuclear_truncated(self, data, alpha, k=50):
         indices = torch.nonzero(data).t()
         values = data[indices[0], indices[1]] # modify this based on dimensionality
         data_sparse = sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
@@ -120,6 +125,7 @@ class ProxOperators():
         U, S, V = torch.svd(data)
         # self.nuclear_norm = S.sum()
         # print(f"rank = {len(S.nonzero())}")
+        self.nuclear_norm = S.sum()
         S = torch.clamp(S-alpha, min=0)
         indices = torch.tensor([range(0, U.shape[0]),range(0, U.shape[0])]).cuda()
         values = S

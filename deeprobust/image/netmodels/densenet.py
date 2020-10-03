@@ -1,4 +1,11 @@
-'''DenseNet in PyTorch.'''
+"""
+This is an implementation of DenseNet model.
+
+Reference
+---------
+..[1]Huang, Gao, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q. Weinberger. "Densely connected convolutional networks." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 4700-4708. 2017.
+..[2]Original implementation: https://github.com/kuangliu/pytorch-cifar
+"""
 import math
 
 import torch
@@ -34,6 +41,10 @@ class Transition(nn.Module):
 
 
 class DenseNet(nn.Module):
+    """DenseNet.
+    
+    """
+
     def __init__(self, block, nblocks, growth_rate=12, reduction=0.5, num_classes=10):
         super(DenseNet, self).__init__()
         self.growth_rate = growth_rate
@@ -84,21 +95,42 @@ class DenseNet(nn.Module):
         return out
 
 def DenseNet121():
+    """DenseNet121.
+    """
     return DenseNet(Bottleneck, [6,12,24,16], growth_rate=32)
 
 def DenseNet169():
+    """DenseNet169.
+    """
     return DenseNet(Bottleneck, [6,12,32,32], growth_rate=32)
 
 def DenseNet201():
+    """DenseNet201.
+    """
     return DenseNet(Bottleneck, [6,12,48,32], growth_rate=32)
 
 def DenseNet161():
+    """DenseNet161.
+    """
     return DenseNet(Bottleneck, [6,12,36,24], growth_rate=48)
 
 def densenet_cifar():
+    """densenet_cifar.
+    """
     return DenseNet(Bottleneck, [6,12,24,16], growth_rate=12)
 
 def test(model, device, test_loader):
+    """test.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    test_loader :
+        test_loader
+    """
     model.eval()
 
     test_loss = 0
@@ -120,6 +152,21 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
 
 def train(model, device, train_loader, optimizer, epoch):
+    """train.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    train_loader :
+        train_loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
+    """
     model.train()
 
     # lr = util.adjust_learning_rate(optimizer, epoch, args) # don't need it if we use Adam

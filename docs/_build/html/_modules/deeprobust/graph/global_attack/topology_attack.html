@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.global_attack.topology_attack &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.graph.global_attack.topology_attack</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.graph.global_attack.topology_attack</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective</span>
+<span class="sd">        https://arxiv.org/pdf/1906.04214.pdf</span>
+<span class="sd">    Tensorflow Implementation:</span>
+<span class="sd">        https://github.com/KaidiXu/GCN_ADV_Train</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">from</span> <span class="nn">torch.nn</span> <span class="kn">import</span> <span class="n">functional</span> <span class="k">as</span> <span class="n">F</span>
+<span class="kn">from</span> <span class="nn">torch.nn.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">deeprobust.graph</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">BaseAttack</span>
+
+
+<div class="viewcode-block" id="PGDAttack"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.topology_attack.PGDAttack">[docs]</a><span class="k">class</span> <span class="nc">PGDAttack</span><span class="p">(</span><span class="n">BaseAttack</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;PGD attack for graph data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model :</span>
+<span class="sd">        model to attack. Default `None`.</span>
+<span class="sd">    nnodes : int</span>
+<span class="sd">        number of nodes in the input graph</span>
+<span class="sd">    loss_type: str</span>
+<span class="sd">        attack loss type, chosen from [&#39;CE&#39;, &#39;CW&#39;]</span>
+<span class="sd">    feature_shape : tuple</span>
+<span class="sd">        shape of the input node features</span>
+<span class="sd">    attack_structure : bool</span>
+<span class="sd">        whether to attack graph structure</span>
+<span class="sd">    attack_features : bool</span>
+<span class="sd">        whether to attack node features</span>
+<span class="sd">    device: str</span>
+<span class="sd">        &#39;cpu&#39; or &#39;cuda&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.defense import GCN</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.global_attack import PGDAttack</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.utils import preprocess</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False) # conver to tensor</span>
+<span class="sd">    &gt;&gt;&gt; idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test</span>
+<span class="sd">    &gt;&gt;&gt; # Setup Victim Model</span>
+<span class="sd">    &gt;&gt;&gt; victim_model = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,</span>
+<span class="sd">                        nhid=16, dropout=0.5, weight_decay=5e-4, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; victim_model.fit(features, adj, labels, idx_train)</span>
+<span class="sd">    &gt;&gt;&gt; # Setup Attack Model</span>
+<span class="sd">    &gt;&gt;&gt; model = PGDAttack(model=victim_model, nnodes=adj.shape[0], loss_type=&#39;CE&#39;, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; model.attack(features, adj, labels, idx_train, n_perturbations=10)</span>
+<span class="sd">    &gt;&gt;&gt; modified_adj = model.modified_adj</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loss_type</span><span class="o">=</span><span class="s1">&#39;CE&#39;</span><span class="p">,</span> <span class="n">feature_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PGDAttack</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">,</span> <span class="n">attack_structure</span><span class="p">,</span> <span class="n">attack_features</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">attack_features</span> <span class="ow">or</span> <span class="n">attack_structure</span><span class="p">,</span> <span class="s1">&#39;attack_features or attack_structure cannot be both False&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">=</span> <span class="n">loss_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_features</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">attack_structure</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">nnodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;Please give nnodes=&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nnodes</span><span class="o">*</span><span class="p">(</span><span class="n">nnodes</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">attack_features</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;Topology Attack does not support attack feature&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="PGDAttack.attack"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.topology_attack.PGDAttack.attack">[docs]</a>    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate perturbations on the input graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ori_features :</span>
+<span class="sd">            Original (unperturbed) node feature matrix</span>
+<span class="sd">        ori_adj :</span>
+<span class="sd">            Original (unperturbed) adjacency matrix</span>
+<span class="sd">        labels :</span>
+<span class="sd">            node labels</span>
+<span class="sd">        idx_train :</span>
+<span class="sd">            node training indices</span>
+<span class="sd">        n_perturbations : int</span>
+<span class="sd">            Number of perturbations on the input graph. Perturbations could</span>
+<span class="sd">            be edge removals/additions or feature removals/additions.</span>
+<span class="sd">        epochs:</span>
+<span class="sd">            number of training epochs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">victim_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_features</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">ori_features</span><span class="p">)</span>
+        <span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">victim_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">)):</span>
+            <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span>
+            <span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">victim_model</span><span class="p">(</span><span class="n">ori_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
+            <span class="c1"># loss = F.nll_loss(output[idx_train], labels[idx_train])</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+            <span class="n">adj_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s1">&#39;CE&#39;</span><span class="p">:</span>
+                <span class="n">lr</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">lr</span> <span class="o">*</span> <span class="n">adj_grad</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s1">&#39;CW&#39;</span><span class="p">:</span>
+                <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">lr</span> <span class="o">*</span> <span class="n">adj_grad</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">n_perturbations</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">):</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">best_loss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>
+        <span class="n">victim_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
+                <span class="n">sampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">sampled</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">sampled</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">n_perturbations</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sampled</span><span class="p">))</span>
+                <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span>
+                <span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">victim_model</span><span class="p">(</span><span class="n">ori_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+                <span class="c1"># loss = F.nll_loss(output[idx_train], labels[idx_train])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">best_loss</span> <span class="o">&lt;</span> <span class="n">loss</span><span class="p">:</span>
+                    <span class="n">best_loss</span> <span class="o">=</span> <span class="n">loss</span>
+                    <span class="n">best_s</span> <span class="o">=</span> <span class="n">sampled</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">best_s</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s2">&quot;CE&quot;</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s2">&quot;CW&quot;</span><span class="p">:</span>
+            <span class="n">onehot</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">tensor2onehot</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+            <span class="n">best_second_class</span> <span class="o">=</span> <span class="p">(</span><span class="n">output</span> <span class="o">-</span> <span class="mi">1000</span><span class="o">*</span><span class="n">onehot</span><span class="p">)</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)),</span> <span class="n">labels</span><span class="p">]</span> <span class="o">-</span> \
+                   <span class="n">output</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">output</span><span class="p">)),</span> <span class="n">best_second_class</span><span class="p">]</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">margin</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="c1"># loss = torch.clamp(margin.sum()+50, min=k)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="k">def</span> <span class="nf">projection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">):</span>
+        <span class="c1"># projected = torch.clamp(self.adj_changes, 0, 1)</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">n_perturbations</span><span class="p">:</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">miu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bisection</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">miu</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_modified_adj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="n">ori_adj</span><span class="p">)</span> <span class="o">-</span> <span class="n">ori_adj</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">tril_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">m</span><span class="p">[</span><span class="n">tril_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tril_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span>
+        <span class="c1"># m += m.t()</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+        <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">ori_adj</span>
+
+        <span class="k">return</span> <span class="n">modified_adj</span>
+
+    <span class="k">def</span> <span class="nf">bisection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">n_perturbations</span>
+
+        <span class="n">miu</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="k">while</span> <span class="p">((</span><span class="n">b</span><span class="o">-</span><span class="n">a</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">epsilon</span><span class="p">):</span>
+            <span class="n">miu</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+            <span class="c1"># Check if middle point is root</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">miu</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="c1"># Decide the side to repeat the steps</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">miu</span><span class="p">)</span><span class="o">*</span><span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">miu</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">miu</span>
+        <span class="c1"># print(&quot;The value of root is : &quot;,&quot;%.4f&quot; % miu)</span>
+        <span class="k">return</span> <span class="n">miu</span></div>
+
+
+<div class="viewcode-block" id="MinMax"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.topology_attack.MinMax">[docs]</a><span class="k">class</span> <span class="nc">MinMax</span><span class="p">(</span><span class="n">PGDAttack</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MinMax attack for graph data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model :</span>
+<span class="sd">        model to attack. Default `None`.</span>
+<span class="sd">    nnodes : int</span>
+<span class="sd">        number of nodes in the input graph</span>
+<span class="sd">    loss_type: str</span>
+<span class="sd">        attack loss type, chosen from [&#39;CE&#39;, &#39;CW&#39;]</span>
+<span class="sd">    feature_shape : tuple</span>
+<span class="sd">        shape of the input node features</span>
+<span class="sd">    attack_structure : bool</span>
+<span class="sd">        whether to attack graph structure</span>
+<span class="sd">    attack_features : bool</span>
+<span class="sd">        whether to attack node features</span>
+<span class="sd">    device: str</span>
+<span class="sd">        &#39;cpu&#39; or &#39;cuda&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.defense import GCN</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.global_attack import MinMax</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.utils import preprocess</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">    &gt;&gt;&gt; adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False) # conver to tensor</span>
+<span class="sd">    &gt;&gt;&gt; idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test</span>
+<span class="sd">    &gt;&gt;&gt; # Setup Victim Model</span>
+<span class="sd">    &gt;&gt;&gt; victim_model = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1,</span>
+<span class="sd">                        nhid=16, dropout=0.5, weight_decay=5e-4, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; victim_model.fit(features, adj, labels, idx_train)</span>
+<span class="sd">    &gt;&gt;&gt; # Setup Attack Model</span>
+<span class="sd">    &gt;&gt;&gt; model = MinMax(model=victim_model, nnodes=adj.shape[0], loss_type=&#39;CE&#39;, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; model.attack(features, adj, labels, idx_train, n_perturbations=10)</span>
+<span class="sd">    &gt;&gt;&gt; modified_adj = model.modified_adj</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loss_type</span><span class="o">=</span><span class="s1">&#39;CE&#39;</span><span class="p">,</span> <span class="n">feature_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attack_structure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attack_features</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">MinMax</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">,</span> <span class="n">loss_type</span><span class="p">,</span> <span class="n">feature_shape</span><span class="p">,</span> <span class="n">attack_structure</span><span class="p">,</span> <span class="n">attack_features</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MinMax.attack"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.topology_attack.MinMax.attack">[docs]</a>    <span class="k">def</span> <span class="nf">attack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate perturbations on the input graph.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ori_features :</span>
+<span class="sd">            Original (unperturbed) node feature matrix</span>
+<span class="sd">        ori_adj :</span>
+<span class="sd">            Original (unperturbed) adjacency matrix</span>
+<span class="sd">        labels :</span>
+<span class="sd">            node labels</span>
+<span class="sd">        idx_train :</span>
+<span class="sd">            node training indices</span>
+<span class="sd">        n_perturbations : int</span>
+<span class="sd">            Number of perturbations on the input graph. Perturbations could</span>
+<span class="sd">            be edge removals/additions or feature removals/additions.</span>
+<span class="sd">        epochs:</span>
+<span class="sd">            number of training epochs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">victim_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse_features</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">ori_features</span><span class="p">)</span>
+        <span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># optimizer</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">victim_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+        <span class="n">epochs</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="n">victim_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">)):</span>
+            <span class="c1"># update victim model</span>
+            <span class="n">victim_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+            <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span>
+            <span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">victim_model</span><span class="p">(</span><span class="n">ori_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+            <span class="c1"># generate pgd attack</span>
+            <span class="n">victim_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span>
+            <span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">victim_model</span><span class="p">(</span><span class="n">ori_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+            <span class="n">adj_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># adj_grad = self.adj_changes.grad</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s1">&#39;CE&#39;</span><span class="p">:</span>
+                <span class="n">lr</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">lr</span> <span class="o">*</span> <span class="n">adj_grad</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_type</span> <span class="o">==</span> <span class="s1">&#39;CW&#39;</span><span class="p">:</span>
+                <span class="n">lr</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">add_</span><span class="p">(</span><span class="n">lr</span> <span class="o">*</span> <span class="n">adj_grad</span><span class="p">)</span>
+
+            <span class="c1"># self.adj_changes.grad.zero_()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">n_perturbations</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

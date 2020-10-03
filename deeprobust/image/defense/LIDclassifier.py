@@ -1,8 +1,28 @@
+"""
+This is an implementation of LID detector.
+Currently this implementation is under testing.
+
+References
+----------
+.. [1] Ma, Xingjun, Bo Li, Yisen Wang, Sarah M. Erfani, Sudanthi Wijewickrema, Grant Schoenebeck, Dawn Song, Michael E. Houle, and James Bailey. "Characterizing adversarial subspaces using local intrinsic dimensionality." arXiv preprint arXiv:1801.02613 (2018).
+.. [2] Original code:t https://github.com/xingjunm/lid_adversarial_subspace_detection.
+"""
+
 from deeprobust.image.netmodels.CNN_multilayer import Net
 
 def train(self, device, train_loader, optimizer, epoch):
-    """
-    Training process.
+    """train process.
+
+    Parameters
+    ----------
+    device :
+        device(option:'cpu', 'cuda')
+    train_loader :
+        train data loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
     """
     self.model.train()
     correct = 0
@@ -32,9 +52,22 @@ def train(self, device, train_loader, optimizer, epoch):
         correct = 0
 
 def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
-    """
-    return: (lid values, labels)
+    """get_lid.
 
+    Parameters
+    ----------
+    model :
+        model
+    X_test :
+        clean data
+    X_test_noisy :
+        noisy data
+    X_test_adv :
+        adversarial data
+    k :
+        k
+    batch_size :
+        batch_size
     """
     funcs = [K.function([model.layers[0].input, K.learning_phase()], [out])
                  for out in get_layer_wise_activations(model, dataset)]

@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>deeprobust.graph.global_attack.nipa &mdash; DeepRobust 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> DeepRobust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>deeprobust.graph.global_attack.nipa</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for deeprobust.graph.global_attack.nipa</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach. WWW 2020.</span>
+<span class="sd">https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf</span>
+
+<span class="sd">Still on testing stage. Haven&#39;t reproduced the performance yet.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">deeprobust.graph.rl.nipa_q_net_node</span> <span class="kn">import</span> <span class="p">(</span><span class="n">NStepQNetNode</span><span class="p">,</span> <span class="n">QNetNode</span><span class="p">,</span>
+                                                 <span class="n">node_greedy_actions</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.rl.nstep_replay_mem</span> <span class="kn">import</span> <span class="n">NstepReplayMem</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.utils</span> <span class="kn">import</span> <span class="n">loss_acc</span>
+
+
+<div class="viewcode-block" id="NIPA"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.nipa.NIPA">[docs]</a><span class="k">class</span> <span class="nc">NIPA</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Reinforcement learning agent for NIPA attack.</span>
+<span class="sd">    https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    env :</span>
+<span class="sd">        Node attack environment</span>
+<span class="sd">    features :</span>
+<span class="sd">        node features matrix</span>
+<span class="sd">    labels :</span>
+<span class="sd">        labels</span>
+<span class="sd">    idx_meta :</span>
+<span class="sd">        node meta indices</span>
+<span class="sd">    idx_test :</span>
+<span class="sd">        node test indices</span>
+<span class="sd">    list_action_space : list</span>
+<span class="sd">        list of action space</span>
+<span class="sd">    num_mod :</span>
+<span class="sd">        number of modification (perturbation) on the graph</span>
+<span class="sd">    reward_type : str</span>
+<span class="sd">        type of reward (e.g., &#39;binary&#39;)</span>
+<span class="sd">    batch_size :</span>
+<span class="sd">        batch size for training DQN</span>
+<span class="sd">    save_dir :</span>
+<span class="sd">        saving directory for model checkpoints</span>
+<span class="sd">    device: str</span>
+<span class="sd">        &#39;cpu&#39; or &#39;cuda&#39;</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    See more details in https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nipa.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span><span class="p">,</span>
+            <span class="n">list_action_space</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">reward_type</span><span class="o">=</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">num_wrong</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bilin_q</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_dim</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">gm</span><span class="o">=</span><span class="s1">&#39;mean_field&#39;</span><span class="p">,</span>
+            <span class="n">mlp_hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">max_lv</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s1">&#39;checkpoint_dqn&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">assert</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;&#39;device&#39; cannot be None, please specify it&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">possible_labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span> <span class="o">=</span> <span class="n">idx_train</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span> <span class="o">=</span> <span class="n">idx_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="n">idx_test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_wrong</span> <span class="o">=</span> <span class="n">num_wrong</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_action_space</span> <span class="o">=</span> <span class="n">list_action_space</span>
+
+        <span class="n">degrees</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">list_action_space</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">degrees</span><span class="p">[</span><span class="n">degrees</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_injected</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">degrees</span><span class="p">)</span> <span class="o">-</span> <span class="n">N</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_injected</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">injected_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">n_injected</span><span class="p">:</span> <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reward_type</span> <span class="o">=</span> <span class="n">reward_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">save_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;mkdir -p </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">save_dir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gm</span> <span class="o">=</span> <span class="n">gm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_pool</span> <span class="o">=</span> <span class="n">NstepReplayMem</span><span class="p">(</span><span class="n">memory_size</span><span class="o">=</span><span class="mi">500000</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">balance_sample</span><span class="o">=</span><span class="n">reward_type</span> <span class="o">==</span> <span class="s1">&#39;binary&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;nipa&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">NStepQNetNode</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">list_action_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_injected</span><span class="p">,</span>
+                          <span class="n">bilin_q</span><span class="o">=</span><span class="n">bilin_q</span><span class="p">,</span> <span class="n">embed_dim</span><span class="o">=</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">mlp_hidden</span><span class="o">=</span><span class="n">mlp_hidden</span><span class="p">,</span>
+                          <span class="n">max_lv</span><span class="o">=</span><span class="n">max_lv</span><span class="p">,</span> <span class="n">gm</span><span class="o">=</span><span class="n">gm</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_net</span> <span class="o">=</span> <span class="n">NStepQNetNode</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">list_action_space</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_injected</span><span class="p">,</span>
+                          <span class="n">bilin_q</span><span class="o">=</span><span class="n">bilin_q</span><span class="p">,</span> <span class="n">embed_dim</span><span class="o">=</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">mlp_hidden</span><span class="o">=</span><span class="n">mlp_hidden</span><span class="p">,</span>
+                          <span class="n">max_lv</span><span class="o">=</span><span class="n">max_lv</span><span class="p">,</span> <span class="n">gm</span><span class="o">=</span><span class="n">gm</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_net</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_start</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="c1"># self.eps_step = 100000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps_step</span> <span class="o">=</span> <span class="mi">30000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GAMMA</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">burn_in</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_eval</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">take_snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">make_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_t</span><span class="p">,</span> <span class="n">greedy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span> <span class="o">+</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_start</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_end</span><span class="p">)</span>
+                <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps_step</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps_step</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">greedy</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">uniformRandActions</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">cur_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">getStateRef</span><span class="p">()</span>
+            <span class="c1"># list_at = self.env.uniformRandActions()</span>
+            <span class="n">list_at</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">first_nodes</span> <span class="k">if</span> <span class="n">time_t</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possible_actions</span><span class="p">(</span><span class="n">cur_state</span><span class="p">,</span> <span class="n">list_at</span><span class="p">,</span> <span class="n">time_t</span><span class="p">)</span>
+            <span class="n">actions</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">time_t</span><span class="p">,</span> <span class="n">cur_state</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">greedy_acts</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_inference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_state</span><span class="p">)</span>
+            <span class="c1"># actions = list(actions.cpu().numpy())</span>
+        <span class="k">return</span> <span class="n">actions</span>
+
+    <span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isActionFinished</span><span class="p">():</span>
+            <span class="n">list_at</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_actions</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">list_st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">cloneState</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">list_at</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">rewards</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isActionFinished</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isActionFinished</span><span class="p">():</span>
+                <span class="n">rewards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">rewards</span>
+                <span class="n">s_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">cloneState</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_at</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                <span class="n">s_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">cloneState</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isTerminal</span><span class="p">():</span>
+                <span class="n">rewards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">rewards</span>
+                <span class="n">s_prime</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># self.env.init_overall_steps()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">mem_pool</span><span class="o">.</span><span class="n">add_list</span><span class="p">(</span><span class="n">list_st</span><span class="p">,</span> <span class="n">list_at</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">s_prime</span><span class="p">,</span>
+                                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isTerminal</span><span class="p">()]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_at</span><span class="p">),</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="NIPA.eval"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.nipa.NIPA.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate RL agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">init_overall_steps</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isActionFinished</span><span class="p">():</span>
+                <span class="n">list_at</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_actions</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">greedy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># print(list_at)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">list_at</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isTerminal</span><span class="p">():</span>
+                <span class="k">break</span>
+
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">extra_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">modified_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_extra_adj</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">norm_tool</span><span class="o">.</span><span class="n">norm_extra</span><span class="p">(</span><span class="n">extra_adj</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">modified_label_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">classifier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">)</span>
+        <span class="n">loss</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">loss_acc</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[93m average test: acc </span><span class="si">%.5f</span><span class="se">\033</span><span class="s1">[0m&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">acc</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">training</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_eval</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">acc</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_eval</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----saving to best attacker since this is the best attack rate so far.----&#39;</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s1">&#39;epoch-best.model&#39;</span><span class="p">))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">,</span> <span class="s1">&#39;epoch-best.txt&#39;</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.4f</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">acc</span><span class="p">)</span>
+            <span class="c1"># with open(osp.join(self.save_dir, &#39;attack_solution.txt&#39;), &#39;w&#39;) as f:</span>
+            <span class="c1">#     for i in range(len(self.idx_meta)):</span>
+            <span class="c1">#         f.write(&#39;%d: [&#39; % self.idx_meta[i])</span>
+            <span class="c1">#         for e in self.env.modified_list[i].directed_edges:</span>
+            <span class="c1">#             f.write(&#39;(%d %d)&#39; % e)</span>
+            <span class="c1">#         f.write(&#39;] succ: %d\n&#39; % (self.env.binary_rewards[i]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">best_eval</span> <span class="o">=</span> <span class="n">acc</span></div>
+
+<div class="viewcode-block" id="NIPA.train"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.nipa.NIPA.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_episodes</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Train RL agent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">init_overall_steps</span><span class="p">()</span>
+        <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">burn_in</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;batch&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_pool</span><span class="o">.</span><span class="n">print_count</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i_episode</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_episodes</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">init_overall_steps</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">count</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">()</span>
+
+                <span class="n">cur_time</span><span class="p">,</span> <span class="n">list_st</span><span class="p">,</span> <span class="n">list_at</span><span class="p">,</span> <span class="n">list_rt</span><span class="p">,</span> <span class="n">list_s_primes</span><span class="p">,</span> <span class="n">list_term</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_pool</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span>
+                <span class="n">list_target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">list_rt</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">list_term</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possible_actions</span><span class="p">(</span><span class="n">list_st</span><span class="p">,</span> <span class="n">list_at</span><span class="p">,</span> <span class="n">cur_time</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">q_rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_net</span><span class="p">(</span><span class="n">cur_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">list_s_primes</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">greedy_acts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">list_target</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GAMMA</span> <span class="o">*</span> <span class="n">q_rhs</span>
+
+                <span class="c1"># list_target = list_target.view(-1, 1)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">q_sa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">cur_time</span><span class="p">,</span> <span class="n">list_st</span><span class="p">,</span> <span class="n">list_at</span><span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span><span class="n">q_sa</span><span class="p">,</span> <span class="n">list_target</span><span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+                <span class="c1"># print([x[0] for x in self.nnamed_parameters() if x[1].grad is None])</span>
+                <span class="c1"># for param in self.net.parameters():</span>
+                <span class="c1">#     if param.grad is None:</span>
+                <span class="c1">#         continue</span>
+                <span class="c1">#     param.grad.data.clamp_(-1, 1)</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+                <span class="c1"># pbar.set_description(&#39;eps: %.5f, loss: %0.5f, q_val: %.5f&#39; % (self.eps, loss, torch.mean(q_sa)) )</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;eps: </span><span class="si">%.5f</span><span class="s1">, loss: </span><span class="si">%0.5f</span><span class="s1">, q_val: </span><span class="si">%.5f</span><span class="s1">, list_target: </span><span class="si">%.5f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">q_sa</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">list_target</span><span class="p">))</span> <span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">isTerminal</span><span class="p">():</span>
+                    <span class="k">break</span>
+
+                <span class="c1"># if (t+1) % 50 == 0:</span>
+                <span class="c1">#     self.take_snapshot()</span>
+
+            <span class="k">if</span> <span class="n">i_episode</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">i_episode</span> <span class="o">%</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NIPA.possible_actions"><a class="viewcode-back" href="../../../../source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.nipa.NIPA.possible_actions">[docs]</a>    <span class="k">def</span> <span class="nf">possible_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_st</span><span class="p">,</span> <span class="n">list_at</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list_st:</span>
+<span class="sd">            current state</span>
+<span class="sd">        list_at:</span>
+<span class="sd">            current action</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            actions for next state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">t</span> <span class="o">%</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">injected_nodes</span><span class="p">,</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">list_st</span><span class="p">),</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_at</span><span class="p">)):</span>
+                <span class="n">a_prime</span> <span class="o">=</span> <span class="n">list_st</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_possible_nodes</span><span class="p">(</span><span class="n">list_at</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">actions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a_prime</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">actions</span>
+
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">possible_labels</span><span class="o">.</span><span class="n">repeat</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">list_st</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

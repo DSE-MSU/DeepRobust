@@ -446,10 +446,19 @@ class MetaApprox(BaseMeta):
 
     def inner_train(self, features, modified_adj, idx_train, idx_unlabeled, labels, labels_self_training):
         adj_norm = utils.normalize_adj_tensor(modified_adj)
-
         for j in range(self.train_iters):
+            # hidden = features
+            # for w, b in zip(self.weights, self.biases):
+            #     if self.sparse_features:
+            #         hidden = adj_norm @ torch.spmm(hidden, w) + b
+            #     else:
+            #         hidden = adj_norm @ hidden @ w + b
+            #     if self.with_relu:
+            #         hidden = F.relu(hidden)
+
             hidden = features
-            for w, b in zip(self.weights, self.biases):
+            for ix, w in enumerate(self.weights):
+                b = self.biases[ix] if self.with_bias else 0
                 if self.sparse_features:
                     hidden = adj_norm @ torch.spmm(hidden, w) + b
                 else:
@@ -470,7 +479,6 @@ class MetaApprox(BaseMeta):
 
             self.optimizer.zero_grad()
             loss_labeled.backward(retain_graph=True)
-            self.optimizer.step()
 
             if self.attack_structure:
                 self.adj_changes.grad.zero_()
@@ -478,6 +486,9 @@ class MetaApprox(BaseMeta):
             if self.attack_features:
                 self.feature_changes.grad.zero_()
                 self.feature_grad_sum += torch.autograd.grad(attack_loss, self.feature_changes, retain_graph=True)[0]
+
+            self.optimizer.step()
+
 
         loss_test_val = F.nll_loss(output[idx_unlabeled], labels[idx_unlabeled])
         print('GCN loss on unlabled data: {}'.format(loss_test_val.item()))

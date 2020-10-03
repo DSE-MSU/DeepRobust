@@ -1,3 +1,11 @@
+"""
+This is an implementation of pgd adversarial training.
+References
+----------
+..[1]Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017).
+Towards Deep Learning Models Resistant to Adversarial Attacks. stat, 1050, 9.
+"""
+
 import os
 import torch
 import torch.nn as nn
@@ -16,11 +24,6 @@ class PGDtraining(BaseDefense):
     """
     PGD adversarial training.
 
-    References
-    ----------
-    Mądry, A., Makelov, A., Schmidt, L., Tsipras, D., & Vladu, A. (2017).
-    Towards Deep Learning Models Resistant to Adversarial Attacks.
-    stat, 1050, 9.
     """
 
 

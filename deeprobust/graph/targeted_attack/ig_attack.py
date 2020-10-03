@@ -1,8 +1,6 @@
 """
-    Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective
-        https://arxiv.org/pdf/1906.04214.pdf
-    Tensorflow Implementation:
-        https://github.com/KaidiXu/GCN_ADV_Train
+    Adversarial Examples on Graph Data: Deep Insights into Attack and Defense
+        https://arxiv.org/pdf/1903.01610.pdf
 """
 
 import torch
@@ -84,8 +82,8 @@ class IGAttack(BaseAttack):
             Original (unperturbed) adjacency matrix
         labels :
             node labels
-        idx_train :
-            node training indices
+        idx_train:
+            training nodes indices
         target_node : int
             target node index to be attacked
         n_perturbations : int
@@ -98,21 +96,27 @@ class IGAttack(BaseAttack):
         self.surrogate.eval()
         self.target_node = target_node
 
+
         modified_adj = ori_adj.todense()
         modified_features = ori_features.todense()
         adj, features, labels = utils.to_tensor(modified_adj, modified_features, labels, device=self.device)
-
         adj_norm = utils.normalize_adj_tensor(adj)
+
+        pseudo_labels = self.surrogate.predict().detach().argmax(1)
+        pseudo_labels[idx_train] = labels[idx_train]
+        self.pseudo_labels = pseudo_labels
+
         s_e = np.zeros(adj.shape[1])
         s_f = np.zeros(features.shape[1])
         if self.attack_structure:
-            s_e = self.calc_importance_edge(features, adj_norm, labels, idx_train, steps)
+            s_e = self.calc_importance_edge(features, adj_norm, labels, steps)
         if self.attack_features:
-            s_f = self.calc_importance_feature(features, adj_norm, labels, idx_train, steps)
+            s_f = self.calc_importance_feature(features, adj_norm, labels, steps)
 
         for t in (range(n_perturbations)):
             s_e_max = np.argmax(s_e)
             s_f_max = np.argmax(s_f)
+
             if s_e[s_e_max] >= s_f[s_f_max]:
                 value = np.abs(1 - modified_adj[target_node, s_e_max])
                 modified_adj[target_node, s_e_max] = value
@@ -126,9 +130,10 @@ class IGAttack(BaseAttack):
         self.modified_features = sp.csr_matrix(modified_features)
         self.check_adj(modified_adj)
 
-
-    def calc_importance_edge(self, features, adj_norm, labels, idx_train, steps):
-        """Calculate integrated gradient for edges
+    def calc_importance_edge(self, features, adj_norm, labels, steps):
+        """Calculate integrated gradient for edges. Although I think the the gradient should be
+        with respect to adj instead of adj_norm, but the calculation is too time-consuming. So I
+        finally decided to calculate the gradient of loss with respect to adj_norm
         """
         baseline_add = adj_norm.clone()
         baseline_remove = adj_norm.clone()
@@ -147,7 +152,8 @@ class IGAttack(BaseAttack):
 
             for new_adj in scaled_inputs:
                 output = self.surrogate(features, new_adj)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
+                loss = F.nll_loss(output[[self.target_node]],
+                        self.pseudo_labels[[self.target_node]])
                 adj_grad = torch.autograd.grad(loss, adj_norm)[0]
                 adj_grad = adj_grad[i][j]
                 _sum += adj_grad
@@ -158,14 +164,16 @@ class IGAttack(BaseAttack):
                 avg_grad = (1 - adj_norm[i][j]) * _sum.mean()
 
             integrated_grad_list.append(avg_grad.detach().item())
+
         integrated_grad_list[i] = 0
         # make impossible perturbation to be negative
         integrated_grad_list = np.array(integrated_grad_list)
         adj = (adj_norm > 0).cpu().numpy()
         integrated_grad_list = (-2 * adj[self.target_node] + 1) * integrated_grad_list
+        integrated_grad_list[self.target_node] = -10
         return integrated_grad_list
 
-    def calc_importance_feature(self, features, adj_norm, labels, idx_train, steps):
+    def calc_importance_feature(self, features, adj_norm, labels, steps):
         """Calculate integrated gradient for features
         """
         baseline_add = features.clone()
@@ -185,7 +193,9 @@ class IGAttack(BaseAttack):
 
             for new_features in scaled_inputs:
                 output = self.surrogate(new_features, adj_norm)
-                loss = F.nll_loss(output[idx_train], labels[idx_train])
+                loss = F.nll_loss(output[[self.target_node]],
+                        self.pseudo_labels[[self.target_node]])
+
                 feature_grad = torch.autograd.grad(loss, features)[0]
                 feature_grad = feature_grad[i][j]
                 _sum += feature_grad

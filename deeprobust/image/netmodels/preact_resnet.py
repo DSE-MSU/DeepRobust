@@ -1,3 +1,6 @@
+"""
+This is an reimplementaiton of Pre-activation ResNet.
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -57,6 +60,9 @@ class PreActBottleneck(nn.Module):
 
 
 class PreActResNet(nn.Module):
+    """PreActResNet.
+    """
+
     def __init__(self, block, num_blocks, num_classes=10):
         super(PreActResNet, self).__init__()
         self.in_planes = 64
@@ -90,4 +96,6 @@ class PreActResNet(nn.Module):
 
 
 def PreActResNet18():
+    """PreActResNet18.
+    """
     return PreActResNet(PreActBlock, [2,2,2,2])

@@ -4,6 +4,7 @@ import torch
 from sklearn.model_selection import train_test_split
 import torch.sparse as ts
 import torch.nn.functional as F
+import warnings
 
 def encode_onehot(labels):
     """Convert label to onehot format.
@@ -146,6 +147,7 @@ def normalize_adj(mx):
         normalized matrix
     """
 
+    # TODO: maybe using coo format would be better?
     if type(mx) is not sp.lil.lil_matrix:
         mx = mx.tolil()
     if mx[0, 0] == 0 :
@@ -199,6 +201,7 @@ def normalize_adj_tensor(adj, sparse=False):
     """
     device = torch.device("cuda" if adj.is_cuda else "cpu")
     if sparse:
+        # warnings.warn('If you find the training process is too slow, you can uncomment line 207 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
         # TODO if this is too slow, uncomment the following code,
         # but you need to install torch_scatter
         # return normalize_sparse_tensor(adj)
@@ -282,7 +285,7 @@ def accuracy(output, labels):
     float
         accuracy
     """
-    if labels is int:
+    if not hasattr(labels, '__len__'):
         labels = [labels]
     if type(labels) is not torch.Tensor:
         labels = torch.LongTensor(labels)
@@ -330,11 +333,21 @@ def classification_margin(output, true_label):
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
-    indices = torch.from_numpy(
-        np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64))
-    values = torch.from_numpy(sparse_mx.data)
-    shape = torch.Size(sparse_mx.shape)
-    return torch.sparse.FloatTensor(indices, values, shape)
+    sparserow=torch.LongTensor(sparse_mx.row).unsqueeze(1)
+    sparsecol=torch.LongTensor(sparse_mx.col).unsqueeze(1)
+    sparseconcat=torch.cat((sparserow, sparsecol),1)
+    sparsedata=torch.FloatTensor(sparse_mx.data)
+    return torch.sparse.FloatTensor(sparseconcat.t(),sparsedata,torch.Size(sparse_mx.shape))
+
+	# slower version....
+    # sparse_mx = sparse_mx.tocoo().astype(np.float32)
+    # indices = torch.from_numpy(
+    #     np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64))
+    # values = torch.from_numpy(sparse_mx.data)
+    # shape = torch.Size(sparse_mx.shape)
+    # return torch.sparse.FloatTensor(indices, values, shape)
+
+
 
 def to_scipy(tensor):
     """Convert a dense/sparse tensor to scipy matrix"""

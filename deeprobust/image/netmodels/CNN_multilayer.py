@@ -1,3 +1,7 @@
+"""
+This is an implementation of Convolution Neural Network with multi conv layer.
+"""
+
 from __future__ import print_function
 import argparse
 import torch
@@ -53,6 +57,21 @@ class Net(nn.Module):
 
 
 def train(model, device, train_loader, optimizer, epoch):
+    """train.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    train_loader :
+        train_loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
+    """
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -70,6 +89,17 @@ def train(model, device, train_loader, optimizer, epoch):
 
 
 def test(model, device, test_loader):
+    """test.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device
+    test_loader :
+        test_loader
+    """
     model.eval()
 
     test_loss = 0

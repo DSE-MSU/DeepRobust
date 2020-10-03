@@ -1,11 +1,12 @@
 """
+This is an implementation of adversarial training variant: YOPO.
 References
 ----------
-Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019).
+.. [1] Zhang, D., Zhang, T., Lu, Y., Zhu, Z., & Dong, B. (2019).
 You only propagate once: Painless adversarial training using maximal principle.
 arXiv preprint arXiv:1905.00877.
 
-Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
+.. [2] Original code: https://github.com/a1600012888/YOPO-You-Only-Propagate-Once
 """
 
 import torch

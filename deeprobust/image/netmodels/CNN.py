@@ -1,3 +1,7 @@
+"""
+This is an implementatio of a Convolution Neural Network with 2 Convolutional layer.
+"""
+
 from __future__ import print_function
 import argparse
 import torch
@@ -9,6 +13,9 @@ import numpy as np
 from PIL import Image
 
 class Net(nn.Module):
+    """Model counterparts.
+    """
+
     def __init__(self, in_channel1 = 1, out_channel1 = 32, out_channel2 = 64, H = 28, W = 28):
         super(Net, self).__init__()
         self.H = H
@@ -52,6 +59,21 @@ class Net(nn.Module):
         return x
 
 def train(model, device, train_loader, optimizer, epoch):
+    """train network.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device(option:'cpu','cuda')
+    train_loader :
+        training data loader
+    optimizer :
+        optimizer
+    epoch :
+        epoch
+    """
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -69,6 +91,17 @@ def train(model, device, train_loader, optimizer, epoch):
 
 
 def test(model, device, test_loader):
+    """test network.
+
+    Parameters
+    ----------
+    model :
+        model
+    device :
+        device(option:'cpu', 'cuda')
+    test_loader :
+        testing data loader
+    """
     model.eval()
 
     test_loss = 0
