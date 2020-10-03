@@ -25,9 +25,10 @@ transform_val = transforms.Compose([
 test_loader  = torch.utils.data.DataLoader(
                 datasets.CIFAR10('deeprobust/image/data', train = False, download=True,
                 transform = transform_val),
-                batch_size = 1, shuffle=True) #, **kwargs)
+                batch_size = 10, shuffle=True) #, **kwargs)
 
-classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+classes = np.array(('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'))
 
 xx, yy = next(iter(test_loader))
 xx = xx.to('cuda').float()
@@ -42,9 +43,9 @@ predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)
 
 print('====== RESULT =====')
-print('true label',classes[yy])
-print('predict_orig',classes[predict0])
-print('predict_adv',classes[predict1])
+print('true label',classes[yy.cpu()])
+print('predict_orig',classes[predict0.cpu()])
+print('predict_adv',classes[predict1.cpu()])
 
 x_show = xx.cpu().numpy().swapaxes(1,3).swapaxes(1,2)[0]
 # print('xx:', x_show)
