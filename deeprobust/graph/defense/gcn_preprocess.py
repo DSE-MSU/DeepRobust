@@ -207,7 +207,7 @@ class GCNJaccard(GCN):
             node training indices
         idx_val :
             node validation indices. If not given (None), GCN training process will not adpot early stopping
-        threshold : int
+        threshold : float
             similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.
         train_iters : int
             number of training epochs
