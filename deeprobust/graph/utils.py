@@ -56,7 +56,7 @@ def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=F
         node labels
     preprocess_adj : bool
         whether to normalize the adjacency matrix
-    preprocess_feature :
+    preprocess_feature : bool
         whether to normalize the feature matrix
     sparse : bool
        whether to return sparse tensor
