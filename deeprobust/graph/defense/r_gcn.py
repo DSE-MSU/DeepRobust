@@ -69,7 +69,7 @@ class GGCL_D(Module):
         Att = torch.exp(-gamma * sigma)
         mean_out = adj_norm1 @ (miu * Att)
         sigma_out = adj_norm2 @ (sigma * Att * Att)
-        return mean_out, sigma
+        return mean_out, sigma_out
 
 
 class GaussianConvolution(Module):
