@@ -7,6 +7,7 @@ import sys
 import pickle as pkl
 import networkx as nx
 from deeprobust.graph.utils import get_train_val_test, get_train_val_test_gcn
+import zipfile
 
 class Dataset():
     """Dataset class contains four citation network datasets "cora", "cora-ml", "citeseer" and "pubmed",
@@ -40,8 +41,8 @@ class Dataset():
         self.name = name.lower()
         self.setting = setting.lower()
 
-        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed'], \
-            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed'
+        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed', 'acm', 'blogcatalog'], \
+            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed, acm, blogcatalog'
         assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
 
         self.seed = seed
@@ -71,6 +72,9 @@ class Dataset():
         if self.name == 'pubmed':
             return self.load_pubmed()
 
+        if self.name in ['acm', 'blogcatalog']:
+            return self.load_zip()
+
         if not osp.exists(self.data_filename):
             self.download_npz()
 
@@ -89,9 +93,46 @@ class Dataset():
     def download_pubmed(self, name):
         url = 'https://raw.githubusercontent.com/tkipf/gcn/master/gcn/data/'
         try:
+            print('Downlading', url)
             urllib.request.urlretrieve(url + name, osp.join(self.root, name))
         except:
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
+
+    def download_zip(self, name):
+        url = 'https://raw.githubusercontent.com/ChandlerBang/Pro-GNN/master/other_datasets/{}.zip'.\
+                format(name)
+        try:
+            print('Downlading', url)
+            urllib.request.urlretrieve(url, osp.join(self.root, name+'.zip'))
+        except:
+            raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
+
+    def load_zip(self):
+        data_filename = self.data_folder + '.zip'
+        name = self.name
+        if not osp.exists(data_filename):
+            self.download_zip(name)
+            with zipfile.ZipFile(data_filename, 'r') as zip_ref:
+                zip_ref.extractall(self.root)
+
+        feature_path = osp.join(self.data_folder, '{0}.feature'.format(name))
+        label_path = osp.join(self.data_folder, '{0}.label'.format(name))
+        graph_path = osp.join(self.data_folder, '{0}.edge'.format(name))
+
+        f = np.loadtxt(feature_path, dtype = float)
+        l = np.loadtxt(label_path, dtype = int)
+        features = sp.csr_matrix(f, dtype=np.float32)
+        # features = torch.FloatTensor(np.array(features.todense()))
+        struct_edges = np.genfromtxt(graph_path, dtype=np.int32)
+        sedges = np.array(list(struct_edges), dtype=np.int32).reshape(struct_edges.shape)
+        n = features.shape[0]
+        sadj = sp.coo_matrix((np.ones(sedges.shape[0]), (sedges[:, 0], sedges[:, 1])), shape=(n, n), dtype=np.float32)
+        sadj = sadj + sadj.T.multiply(sadj.T > sadj) - sadj.multiply(sadj.T > sadj)
+        label = np.array(l)
+
+        return sadj, features, label
+
+
 
 
     def load_pubmed(self):

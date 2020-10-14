@@ -21,6 +21,14 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
 # Full README
 [click here](https://github.com/DSE-MSU/DeepRobust)
 
+# Supported Datasets:
+* Cora
+* Cora-ML
+* Citeseer
+* Pubmed
+* ACM: [link1](https://github.com/zhumeiqiBUPT/AM-GCN) [link2](https://github.com/Jhy1993/HAN)
+* BlogCatalog: [link](https://github.com/mengzaiqiao/CAN)
+
 # Attack Methods
 |   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Links |
 |--------------------|------|--------------------|-------------|-------|----|
