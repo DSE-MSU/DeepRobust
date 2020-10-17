@@ -10,8 +10,8 @@ attack_params = {
 
     "PGD_CIFAR10": {
     'epsilon': 0.1,
-    'clip_max': (1 - 0.4914) / 0.2023,
-    'clip_min': (0-0.4914) / 0.2023,
+    'clip_max': 1.0,
+    'clip_min': 0.0,
     'print_process': True
     },
 
