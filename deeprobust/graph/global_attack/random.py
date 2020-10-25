@@ -1,6 +1,7 @@
-import random
 import numpy as np
 from deeprobust.graph.global_attack import BaseAttack
+import scipy.sparse as sp
+# import random
 
 
 class Random(BaseAttack):
@@ -99,7 +100,7 @@ class Random(BaseAttack):
 
         if type == 'remove':
             # sample edges to remove
-            nonzero = np.array(adj.nonzero()).T
+            nonzero = np.array(sp.triu(adj, k=1).nonzero()).T
             indices = np.random.permutation(nonzero)[: n_perturbations].T
             modified_adj[indices[0], indices[1]] = 0
             modified_adj[indices[1], indices[0]] = 0
@@ -135,7 +136,8 @@ class Random(BaseAttack):
         """
         while True:
             # t = tuple(np.random.randint(0, adj.shape[0], 2))
-            t = tuple(random.sample(range(0, adj.shape[0]), 2))
+            # t = tuple(random.sample(range(0, adj.shape[0]), 2))
+            t = tuple(np.random.choice(adj.shape[0], 2, replace=False))
             if t not in exclude:
                 yield t
                 exclude.add(t)
