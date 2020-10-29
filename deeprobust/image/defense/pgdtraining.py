@@ -61,14 +61,14 @@ class PGDtraining(BaseDefense):
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
-            if (self.save_model and epoch % 10 == 0):
-                if os.path.isdir('./' + str(self.save_dir)):
+            if (self.save_model and epoch % 5 == 0):
+                if os.path.isdir(str(self.save_dir)):
                     torch.save(self.model.state_dict(),  str(self.save_dir) + "/" + self.save_name)
-                    print("model saved in " + './' + str(self.save_dir))
+                    print("model saved in " + str(self.save_dir))
                 else:
-                    print("make new directory and save model in " + './' + str(self.save_dir))
+                    print("make new directory and save model in " + str(self.save_dir))
                     os.mkdir('./' + str(self.save_dir))
-                    torch.save(self.model.state_dict(), './' + str(self.save_dir) +"/" + self.save_name)
+                    torch.save(self.model.state_dict(), str(self.save_dir) +"/" + self.save_name)
         return self.model
 
     def parse_params(self,
@@ -153,7 +153,7 @@ class PGDtraining(BaseDefense):
             if batch_idx % 10 == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
-                       100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(10*bs)))
+                       100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(bs)))
             correct = 0
 
 
