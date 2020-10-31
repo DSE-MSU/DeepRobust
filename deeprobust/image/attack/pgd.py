@@ -71,7 +71,7 @@ class PGD(BaseAttack):
         clip_min :
             minimum pixel value
         print_process :
-            whether to print out the log during optimization process, True or False print out the log during optimization process, True or False. 
+            whether to print out the log during optimization process, True or False print out the log during optimization process, True or False.
         """
         self.epsilon = epsilon
         self.num_steps = num_steps
@@ -89,7 +89,9 @@ def pgd_attack(model,
                   clip_min,
                   num_steps,
                   step_size,
-                  print_process):
+                  print_process,
+                  bound = 'linf'):
+
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
     #TODO: find a other way
@@ -111,17 +113,27 @@ def pgd_attack(model,
 
         loss.backward()
 
-        eta = step_size * X_pgd.grad.data.sign()
+        if bound == 'linf':
+            eta = step_size * X_pgd.grad.data.sign()
+            X_pgd = X_pgd + eta
+            eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
 
-        X_pgd = X_pgd + eta
-        eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
-
-        X_pgd = X.data + eta
-        X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
-        X_pgd = X_pgd.detach()
-        X_pgd.requires_grad_()
-        X_pgd.retain_grad()
-
+            X_pgd = X.data + eta
+            X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
+            X_pgd = X_pgd.detach()
+            X_pgd.requires_grad_()
+            X_pgd.retain_grad()
+        if bound == 'l2':
+            output = model(X+delta)
+            incorrect = output.max(1)[1] != y
+            correct = (~incorrect).unsqueeze(1).unsqueeze(1).unsqueeze(1).float()
+            #Finding the correct examples so as to attack only them
+            loss = nn.CrossEntropyLoss()(model(X + delta), y)
+            loss.backward()
+            delta.data +=  correct*alpha*delta.grad.detach() / norms(delta.grad.detach())
+            delta.data *=  epsilon / norms(delta.detach()).clamp(min=epsilon)
+            delta.data =   torch.min(torch.max(delta.detach(), -X), 1-X) # clip X+delta to [0,1]
+            delta.grad.zero_()
 
     return X_pgd
 

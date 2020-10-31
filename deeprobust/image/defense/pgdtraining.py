@@ -133,6 +133,7 @@ class PGDtraining(BaseDefense):
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
+        scheduler = StepLR(optimizer, step_size = 5, gamma = 0.5)
 
         for batch_idx, (data, target) in enumerate(train_loader):
 
@@ -156,6 +157,7 @@ class PGDtraining(BaseDefense):
                        100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(bs)))
             correct = 0
 
+            scheduler.step()
 
     def test(self, model, device, test_loader):
         """

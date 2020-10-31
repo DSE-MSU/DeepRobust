@@ -32,7 +32,7 @@ def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, 
         save_per_epoch(default = 10)
     seed :
         seed
-    
+
     Examples
     --------
     >>>import deeprobust.image.netmodels.train_model as trainmodel
@@ -79,8 +79,8 @@ def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, 
 
 
 
-    optimizer = optim.SGD(train_net.parameters(), lr=0.01, momentum=0.5)
-
+    optimizer = optim.SGD(train_net.parameters(), lr= 0.1, momentum=0.5)
+    scheduler = lr_scheduler.StepLR(optimizer, step_size = 100, gamma = 0.1)
     save_model = True
     for epoch in range(1, maxepoch + 1):     ## 5 batches
 
@@ -96,6 +96,7 @@ def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, 
                 os.mkdir('./trained_models/')
                 print('Make directory and save model.')
                 torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+        scheduler.step()
 
 def feed_dataset(data, data_dict):
     if(data == 'CIFAR10'):
@@ -114,7 +115,7 @@ def feed_dataset(data, data_dict):
         train_loader = torch.utils.data.DataLoader(
                  datasets.CIFAR10(data_dict, train=True, download = True,
                         transform=transform_train),
-                 batch_size= 1000, shuffle=True) #, **kwargs)
+                 batch_size= 128, shuffle=True) #, **kwargs)
 
         test_loader  = torch.utils.data.DataLoader(
                  datasets.CIFAR10(data_dict, train=False, download = True,
@@ -126,7 +127,7 @@ def feed_dataset(data, data_dict):
                  datasets.MNIST(data_dict, train=True, download = True,
                  transform=transforms.Compose([transforms.ToTensor(),
                  transforms.Normalize((0.1307,), (0.3081,))])),
-                 batch_size=64,
+                 batch_size=128,
                  shuffle=True)
 
         test_loader = torch.utils.data.DataLoader(
