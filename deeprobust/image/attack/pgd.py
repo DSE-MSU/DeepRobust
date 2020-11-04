@@ -90,6 +90,8 @@ def pgd_attack(model,
                   num_steps,
                   step_size,
                   print_process,
+                  mean = 0.0,
+                  std = 1.0,
                   bound = 'linf'):
 
     out = model(X)
@@ -119,10 +121,11 @@ def pgd_attack(model,
             eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
 
             X_pgd = X.data + eta
-            X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
+            X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std
             X_pgd = X_pgd.detach()
             X_pgd.requires_grad_()
             X_pgd.retain_grad()
+
         if bound == 'l2':
             output = model(X+delta)
             incorrect = output.max(1)[1] != y
