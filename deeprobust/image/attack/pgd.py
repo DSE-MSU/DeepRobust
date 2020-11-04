@@ -83,13 +83,13 @@ class PGD(BaseAttack):
 
 def pgd_attack(model,
                   X,
+                  y,
                   epsilon,
                   clip_max,
                   clip_min,
                   num_steps,
                   step_size,
                   print_process,
-                  y = None,      
                   bound = 'linf'):
 
     out = model(X)
