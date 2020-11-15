@@ -4,8 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from deeprobust.graph.defense import GCNSVD
 from deeprobust.graph.utils import *
-from deeprobust.graph.data import Dataset
-from deeprobust.graph.data import PtbDataset
+from deeprobust.graph.data import Dataset, PrePtbDataset
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -30,7 +29,10 @@ adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # load pre-attacked graph
-perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
+perturbed_data = PrePtbDataset(root='/tmp/',
+        name=args.dataset,
+        attack_method='meta',
+        ptb_rate=args.ptb_rate)
 perturbed_adj = perturbed_data.adj
 
 # Setup Defense Model

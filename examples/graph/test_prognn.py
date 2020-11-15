@@ -2,8 +2,6 @@
     If you would like to reproduce the performance of the paper,
     please refer to https://github.com/ChandlerBang/Pro-GNN
 '''
-
-
 import time
 import argparse
 import numpy as np

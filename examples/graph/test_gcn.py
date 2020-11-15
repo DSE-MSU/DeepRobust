@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from deeprobust.graph.defense import GCN
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
-from deeprobust.graph.data import PtbDataset
+from deeprobust.graph.data import PtbDataset, PrePtbDataset
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -17,30 +17,46 @@ args.cuda = torch.cuda.is_available()
 print('cuda: %s' % args.cuda)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# make sure you use the same data splits as you generated attacks
+# Here the random seed is to split the train/val/test data, we need to set the random seed to be the same as that when you generate the perturbed graph
+data = Dataset(root='/tmp/', name=args.dataset, setting='nettack', seed=15)
+adj, features, labels = data.adj, data.features, data.labels
+idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+
+
+# load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
+print('=== load graph perturbed by Zugner metattack (under seed 15) ===')
+perturbed_data = PrePtbDataset(root='/tmp/',
+        name=args.dataset,
+        attack_method='meta',
+        ptb_rate=args.ptb_rate)
+perturbed_adj = perturbed_data.adj
+
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-# load original dataset (to get clean features and labels)
-data = Dataset(root='/tmp/', name=args.dataset)
-adj, features, labels = data.adj, data.features, data.labels
-idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-
-# load pre-attacked graph
-perturbed_data = PtbDataset(root='/tmp/', name=args.dataset)
-perturbed_adj = perturbed_data.adj
-
 # Setup GCN Model
 model = GCN(nfeat=features.shape[1], nhid=16, nclass=labels.max()+1, device=device)
 model = model.to(device)
-model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
 
+model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
 # # using validation to pick model
 # model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
+# You can use the inner function of model to test
+model.test(idx_test)
 
+print('=== load graph perturbed by DeepRobust 5% metattack (under seed 15) ===')
+perturbed_data = PtbDataset(root='/tmp/',
+                    name='cora',
+                    attack_method='meta')
+perturbed_adj = perturbed_data.adj
+
+model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
+# # using validation to pick model
+# model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+model.eval()
 # You can use the inner function of model to test
 model.test(idx_test)
 
