@@ -1,5 +1,7 @@
 """
 https://github.com/ferjad/Universal_Adversarial_Perturbation_pytorch
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+
 """
 from deeprobust.image.attack import deepfool
 import torch.nn as nn

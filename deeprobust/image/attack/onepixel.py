@@ -1,8 +1,3 @@
-"""
-This is a re-implementation of One pixel attack.
-
-"""
-
 import numpy as np
 
 import argparse
@@ -24,6 +19,8 @@ from deeprobust.image.utils import progress_bar
 class Onepixel(BaseAttack):
     """
     Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.
+    This is a re-implementation of One pixel attack.
+    Copyright (c) 2018 Debang Li
 
     References
     ----------

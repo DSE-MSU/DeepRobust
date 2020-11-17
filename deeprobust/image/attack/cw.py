@@ -17,10 +17,11 @@ class CarliniWagner(BaseAttack):
     .. [1] Carlini, N., & Wagner, D. (2017, May). Towards evaluating the robustness of neural networks. https://arxiv.org/pdf/1608.04644.pdf
 
     This reimplementation is based on https://github.com/kkew3/pytorch-cw2
+    Copyright 2018 Kaiwen Wu
 
     Examples
     --------
-    
+
     >>> from deeprobust.image.attack.cw import CarliniWagner
     >>> from deeprobust.image.netmodels.CNN import Net
     >>> from deeprobust.image.config import attack_params
