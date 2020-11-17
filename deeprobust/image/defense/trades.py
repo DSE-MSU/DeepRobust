@@ -7,6 +7,7 @@ Theoretically Principled Trade-off between Robustness and Accuracy.
 In International Conference on Machine Learning (pp. 7472-7482).
 
 This implementation is based on their code: https://github.com/yaodongyu/TRADES
+Copyright (c) 2019 Hongyang Zhang, Yaodong Yu
 """
 
 import os
