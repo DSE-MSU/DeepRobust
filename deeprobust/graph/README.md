@@ -17,6 +17,8 @@ Generate attack by yourself
 ```
 python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05 
 ```
+For a practice of deeprobust graph package, you can also refer to https://github.com/ChandlerBang/Pro-GNN.
+
 
 # Full README
 [click here](https://github.com/DSE-MSU/DeepRobust)

@@ -1,3 +1,5 @@
+"""Copyright (c) 2018 Dai, Hanjun and Li, Hui and Tian, Tian and Huang, Xin and Wang, Lin and Zhu, Jun and Song, Le
+"""
 import argparse
 import pickle as cp
 

@@ -7,6 +7,15 @@
     Since pytorch does not have good enough support to the operations
     on sparse tensor, this part of code is heavily based on the author's implementation.
 """
+"""
+Implementation of the method proposed in the paper:
+'Adversarial Attacks on Neural Networks for Graph Data'
+by Daniel Zügner, Amir Akbarnejad and Stephan Günnemann,
+published at SIGKDD'18, August 2018, London, UK
+Copyright (C) 2018
+Daniel Zügner
+Technical University of Munich
+"""
 
 import torch
 from deeprobust.graph.targeted_attack import BaseAttack

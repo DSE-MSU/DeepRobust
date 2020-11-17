@@ -1,5 +1,5 @@
 '''
-    This part of code is adopted from https://github.com/Hanjun-Dai/graph_adversarial_attack
+    This part of code is adopted from https://github.com/Hanjun-Dai/graph_adversarial_attack (Copyright (c) 2018 Dai, Hanjun and Li, Hui and Tian, Tian and Huang, Xin and Wang, Lin and Zhu, Jun and Song, Le)
     but modified to be integrated into the repository.
 '''
 

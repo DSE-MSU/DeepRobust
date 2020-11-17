@@ -614,6 +614,8 @@ def degree_sequence_log_likelihood(degree_sequence, d_min):
     return ll, alpha, n, sum_log_degrees
 
 def updated_log_likelihood_for_edge_changes(node_pairs, adjacency_matrix, d_min):
+    """ Adopted from https://github.com/danielzuegner/nettack
+    """
     # For each node pair find out whether there is an edge or not in the input adjacency matrix.
 
     edge_entries_before = adjacency_matrix[node_pairs.T]
