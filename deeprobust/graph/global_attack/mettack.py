@@ -158,7 +158,6 @@ class Metattack(BaseMeta):
                     nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
     >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
     >>> # Setup Attack Model
-    >>> target_node = 0
     >>> model = Metattack(surrogate, nnodes=adj.shape[0], feature_shape=features.shape,
             attack_structure=True, attack_features=False, device='cpu', lambda_=0).to('cpu')
     >>> # Attack
@@ -390,7 +389,6 @@ class MetaApprox(BaseMeta):
                     nhid=16, dropout=0, with_relu=False, with_bias=False, device='cpu').to('cpu')
     >>> surrogate.fit(features, adj, labels, idx_train, idx_val, patience=30)
     >>> # Setup Attack Model
-    >>> target_node = 0
     >>> model = MetaApprox(surrogate, nnodes=adj.shape[0], feature_shape=features.shape,
             attack_structure=True, attack_features=False, device='cpu', lambda_=0).to('cpu')
     >>> # Attack
