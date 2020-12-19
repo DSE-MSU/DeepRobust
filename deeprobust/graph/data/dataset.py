@@ -41,8 +41,8 @@ class Dataset():
         self.name = name.lower()
         self.setting = setting.lower()
 
-        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed', 'acm', 'blogcatalog'], \
-            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed, acm, blogcatalog'
+        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr'], \
+            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed, acm, blogcatalog, flickr'
         assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
 
         self.seed = seed
@@ -72,7 +72,7 @@ class Dataset():
         if self.name == 'pubmed':
             return self.load_pubmed()
 
-        if self.name in ['acm', 'blogcatalog']:
+        if self.name in ['acm', 'blogcatalog', 'uai', 'flickr']:
             return self.load_zip()
 
         if not osp.exists(self.data_filename):
@@ -84,17 +84,19 @@ class Dataset():
     def download_npz(self):
         """Download adjacen matrix npz file from self.url.
         """
-        print('Dowloading from {} to {}'.format(self.url, self.data_filename))
+        print('Downloading from {} to {}'.format(self.url, self.data_filename))
         try:
             urllib.request.urlretrieve(self.url, self.data_filename)
+            print('Done!')
         except:
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
 
     def download_pubmed(self, name):
         url = 'https://raw.githubusercontent.com/tkipf/gcn/master/gcn/data/'
         try:
-            print('Downlading', url)
+            print('Downloading', url)
             urllib.request.urlretrieve(url + name, osp.join(self.root, name))
+            print('Done!')
         except:
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
 
@@ -104,6 +106,7 @@ class Dataset():
         try:
             print('Downlading', url)
             urllib.request.urlretrieve(url, osp.join(self.root, name+'.zip'))
+            print('Done!')
         except:
             raise Exception('''Download failed! Make sure you have stable Internet connection and enter the right name''')
 
@@ -268,4 +271,12 @@ def parse_index_file(filename):
     for line in open(filename):
         index.append(int(line.strip()))
     return index
+
+
+if __name__ == '__main__':
+    from deeprobust.graph.data import Dataset
+    data = Dataset(root='/tmp/', name='flickr')
+    adj, features, labels = data.adj, data.features, data.labels
+    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+
 

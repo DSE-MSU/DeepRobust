@@ -30,6 +30,10 @@ For a practice of deeprobust graph package, you can also refer to https://github
 * Pubmed
 * ACM: [link1](https://github.com/zhumeiqiBUPT/AM-GCN) [link2](https://github.com/Jhy1993/HAN)
 * BlogCatalog: [link](https://github.com/mengzaiqiao/CAN)
+* Flickr
+* UAI
+
+For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/DeepRobust/blob/master/deeprobust/graph/data/dataset.py)
 
 # Attack Methods
 |   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Links |
@@ -47,11 +51,12 @@ For a practice of deeprobust graph package, you can also refer to https://github
 # Defense Methods
 |   Defense Methods   | Defense Type | Apply Domain | Links |
 |---------------------|--------------|--------------|------|
-| RGCN | Gaussian | Node Classification | [Robust Graph Convolutional Networks Against Adversarial Attacks](http://pengcui.thumedialab.com/papers/RGCN.pdf) |
+| RGCN | Adaptive Aggregation | Node Classification | [Robust Graph Convolutional Networks Against Adversarial Attacks](http://pengcui.thumedialab.com/papers/RGCN.pdf) |
 | GCN-Jaccard | Graph Purifying | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|
 | GCN-SVD | Graph Purifying | Node Classification | [All You Need is Low (Rank): Defending Against Adversarial Attacks on Graphs](https://dl.acm.org/doi/pdf/10.1145/3336191.3371789?download=true) |
 | Adv-training | Adversarial Training | Node Classification | 
-| Pro-GNN | Preprocessing | Node Classification | [Graph Structure Learning for Robust Graph Neural Network]()|
+| Pro-GNN | Graph Purifying | Node Classification | [Graph Structure Learning for Robust Graph Neural Network](https://arxiv.org/abs/2005.10203)|
+| SimP-GCN | Adaptive Aggregation | Node Classification | [Node Similarity Preserving Graph Convolutional Networks](https://arxiv.org/abs/2011.09643)|
 <!--| Adv-training | Adversarial Training | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
 -->
 <!--| Hidden-Adv-training | Adversarial Training | Node Classification<br>Graph Classification |[To be added]|
