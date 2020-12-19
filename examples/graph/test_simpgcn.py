@@ -1,10 +1,10 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-from deeprobust.graph.defense import GCN
 from deeprobust.graph.utils import *
 from deeprobust.graph.data import Dataset
 from deeprobust.graph.data import PtbDataset, PrePtbDataset
+from deeprobust.graph.defense import SimPGCN
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -23,9 +23,9 @@ adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 
-# load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
 print('==================')
 print('=== load graph perturbed by Zugner metattack (under seed 15) ===')
+# load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
 perturbed_data = PrePtbDataset(root='/tmp/',
         name=args.dataset,
         attack_method='meta',
@@ -37,16 +37,16 @@ torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
-# Setup GCN Model
-model = GCN(nfeat=features.shape[1], nhid=16, nclass=labels.max()+1, device=device)
+# Setup Defense Model
+model = SimPGCN(nnodes=features.shape[0], nfeat=features.shape[1], nhid=16, nclass=labels.max()+1, device=device)
 model = model.to(device)
 
-model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
-# # using validation to pick model
-# model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+# using validation to pick model
+model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
 # You can use the inner function of model to test
 model.test(idx_test)
+
 
 print('==================')
 print('=== load graph perturbed by DeepRobust 5% metattack (under seed 15) ===')
@@ -55,9 +55,8 @@ perturbed_data = PtbDataset(root='/tmp/',
                     attack_method='meta')
 perturbed_adj = perturbed_data.adj
 
-model.fit(features, perturbed_adj, labels, idx_train, train_iters=200, verbose=True)
-# # using validation to pick model
-# model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+# using validation to pick model
+model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
 model.eval()
 # You can use the inner function of model to test
 model.test(idx_test)

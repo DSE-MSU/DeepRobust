@@ -23,15 +23,16 @@ For a practice of deeprobust graph package, you can also refer to https://github
 # Full README
 [click here](https://github.com/DSE-MSU/DeepRobust)
 
-# Supported Datasets:
+# Supported Datasets
 * Cora
 * Cora-ML
 * Citeseer
 * Pubmed
+* Polblogs
 * ACM: [link1](https://github.com/zhumeiqiBUPT/AM-GCN) [link2](https://github.com/Jhy1993/HAN)
 * BlogCatalog: [link](https://github.com/mengzaiqiao/CAN)
-* Flickr
-* UAI
+* Flickr: [link](https://github.com/mengzaiqiao/CAN)
+* UAI: A Unifed Weakly Supervised Framework for Community Detection and Semantic Matching. 
 
 For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/DeepRobust/blob/master/deeprobust/graph/data/dataset.py)
 
@@ -49,14 +50,15 @@ For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/
 | RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |
 
 # Defense Methods
-|   Defense Methods   | Defense Type | Apply Domain | Links |
-|---------------------|--------------|--------------|------|
-| RGCN | Adaptive Aggregation | Node Classification | [Robust Graph Convolutional Networks Against Adversarial Attacks](http://pengcui.thumedialab.com/papers/RGCN.pdf) |
-| GCN-Jaccard | Graph Purifying | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|
-| GCN-SVD | Graph Purifying | Node Classification | [All You Need is Low (Rank): Defending Against Adversarial Attacks on Graphs](https://dl.acm.org/doi/pdf/10.1145/3336191.3371789?download=true) |
-| Adv-training | Adversarial Training | Node Classification | 
-| Pro-GNN | Graph Purifying | Node Classification | [Graph Structure Learning for Robust Graph Neural Network](https://arxiv.org/abs/2005.10203)|
-| SimP-GCN | Adaptive Aggregation | Node Classification | [Node Similarity Preserving Graph Convolutional Networks](https://arxiv.org/abs/2011.09643)|
+|   Defense Methods   | Defense Type | Apply Domain | Paper | Code |
+|---------------------|--------------|--------------|------| ------|
+| GCN | Victim Model | Node Classification | [Semi-Supervised Classification with Graph Convolutional Networks](https://arxiv.org/abs/1609.02907) | [test_gcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gcn.py) |
+| RGCN | Adaptive Aggregation | Node Classification | [Robust Graph Convolutional Networks Against Adversarial Attacks](http://pengcui.thumedialab.com/papers/RGCN.pdf) | [test_rgcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rgcn.py) |
+| GCN-Jaccard | Graph Purifying | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)| [test_gcn_jaccard.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gcn_jaccard.py) |
+| GCN-SVD | Graph Purifying | Node Classification | [All You Need is Low (Rank): Defending Against Adversarial Attacks on Graphs](https://dl.acm.org/doi/pdf/10.1145/3336191.3371789?download=true) | [test_gcn_svd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gcn_svd.py) |
+| Adv-training | Adversarial Training | Node Classification |  |[test_adv_train_poisoning.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_adv_train_poisoning.py) |
+| Pro-GNN | Graph Purifying | Node Classification | [Graph Structure Learning for Robust Graph Neural Network](https://arxiv.org/abs/2005.10203)|[test_prognn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prognn.py) |
+| SimP-GCN | Adaptive Aggregation | Node Classification | [Node Similarity Preserving Graph Convolutional Networks](https://arxiv.org/abs/2011.09643)|[test_simpgcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_simpgcn.py) |
 <!--| Adv-training | Adversarial Training | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
 -->
 <!--| Hidden-Adv-training | Adversarial Training | Node Classification<br>Graph Classification |[To be added]|
