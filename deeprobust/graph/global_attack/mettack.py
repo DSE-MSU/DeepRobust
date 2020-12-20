@@ -359,7 +359,7 @@ class Metattack(BaseMeta):
             else:
                 feature_meta_argmax = torch.argmax(feature_meta_score)
                 row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
-                self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
+                self.feature_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
 
         if self.attack_structure:
             self.modified_adj = self.get_modified_adj(ori_adj).detach()
@@ -554,7 +554,7 @@ class MetaApprox(BaseMeta):
             else:
                 feature_meta_argmax = torch.argmax(feature_meta_score)
                 row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
-                self.features_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
+                self.feature_changes.data[row_idx][col_idx] += (-2 * modified_features[row_idx][col_idx] + 1)
 
         if self.attack_structure:
             self.modified_adj = self.get_modified_adj(ori_adj).detach()
