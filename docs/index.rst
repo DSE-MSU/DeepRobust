@@ -28,8 +28,6 @@ Example Code
 ============
 #. Image Attack and Defense
     
-   #. Example: PGD attack
-    
     .. code-block:: python
        
        from deeprobust.image.attack.pgd import PGD
@@ -56,8 +54,6 @@ Example Code
 
        adversary = PGD(model, device)
        Adv_img = adversary.generate(x, y, **attack_params['PGD_CIFAR10'])
-
-   #. Example: PGD training
 
     .. code-block:: python
        
