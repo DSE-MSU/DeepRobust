@@ -37,17 +37,17 @@ For a practice of deeprobust graph package, you can also refer to https://github
 For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/DeepRobust/blob/master/deeprobust/graph/data/dataset.py)
 
 # Attack Methods
-|   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Links |
-|--------------------|------|--------------------|-------------|-------|----|
-| Nettack | Targeted Attack | Structure<br>Features | Both | Node Classification | [Adversarial Attacks on Neural Networks for Graph Data](https://arxiv.org/pdf/1805.07984.pdf)|
-| FGA | Targeted Attack | Structure | Both | Node Classification | [Fast Gradient Attack on Network Embedding](https://arxiv.org/pdf/1809.02797.pdf)|
-| Mettack | Global Attack |  Structure<br>Features | Poisoning | Node Classification | [Adversarial Attacks on Graph Neural Networks via Meta Learning](https://openreview.net/pdf?id=Bylnx209YX) |
-| RL-S2V | Targeted Attack | Structure | Evasion |  Node Classification | [Adversarial Attack on Graph Structured Data](https://arxiv.org/pdf/1806.02371.pdf) |
-| PGD, Min-max | Global Attack | Structure | Both | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
-| DICE | Global Attack | Structure | Both |  Node Classification | [Hiding individuals and communities in a social network](https://arxiv.org/abs/1608.00375)|
-| IG-Attack | Targeted Attack | Structure<br>Features| Both | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|
-| NIPA | Global Attack | Structure | Poisoning |  Node Classification | [Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach](https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf) |
-| RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |
+|   Attack Methods   | Type<img width=200> | Perturbation <img width=80> | Evasion/<br>Poisoning | Apply Domain | Paper | Code |
+|--------------------|------|--------------------|-------------|-------|----|----|
+| Nettack | Targeted Attack | Structure<br>Features | Both | Node Classification | [Adversarial Attacks on Neural Networks for Graph Data](https://arxiv.org/pdf/1805.07984.pdf)| [test_nettack.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nettack.py) |
+| FGA | Targeted Attack | Structure | Both | Node Classification | [Fast Gradient Attack on Network Embedding](https://arxiv.org/pdf/1809.02797.pdf)| [test_fga.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_fga.py) |
+| Metattack | Global Attack |  Structure<br>Features | Poisoning | Node Classification | [Adversarial Attacks on Graph Neural Networks via Meta Learning](https://openreview.net/pdf?id=Bylnx209YX) | [test_mettack.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_mettack.py) |
+| RL-S2V | Targeted Attack | Structure | Evasion |  Node Classification | [Adversarial Attack on Graph Structured Data](https://arxiv.org/pdf/1806.02371.pdf) |[test_rl_s2v.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rl_s2v.py) |
+| PGD, Min-max | Global Attack | Structure | Both | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|[test_pgd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_pgd.py)  [test_min_max.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_min_max.py) |
+| DICE | Global Attack | Structure | Both |  Node Classification | [Hiding individuals and communities in a social network](https://arxiv.org/abs/1608.00375)|[test_dice.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_dice.py) |
+| IG-Attack | Targeted Attack | Structure<br>Features| Both | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|[test_ig.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_ig.py) |
+| NIPA | Global Attack | Structure | Poisoning |  Node Classification | [Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach](https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf) | [test_nipa.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nipa.py) |
+| RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |[test_rnd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rnd.py) |
 
 # Defense Methods
 |   Defense Methods   | Defense Type | Apply Domain | Paper | Code |
