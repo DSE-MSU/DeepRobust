@@ -133,7 +133,7 @@ class PGDtraining(BaseDefense):
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
-        scheduler = StepLR(optimizer, step_size = 5, gamma = 0.5)
+        scheduler = StepLR(optimizer, step_size = 10, gamma = 0.5)
 
         for batch_idx, (data, target) in enumerate(train_loader):
 

@@ -42,10 +42,10 @@ defense_params = {
     "PGDtraining_MNIST":{
         'save_dir': "./defense_model",
         'save_model': True,
-        'save_name' : "mnist_fgsmtraining_0.2.pt",
+        'save_name' : "mnist_pgdtraining_0.3.pt",
         'epsilon' : 0.3,
-        'epoch_num' : 100,
-        'lr' : 0.001
+        'epoch_num' : 80,
+        'lr' : 0.01
     },
 
     "FGSMtraining_MNIST":{

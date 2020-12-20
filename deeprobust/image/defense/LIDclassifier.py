@@ -5,7 +5,8 @@ Currently this implementation is under testing.
 References
 ----------
 .. [1] Ma, Xingjun, Bo Li, Yisen Wang, Sarah M. Erfani, Sudanthi Wijewickrema, Grant Schoenebeck, Dawn Song, Michael E. Houle, and James Bailey. "Characterizing adversarial subspaces using local intrinsic dimensionality." arXiv preprint arXiv:1801.02613 (2018).
-.. [2] Original code:t https://github.com/xingjunm/lid_adversarial_subspace_detection.
+.. [2] Original code:t https://github.com/xingjunm/lid_adversarial_subspace_detection
+Copyright (c) 2018 Xingjun Ma
 """
 
 from deeprobust.image.netmodels.CNN_multilayer import Net
@@ -31,13 +32,13 @@ def train(self, device, train_loader, optimizer, epoch):
     for batch_idx, (data, target) in enumerate(train_loader):
 
         optimizer.zero_grad()
-            
+
         data, target = data.to(device), target.to(device)
 
         data_adv, output = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps)
 
         loss = self.calculate_loss(output, target)
-            
+
         loss.backward()
         optimizer.step()
 
@@ -71,19 +72,19 @@ def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
     """
     funcs = [K.function([model.layers[0].input, K.learning_phase()], [out])
                  for out in get_layer_wise_activations(model, dataset)]
-    
+
     lid_dim = len(funcs)
     print("Number of layers to estimate: ", lid_dim)
 
     def estimate(i_batch):
-        
+
         start = i_batch * batch_size
         end = np.minimum(len(X), (i_batch + 1) * batch_size)
         n_feed = end - start
         lid_batch = np.zeros(shape=(n_feed, lid_dim))
         lid_batch_adv = np.zeros(shape=(n_feed, lid_dim))
         lid_batch_noisy = np.zeros(shape=(n_feed, lid_dim))
-        
+
         for i, func in enumerate(funcs):
             X_act = func([X[start:end], 0])[0]
             X_act = np.asarray(X_act, dtype=np.float32).reshape((n_feed, -1))
@@ -105,16 +106,16 @@ def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
             # print("lid_batch_adv: ", lid_batch_adv.shape)
             lid_batch_noisy[:, i] = mle_batch(X_act, X_noisy_act, k=k)
             # print("lid_batch_noisy: ", lid_batch_noisy.shape)
-        
+
         return lid_batch, lid_batch_noisy, lid_batch_adv
 
     lids = []
     lids_adv = []
     lids_noisy = []
     n_batches = int(np.ceil(X.shape[0] / float(batch_size)))
-    
+
     for i_batch in tqdm(range(n_batches)):
-        
+
         lid_batch, lid_batch_noisy, lid_batch_adv = estimate(i_batch)
         lids.extend(lid_batch)
         lids_adv.extend(lid_batch_adv)
@@ -134,7 +135,7 @@ def get_lid(model, X_test, X_test_noisy, X_test_adv, k, batch_size):
     return artifacts, labels
 
 if __name__ == "__main__":
-    
+
     batch_size = 100
     k_nearest = 20
 

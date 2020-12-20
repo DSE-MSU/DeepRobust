@@ -13,13 +13,13 @@ LOAD DATASETS
 train_loader = torch.utils.data.DataLoader(
                 datasets.MNIST('deeprobust/image/defense/data', train=True, download=True,
                 transform=transforms.Compose([transforms.ToTensor()])),
-                batch_size=100,
+                batch_size=256,
                 shuffle=True)
 
 test_loader = torch.utils.data.DataLoader(
             datasets.MNIST('deeprobust/image/defense/data', train=False,
             transform=transforms.Compose([transforms.ToTensor()])),
-            batch_size=1000,
+            batch_size=256,
             shuffle=True)
 
 """

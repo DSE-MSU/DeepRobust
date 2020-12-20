@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 model = resnet.ResNet18().to('cuda')
 print("Load network")
 
+import ipdb
+ipdb.set_trace()
+
 model.load_state_dict(torch.load("./trained_models/CIFAR10_ResNet18_epoch_20.pt"))
 model.eval()
 
@@ -25,7 +28,7 @@ transform_val = transforms.Compose([
 test_loader  = torch.utils.data.DataLoader(
                 datasets.CIFAR10('deeprobust/image/data', train = False, download=True,
                 transform = transform_val),
-                batch_size = 10, shuffle=True) #, **kwargs)
+                batch_size = 1, shuffle=True) #, **kwargs)
 
 
 classes = np.array(('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck'))
