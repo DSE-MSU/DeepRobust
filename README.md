@@ -95,8 +95,9 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     from deeprobust.image.utils import download_model
     import torch
     import deeprobust.image.netmodels.resnet as resnet
+    from torchvision import transforms,datasets
     
-    URL = "https://github.com/I-am-Bot/deeprobust_model/raw/master/CIFAR10_ResNet18_epoch_50.pt"
+    URL = "https://github.com/I-am-Bot/deeprobust_model/raw/master/CIFAR10_ResNet18_epoch_20.pt"
     download_model(URL, "$MODEL_PATH$")
 
     model = resnet.ResNet18().to('cuda')
@@ -112,7 +113,7 @@ python examples/graph/test_mettack.py --dataset cora --ptb_rate 0.05
     x, y = next(iter(test_loader))
     x = x.to('cuda').float()
     
-    adversary = PGD(model, device)
+    adversary = PGD(model, 'cuda')
     Adv_img = adversary.generate(x, y, **attack_params['PGD_CIFAR10'])
     ```
 
