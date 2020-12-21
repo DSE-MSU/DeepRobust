@@ -1,9 +1,16 @@
 from setuptools import setup
 from setuptools import find_packages
 
+
+with open("README.md", 'r') as fh:
+    long_description = fh.read()
+
 setup(name = "deeprobust",
-      version = "0",
-      description = "A pytorch library for adversarial robustness learning.",
+      version = "0.1.0",
+      author='MSU-DSE',
+      maintainer='MSU-DSE',
+      description = "A PyTorch library for adversarial robustness learning for image and graph data.",
+      long_description=long_description,
       packages = find_packages(),
       install_requires = [
           'matplotlib>=3.1.1',
