@@ -13,6 +13,8 @@ setup(name = "deeprobust",
       long_description=long_description,
       long_description_content_type = "text/markdown",
       packages = find_packages(),
+      url='https://github.com/DSE-MSU/DeepRobust',
+      include_package_data=True,
       install_requires = [
           'matplotlib>=3.1.1',
           'numpy>=1.17.1',
@@ -27,6 +29,20 @@ setup(name = "deeprobust",
           'scikit-image>=0.0',
           'tensorboardX>=2.0',
           'tqdm>=4.42.1'
-      ]
+      ],
+      classifiers=[
+        "Intended Audience :: Developers",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Libraries",
+      ],
+      license="MIT",
+
 )
 
