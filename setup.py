@@ -11,6 +11,7 @@ setup(name = "deeprobust",
       maintainer='MSU-DSE',
       description = "A PyTorch library for adversarial robustness learning for image and graph data.",
       long_description=long_description,
+      long_description_content_type = "text/markdown",
       packages = find_packages(),
       install_requires = [
           'matplotlib>=3.1.1',
