@@ -64,7 +64,7 @@ class CarliniWagner(BaseAttack):
                   self.label,
                   self.target,
                   self.confidence,
-                  self.clip_min,
+                  self.clip_max,
                   self.clip_min,
                   self.max_iterations,
                   self.initial_const,
