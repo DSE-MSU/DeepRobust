@@ -118,13 +118,24 @@ class IGAttack(BaseAttack):
             s_f_max = np.argmax(s_f)
 
             if s_e[s_e_max] >= s_f[s_f_max]:
-                value = np.abs(1 - modified_adj[target_node, s_e_max])
-                modified_adj[target_node, s_e_max] = value
-                modified_adj[s_e_max, target_node] = value
-                s_e[s_e_max] = 0
+                # edge perturbation score is larger
+                if self.attack_structure:
+                    value = np.abs(1 - modified_adj[target_node, s_e_max])
+                    modified_adj[target_node, s_e_max] = value
+                    modified_adj[s_e_max, target_node] = value
+                    s_e[s_e_max] = 0
+                else:
+                    raise Exception("""No posisble perturbation on the structure can be made!
+                            See https://github.com/DSE-MSU/DeepRobust/issues/42 for more details.""")
             else:
-                modified_features[target_node, s_f_max] = np.abs(1 - modified_features[target_node, s_f_max])
-                s_f[s_f_max] = 0
+                # feature perturbation score is larger
+                if self.attack_features:
+                    modified_features[target_node, s_f_max] = np.abs(1 - modified_features[target_node, s_f_max])
+                    s_f[s_f_max] = 0
+                else:
+                    raise Exception("""No posisble perturbation on the features can be made!
+                            See https://github.com/DSE-MSU/DeepRobust/issues/42 for more details.""")
+
 
         self.modified_adj = sp.csr_matrix(modified_adj)
         self.modified_features = sp.csr_matrix(modified_features)
