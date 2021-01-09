@@ -56,8 +56,8 @@ class PGD(BaseAttack):
                      step_size = 0.01,
                      clip_max = 1.0,
                      clip_min = 0.0,
-                     mean = (0, 0, 0)
-                     std = (1.0, 1.0, 1,0)
+                     mean = (0, 0, 0),
+                     std = (1.0, 1.0, 1,0),
                      print_process = False
                      ):
         """parse_params.
