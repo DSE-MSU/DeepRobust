@@ -246,7 +246,8 @@ class Metattack(BaseMeta):
                     hidden = adj_norm @ torch.spmm(hidden, w) + b
                 else:
                     hidden = adj_norm @ hidden @ w + b
-                if self.with_relu:
+
+                if self.with_relu and ix != len(self.weights) - 1:
                     hidden = F.relu(hidden)
 
             output = F.log_softmax(hidden, dim=1)
@@ -271,7 +272,7 @@ class Metattack(BaseMeta):
                 hidden = adj_norm @ torch.spmm(hidden, w) + b
             else:
                 hidden = adj_norm @ hidden @ w + b
-            if self.with_relu:
+            if self.with_relu and ix != len(self.weights) - 1:
                 hidden = F.relu(hidden)
 
         output = F.log_softmax(hidden, dim=1)
