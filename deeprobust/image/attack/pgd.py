@@ -43,6 +43,8 @@ class PGD(BaseAttack):
                    self.epsilon,
                    self.clip_max,
                    self.clip_min,
+                   self.mean,
+                   self.std,
                    self.num_steps,
                    self.step_size,
                    self.print_process)
@@ -54,6 +56,8 @@ class PGD(BaseAttack):
                      step_size = 0.01,
                      clip_max = 1.0,
                      clip_min = 0.0,
+                     mean = (0, 0, 0)
+                     std = (1.0, 1.0, 1,0)
                      print_process = False
                      ):
         """parse_params.
