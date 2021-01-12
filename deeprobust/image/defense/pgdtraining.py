@@ -57,30 +57,31 @@ class PGDtraining(BaseDefense):
 
         save_model = True
         for epoch in range(1, self.epoch + 1):
-            print(epoch, flush = True)
+            print('Training epoch: ', epoch, flush = True)
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
-            if (self.save_model and epoch % 5 == 0):
+            if (self.save_model and epoch % self.save_per_epoch == 0):
                 if os.path.isdir(str(self.save_dir)):
-                    torch.save(self.model.state_dict(),  str(self.save_dir) + "/" + self.save_name)
+                    torch.save(self.model.state_dict(), str(self.save_dir) + self.save_name + '_epoch' + str(epoch) + '.pth')
                     print("model saved in " + str(self.save_dir))
                 else:
                     print("make new directory and save model in " + str(self.save_dir))
                     os.mkdir('./' + str(self.save_dir))
-                    torch.save(self.model.state_dict(), str(self.save_dir) +"/" + self.save_name)
+                    torch.save(self.model.state_dict(), str(self.save_dir) + self.save_name + '_epoch' + str(epoch) + '.pth')
         return self.model
 
     def parse_params(self,
                      epoch_num = 100,
                      save_dir = "./defense_models",
-                     save_name = "mnist_pgdtraining_0.3.pt",
+                     save_name = "mnist_pgdtraining_0.3",
                      save_model = True,
                      epsilon = 8.0 / 255.0,
                      num_steps = 10,
                      perturb_step_size = 0.01,
                      lr = 0.1,
-                     momentum = 0.1):
+                     momentum = 0.1,
+                     save_per_epoch = 10):
         """Parameter parser.
 
         Parameters
@@ -113,6 +114,7 @@ class PGDtraining(BaseDefense):
         self.perturb_step_size = perturb_step_size
         self.lr = lr
         self.momentum = momentum
+        self.save_per_epoch = save_per_epoch
 
     def train(self, device, train_loader, optimizer, epoch):
         """
@@ -151,7 +153,7 @@ class PGDtraining(BaseDefense):
             correct += pred.eq(target.view_as(pred)).sum().item()
 
             #print every 10
-            if batch_idx % 10 == 0:
+            if batch_idx % 20 == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAccuracy:{:.2f}%'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), loss.item(), 100 * correct/(bs)))
@@ -159,8 +161,6 @@ class PGDtraining(BaseDefense):
 
             scheduler.step()
 
-        if epoch % 10 == 0:
-            model
 
     def test(self, model, device, test_loader):
         """
