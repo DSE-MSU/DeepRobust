@@ -82,6 +82,8 @@ class PGD(BaseAttack):
         self.step_size = step_size
         self.clip_max = clip_max
         self.clip_min = clip_min
+        self.mean = mean
+        self.std = std
         self.print_process = print_process
         return True
 
@@ -91,11 +93,11 @@ def pgd_attack(model,
                   epsilon,
                   clip_max,
                   clip_min,
+                  mean,
+                  std,
                   num_steps,
                   step_size,
                   print_process,
-                  mean = 0.0,
-                  std = 1.0,
                   bound = 'linf'):
 
     out = model(X)
@@ -125,7 +127,13 @@ def pgd_attack(model,
             eta = torch.clamp(X_pgd.data - X.data, -epsilon, epsilon)
 
             X_pgd = X.data + eta
-            X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std
+
+            #X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std
+
+            X_pgd[:,0,:,:] = (torch.clamp(X_pgd[:,0,:,:] * std[0] + mean[0], clip_min, clip_max) - mean[0]) / std[0]
+            X_pgd[:,1,:,:] = (torch.clamp(X_pgd[:,1,:,:] * std[1] + mean[1], clip_min, clip_max) - mean[1]) / std[1]
+            X_pgd[:,2,:,:] = (torch.clamp(X_pgd[:,2,:,:] * std[2] + mean[2], clip_min, clip_max) - mean[2]) / std[2]
+
             X_pgd = X_pgd.detach()
             X_pgd.requires_grad_()
             X_pgd.retain_grad()

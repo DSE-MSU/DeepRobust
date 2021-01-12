@@ -76,10 +76,10 @@ class PGDtraining(BaseDefense):
                      save_dir = "./defense_models",
                      save_name = "mnist_pgdtraining_0.3.pt",
                      save_model = True,
-                     epsilon = 0.3,
-                     num_steps = 40,
+                     epsilon = 8.0 / 255.0,
+                     num_steps = 10,
                      perturb_step_size = 0.01,
-                     lr = 5e-4,
+                     lr = 0.1,
                      momentum = 0.1):
         """Parameter parser.
 
@@ -133,8 +133,8 @@ class PGDtraining(BaseDefense):
         self.model.train()
         correct = 0
         bs = train_loader.batch_size
-        scheduler = StepLR(optimizer, step_size = 10, gamma = 0.5)
-
+        #scheduler = StepLR(optimizer, step_size = 10, gamma = 0.5)
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = [70], gamma = 0.1)
         for batch_idx, (data, target) in enumerate(train_loader):
 
             optimizer.zero_grad()
@@ -158,6 +158,9 @@ class PGDtraining(BaseDefense):
             correct = 0
 
             scheduler.step()
+
+        if epoch % 10 == 0:
+            model
 
     def test(self, model, device, test_loader):
         """
@@ -205,7 +208,7 @@ class PGDtraining(BaseDefense):
             test_loss_adv, correct_adv, len(test_loader.dataset),
             100. * correct_adv / len(test_loader.dataset)))
 
-    def adv_data(self, data, output, ep = 0.3, num_steps = 40, perturb_step_size = 0.01):
+    def adv_data(self, data, output, ep = 0.3, num_steps = 10, perturb_step_size = 0.01):
         """
         Generate input(adversarial) data for training.
         """
