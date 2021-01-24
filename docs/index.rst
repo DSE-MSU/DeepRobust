@@ -24,6 +24,41 @@ Installation
        $ cd DeepRobust
        $ python setup.py install
 
+Short Tutorial for Graph Package
+========
+Test your model's robustness on poisoned graph
+
+#. Load pre-attacked graph data 
+    .. code-block:: python
+       
+       from deeprobust.graph.data import Dataset, PrePtbDataset
+       data = Dataset(root='/tmp/', name='cora', seed=15) # make sure random seed is set to 15, 
+                                                          # since the attacked graph are generated under seed 15
+       adj, features, labels = data.adj, data.features, data.labels
+       idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+       # Load meta attacked data
+       perturbed_data = PrePtbDataset(root='/tmp/',
+                           name='cora',
+                           attack_method='meta',
+                           ptb_rate=0.05)
+       perturbed_adj = perturbed_data.adj
+#. Train your model on clearn/poinsed graph
+    .. code-block:: python
+       
+       from deeprobust.graph.defense import GCN
+       gcn = GCN(nfeat=features.shape[1],
+           nhid=16,
+           nclass=labels.max().item() + 1,
+           dropout=0.5, device='cpu')
+       gcn = gcn.to('cpu')
+       gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train on clean graph with earlystopping
+       gcn.test(idx_test)
+         
+       gcn.fit(features, perturbed_adj, labels, idx_train, idx_val, patience=30) # train on poisoned graph
+       gcn.test(idx_test)
+
+For more exmaples on graph package, please refer to https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph
+
 Example Code
 ============
 #. Image Attack and Defense
