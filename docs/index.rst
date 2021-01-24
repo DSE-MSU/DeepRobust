@@ -57,7 +57,8 @@ Test your model's robustness on poisoned graph
        gcn.fit(features, perturbed_adj, labels, idx_train, idx_val, patience=30) # train on poisoned graph
        gcn.test(idx_test)
 
-For more exmaples on graph package, please refer to https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph
+For more exmaples on graph package, please refer to https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph 
+or https://github.com/ChandlerBang/Pro-GNN 
 
 Example Code
 ============
