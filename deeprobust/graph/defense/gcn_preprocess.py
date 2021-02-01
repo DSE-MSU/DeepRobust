@@ -234,6 +234,9 @@ class GCNJaccard(GCN):
 
         adj_triu = sp.triu(adj, format='csr')
 
+        if sp.issparse(features):
+            features = features.todense().A # make it easier for njit processing
+
         if metric == 'distance':
             removed_cnt = dropedge_dis(adj_triu.data, adj_triu.indptr, adj_triu.indices, features, threshold=self.threshold)
         else:
@@ -285,10 +288,30 @@ class GCNJaccard(GCN):
         return J
 
     def _cosine_similarity(self, a, b):
-        inner_product = (features[n1] * features[n2]).sum()
-        C = inner_product / np.sqrt(np.square(a).sum() + np.square(b).sum())
+        inner_product = (a * b).sum()
+        C = inner_product / (np.sqrt(np.square(a).sum()) * np.sqrt(np.square(b).sum()) + 1e-10)
         return C
 
+def __dropedge_jaccard(A, iA, jA, features, threshold):
+    # deprecated: for sparse feature matrix...
+    removed_cnt = 0
+    for row in range(len(iA)-1):
+        for i in range(iA[row], iA[row+1]):
+            # print(row, jA[i], A[i])
+            n1 = row
+            n2 = jA[i]
+            a, b = features[n1], features[n2]
+
+            intersection = a.multiply(b).count_nonzero()
+            J = intersection * 1.0 / (a.count_nonzero() + b.count_nonzero() - intersection)
+
+            if J < threshold:
+                A[i] = 0
+                # A[n2, n1] = 0
+                removed_cnt += 1
+    return removed_cnt
+
+@njit
 def dropedge_jaccard(A, iA, jA, features, threshold):
     removed_cnt = 0
     for row in range(len(iA)-1):
@@ -297,8 +320,8 @@ def dropedge_jaccard(A, iA, jA, features, threshold):
             n1 = row
             n2 = jA[i]
             a, b = features[n1], features[n2]
-            intersection = a.multiply(b).count_nonzero()
-            J = intersection * 1.0 / (a.count_nonzero() + b.count_nonzero() - intersection)
+            intersection = np.count_nonzero(a*b)
+            J = intersection * 1.0 / (np.count_nonzero(a) + np.count_nonzero(b) - intersection)
 
             if J < threshold:
                 A[i] = 0
@@ -317,7 +340,7 @@ def dropedge_cosine(A, iA, jA, features, threshold):
             n2 = jA[i]
             a, b = features[n1], features[n2]
             inner_product = (a * b).sum()
-            C = inner_product / (np.sqrt(np.square(a).sum() + np.square(b).sum())+ 1e-6)
+            C = inner_product / (np.sqrt(np.square(a).sum()) * np.sqrt(np.square(b).sum()) + 1e-8)
 
             if C < threshold:
                 A[i] = 0
@@ -361,3 +384,22 @@ def dropedge_both(A, iA, jA, features, threshold1=2.5, threshold2=0.01):
 
     return removed_cnt
 
+
+if __name__ == "__main__":
+    from deeprobust.graph.data import PrePtbDataset, Dataset
+    # load clean graph data
+    dataset_str = 'pubmed'
+    data = Dataset(root='/tmp/', name=dataset_str, seed=15)
+    adj, features, labels = data.adj, data.features, data.labels
+    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    # load perturbed graph data
+    perturbed_data = PrePtbDataset(root='/tmp/', name=dataset_str)
+    perturbed_adj = perturbed_data.adj
+    # train defense model
+    model = GCNJaccard(nfeat=features.shape[1],
+          nhid=16,
+          nclass=labels.max().item() + 1,
+          binary_feature=False,
+          dropout=0.5, device='cpu').to('cpu')
+    model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.1)
+    model.test(idx_test)
