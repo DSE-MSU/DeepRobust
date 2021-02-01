@@ -123,8 +123,8 @@ class PrePtbDataset:
         self.root = osp.expanduser(osp.normpath(root))
         self.data_filename = osp.join(root,
                 '{}_{}_adj_{}.npz'.format(self.name, self.attack_method, self.ptb_rate))
-        self.adj = self.load_data()
         self.target_nodes = None
+        self.adj = self.load_data()
 
     def load_data(self):
         if not osp.exists(self.data_filename):
