@@ -65,6 +65,17 @@ class BaseAttack(Module):
         assert adj.tocsr().max() == 1, "Max value should be 1!"
         assert adj.tocsr().min() == 0, "Min value should be 0!"
 
+    def check_adj_tensor(self, adj):
+        """Check if the modified adjacency is symmetric, unweighted, all-zero diagonal.
+        """
+        assert torch.abs(adj - adj.t()).sum() == 0, "Input graph is not symmetric"
+        assert adj.max() == 1, "Max value should be 1!"
+        assert adj.min() == 0, "Min value should be 0!"
+        diag = adj.diag()
+        assert diag.max() == 0, "Diagonal should be 0!"
+        assert diag.min() == 0, "Diagonal should be 0!"
+
+
     def save_adj(self, root=r'/tmp/', name='mod_adj'):
         """Save attacked adjacency matrix.
 

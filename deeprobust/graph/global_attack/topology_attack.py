@@ -126,6 +126,8 @@ class PGDAttack(BaseAttack):
 
         self.random_sample(ori_adj, ori_features, labels, idx_train, n_perturbations)
         self.modified_adj = self.get_modified_adj(ori_adj).detach()
+        self.check_adj_tensor(self.modified_adj)
+
 
     def random_sample(self, ori_adj, ori_features, labels, idx_train, n_perturbations):
         K = 20
@@ -136,7 +138,7 @@ class PGDAttack(BaseAttack):
             for i in range(K):
                 sampled = np.random.binomial(1, s)
 
-                print(sampled.sum())
+                # print(sampled.sum())
                 if sampled.sum() > n_perturbations:
                     continue
                 self.adj_changes.data.copy_(torch.tensor(sampled))
@@ -145,7 +147,7 @@ class PGDAttack(BaseAttack):
                 output = victim_model(ori_features, adj_norm)
                 loss = self._loss(output[idx_train], labels[idx_train])
                 # loss = F.nll_loss(output[idx_train], labels[idx_train])
-                print(loss)
+                # print(loss)
                 if best_loss < loss:
                     best_loss = loss
                     best_s = sampled
@@ -180,9 +182,8 @@ class PGDAttack(BaseAttack):
             self.complementary = (torch.ones_like(ori_adj) - torch.eye(self.nnodes).to(self.device) - ori_adj) - ori_adj
 
         m = torch.zeros((self.nnodes, self.nnodes)).to(self.device)
-        tril_indices = torch.tril_indices(row=self.nnodes-1, col=self.nnodes-1, offset=0)
+        tril_indices = torch.tril_indices(row=self.nnodes, col=self.nnodes, offset=-1)
         m[tril_indices[0], tril_indices[1]] = self.adj_changes
-        # m += m.t()
         m = m + m.t()
         modified_adj = self.complementary * m + ori_adj
 
