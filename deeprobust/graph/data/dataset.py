@@ -16,23 +16,30 @@ class Dataset():
 
     Parameters
     ----------
-    root :
+    root : string
         root directory where the dataset should be saved.
-    name :
-        dataset name, it can be choosen from ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed']
-    setting :
-        there are two data splits settings. The 'nettack' setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The 'gcn' setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here 'gcn' setting is not a fixed split, i.e., different random seed would return different data splits)
-    seed :
+    name : string
+        dataset name, it can be choosen from ['cora', 'citeseer', 'cora_ml', 'polblogs',
+        'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr']
+    setting : string
+        there are two data splits settings. The 'nettack' setting follows nettack paper
+        where they select the largest connected components of the graph and use 10%/10%/80%
+        nodes for training/validation/test . The 'gcn' setting follows gcn paper where they
+        use 20 samples in each class for traing, 500 nodes for validation, and 1000
+        nodes for test. (Note here 'gcn' setting is not a fixed split, i.e.,
+        different random seed would return different data splits)
+    seed : int
         random seed for splitting training/validation/test.
-    require_mask :
-        setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)
+    require_mask : bool
+        setting require_mask True to get training, validation and test mask
+        (self.train_mask, self.val_mask, self.test_mask)
 
     Examples
     --------
 	We can first create an instance of the Dataset class and then take out its attributes.
 
 	>>> from deeprobust.graph.data import Dataset
-	>>> data = Dataset(root='/tmp/', name='cora')
+	>>> data = Dataset(root='/tmp/', name='cora', seed=15)
 	>>> adj, features, labels = data.adj, data.features, data.labels
 	>>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     """
@@ -41,8 +48,10 @@ class Dataset():
         self.name = name.lower()
         self.setting = setting.lower()
 
-        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs', 'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr'], \
-            'Currently only support cora, citeseer, cora_ml, polblogs, pubmed, acm, blogcatalog, flickr'
+        assert self.name in ['cora', 'citeseer', 'cora_ml', 'polblogs',
+                'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr'], \
+                'Currently only support cora, citeseer, cora_ml, ' + \
+                'polblogs, pubmed, acm, blogcatalog, flickr'
         assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
 
         self.seed = seed
@@ -134,9 +143,6 @@ class Dataset():
         label = np.array(l)
 
         return sadj, features, label
-
-
-
 
     def load_pubmed(self):
         dataset = 'pubmed'

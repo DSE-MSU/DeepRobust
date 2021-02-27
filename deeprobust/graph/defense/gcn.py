@@ -25,10 +25,6 @@ class GraphConvolution(Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        # self.weight.data.fill_(1)
-        # if self.bias is not None:
-        #     self.bias.data.fill_(1)
-
         stdv = 1. / math.sqrt(self.weight.size(1))
         self.weight.data.uniform_(-stdv, stdv)
         if self.bias is not None:
@@ -69,7 +65,8 @@ class GCN(nn.Module):
     lr : float
         learning rate for GCN
     weight_decay : float
-        weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
+        weight decay coefficient (l2 normalization) for GCN.
+        When `with_relu` is True, `weight_decay` will be set to 0.
     with_relu : bool
         whether to use relu activation function. If False, GCN will be linearized.
     with_bias: bool
@@ -93,10 +90,11 @@ class GCN(nn.Module):
     >>> gcn = gcn.to('cpu')
     >>> gcn.fit(features, adj, labels, idx_train) # train without earlystopping
     >>> gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train with earlystopping
-
+    >>> gcn.test(idx_test)
     """
 
-    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device=None):
+    def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4,
+            with_relu=True, with_bias=True, device=None):
 
         super(GCN, self).__init__()
 
@@ -313,7 +311,7 @@ class GCN(nn.Module):
 
 
     def predict(self, features=None, adj=None):
-        """By default, the inputs should be unnormalized data
+        """By default, the inputs should be unnormalized adjacency
 
         Parameters
         ----------

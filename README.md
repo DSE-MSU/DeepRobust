@@ -49,6 +49,8 @@ If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
 # Changelog
+* [02/2021] [Graph Package] DeepRobust now provides tools for converting the datasets between [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/) and DeepRobust. 
+See more details in the [tutorial page]()! DeepRobust now also support GAT and Chebnet based on pyg; see details in [test_gat.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gat.py) and [test_chebnet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_chebnet.py).
 * [12/2020] DeepRobust now can be installed via pip! Try `pip install deeprobust`!
 * [12/2020] [Graph Package] Add four more [datasets](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph/#supported-datasets) and one defense algorithm. More details can be found [here](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph/#defense-methods). More datasets and algorithms will be added later. Stay tuned :)
 * [07/2020] Add [documentation](https://deeprobust.readthedocs.io/en/latest/) page!
