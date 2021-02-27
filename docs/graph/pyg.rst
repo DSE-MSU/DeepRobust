@@ -68,7 +68,7 @@ data and then train Pyg models.
 
 .. code-block:: python
 
-    from deeprobust.graph.data import Dataset
+    from deeprobust.graph.data import Dataset, Dpr2Pyg
     from deeprobust.graph.defense import GAT
     data = Dataset(root='/tmp/', name='cora')
     adj, features, labels = data.adj, data.features, data.labels
@@ -84,7 +84,7 @@ data and then train Pyg models.
 
 .. code-block:: python
 
-    from deeprobust.graph.data import Dataset
+    from deeprobust.graph.data import Dataset, Dpr2Pyg
     from deeprobust.graph.defense import ChebNet
     data = Dataset(root='/tmp/', name='cora')
     adj, features, labels = data.adj, data.features, data.labels

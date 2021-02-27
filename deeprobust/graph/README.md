@@ -33,6 +33,7 @@ For a practice of deeprobust graph package, you can also refer to https://github
 * BlogCatalog: [link](https://github.com/mengzaiqiao/CAN)
 * Flickr: [link](https://github.com/mengzaiqiao/CAN)
 * UAI: A Unifed Weakly Supervised Framework for Community Detection and Semantic Matching. 
+* PyTorch Geometric Datasets: Amazon-Computers, Amazon-Photo, CoauthorCS CoauthorPhysics...
 
 For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/DeepRobust/blob/master/deeprobust/graph/data/dataset.py)
 
