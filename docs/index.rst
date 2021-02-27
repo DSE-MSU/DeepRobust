@@ -11,7 +11,18 @@ Start building your robust models with DeepRobust!
    :width: 313px
    :height: 119px
 
-DeepRobust is a pytorch adversarial learning library, which contains most popular attack and defense algorithms in image domain and graph domain.
+DeepRobust is a pytorch adversarial learning library, which contains most popular attack and defense algorithms in image domain and graph domain. 
+
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Notes
+
+   graph/data
+   graph/attack
+   graph/defense
+   graph/pyg
 
 Installation
 ============
