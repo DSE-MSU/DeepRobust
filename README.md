@@ -42,15 +42,14 @@ Usage
 [Acknowledgement](#acknowledgement) 
 
 For more details about attacks and defenses, you can read the following papers.
-* [Adversarial Attacks and Defenses on Graphs: A Review and Empirical Study](https://arxiv.org/abs/2003.00653)
+* [Adversarial Attacks and Defenses on Graphs: A Review, A Tool and Empirical Studies](https://arxiv.org/abs/2003.00653)
 * [Adversarial Attacks and Defenses in Images, Graphs and Text: A Review](https://arxiv.org/pdf/1909.08072.pdf)
 
 If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
 # Changelog
-* [02/2021] [Graph Package] DeepRobust now provides tools for converting the datasets between [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/) and DeepRobust. 
-See more details in the [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/pyg.html)! DeepRobust now also support GAT and Chebnet based on pyg; see details in [test_gat.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gat.py) and [test_chebnet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_chebnet.py).
+* [02/2021] **[Graph Package] DeepRobust now provides tools for converting the datasets between [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/) and DeepRobust. See more details in the [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/pyg.html)!** DeepRobust now also support GAT and Chebnet based on pyg; see details in [test_gat.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gat.py) and [test_chebnet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_chebnet.py).
 * [12/2020] DeepRobust now can be installed via pip! Try `pip install deeprobust`!
 * [12/2020] [Graph Package] Add four more [datasets](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph/#supported-datasets) and one defense algorithm. More details can be found [here](https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph/#defense-methods). More datasets and algorithms will be added later. Stay tuned :)
 * [07/2020] Add [documentation](https://deeprobust.readthedocs.io/en/latest/) page!
