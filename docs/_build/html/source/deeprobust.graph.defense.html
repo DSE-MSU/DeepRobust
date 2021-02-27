@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.defense package &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.defense package &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,17 +26,19 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="deeprobust.graph.data package" href="deeprobust.graph.data.html" />
+    <link rel="prev" title="deeprobust.graph.targeted_attack package" href="deeprobust.graph.targeted_attack.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,16 +83,42 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Graph Package</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.graph.defense package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.adv_training">deeprobust.graph.defense.adv_training module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.gcn">deeprobust.graph.defense.gcn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.gcn_preprocess">deeprobust.graph.defense.gcn_preprocess module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.pgd">deeprobust.graph.defense.pgd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.prognn">deeprobust.graph.defense.prognn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense.r_gcn">deeprobust.graph.defense.r_gcn module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.defense">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -212,7 +240,8 @@
 <li><p><strong>nclass</strong> (<em>int</em>) – size of output dimension</p></li>
 <li><p><strong>dropout</strong> (<em>float</em>) – dropout rate for GCN</p></li>
 <li><p><strong>lr</strong> (<em>float</em>) – learning rate for GCN</p></li>
-<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN. When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN.
+When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
 <li><p><strong>with_relu</strong> (<em>bool</em>) – whether to use relu activation function. If False, GCN will be linearized.</p></li>
 <li><p><strong>with_bias</strong> (<em>bool</em>) – whether to include bias term in GCN weights.</p></li>
 <li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’.</p></li>
@@ -221,7 +250,7 @@
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCN.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
@@ -233,6 +262,7 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span> <span class="o">=</span> <span class="n">gcn</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">)</span> <span class="c1"># train without earlystopping</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span> <span class="c1"># train with earlystopping</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -266,7 +296,7 @@
 <dl class="method">
 <dt id="deeprobust.graph.defense.gcn.GCN.predict">
 <code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn.html#GCN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.gcn.GCN.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>By default, the inputs should be unnormalized data</p>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -335,27 +365,27 @@ Adversarial Examples on Graph Data: Deep Insights into Attack and Defense,
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCNJaccard.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCNJaccard</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">GCNJaccard</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="go">          nhid=16,</span>
 <span class="go">          nclass=labels.max().item() + 1,</span>
 <span class="go">          dropout=0.5, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
 <dt id="deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges">
-<code class="sig-name descname">drop_dissimilar_edges</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.drop_dissimilar_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drop dissimilar edges.</p>
+<code class="sig-name descname">drop_dissimilar_edges</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em>, <em class="sig-param">metric='similarity'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.drop_dissimilar_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop dissimilar edges.(Faster version using numba)</p>
 </dd></dl>
 
 <dl class="method">
@@ -373,7 +403,7 @@ validation loss.</p>
 <li><p><strong>labels</strong> – node labels</p></li>
 <li><p><strong>idx_train</strong> – node training indices</p></li>
 <li><p><strong>idx_val</strong> – node validation indices. If not given (None), GCN training process will not adpot early stopping</p></li>
-<li><p><strong>threshold</strong> (<em>int</em>) – similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.</p></li>
 <li><p><strong>train_iters</strong> (<em>int</em>) – number of training epochs</p></li>
 <li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
@@ -408,14 +438,14 @@ Against Adversarial Attacks on Graphs,
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCNSVD.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCNSVD</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">GCNSVD</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -642,6 +672,25 @@ adjacency matrix and corresponding operations.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>We can first load dataset and then train RGCN.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">RGCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RGCN</span><span class="p">(</span><span class="n">nnodes</span><span class="o">=</span><span class="n">perturbed_adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">                 nclass=labels.max()+1, nhid=32, device=&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span>
+<span class="go">              train_iters=200, verbose=True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -667,7 +716,8 @@ adjacency matrix and corresponding operations.</p>
 <li><p><strong>nclass</strong> (<em>int</em>) – size of output dimension</p></li>
 <li><p><strong>dropout</strong> (<em>float</em>) – dropout rate for GCN</p></li>
 <li><p><strong>lr</strong> (<em>float</em>) – learning rate for GCN</p></li>
-<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN. When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN.
+When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
 <li><p><strong>with_relu</strong> (<em>bool</em>) – whether to use relu activation function. If False, GCN will be linearized.</p></li>
 <li><p><strong>with_bias</strong> (<em>bool</em>) – whether to include bias term in GCN weights.</p></li>
 <li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’.</p></li>
@@ -676,7 +726,7 @@ adjacency matrix and corresponding operations.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCN.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
@@ -688,6 +738,7 @@ adjacency matrix and corresponding operations.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span> <span class="o">=</span> <span class="n">gcn</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">)</span> <span class="c1"># train without earlystopping</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span> <span class="c1"># train with earlystopping</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gcn</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
@@ -721,7 +772,7 @@ adjacency matrix and corresponding operations.</p>
 <dl class="method">
 <dt id="deeprobust.graph.defense.GCN.predict">
 <code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn.html#GCN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCN.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>By default, the inputs should be unnormalized data</p>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -775,14 +826,14 @@ Against Adversarial Attacks on Graphs,
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCNSVD.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCNSVD</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">GCNSVD</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -862,27 +913,27 @@ Adversarial Examples on Graph Data: Deep Insights into Attack and Defense,
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first load dataset and then train GCNJaccard.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCNJaccard</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">GCNJaccard</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
 <span class="go">          nhid=16,</span>
 <span class="go">          nclass=labels.max().item() + 1,</span>
 <span class="go">          dropout=0.5, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
 <dt id="deeprobust.graph.defense.GCNJaccard.drop_dissimilar_edges">
-<code class="sig-name descname">drop_dissimilar_edges</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.drop_dissimilar_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCNJaccard.drop_dissimilar_edges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Drop dissimilar edges.</p>
+<code class="sig-name descname">drop_dissimilar_edges</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj</em>, <em class="sig-param">metric='similarity'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.drop_dissimilar_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCNJaccard.drop_dissimilar_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop dissimilar edges.(Faster version using numba)</p>
 </dd></dl>
 
 <dl class="method">
@@ -900,7 +951,7 @@ validation loss.</p>
 <li><p><strong>labels</strong> – node labels</p></li>
 <li><p><strong>idx_train</strong> – node training indices</p></li>
 <li><p><strong>idx_val</strong> – node validation indices. If not given (None), GCN training process will not adpot early stopping</p></li>
-<li><p><strong>threshold</strong> (<em>int</em>) – similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.</p></li>
 <li><p><strong>train_iters</strong> (<em>int</em>) – number of training epochs</p></li>
 <li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
@@ -948,6 +999,25 @@ validation loss.</p>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>We can first load dataset and then train RGCN.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">RGCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># train defense model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">RGCN</span><span class="p">(</span><span class="n">nnodes</span><span class="o">=</span><span class="n">perturbed_adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">                 nclass=labels.max()+1, nhid=32, device=&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span>
+<span class="go">              train_iters=200, verbose=True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -998,6 +1068,189 @@ validation loss.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="deeprobust.graph.defense.GraphConvolution">
+<em class="property">class </em><code class="sig-name descname">GraphConvolution</code><span class="sig-paren">(</span><em class="sig-param">in_features</em>, <em class="sig-param">out_features</em>, <em class="sig-param">with_bias=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn.html#GraphConvolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GraphConvolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple GCN layer, similar to <a class="reference external" href="https://github.com/tkipf/pygcn">https://github.com/tkipf/pygcn</a></p>
+<dl class="method">
+<dt id="deeprobust.graph.defense.GraphConvolution.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param">input</em>, <em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn.html#GraphConvolution.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GraphConvolution.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graph Convolutional Layer forward function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.defense.GGCL_F">
+<em class="property">class </em><code class="sig-name descname">GGCL_F</code><span class="sig-paren">(</span><em class="sig-param">in_features</em>, <em class="sig-param">out_features</em>, <em class="sig-param">dropout=0.6</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/r_gcn.html#GGCL_F"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GGCL_F" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graph Gaussian Convolution Layer (GGCL) when the input is feature</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.defense.GGCL_D">
+<em class="property">class </em><code class="sig-name descname">GGCL_D</code><span class="sig-paren">(</span><em class="sig-param">in_features</em>, <em class="sig-param">out_features</em>, <em class="sig-param">dropout</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/r_gcn.html#GGCL_D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GGCL_D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graph Gaussian Convolution Layer (GGCL) when the input is distribution</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.defense.GAT">
+<em class="property">class </em><code class="sig-name descname">GAT</code><span class="sig-paren">(</span><em class="sig-param">nfeat</em>, <em class="sig-param">nhid</em>, <em class="sig-param">nclass</em>, <em class="sig-param">heads=8</em>, <em class="sig-param">output_heads=1</em>, <em class="sig-param">dropout=0.5</em>, <em class="sig-param">lr=0.01</em>, <em class="sig-param">weight_decay=0.0005</em>, <em class="sig-param">with_bias=True</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 Layer Graph Attention Network based on pytorch geometric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nfeat</strong> (<em>int</em>) – size of input feature dimension</p></li>
+<li><p><strong>nhid</strong> (<em>int</em>) – number of hidden units</p></li>
+<li><p><strong>nclass</strong> (<em>int</em>) – size of output dimension</p></li>
+<li><p><strong>heads</strong> (<em>int</em>) – number of attention heads</p></li>
+<li><p><strong>output_heads</strong> (<em>int</em>) – number of attention output heads</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout rate for GAT</p></li>
+<li><p><strong>lr</strong> (<em>float</em>) – learning rate for GAT</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN.
+When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
+<li><p><strong>with_bias</strong> (<em>bool</em>) – whether to include bias term in GAT weights.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first load dataset and then train GAT.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GAT</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gat</span> <span class="o">=</span> <span class="n">GAT</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">          nhid=8, heads=8,</span>
+<span class="go">          nclass=labels.max().item() + 1,</span>
+<span class="go">          dropout=0.5, device=&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gat</span> <span class="o">=</span> <span class="n">gat</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># convert deeprobust dataset to pyg dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gat</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># train with earlystopping</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.defense.GAT.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">pyg_data</em>, <em class="sig-param">train_iters=1000</em>, <em class="sig-param">initialize=True</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">patience=100</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the GAT model, when idx_val is not None, pick the best model
+according to the validation loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pyg_data</strong> – pytorch geometric dataset object</p></li>
+<li><p><strong>train_iters</strong> (<em>int</em>) – number of training epochs</p></li>
+<li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
+<li><p><strong>patience</strong> (<em>int</em>) – patience for early stopping, only valid when <cite>idx_val</cite> is given</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.GAT.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize parameters of GAT.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.GAT.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate GAT performance on test set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx_test</strong> – node testing indices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.GAT.train_with_early_stopping">
+<code class="sig-name descname">train_with_early_stopping</code><span class="sig-paren">(</span><em class="sig-param">train_iters</em>, <em class="sig-param">patience</em>, <em class="sig-param">verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.train_with_early_stopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.train_with_early_stopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>early stopping based on the validation loss</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.defense.ChebNet">
+<em class="property">class </em><code class="sig-name descname">ChebNet</code><span class="sig-paren">(</span><em class="sig-param">nfeat</em>, <em class="sig-param">nhid</em>, <em class="sig-param">nclass</em>, <em class="sig-param">num_hops=3</em>, <em class="sig-param">dropout=0.5</em>, <em class="sig-param">lr=0.01</em>, <em class="sig-param">weight_decay=0.0005</em>, <em class="sig-param">with_bias=True</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>2 Layer ChebNet based on pytorch geometric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nfeat</strong> (<em>int</em>) – size of input feature dimension</p></li>
+<li><p><strong>nhid</strong> (<em>int</em>) – number of hidden units</p></li>
+<li><p><strong>nclass</strong> (<em>int</em>) – size of output dimension</p></li>
+<li><p><strong>num_hops</strong> (<em>int</em>) – number of hops in ChebConv</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout rate for ChebNet</p></li>
+<li><p><strong>lr</strong> (<em>float</em>) – learning rate for ChebNet</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN.
+When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
+<li><p><strong>with_bias</strong> (<em>bool</em>) – whether to include bias term in ChebNet weights.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first load dataset and then train ChebNet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">ChebNet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cheby</span> <span class="o">=</span> <span class="n">ChebNet</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">          nhid=16, num_hops=3,</span>
+<span class="go">          nclass=labels.max().item() + 1,</span>
+<span class="go">          dropout=0.5, device=&#39;cpu&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cheby</span> <span class="o">=</span> <span class="n">cheby</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># convert deeprobust dataset to pyg dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cheby</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># train with earlystopping</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.defense.ChebNet.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">pyg_data</em>, <em class="sig-param">train_iters=200</em>, <em class="sig-param">initialize=True</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">patience=500</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the ChebNet model, when idx_val is not None, pick the best model
+according to the validation loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pyg_data</strong> – pytorch geometric dataset object</p></li>
+<li><p><strong>train_iters</strong> (<em>int</em>) – number of training epochs</p></li>
+<li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
+<li><p><strong>patience</strong> (<em>int</em>) – patience for early stopping, only valid when <cite>idx_val</cite> is given</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.ChebNet.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize parameters of ChebNet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.ChebNet.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate ChebNet performance on test set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx_test</strong> – node testing indices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.ChebNet.train_with_early_stopping">
+<code class="sig-name descname">train_with_early_stopping</code><span class="sig-paren">(</span><em class="sig-param">train_iters</em>, <em class="sig-param">patience</em>, <em class="sig-param">verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.train_with_early_stopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.train_with_early_stopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>early stopping based on the validation loss</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
@@ -1006,6 +1259,15 @@ validation loss.</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="deeprobust.graph.data.html" class="btn btn-neutral float-right" title="deeprobust.graph.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="deeprobust.graph.targeted_attack.html" class="btn btn-neutral float-left" title="deeprobust.graph.targeted_attack package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

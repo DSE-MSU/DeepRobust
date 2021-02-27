@@ -146,10 +146,8 @@ class Metattack(BaseMeta):
     >>> from deeprobust.graph.data import Dataset
     >>> from deeprobust.graph.defense import GCN
     >>> from deeprobust.graph.global_attack import Metattack
-    >>> from deeprobust.graph.utils import preprocess
     >>> data = Dataset(root='/tmp/', name='cora')
     >>> adj, features, labels = data.adj, data.features, data.labels
-    >>> adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False) # conver to tensor
     >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     >>> idx_unlabeled = np.union1d(idx_val, idx_test)
     >>> idx_unlabeled = np.union1d(idx_val, idx_test)

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.image.attack.onepixel &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.image.attack.onepixel &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -156,13 +172,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for deeprobust.image.attack.onepixel</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This is a re-implementation of One pixel attack.</span>
-
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 
@@ -181,165 +191,168 @@
 <span class="kn">from</span> <span class="nn">deeprobust.image.utils</span> <span class="kn">import</span> <span class="n">progress_bar</span>
 
 <div class="viewcode-block" id="Onepixel"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.onepixel.Onepixel">[docs]</a><span class="k">class</span> <span class="nc">Onepixel</span><span class="p">(</span><span class="n">BaseAttack</span><span class="p">):</span>
-	<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">	Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Onepixel attack is an algorithm that allow attacker to only manipulate one (or a few) pixel to mislead classifier.</span>
+<span class="sd">    This is a re-implementation of One pixel attack.</span>
+<span class="sd">    Copyright (c) 2018 Debang Li</span>
 
-<span class="sd">	References</span>
-<span class="sd">	----------</span>
-<span class="sd">	Akhtar, N., &amp; Mian, A. (2018).Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. IEEE Access, 6, 14410-14430.</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Akhtar, N., &amp; Mian, A. (2018).Threat of Adversarial Attacks on Deep Learning in Computer Vision: A Survey: A Survey. IEEE Access, 6, 14410-14430.</span>
 
-<span class="sd">	Reference code: https://github.com/DebangLi/one-pixel-attack-pytorch</span>
-<span class="sd">	&quot;&quot;&quot;</span>
-
-
-	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">):</span>
-
-	    <span class="nb">super</span><span class="p">(</span><span class="n">Onepixel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Onepixel.generate"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.onepixel.Onepixel.generate">[docs]</a>	<span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Call this function to generate FGSM adversarial examples.</span>
-
-<span class="sd">		Parameters</span>
-<span class="sd">		----------</span>
-<span class="sd">		image :1*3*W*H</span>
-<span class="sd">		    original image</span>
-<span class="sd">		label :</span>
-<span class="sd">		    target label</span>
-<span class="sd">		kwargs :</span>
-<span class="sd">		    user defined paremeters</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-
-		<span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
-
-		<span class="c1">## check and parse parameters for attack</span>
-		<span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_type_device</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
-		<span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_pixel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">targeted_attack</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">popsize</span><span class="p">,</span>
-						 <span class="bp">self</span><span class="o">.</span><span class="n">print_log</span><span class="p">)</span></div>
-
-	<span class="k">def</span> <span class="nf">get_pred</span><span class="p">():</span>
-		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">adv_pred</span>
-
-<div class="viewcode-block" id="Onepixel.parse_params"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.onepixel.Onepixel.parse_params">[docs]</a>	<span class="k">def</span> <span class="nf">parse_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-			 <span class="n">pixels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-			 <span class="n">maxiter</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-			 <span class="n">popsize</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
-			 <span class="n">samples</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-			 <span class="n">targeted_attack</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-			 <span class="n">print_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-			 <span class="n">target</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-		<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">		Parse the user-defined params.</span>
-
-<span class="sd">		Parameters</span>
-<span class="sd">		----------</span>
-<span class="sd">		pixels :</span>
-<span class="sd">		    maximum number of manipulated pixels</span>
-<span class="sd">		maxiter :</span>
-<span class="sd">		    maximum number of iteration</span>
-<span class="sd">		popsize :</span>
-<span class="sd">		    population size</span>
-<span class="sd">		samples :</span>
-<span class="sd">		    samples</span>
-<span class="sd">		targeted_attack :</span>
-<span class="sd">		    targeted attack or not</span>
-<span class="sd">		print_log :</span>
-<span class="sd">		    Set print_log = True to print out details in the searching algorithm</span>
-<span class="sd">		target :</span>
-<span class="sd">		    target label (if targeted attack is set to be True)</span>
-<span class="sd">		&quot;&quot;&quot;</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">popsize</span> <span class="o">=</span> <span class="n">popsize</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">targeted_attack</span> <span class="o">=</span> <span class="n">targeted_attack</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">print_log</span> <span class="o">=</span> <span class="n">print_log</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
-		<span class="k">return</span> <span class="kc">True</span></div>
+<span class="sd">    Reference code: https://github.com/DebangLi/one-pixel-attack-pytorch</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 
-	<span class="k">def</span> <span class="nf">one_pixel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">targeted_attack</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pixels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">maxiter</span> <span class="o">=</span> <span class="mi">75</span><span class="p">,</span> <span class="n">popsize</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">print_log</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-		<span class="c1"># label: a number</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">):</span>
 
-		<span class="n">target_calss</span> <span class="o">=</span> <span class="n">target</span> <span class="k">if</span> <span class="n">targeted_attack</span> <span class="k">else</span> <span class="n">label</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Onepixel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
-		<span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)]</span> <span class="o">*</span> <span class="n">pixels</span>
+<div class="viewcode-block" id="Onepixel.generate"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.onepixel.Onepixel.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this function to generate Onepixel adversarial examples.</span>
 
-		<span class="n">popmul</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">popsize</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">))</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image :1*3*W*H</span>
+<span class="sd">            original image</span>
+<span class="sd">        label :</span>
+<span class="sd">            target label</span>
+<span class="sd">        kwargs :</span>
+<span class="sd">            user defined paremeters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-		<span class="n">predict_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">xs</span><span class="p">:</span> <span class="n">predict_classes</span><span class="p">(</span>
-			<span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">targeted_attack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-		<span class="n">callback_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">convergence</span><span class="p">:</span> <span class="n">attack_success</span><span class="p">(</span>
-			<span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">targeted_attack</span><span class="p">,</span> <span class="n">print_log</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">)</span>
 
-		<span class="n">inits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">popmul</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">)])</span>
-		<span class="k">for</span> <span class="n">init</span> <span class="ow">in</span> <span class="n">inits</span><span class="p">:</span>
-			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pixels</span><span class="p">):</span>
-				<span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">32</span>
-				<span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">32</span>
-				<span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
-				<span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
-				<span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
+        <span class="c1">## check and parse parameters for attack</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_type_device</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-		<span class="n">attack_result</span> <span class="o">=</span> <span class="n">differential_evolution</span><span class="p">(</span><span class="n">predict_fn</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">popsize</span> <span class="o">=</span> <span class="n">popmul</span><span class="p">,</span>
-			<span class="n">recombination</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">atol</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">callback_fn</span><span class="p">,</span> <span class="n">polish</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="n">inits</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">one_pixel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">targeted_attack</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">popsize</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">print_log</span><span class="p">)</span></div>
 
-		<span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">attack_result</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
-		<span class="n">attack_var</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">attack_image</span><span class="p">,</span> <span class="n">volatile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-		<span class="n">predicted_probs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">attack_var</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">def</span> <span class="nf">get_pred</span><span class="p">():</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">adv_pred</span>
 
-		<span class="n">predicted_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">predicted_probs</span><span class="p">)</span>
+<div class="viewcode-block" id="Onepixel.parse_params"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.onepixel.Onepixel.parse_params">[docs]</a>    <span class="k">def</span> <span class="nf">parse_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">pixels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+             <span class="n">maxiter</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+             <span class="n">popsize</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+             <span class="n">samples</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+             <span class="n">targeted_attack</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+             <span class="n">print_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="n">target</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 
-		<span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">predicted_class</span> <span class="o">!=</span> <span class="n">label</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">predicted_class</span> <span class="o">==</span> <span class="n">target_calss</span><span class="p">):</span>
-			<span class="bp">self</span><span class="o">.</span><span class="n">adv_pred</span> <span class="o">=</span> <span class="n">predicted_class</span>
-			<span class="k">return</span> <span class="n">attack_image</span>
-		<span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse the user-defined params.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixels :</span>
+<span class="sd">            maximum number of manipulated pixels</span>
+<span class="sd">        maxiter :</span>
+<span class="sd">            maximum number of iteration</span>
+<span class="sd">        popsize :</span>
+<span class="sd">            population size</span>
+<span class="sd">        samples :</span>
+<span class="sd">            samples</span>
+<span class="sd">        targeted_attack :</span>
+<span class="sd">            targeted attack or not</span>
+<span class="sd">        print_log :</span>
+<span class="sd">            Set print_log = True to print out details in the searching algorithm</span>
+<span class="sd">        target :</span>
+<span class="sd">            target label (if targeted attack is set to be True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixels</span> <span class="o">=</span> <span class="n">pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popsize</span> <span class="o">=</span> <span class="n">popsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">targeted_attack</span> <span class="o">=</span> <span class="n">targeted_attack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_log</span> <span class="o">=</span> <span class="n">print_log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span> <span class="nf">one_pixel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">targeted_attack</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pixels</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">maxiter</span> <span class="o">=</span> <span class="mi">75</span><span class="p">,</span> <span class="n">popsize</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span> <span class="n">print_log</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># label: a number</span>
+
+        <span class="n">target_calss</span> <span class="o">=</span> <span class="n">target</span> <span class="k">if</span> <span class="n">targeted_attack</span> <span class="k">else</span> <span class="n">label</span>
+
+        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)]</span> <span class="o">*</span> <span class="n">pixels</span>
+
+        <span class="n">popmul</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">popsize</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">))</span>
+
+        <span class="n">predict_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">xs</span><span class="p">:</span> <span class="n">predict_classes</span><span class="p">(</span>
+            <span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">targeted_attack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">callback_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">convergence</span><span class="p">:</span> <span class="n">attack_success</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">targeted_attack</span><span class="p">,</span> <span class="n">print_log</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">inits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">popmul</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">)])</span>
+        <span class="k">for</span> <span class="n">init</span> <span class="ow">in</span> <span class="n">inits</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pixels</span><span class="p">):</span>
+                <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">32</span>
+                <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="mi">32</span>
+                <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
+                <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
+                <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>
+
+        <span class="n">attack_result</span> <span class="o">=</span> <span class="n">differential_evolution</span><span class="p">(</span><span class="n">predict_fn</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span><span class="p">,</span> <span class="n">popsize</span> <span class="o">=</span> <span class="n">popmul</span><span class="p">,</span>
+            <span class="n">recombination</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">atol</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">callback_fn</span><span class="p">,</span> <span class="n">polish</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">init</span> <span class="o">=</span> <span class="n">inits</span><span class="p">)</span>
+
+        <span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">attack_result</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+        <span class="n">attack_var</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">attack_image</span><span class="p">,</span> <span class="n">volatile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="n">predicted_probs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">attack_var</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">predicted_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">predicted_probs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">predicted_class</span> <span class="o">!=</span> <span class="n">label</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">predicted_class</span> <span class="o">==</span> <span class="n">target_calss</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adv_pred</span> <span class="o">=</span> <span class="n">predicted_class</span>
+            <span class="k">return</span> <span class="n">attack_image</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span></div>
 
 <span class="k">def</span> <span class="nf">perturb_image</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
 
-	<span class="k">if</span> <span class="n">xs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-		<span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xs</span><span class="p">])</span>
-	<span class="n">batch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
-	<span class="n">imgs</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-	<span class="n">xs</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xs</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xs</span><span class="p">])</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="n">imgs</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
-	<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
 
-	<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">:</span>
-		<span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xs</span><span class="p">:</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pixel</span> <span class="ow">in</span> <span class="n">pixels</span><span class="p">:</span>
+            <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pixel</span>
+            <span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4914</span><span class="p">)</span><span class="o">/</span><span class="mf">0.2023</span>
+            <span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4822</span><span class="p">)</span><span class="o">/</span><span class="mf">0.1994</span>
+            <span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4465</span><span class="p">)</span><span class="o">/</span><span class="mf">0.2010</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-		<span class="k">for</span> <span class="n">pixel</span> <span class="ow">in</span> <span class="n">pixels</span><span class="p">:</span>
-			<span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pixel</span>
-			<span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4914</span><span class="p">)</span><span class="o">/</span><span class="mf">0.2023</span>
-			<span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4822</span><span class="p">)</span><span class="o">/</span><span class="mf">0.1994</span>
-			<span class="n">imgs</span><span class="p">[</span><span class="n">count</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="mf">0.4465</span><span class="p">)</span><span class="o">/</span><span class="mf">0.2010</span>
-		<span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-
-	<span class="k">return</span> <span class="n">imgs</span>
+    <span class="k">return</span> <span class="n">imgs</span>
 
 <span class="k">def</span> <span class="nf">predict_classes</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">minimize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">):</span>
-	<span class="n">imgs_perturbed</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-	<span class="n">predictions</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">imgs_perturbed</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[:,</span> <span class="n">target_calss</span><span class="p">]</span>
+    <span class="n">imgs_perturbed</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">imgs_perturbed</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[:,</span> <span class="n">target_calss</span><span class="p">]</span>
 
-	<span class="k">return</span> <span class="n">predictions</span> <span class="k">if</span> <span class="n">minimize</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">predictions</span>
+    <span class="k">return</span> <span class="n">predictions</span> <span class="k">if</span> <span class="n">minimize</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">predictions</span>
 
 <span class="k">def</span> <span class="nf">attack_success</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">target_calss</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">targeted_attack</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">print_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span><span class="p">):</span>
 
-	<span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-	<span class="n">confidence</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">attack_image</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-	<span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span>
+    <span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">confidence</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">attack_image</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span>
 
-	<span class="k">if</span> <span class="p">(</span><span class="n">print_log</span><span class="p">):</span>
-		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Confidence: </span><span class="si">%.4f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">confidence</span><span class="p">[</span><span class="n">target_calss</span><span class="p">])</span>
-	<span class="k">if</span> <span class="p">(</span><span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">pred</span> <span class="o">==</span> <span class="n">target_calss</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">pred</span> <span class="o">!=</span> <span class="n">target_calss</span><span class="p">):</span>
-		<span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">print_log</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Confidence: </span><span class="si">%.4f</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">confidence</span><span class="p">[</span><span class="n">target_calss</span><span class="p">])</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">pred</span> <span class="o">==</span> <span class="n">target_calss</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">targeted_attack</span> <span class="ow">and</span> <span class="n">pred</span> <span class="o">!=</span> <span class="n">target_calss</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
 
 

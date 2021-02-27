@@ -195,6 +195,27 @@ class RGCN(Module):
             number of training epochs
         verbose : bool
             whether to show verbose logs
+
+        Examples
+        --------
+        We can first load dataset and then train RGCN.
+
+        >>> from deeprobust.graph.data import PrePtbDataset, Dataset
+        >>> from deeprobust.graph.defense import RGCN
+        >>> # load clean graph data
+        >>> data = Dataset(root='/tmp/', name='cora', seed=15)
+        >>> adj, features, labels = data.adj, data.features, data.labels
+        >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+        >>> # load perturbed graph data
+        >>> perturbed_data = PrePtbDataset(root='/tmp/', name='cora')
+        >>> perturbed_adj = perturbed_data.adj
+        >>> # train defense model
+        >>> model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1],
+                         nclass=labels.max()+1, nhid=32, device='cpu')
+        >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val,
+                      train_iters=200, verbose=True)
+        >>> model.test(idx_test)
+
         """
 
         adj, features, labels = utils.to_tensor(adj.todense(), features.todense(), labels, device=self.device)
@@ -260,6 +281,7 @@ class RGCN(Module):
     def test(self, idx_test):
         """Evaluate the peformance on test set
         """
+        self.eval()
         # output = self.forward()
         output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])

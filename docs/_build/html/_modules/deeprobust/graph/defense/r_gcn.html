@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.defense.r_gcn &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.defense.r_gcn &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -227,7 +243,7 @@
         <span class="n">Att</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">)</span>
         <span class="n">mean_out</span> <span class="o">=</span> <span class="n">adj_norm1</span> <span class="o">@</span> <span class="p">(</span><span class="n">miu</span> <span class="o">*</span> <span class="n">Att</span><span class="p">)</span>
         <span class="n">sigma_out</span> <span class="o">=</span> <span class="n">adj_norm2</span> <span class="o">@</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">*</span> <span class="n">Att</span> <span class="o">*</span> <span class="n">Att</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mean_out</span><span class="p">,</span> <span class="n">sigma</span></div>
+        <span class="k">return</span> <span class="n">mean_out</span><span class="p">,</span> <span class="n">sigma_out</span></div>
 
 
 <div class="viewcode-block" id="GaussianConvolution"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GaussianConvolution">[docs]</a><span class="k">class</span> <span class="nc">GaussianConvolution</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
@@ -353,6 +369,27 @@
 <span class="sd">            number of training epochs</span>
 <span class="sd">        verbose : bool</span>
 <span class="sd">            whether to show verbose logs</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We can first load dataset and then train RGCN.</span>
+
+<span class="sd">        &gt;&gt;&gt; from deeprobust.graph.data import PrePtbDataset, Dataset</span>
+<span class="sd">        &gt;&gt;&gt; from deeprobust.graph.defense import RGCN</span>
+<span class="sd">        &gt;&gt;&gt; # load clean graph data</span>
+<span class="sd">        &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;, seed=15)</span>
+<span class="sd">        &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
+<span class="sd">        &gt;&gt;&gt; idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test</span>
+<span class="sd">        &gt;&gt;&gt; # load perturbed graph data</span>
+<span class="sd">        &gt;&gt;&gt; perturbed_data = PrePtbDataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
+<span class="sd">        &gt;&gt;&gt; # train defense model</span>
+<span class="sd">        &gt;&gt;&gt; model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1],</span>
+<span class="sd">                         nclass=labels.max()+1, nhid=32, device=&#39;cpu&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; model.fit(features, perturbed_adj, labels, idx_train, idx_val,</span>
+<span class="sd">                      train_iters=200, verbose=True)</span>
+<span class="sd">        &gt;&gt;&gt; model.test(idx_test)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">todense</span><span class="p">(),</span> <span class="n">features</span><span class="o">.</span><span class="n">todense</span><span class="p">(),</span> <span class="n">labels</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
@@ -418,6 +455,7 @@
 <div class="viewcode-block" id="RGCN.test"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.RGCN.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx_test</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Evaluate the peformance on test set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="c1"># output = self.forward()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
         <span class="n">loss_test</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_test</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">idx_test</span><span class="p">])</span>

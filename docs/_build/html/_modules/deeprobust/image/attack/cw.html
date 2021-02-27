@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.image.attack.cw &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.image.attack.cw &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -175,20 +191,22 @@
 <span class="sd">    .. [1] Carlini, N., &amp; Wagner, D. (2017, May). Towards evaluating the robustness of neural networks. https://arxiv.org/pdf/1608.04644.pdf</span>
 
 <span class="sd">    This reimplementation is based on https://github.com/kkew3/pytorch-cw2</span>
+<span class="sd">    Copyright 2018 Kaiwen Wu</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    from deeprobust.image.attack.cw import CarliniWagner</span>
-<span class="sd">    from deeprobust.image.netmodels.CNN import Net</span>
-<span class="sd">    from deeprobust.image.config import attack_params</span>
 
-<span class="sd">    model = Net()</span>
-<span class="sd">    model.load_state_dict(torch.load(&quot;./trained_models/MNIST_CNN_epoch_20.pt&quot;, map_location = torch.device(&#39;cuda&#39;)))</span>
-<span class="sd">    model.eval()</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.image.attack.cw import CarliniWagner</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.image.netmodels.CNN import Net</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.image.config import attack_params</span>
 
-<span class="sd">    x,y = datasets.MNIST()</span>
-<span class="sd">    attack = CarliniWagner(model, device=&#39;cuda&#39;)</span>
-<span class="sd">    AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, **attack_params[&#39;CW_MNIST])</span>
+<span class="sd">    &gt;&gt;&gt; model = Net()</span>
+<span class="sd">    &gt;&gt;&gt; model.load_state_dict(torch.load(&quot;./trained_models/MNIST_CNN_epoch_20.pt&quot;, map_location = torch.device(&#39;cuda&#39;)))</span>
+<span class="sd">    &gt;&gt;&gt; model.eval()</span>
+
+<span class="sd">    &gt;&gt;&gt; x,y = datasets.MNIST()</span>
+<span class="sd">    &gt;&gt;&gt; attack = CarliniWagner(model, device=&#39;cuda&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; AdvExArray = attack.generate(x, y, target_label = 1, classnum = 10, **attack_params[&#39;CW_MNIST])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -220,7 +238,7 @@
                   <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span>
-                  <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">clip_max</span><span class="p">,</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span><span class="p">,</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
                   <span class="bp">self</span><span class="o">.</span><span class="n">initial_const</span><span class="p">,</span>

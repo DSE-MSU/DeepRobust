@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.utils &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.utils &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -162,6 +178,7 @@
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">import</span> <span class="nn">torch.sparse</span> <span class="k">as</span> <span class="nn">ts</span>
 <span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <div class="viewcode-block" id="encode_onehot"><a class="viewcode-back" href="../../../source/deeprobust.graph.html#deeprobust.graph.utils.encode_onehot">[docs]</a><span class="k">def</span> <span class="nf">encode_onehot</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert label to onehot format.</span>
@@ -213,7 +230,7 @@
 <span class="sd">        node labels</span>
 <span class="sd">    preprocess_adj : bool</span>
 <span class="sd">        whether to normalize the adjacency matrix</span>
-<span class="sd">    preprocess_feature :</span>
+<span class="sd">    preprocess_feature : bool</span>
 <span class="sd">        whether to normalize the feature matrix</span>
 <span class="sd">    sparse : bool</span>
 <span class="sd">       whether to return sparse tensor</span>
@@ -304,6 +321,7 @@
 <span class="sd">        normalized matrix</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># TODO: maybe using coo format would be better?</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">:</span>
         <span class="n">mx</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">mx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
@@ -357,6 +375,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">adj</span><span class="o">.</span><span class="n">is_cuda</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sparse</span><span class="p">:</span>
+        <span class="c1"># warnings.warn(&#39;If you find the training process is too slow, you can uncomment line 207 in deeprobust/graph/utils.py. Note that you need to install torch_sparse&#39;)</span>
         <span class="c1"># TODO if this is too slow, uncomment the following code,</span>
         <span class="c1"># but you need to install torch_scatter</span>
         <span class="c1"># return normalize_sparse_tensor(adj)</span>
@@ -440,7 +459,7 @@
 <span class="sd">    float</span>
 <span class="sd">        accuracy</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="s1">&#39;__len__&#39;</span><span class="p">):</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -488,11 +507,21 @@
 <div class="viewcode-block" id="sparse_mx_to_torch_sparse_tensor"><a class="viewcode-back" href="../../../source/deeprobust.graph.html#deeprobust.graph.utils.sparse_mx_to_torch_sparse_tensor">[docs]</a><span class="k">def</span> <span class="nf">sparse_mx_to_torch_sparse_tensor</span><span class="p">(</span><span class="n">sparse_mx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a scipy sparse matrix to a torch sparse tensor.&quot;&quot;&quot;</span>
     <span class="n">sparse_mx</span> <span class="o">=</span> <span class="n">sparse_mx</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">sparse_mx</span><span class="o">.</span><span class="n">col</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">))</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
+    <span class="n">sparserow</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">row</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sparsecol</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sparseconcat</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">sparserow</span><span class="p">,</span> <span class="n">sparsecol</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sparsedata</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">sparseconcat</span><span class="o">.</span><span class="n">t</span><span class="p">(),</span><span class="n">sparsedata</span><span class="p">,</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">(</span><span class="n">sparse_mx</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span></div>
+
+	<span class="c1"># slower version....</span>
+    <span class="c1"># sparse_mx = sparse_mx.tocoo().astype(np.float32)</span>
+    <span class="c1"># indices = torch.from_numpy(</span>
+    <span class="c1">#     np.vstack((sparse_mx.row, sparse_mx.col)).astype(np.int64))</span>
+    <span class="c1"># values = torch.from_numpy(sparse_mx.data)</span>
+    <span class="c1"># shape = torch.Size(sparse_mx.shape)</span>
+    <span class="c1"># return torch.sparse.FloatTensor(indices, values, shape)</span>
+
+
 
 <div class="viewcode-block" id="to_scipy"><a class="viewcode-back" href="../../../source/deeprobust.graph.html#deeprobust.graph.utils.to_scipy">[docs]</a><span class="k">def</span> <span class="nf">to_scipy</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a dense/sparse tensor to scipy matrix&quot;&quot;&quot;</span>
@@ -758,7 +787,9 @@
     <span class="n">ll</span> <span class="o">=</span> <span class="n">compute_log_likelihood</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">sum_log_degrees</span><span class="p">,</span> <span class="n">d_min</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ll</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">sum_log_degrees</span></div>
 
-<span class="k">def</span> <span class="nf">updated_log_likelihood_for_edge_changes</span><span class="p">(</span><span class="n">node_pairs</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">d_min</span><span class="p">):</span>
+<div class="viewcode-block" id="updated_log_likelihood_for_edge_changes"><a class="viewcode-back" href="../../../source/deeprobust.graph.html#deeprobust.graph.utils.updated_log_likelihood_for_edge_changes">[docs]</a><span class="k">def</span> <span class="nf">updated_log_likelihood_for_edge_changes</span><span class="p">(</span><span class="n">node_pairs</span><span class="p">,</span> <span class="n">adjacency_matrix</span><span class="p">,</span> <span class="n">d_min</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Adopted from https://github.com/danielzuegner/nettack</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># For each node pair find out whether there is an edge or not in the input adjacency matrix.</span>
 
     <span class="n">edge_entries_before</span> <span class="o">=</span> <span class="n">adjacency_matrix</span><span class="p">[</span><span class="n">node_pairs</span><span class="o">.</span><span class="n">T</span><span class="p">]</span>
@@ -777,7 +808,7 @@
     <span class="n">new_alpha</span> <span class="o">=</span> <span class="n">compute_alpha</span><span class="p">(</span><span class="n">new_n</span><span class="p">,</span> <span class="n">sum_log_degrees_after</span><span class="p">,</span> <span class="n">d_min</span><span class="p">)</span>
     <span class="c1"># Updated log likelihood values for the Powerlaw distributions</span>
     <span class="n">new_ll</span> <span class="o">=</span> <span class="n">compute_log_likelihood</span><span class="p">(</span><span class="n">new_n</span><span class="p">,</span> <span class="n">new_alpha</span><span class="p">,</span> <span class="n">sum_log_degrees_after</span><span class="p">,</span> <span class="n">d_min</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">new_ll</span><span class="p">,</span> <span class="n">new_alpha</span><span class="p">,</span> <span class="n">new_n</span><span class="p">,</span> <span class="n">sum_log_degrees_after</span>
+    <span class="k">return</span> <span class="n">new_ll</span><span class="p">,</span> <span class="n">new_alpha</span><span class="p">,</span> <span class="n">new_n</span><span class="p">,</span> <span class="n">sum_log_degrees_after</span></div>
 
 
 <span class="k">def</span> <span class="nf">update_sum_log_degrees</span><span class="p">(</span><span class="n">sum_log_degrees_before</span><span class="p">,</span> <span class="n">n_old</span><span class="p">,</span> <span class="n">d_old</span><span class="p">,</span> <span class="n">d_new</span><span class="p">,</span> <span class="n">d_min</span><span class="p">):</span>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.defense.gcn_preprocess &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.defense.gcn_preprocess &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -167,7 +183,7 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
 
 <div class="viewcode-block" id="GCNSVD"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNSVD">[docs]</a><span class="k">class</span> <span class="nc">GCNSVD</span><span class="p">(</span><span class="n">GCN</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;GCNSVD is a 2 Layer Graph Convolutional Network with Truncated SVD as</span>
@@ -200,14 +216,14 @@
 <span class="sd">    --------</span>
 <span class="sd">	We can first load dataset and then train GCNSVD.</span>
 
-<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import PtbDataset, Dataset</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import PrePtbDataset, Dataset</span>
 <span class="sd">    &gt;&gt;&gt; from deeprobust.graph.defense import GCNSVD</span>
 <span class="sd">    &gt;&gt;&gt; # load clean graph data</span>
 <span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;, seed=15)</span>
 <span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
 <span class="sd">    &gt;&gt;&gt; idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test</span>
 <span class="sd">    &gt;&gt;&gt; # load perturbed graph data</span>
-<span class="sd">    &gt;&gt;&gt; perturbed_data = PtbDataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_data = PrePtbDataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
 <span class="sd">    &gt;&gt;&gt; # train defense model</span>
 <span class="sd">    &gt;&gt;&gt; model = GCNSVD(nfeat=features.shape[1],</span>
@@ -324,21 +340,21 @@
 <span class="sd">    --------</span>
 <span class="sd">	We can first load dataset and then train GCNJaccard.</span>
 
-<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import PtbDataset, Dataset</span>
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import PrePtbDataset, Dataset</span>
 <span class="sd">    &gt;&gt;&gt; from deeprobust.graph.defense import GCNJaccard</span>
 <span class="sd">    &gt;&gt;&gt; # load clean graph data</span>
 <span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;, seed=15)</span>
 <span class="sd">    &gt;&gt;&gt; adj, features, labels = data.adj, data.features, data.labels</span>
 <span class="sd">    &gt;&gt;&gt; idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test</span>
 <span class="sd">    &gt;&gt;&gt; # load perturbed graph data</span>
-<span class="sd">    &gt;&gt;&gt; perturbed_data = PtbDataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; perturbed_data = PrePtbDataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; perturbed_adj = perturbed_data.adj</span>
 <span class="sd">    &gt;&gt;&gt; # train defense model</span>
 <span class="sd">    &gt;&gt;&gt; model = GCNJaccard(nfeat=features.shape[1],</span>
 <span class="sd">              nhid=16,</span>
 <span class="sd">              nclass=labels.max().item() + 1,</span>
 <span class="sd">              dropout=0.5, device=&#39;cpu&#39;).to(&#39;cpu&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.03)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nfeat</span><span class="p">,</span> <span class="n">nhid</span><span class="p">,</span> <span class="n">nclass</span><span class="p">,</span> <span class="n">binary_feature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">5e-4</span><span class="p">,</span> <span class="n">with_relu</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">):</span>
@@ -365,7 +381,7 @@
 <span class="sd">            node training indices</span>
 <span class="sd">        idx_val :</span>
 <span class="sd">            node validation indices. If not given (None), GCN training process will not adpot early stopping</span>
-<span class="sd">        threshold : int</span>
+<span class="sd">        threshold : float</span>
 <span class="sd">            similarity threshold for dropping edges. If two connected nodes with similarity smaller than threshold, the edge between them will be removed.</span>
 <span class="sd">        train_iters : int</span>
 <span class="sd">            number of training epochs</span>
@@ -384,16 +400,37 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">modified_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">train_iters</span><span class="o">=</span><span class="n">train_iters</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="n">initialize</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="GCNJaccard.drop_dissimilar_edges"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges">[docs]</a>    <span class="k">def</span> <span class="nf">drop_dissimilar_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Drop dissimilar edges.</span>
+<div class="viewcode-block" id="GCNJaccard.drop_dissimilar_edges"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges">[docs]</a>    <span class="k">def</span> <span class="nf">drop_dissimilar_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;similarity&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop dissimilar edges.(Faster version using numba)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>
+            <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+        <span class="n">adj_triu</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">features</span><span class="p">):</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span><span class="o">.</span><span class="n">A</span> <span class="c1"># make it easier for njit processing</span>
+
+        <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">&#39;distance&#39;</span><span class="p">:</span>
+            <span class="n">removed_cnt</span> <span class="o">=</span> <span class="n">dropedge_dis</span><span class="p">(</span><span class="n">adj_triu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_feature</span><span class="p">:</span>
+                <span class="n">removed_cnt</span> <span class="o">=</span> <span class="n">dropedge_jaccard</span><span class="p">(</span><span class="n">adj_triu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">removed_cnt</span> <span class="o">=</span> <span class="n">dropedge_cosine</span><span class="p">(</span><span class="n">adj_triu</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed </span><span class="si">%s</span><span class="s1"> edges in the original graph&#39;</span> <span class="o">%</span> <span class="n">removed_cnt</span><span class="p">)</span>
+        <span class="n">modified_adj</span> <span class="o">=</span> <span class="n">adj_triu</span> <span class="o">+</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">modified_adj</span></div>
+
+    <span class="k">def</span> <span class="nf">_drop_dissimilar_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Drop dissimilar edges. (Slower version)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>
             <span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
         <span class="n">modified_adj</span> <span class="o">=</span> <span class="n">adj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
-        <span class="c1"># preprocessing based on features</span>
 
+        <span class="c1"># preprocessing based on features</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;=== GCN-Jaccrad ===&#39;</span><span class="p">)</span>
-        <span class="c1"># isSparse = sp.issparse(features)</span>
         <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">modified_adj</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
         <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">edges</span><span class="p">):</span>
@@ -402,7 +439,6 @@
             <span class="k">if</span> <span class="n">n1</span> <span class="o">&gt;</span> <span class="n">n2</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># if isSparse:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_feature</span><span class="p">:</span>
                 <span class="n">J</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jaccard_similarity</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">])</span>
 
@@ -418,7 +454,7 @@
                     <span class="n">modified_adj</span><span class="p">[</span><span class="n">n2</span><span class="p">,</span> <span class="n">n1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed </span><span class="si">%s</span><span class="s1"> edges in the original graph&#39;</span> <span class="o">%</span> <span class="n">removed_cnt</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">modified_adj</span></div>
+        <span class="k">return</span> <span class="n">modified_adj</span>
 
     <span class="k">def</span> <span class="nf">_jaccard_similarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
         <span class="n">intersection</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">()</span>
@@ -426,9 +462,121 @@
         <span class="k">return</span> <span class="n">J</span>
 
     <span class="k">def</span> <span class="nf">_cosine_similarity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-        <span class="n">inner_product</span> <span class="o">=</span> <span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">*</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">C</span> <span class="o">=</span> <span class="n">inner_product</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+        <span class="n">inner_product</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">inner_product</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">C</span></div>
+
+<span class="k">def</span> <span class="nf">__dropedge_jaccard</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">iA</span><span class="p">,</span> <span class="n">jA</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="c1"># deprecated: for sparse feature matrix...</span>
+    <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iA</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># print(row, jA[i], A[i])</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">jA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+
+            <span class="n">intersection</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">()</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">intersection</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">()</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">()</span> <span class="o">-</span> <span class="n">intersection</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">J</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># A[n2, n1] = 0</span>
+                <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">removed_cnt</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">dropedge_jaccard</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">iA</span><span class="p">,</span> <span class="n">jA</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iA</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># print(row, jA[i], A[i])</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">jA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+            <span class="n">intersection</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">J</span> <span class="o">=</span> <span class="n">intersection</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">intersection</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">J</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># A[n2, n1] = 0</span>
+                <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">removed_cnt</span>
+
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">dropedge_cosine</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">iA</span><span class="p">,</span> <span class="n">jA</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iA</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># print(row, jA[i], A[i])</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">jA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+            <span class="n">inner_product</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">inner_product</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">C</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># A[n2, n1] = 0</span>
+                <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">removed_cnt</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">dropedge_dis</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">iA</span><span class="p">,</span> <span class="n">jA</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iA</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># print(row, jA[i], A[i])</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">jA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">-</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">C</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># A[n2, n1] = 0</span>
+                <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">removed_cnt</span>
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">dropedge_both</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">iA</span><span class="p">,</span> <span class="n">jA</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">threshold1</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">threshold2</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+    <span class="n">removed_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iA</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">iA</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="c1"># print(row, jA[i], A[i])</span>
+            <span class="n">n1</span> <span class="o">=</span> <span class="n">row</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">jA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">C1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="o">-</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">])</span>
+
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">n1</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span>
+            <span class="n">inner_product</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">C2</span> <span class="o">=</span> <span class="n">inner_product</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">C1</span> <span class="o">&gt;</span> <span class="n">threshold1</span> <span class="ow">or</span> <span class="n">threshold2</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># A[n2, n1] = 0</span>
+                <span class="n">removed_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">removed_cnt</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+    <span class="c1"># load clean graph data</span>
+    <span class="n">dataset_str</span> <span class="o">=</span> <span class="s1">&#39;pubmed&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dataset_str</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+    <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+    <span class="c1"># load perturbed graph data</span>
+    <span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dataset_str</span><span class="p">)</span>
+    <span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+    <span class="c1"># train defense model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GCNJaccard</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+          <span class="n">nhid</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+          <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="n">binary_feature</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+          <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
 </pre></div>
 
            </div>

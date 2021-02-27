@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.image.defense package &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.image.defense package &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -83,7 +83,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.image.defense package</a><ul>
@@ -105,6 +120,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -186,9 +202,10 @@ Currently this implementation is under testing.</p>
 <dd><p>Ma, Xingjun, Bo Li, Yisen Wang, Sarah M. Erfani, Sudanthi Wijewickrema, Grant Schoenebeck, Dawn Song, Michael E. Houle, and James Bailey. “Characterizing adversarial subspaces using local intrinsic dimensionality.” arXiv preprint arXiv:1801.02613 (2018).</p>
 </dd>
 <dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Original code:t https://github.com/xingjunm/lid_adversarial_subspace_detection.</p>
+<dd><p>Original code:t https://github.com/xingjunm/lid_adversarial_subspace_detection</p>
 </dd>
 </dl>
+<p>Copyright (c) 2018 Xingjun Ma</p>
 <dl class="function">
 <dt id="deeprobust.image.defense.LIDclassifier.get_lid">
 <code class="sig-name descname">get_lid</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">X_test</em>, <em class="sig-param">X_test_noisy</em>, <em class="sig-param">X_test_adv</em>, <em class="sig-param">k</em>, <em class="sig-param">batch_size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/LIDclassifier.html#get_lid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.LIDclassifier.get_lid" title="Permalink to this definition">¶</a></dt>
@@ -320,7 +337,82 @@ arXiv preprint arXiv:1905.00877.</p>
 </div>
 <div class="section" id="module-deeprobust.image.defense.base_defense">
 <span id="deeprobust-image-defense-base-defense-module"></span><h2>deeprobust.image.defense.base_defense module<a class="headerlink" href="#module-deeprobust.image.defense.base_defense" title="Permalink to this headline">¶</a></h2>
-<p>This is the base class for most of defense model.</p>
+<dl class="class">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense">
+<em class="property">class </em><code class="sig-name descname">BaseDefense</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defense base class.</p>
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.adv_data">
+<code class="sig-name descname">adv_data</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">data</em>, <em class="sig-param">target</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.adv_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.adv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate adversarial examples for adversarial training.
+Overide this function to generate customize adv examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – victim model</p></li>
+<li><p><strong>data</strong> – original data</p></li>
+<li><p><strong>target</strong> – target labels</p></li>
+<li><p><strong>kwargs</strong> – parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.loss">
+<code class="sig-name descname">loss</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate training loss.
+Overide this function to customize loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output</strong> – model outputs</p></li>
+<li><p><strong>target</strong> – true labels</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse user defined parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.save_model">
+<code class="sig-name descname">save_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.save_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>test_loader</strong> – testing data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.base_defense.BaseDefense.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/base_defense.html#BaseDefense.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.base_defense.BaseDefense.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_loader</strong> – training data</p></li>
+<li><p><strong>optimizer</strong> – training optimizer</p></li>
+<li><p><strong>epoch</strong> – training epoch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-deeprobust.image.defense.fast">
 <span id="deeprobust-image-defense-fast-module"></span><h2>deeprobust.image.defense.fast module<a class="headerlink" href="#module-deeprobust.image.defense.fast" title="Permalink to this headline">¶</a></h2>
@@ -331,6 +423,58 @@ arXiv preprint arXiv:1905.00877.</p>
 <dd><p>Wong, Eric, Leslie Rice, and J. Zico Kolter. “Fast is better than free: Revisiting adversarial training.” arXiv preprint arXiv:2001.03994 (2020).</p>
 </dd>
 </dl>
+<dl class="class">
+<dt id="deeprobust.image.defense.fast.Fast">
+<em class="property">class </em><code class="sig-name descname">Fast</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.adv_data">
+<code class="sig-name descname">adv_data</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">output</em>, <em class="sig-param">ep=0.3</em>, <em class="sig-param">num_steps=40</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.adv_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.adv_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate adversarial examples for adversarial training.
+Overide this function to generate customize adv examples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – victim model</p></li>
+<li><p><strong>data</strong> – original data</p></li>
+<li><p><strong>target</strong> – target labels</p></li>
+<li><p><strong>kwargs</strong> – parameters</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.calculate_loss">
+<code class="sig-name descname">calculate_loss</code><span class="sig-paren">(</span><em class="sig-param">output</em>, <em class="sig-param">target</em>, <em class="sig-param">redmode='mean'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.calculate_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.calculate_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate loss for training.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><em class="sig-param">train_loader</em>, <em class="sig-param">test_loader</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>FGSM defense process:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.parse_params">
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">save_dir='defense_models'</em>, <em class="sig-param">save_model=True</em>, <em class="sig-param">save_name='fast_mnist_fgsmtraining_0.2.pt'</em>, <em class="sig-param">epsilon=0.2</em>, <em class="sig-param">epoch_num=30</em>, <em class="sig-param">lr_train=0.005</em>, <em class="sig-param">momentum=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.parse_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse user defined parameters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Testing process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.fast.Fast.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/fast.html#Fast.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.fast.Fast.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Training process.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-deeprobust.image.defense.fgsmtraining">
 <span id="deeprobust-image-defense-fgsmtraining-module"></span><h2>deeprobust.image.defense.fgsmtraining module<a class="headerlink" href="#module-deeprobust.image.defense.fgsmtraining" title="Permalink to this headline">¶</a></h2>
@@ -446,7 +590,7 @@ Towards Deep Learning Models Resistant to Adversarial Attacks. stat, 1050, 9.</p
 <dd><p>PGD adversarial training.</p>
 <dl class="method">
 <dt id="deeprobust.image.defense.pgdtraining.PGDtraining.adv_data">
-<code class="sig-name descname">adv_data</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">output</em>, <em class="sig-param">ep=0.3</em>, <em class="sig-param">num_steps=40</em>, <em class="sig-param">perturb_step_size=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/pgdtraining.html#PGDtraining.adv_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.pgdtraining.PGDtraining.adv_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">adv_data</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">output</em>, <em class="sig-param">ep=0.3</em>, <em class="sig-param">num_steps=10</em>, <em class="sig-param">perturb_step_size=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/pgdtraining.html#PGDtraining.adv_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.pgdtraining.PGDtraining.adv_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate input(adversarial) data for training.</p>
 </dd></dl>
 
@@ -473,7 +617,7 @@ Towards Deep Learning Models Resistant to Adversarial Attacks. stat, 1050, 9.</p
 
 <dl class="method">
 <dt id="deeprobust.image.defense.pgdtraining.PGDtraining.parse_params">
-<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">epoch_num=100</em>, <em class="sig-param">save_dir='./defense_models'</em>, <em class="sig-param">save_name='mnist_pgdtraining_0.3.pt'</em>, <em class="sig-param">save_model=True</em>, <em class="sig-param">epsilon=0.3</em>, <em class="sig-param">num_steps=40</em>, <em class="sig-param">perturb_step_size=0.01</em>, <em class="sig-param">lr=0.0005</em>, <em class="sig-param">momentum=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/pgdtraining.html#PGDtraining.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.pgdtraining.PGDtraining.parse_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_params</code><span class="sig-paren">(</span><em class="sig-param">epoch_num=100</em>, <em class="sig-param">save_dir='./defense_models'</em>, <em class="sig-param">save_name='mnist_pgdtraining_0.3'</em>, <em class="sig-param">save_model=True</em>, <em class="sig-param">epsilon=0.03137254901960784</em>, <em class="sig-param">num_steps=10</em>, <em class="sig-param">perturb_step_size=0.01</em>, <em class="sig-param">lr=0.1</em>, <em class="sig-param">momentum=0.1</em>, <em class="sig-param">save_per_epoch=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/pgdtraining.html#PGDtraining.parse_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.pgdtraining.PGDtraining.parse_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parameter parser.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -537,7 +681,8 @@ Towards Deep Learning Models Resistant to Adversarial Attacks. stat, 1050, 9.</p
 </dl>
 <p>Theoretically Principled Trade-off between Robustness and Accuracy.
 In International Conference on Machine Learning (pp. 7472-7482).</p>
-<p>This implementation is based on their code: <a class="reference external" href="https://github.com/yaodongyu/TRADES">https://github.com/yaodongyu/TRADES</a></p>
+<p>This implementation is based on their code: <a class="reference external" href="https://github.com/yaodongyu/TRADES">https://github.com/yaodongyu/TRADES</a>
+Copyright (c) 2019 Hongyang Zhang, Yaodong Yu</p>
 <dl class="class">
 <dt id="deeprobust.image.defense.trades.TRADES">
 <em class="property">class </em><code class="sig-name descname">TRADES</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device='cuda'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/trades.html#TRADES"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.trades.TRADES" title="Permalink to this definition">¶</a></dt>
@@ -587,6 +732,32 @@ In International Conference on Machine Learning (pp. 7472-7482).</p>
 </dd>
 <dt>:param momentum<span class="classifier">float</span></dt><dd><ul class="simple">
 <li><p>parameter for optimizer in training process</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.trades.TRADES.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">device</em>, <em class="sig-param">test_loader</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/trades.html#TRADES.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.trades.TRADES.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>test_loader</strong> – testing data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.image.defense.trades.TRADES.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">train_loader</em>, <em class="sig-param">optimizer</em>, <em class="sig-param">epoch</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/image/defense/trades.html#TRADES.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.image.defense.trades.TRADES.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>train.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_loader</strong> – training data</p></li>
+<li><p><strong>optimizer</strong> – training optimizer</p></li>
+<li><p><strong>epoch</strong> – training epoch</p></li>
 </ul>
 </dd>
 </dl>

@@ -22,10 +22,10 @@ sys.path.append('../..')
 
 project = 'DeepRobust'
 copyright = ''
-author = 'Yaxin Li, Wei Jin, Han Xu'
+author = 'Yaxin Li, Wei Jin, Han Xu, Jiliang Tang'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = '0.1.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -33,12 +33,11 @@ release = '1.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.autosummary',
-              'sphinx.ext.mathjax', 'sphinx.ext.viewcode', 'sphinx.ext.githubpages' ]
+extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon',
+              'sphinx.ext.autosummary', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode', 'sphinx.ext.githubpages' ]
 
 # extensions = ['sphinx.ext.napoleon']
-autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX',
-                        ]
+autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX', 'torch_geometric']
 
 # remove undoc members
 #autodoc_default_flags = ['members']

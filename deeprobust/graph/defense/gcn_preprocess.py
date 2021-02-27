@@ -42,14 +42,14 @@ class GCNSVD(GCN):
     --------
 	We can first load dataset and then train GCNSVD.
 
-    >>> from deeprobust.graph.data import PtbDataset, Dataset
+    >>> from deeprobust.graph.data import PrePtbDataset, Dataset
     >>> from deeprobust.graph.defense import GCNSVD
     >>> # load clean graph data
     >>> data = Dataset(root='/tmp/', name='cora', seed=15)
     >>> adj, features, labels = data.adj, data.features, data.labels
     >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     >>> # load perturbed graph data
-    >>> perturbed_data = PtbDataset(root='/tmp/', name='cora')
+    >>> perturbed_data = PrePtbDataset(root='/tmp/', name='cora')
     >>> perturbed_adj = perturbed_data.adj
     >>> # train defense model
     >>> model = GCNSVD(nfeat=features.shape[1],
@@ -166,21 +166,21 @@ class GCNJaccard(GCN):
     --------
 	We can first load dataset and then train GCNJaccard.
 
-    >>> from deeprobust.graph.data import PtbDataset, Dataset
+    >>> from deeprobust.graph.data import PrePtbDataset, Dataset
     >>> from deeprobust.graph.defense import GCNJaccard
     >>> # load clean graph data
     >>> data = Dataset(root='/tmp/', name='cora', seed=15)
     >>> adj, features, labels = data.adj, data.features, data.labels
     >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     >>> # load perturbed graph data
-    >>> perturbed_data = PtbDataset(root='/tmp/', name='cora')
+    >>> perturbed_data = PrePtbDataset(root='/tmp/', name='cora')
     >>> perturbed_adj = perturbed_data.adj
     >>> # train defense model
     >>> model = GCNJaccard(nfeat=features.shape[1],
               nhid=16,
               nclass=labels.max().item() + 1,
               dropout=0.5, device='cpu').to('cpu')
-    >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.1)
+    >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.03)
 
     """
     def __init__(self, nfeat, nhid, nclass, binary_feature=True, dropout=0.5, lr=0.01, weight_decay=5e-4, with_relu=True, with_bias=True, device='cpu'):

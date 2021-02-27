@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph package &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph package &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -507,7 +523,7 @@ torch Tensor, and normalize the input data.</p>
 <li><p><strong>features</strong> (<em>scipy.sparse.csr_matrix</em>) – node features</p></li>
 <li><p><strong>labels</strong> (<em>numpy.array</em>) – node labels</p></li>
 <li><p><strong>preprocess_adj</strong> (<em>bool</em>) – whether to normalize the adjacency matrix</p></li>
-<li><p><strong>preprocess_feature</strong> – whether to normalize the feature matrix</p></li>
+<li><p><strong>preprocess_feature</strong> (<em>bool</em>) – whether to normalize the feature matrix</p></li>
 <li><p><strong>sparse</strong> (<em>bool</em>) – whether to return sparse tensor</p></li>
 <li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’</p></li>
 </ul>
@@ -578,6 +594,12 @@ torch Tensor.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="deeprobust.graph.utils.updated_log_likelihood_for_edge_changes">
+<code class="sig-name descname">updated_log_likelihood_for_edge_changes</code><span class="sig-paren">(</span><em class="sig-param">node_pairs</em>, <em class="sig-param">adjacency_matrix</em>, <em class="sig-param">d_min</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/utils.html#updated_log_likelihood_for_edge_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.utils.updated_log_likelihood_for_edge_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adopted from <a class="reference external" href="https://github.com/danielzuegner/nettack">https://github.com/danielzuegner/nettack</a></p>
 </dd></dl>
 
 <dl class="function">

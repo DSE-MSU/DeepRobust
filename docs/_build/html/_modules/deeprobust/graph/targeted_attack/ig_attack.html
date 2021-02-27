@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.targeted_attack.ig_attack &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.targeted_attack.ig_attack &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -157,10 +173,8 @@
             
   <h1>Source code for deeprobust.graph.targeted_attack.ig_attack</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective</span>
-<span class="sd">        https://arxiv.org/pdf/1906.04214.pdf</span>
-<span class="sd">    Tensorflow Implementation:</span>
-<span class="sd">        https://github.com/KaidiXu/GCN_ADV_Train</span>
+<span class="sd">    Adversarial Examples on Graph Data: Deep Insights into Attack and Defense</span>
+<span class="sd">        https://arxiv.org/pdf/1903.01610.pdf</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -242,8 +256,8 @@
 <span class="sd">            Original (unperturbed) adjacency matrix</span>
 <span class="sd">        labels :</span>
 <span class="sd">            node labels</span>
-<span class="sd">        idx_train :</span>
-<span class="sd">            node training indices</span>
+<span class="sd">        idx_train:</span>
+<span class="sd">            training nodes indices</span>
 <span class="sd">        target_node : int</span>
 <span class="sd">            target node index to be attacked</span>
 <span class="sd">        n_perturbations : int</span>
@@ -256,37 +270,55 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_node</span> <span class="o">=</span> <span class="n">target_node</span>
 
+
         <span class="n">modified_adj</span> <span class="o">=</span> <span class="n">ori_adj</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
         <span class="n">modified_features</span> <span class="o">=</span> <span class="n">ori_features</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
         <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">,</span> <span class="n">modified_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
         <span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+
+        <span class="n">pseudo_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pseudo_labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_labels</span> <span class="o">=</span> <span class="n">pseudo_labels</span>
+
         <span class="n">s_e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">s_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_structure</span><span class="p">:</span>
-            <span class="n">s_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_importance_edge</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+            <span class="n">s_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_importance_edge</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_features</span><span class="p">:</span>
-            <span class="n">s_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_importance_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+            <span class="n">s_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_importance_feature</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_perturbations</span><span class="p">)):</span>
             <span class="n">s_e_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">s_e</span><span class="p">)</span>
             <span class="n">s_f_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">s_f</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">s_e</span><span class="p">[</span><span class="n">s_e_max</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">s_f</span><span class="p">[</span><span class="n">s_f_max</span><span class="p">]:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">modified_adj</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_e_max</span><span class="p">])</span>
-                <span class="n">modified_adj</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_e_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-                <span class="n">modified_adj</span><span class="p">[</span><span class="n">s_e_max</span><span class="p">,</span> <span class="n">target_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-                <span class="n">s_e</span><span class="p">[</span><span class="n">s_e_max</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># edge perturbation score is larger</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_structure</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">modified_adj</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_e_max</span><span class="p">])</span>
+                    <span class="n">modified_adj</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_e_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">modified_adj</span><span class="p">[</span><span class="n">s_e_max</span><span class="p">,</span> <span class="n">target_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="n">s_e</span><span class="p">[</span><span class="n">s_e_max</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;No posisble perturbation on the structure can be made!</span>
+<span class="s2">                            See https://github.com/DSE-MSU/DeepRobust/issues/42 for more details.&quot;&quot;&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">modified_features</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_f_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">modified_features</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_f_max</span><span class="p">])</span>
-                <span class="n">s_f</span><span class="p">[</span><span class="n">s_f_max</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="c1"># feature perturbation score is larger</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attack_features</span><span class="p">:</span>
+                    <span class="n">modified_features</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_f_max</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">modified_features</span><span class="p">[</span><span class="n">target_node</span><span class="p">,</span> <span class="n">s_f_max</span><span class="p">])</span>
+                    <span class="n">s_f</span><span class="p">[</span><span class="n">s_f_max</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;No posisble perturbation on the features can be made!</span>
+<span class="s2">                            See https://github.com/DSE-MSU/DeepRobust/issues/42 for more details.&quot;&quot;&quot;</span><span class="p">)</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modified_features</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span><span class="n">modified_features</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_adj</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="IGAttack.calc_importance_edge"><a class="viewcode-back" href="../../../../source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge">[docs]</a>    <span class="k">def</span> <span class="nf">calc_importance_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculate integrated gradient for edges</span>
+<div class="viewcode-block" id="IGAttack.calc_importance_edge"><a class="viewcode-back" href="../../../../source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge">[docs]</a>    <span class="k">def</span> <span class="nf">calc_importance_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate integrated gradient for edges. Although I think the the gradient should be</span>
+<span class="sd">        with respect to adj instead of adj_norm, but the calculation is too time-consuming. So I</span>
+<span class="sd">        finally decided to calculate the gradient of loss with respect to adj_norm</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">baseline_add</span> <span class="o">=</span> <span class="n">adj_norm</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
         <span class="n">baseline_remove</span> <span class="o">=</span> <span class="n">adj_norm</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -305,7 +337,8 @@
 
             <span class="k">for</span> <span class="n">new_adj</span> <span class="ow">in</span> <span class="n">scaled_inputs</span><span class="p">:</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">new_adj</span><span class="p">)</span>
-                <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_labels</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]])</span>
                 <span class="n">adj_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">adj_grad</span> <span class="o">=</span> <span class="n">adj_grad</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
                 <span class="n">_sum</span> <span class="o">+=</span> <span class="n">adj_grad</span>
@@ -316,14 +349,16 @@
                 <span class="n">avg_grad</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">adj_norm</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span> <span class="o">*</span> <span class="n">_sum</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
             <span class="n">integrated_grad_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avg_grad</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
         <span class="n">integrated_grad_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># make impossible perturbation to be negative</span>
         <span class="n">integrated_grad_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">integrated_grad_list</span><span class="p">)</span>
         <span class="n">adj</span> <span class="o">=</span> <span class="p">(</span><span class="n">adj_norm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
         <span class="n">integrated_grad_list</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">adj</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">integrated_grad_list</span>
+        <span class="n">integrated_grad_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">10</span>
         <span class="k">return</span> <span class="n">integrated_grad_list</span></div>
 
-<div class="viewcode-block" id="IGAttack.calc_importance_feature"><a class="viewcode-back" href="../../../../source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature">[docs]</a>    <span class="k">def</span> <span class="nf">calc_importance_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
+<div class="viewcode-block" id="IGAttack.calc_importance_feature"><a class="viewcode-back" href="../../../../source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature">[docs]</a>    <span class="k">def</span> <span class="nf">calc_importance_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">steps</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate integrated gradient for features</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">baseline_add</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -343,7 +378,9 @@
 
             <span class="k">for</span> <span class="n">new_features</span> <span class="ow">in</span> <span class="n">scaled_inputs</span><span class="p">:</span>
                 <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surrogate</span><span class="p">(</span><span class="n">new_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
-                <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">nll_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">pseudo_labels</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_node</span><span class="p">]])</span>
+
                 <span class="n">feature_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">feature_grad</span> <span class="o">=</span> <span class="n">feature_grad</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
                 <span class="n">_sum</span> <span class="o">+=</span> <span class="n">feature_grad</span>

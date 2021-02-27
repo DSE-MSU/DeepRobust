@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; DeepRobust 1.0 documentation</title>
+  <title>Index &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -27,11 +27,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -82,7 +82,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -92,6 +107,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -193,9 +209,13 @@
 </li>
       <li><a href="source/deeprobust.image.html#deeprobust.image.utils.adjust_learning_rate">adjust_learning_rate() (in module deeprobust.image.utils)</a>
 </li>
-      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.adv_data">adv_data() (FGSMtraining method)</a>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.adv_data">adv_data() (BaseDefense method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.adv_data">(Fast method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.adv_data">(FGSMtraining method)</a>
+</li>
         <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.pgdtraining.PGDtraining.adv_data">(PGDtraining method)</a>
 </li>
       </ul></li>
@@ -203,8 +223,12 @@
 </li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.adv_training.AdvTraining">AdvTraining (class in deeprobust.graph.defense.adv_training)</a>
 </li>
+      <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.AmazonPyg">AmazonPyg (class in deeprobust.graph.data)</a>
+</li>
       <li><a href="source/deeprobust.image.html#deeprobust.image.utils.arctanh">arctanh() (in module deeprobust.image.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.BaseAttack.attack">attack() (BaseAttack method)</a>, <a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.base_attack.BaseAttack.attack">[1]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.BaseAttack.attack">[2]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.base_attack.BaseAttack.attack">[3]</a>
 
       <ul>
@@ -251,6 +275,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense">BaseDefense (class in deeprobust.image.defense.base_defense)</a>
+</li>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.mettack.BaseMeta">BaseMeta (class in deeprobust.graph.global_attack.mettack)</a>
 </li>
       <li><a href="source/deeprobust.image.netmodels.html#deeprobust.image.netmodels.resnet.BasicBlock">BasicBlock (class in deeprobust.image.netmodels.resnet)</a>
@@ -271,21 +297,29 @@
 </li>
       <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature">calc_importance_feature() (IGAttack method)</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature">[1]</a>
 </li>
-      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.calculate_loss">calculate_loss() (FGSMtraining method)</a>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.calculate_loss">calculate_loss() (Fast method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.calculate_loss">(FGSMtraining method)</a>
+</li>
         <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.pgdtraining.PGDtraining.calculate_loss">(PGDtraining method)</a>
 </li>
       </ul></li>
       <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.cw.CarliniWagner">CarliniWagner (class in deeprobust.image.attack.cw)</a>
 </li>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.ChebNet">ChebNet (class in deeprobust.graph.defense)</a>
+</li>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.BaseAttack.check_adj">check_adj() (BaseAttack method)</a>, <a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.base_attack.BaseAttack.check_adj">[1]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.BaseAttack.check_adj">[2]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.base_attack.BaseAttack.check_adj">[3]</a>
 </li>
-      <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.base_attack.BaseAttack.check_type_device">check_type_device() (BaseAttack method)</a>
+      <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.BaseAttack.check_adj_tensor">check_adj_tensor() (BaseAttack method)</a>, <a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.base_attack.BaseAttack.check_adj_tensor">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.base_attack.BaseAttack.check_type_device">check_type_device() (BaseAttack method)</a>
+</li>
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.utils.classification_margin">classification_margin() (in module deeprobust.graph.utils)</a>
+</li>
+      <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.CoauthorPyg">CoauthorPyg (class in deeprobust.graph.data)</a>
 </li>
       <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.nettack.compute_alpha">compute_alpha() (in module deeprobust.graph.targeted_attack.nettack)</a>
 </li>
@@ -495,6 +529,8 @@
 </li>
       <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.Dataset.download_npz">download_npz() (Dataset method)</a>, <a href="source/deeprobust.graph.data.html#deeprobust.graph.data.dataset.Dataset.download_npz">[1]</a>
 </li>
+      <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.Dpr2Pyg">Dpr2Pyg (class in deeprobust.graph.data)</a>
+</li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCNJaccard.drop_dissimilar_edges">drop_dissimilar_edges() (GCNJaccard method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.drop_dissimilar_edges">[1]</a>
 </li>
   </ul></td>
@@ -521,6 +557,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast">Fast (class in deeprobust.image.defense.fast)</a>
+</li>
       <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.YOPOpgd.FASTPGD">FASTPGD (class in deeprobust.image.attack.YOPOpgd)</a>
 </li>
       <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.Nettack.feature_scores">feature_scores() (Nettack method)</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.nettack.Nettack.feature_scores">[1]</a>
@@ -545,9 +583,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.nettack.filter_singletons">filter_singletons() (in module deeprobust.graph.targeted_attack.nettack)</a>
 </li>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN.fit">fit() (GCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.fit">[1]</a>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.ChebNet.fit">fit() (ChebNet method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GAT.fit">(GAT method)</a>
+</li>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN.fit">(GCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.fit">[1]</a>
+</li>
         <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCNJaccard.fit">(GCNJaccard method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.fit">[1]</a>
 </li>
         <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCNSVD.fit">(GCNSVD method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNSVD.fit">[1]</a>
@@ -557,7 +599,7 @@
         <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.RGCN.fit">(RGCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.RGCN.fit">[1]</a>
 </li>
       </ul></li>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GraphConvolution.forward">forward() (GraphConvolution method)</a>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GraphConvolution.forward">forward() (GraphConvolution method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GraphConvolution.forward">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -565,6 +607,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GAT">GAT (class in deeprobust.graph.defense)</a>
+</li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GaussianConvolution">GaussianConvolution (class in deeprobust.graph.defense.r_gcn)</a>
 </li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN">GCN (class in deeprobust.graph.defense)</a>
@@ -591,6 +635,8 @@
         <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.cw.CarliniWagner.generate">(CarliniWagner method)</a>
 </li>
         <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.deepfool.DeepFool.generate">(DeepFool method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.generate">(Fast method)</a>
 </li>
         <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.fgsm.FGSM.generate">(FGSM method)</a>
 </li>
@@ -631,12 +677,24 @@
       </ul></li>
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.utils.get_train_val_test_gcn">get_train_val_test_gcn() (in module deeprobust.graph.utils)</a>
 </li>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GGCL_D">GGCL_D (class in deeprobust.graph.defense.r_gcn)</a>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GGCL_D">GGCL_D (class in deeprobust.graph.defense)</a>
+
+      <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GGCL_D">(class in deeprobust.graph.defense.r_gcn)</a>
 </li>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GGCL_F">GGCL_F (class in deeprobust.graph.defense.r_gcn)</a>
+      </ul></li>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GGCL_F">GGCL_F (class in deeprobust.graph.defense)</a>
+
+      <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.GGCL_F">(class in deeprobust.graph.defense.r_gcn)</a>
 </li>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GraphConvolution">GraphConvolution (class in deeprobust.graph.defense.gcn)</a>
+      </ul></li>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GraphConvolution">GraphConvolution (class in deeprobust.graph.defense)</a>
+
+      <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GraphConvolution">(class in deeprobust.graph.defense.gcn)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -657,10 +715,16 @@
         <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.ig_attack.IGAttack">(class in deeprobust.graph.targeted_attack.ig_attack)</a>
 </li>
       </ul></li>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.ChebNet.initialize">initialize() (ChebNet method)</a>
+
+      <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GAT.initialize">(GAT method)</a>
+</li>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN.initialize">(GCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.initialize">[1]</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN.initialize">initialize() (GCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.initialize">[1]</a>
-</li>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.Random.inject_nodes">inject_nodes() (Random method)</a>, <a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.random.Random.inject_nodes">[1]</a>
 </li>
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.utils.is_sparse_tensor">is_sparse_tensor() (in module deeprobust.graph.utils)</a>
@@ -682,6 +746,8 @@
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.black_box.load_victim_model">load_victim_model() (in module deeprobust.graph.black_box)</a>
 </li>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.mettack.BaseMeta.log_likelihood_constraint">log_likelihood_constraint() (BaseMeta method)</a>
+</li>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.loss">loss() (BaseDefense method)</a>
 </li>
       <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.cw.CarliniWagner.loss_function">loss_function() (CarliniWagner method)</a>
 </li>
@@ -789,10 +855,16 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.cw.CarliniWagner.parse_params">parse_params() (CarliniWagner method)</a>
+      <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.base_attack.BaseAttack.parse_params">parse_params() (BaseAttack method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.parse_params">(BaseDefense method)</a>
+</li>
+        <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.cw.CarliniWagner.parse_params">(CarliniWagner method)</a>
+</li>
         <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.deepfool.DeepFool.parse_params">(DeepFool method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.parse_params">(Fast method)</a>
 </li>
         <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.fgsm.FGSM.parse_params">(FGSM method)</a>
 </li>
@@ -871,6 +943,8 @@
         <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.attacked_data.PtbDataset">(class in deeprobust.graph.data.attacked_data)</a>
 </li>
       </ul></li>
+      <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.Pyg2Dpr">Pyg2Dpr (class in deeprobust.graph.data)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -935,6 +1009,8 @@
 </li>
       <li><a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.BaseAttack.save_features">save_features() (BaseAttack method)</a>, <a href="source/deeprobust.graph.global_attack.html#deeprobust.graph.global_attack.base_attack.BaseAttack.save_features">[1]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.BaseAttack.save_features">[2]</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.base_attack.BaseAttack.save_features">[3]</a>
 </li>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.save_model">save_model() (BaseDefense method)</a>
+</li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.pgd.SGD">SGD (class in deeprobust.graph.defense.pgd)</a>
 </li>
   </ul></td>
@@ -963,9 +1039,17 @@
 </li>
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.utils.tensor2onehot">tensor2onehot() (in module deeprobust.graph.utils)</a>
 </li>
-      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.test">test() (FGSMtraining method)</a>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.test">test() (BaseDefense method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.ChebNet.test">(ChebNet method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.test">(Fast method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.test">(FGSMtraining method)</a>
+</li>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GAT.test">(GAT method)</a>
+</li>
         <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCN.test">(GCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.test">[1]</a>
 </li>
         <li><a href="source/deeprobust.image.netmodels.html#deeprobust.image.netmodels.CNN.test">(in module deeprobust.image.netmodels.CNN)</a>
@@ -982,6 +1066,8 @@
 </li>
         <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.RGCN.test">(RGCN method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.r_gcn.RGCN.test">[1]</a>
 </li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.trades.TRADES.test">(TRADES method)</a>
+</li>
       </ul></li>
       <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.TherEncoding.Thermometer">Thermometer() (in module deeprobust.image.defense.TherEncoding)</a>
 </li>
@@ -997,9 +1083,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.trades.TRADES">TRADES (class in deeprobust.image.defense.trades)</a>
 </li>
-      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.train">train() (FGSMtraining method)</a>
+      <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.base_defense.BaseDefense.train">train() (BaseDefense method)</a>
 
       <ul>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fast.Fast.train">(Fast method)</a>
+</li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.fgsmtraining.FGSMtraining.train">(FGSMtraining method)</a>
+</li>
         <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.LIDclassifier.train">(in module deeprobust.image.defense.LIDclassifier)</a>
 </li>
         <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.TherEncoding.train">(in module deeprobust.image.defense.TherEncoding)</a>
@@ -1020,11 +1110,19 @@
 </li>
         <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.RLS2V.train">(RLS2V method)</a>, <a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.rl_s2v.RLS2V.train">[1]</a>
 </li>
+        <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.trades.TRADES.train">(TRADES method)</a>
+</li>
       </ul></li>
       <li><a href="source/deeprobust.image.defense.html#deeprobust.image.defense.YOPO.train_one_epoch">train_one_epoch() (in module deeprobust.image.defense.YOPO)</a>
 </li>
       <li><a href="source/deeprobust.graph.html#deeprobust.graph.black_box.train_victim_model">train_victim_model() (in module deeprobust.graph.black_box)</a>
 </li>
+      <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.ChebNet.train_with_early_stopping">train_with_early_stopping() (ChebNet method)</a>
+
+      <ul>
+        <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GAT.train_with_early_stopping">(GAT method)</a>
+</li>
+      </ul></li>
       <li><a href="source/deeprobust.image.netmodels.html#deeprobust.image.netmodels.densenet.Transition">Transition (class in deeprobust.image.netmodels.densenet)</a>
 </li>
       <li><a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.GCNSVD.truncatedSVD">truncatedSVD() (GCNSVD method)</a>, <a href="source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNSVD.truncatedSVD">[1]</a>
@@ -1037,9 +1135,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/deeprobust.image.attack.html#deeprobust.image.attack.Universal.universal_adversarial_perturbation">universal_adversarial_perturbation() (in module deeprobust.image.attack.Universal)</a>
 </li>
+      <li><a href="source/deeprobust.graph.data.html#deeprobust.graph.data.Dpr2Pyg.update_edge_index">update_edge_index() (Dpr2Pyg method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/deeprobust.graph.targeted_attack.html#deeprobust.graph.targeted_attack.nettack.update_Sx">update_Sx() (in module deeprobust.graph.targeted_attack.nettack)</a>
+</li>
+      <li><a href="source/deeprobust.graph.html#deeprobust.graph.utils.updated_log_likelihood_for_edge_changes">updated_log_likelihood_for_edge_changes() (in module deeprobust.graph.utils)</a>
 </li>
   </ul></td>
 </tr></table>

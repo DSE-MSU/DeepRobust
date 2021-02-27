@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.global_attack.topology_attack &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.global_attack.topology_attack &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -283,7 +299,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">n_perturbations</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modified_adj</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_adj_tensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modified_adj</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_adj</span><span class="p">,</span> <span class="n">ori_features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="p">):</span>
         <span class="n">K</span> <span class="o">=</span> <span class="mi">20</span>
@@ -294,7 +312,7 @@
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">K</span><span class="p">):</span>
                 <span class="n">sampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
-                <span class="nb">print</span><span class="p">(</span><span class="n">sampled</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+                <span class="c1"># print(sampled.sum())</span>
                 <span class="k">if</span> <span class="n">sampled</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">n_perturbations</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sampled</span><span class="p">))</span>
@@ -303,7 +321,7 @@
                 <span class="n">output</span> <span class="o">=</span> <span class="n">victim_model</span><span class="p">(</span><span class="n">ori_features</span><span class="p">,</span> <span class="n">adj_norm</span><span class="p">)</span>
                 <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">idx_train</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="n">idx_train</span><span class="p">])</span>
                 <span class="c1"># loss = F.nll_loss(output[idx_train], labels[idx_train])</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+                <span class="c1"># print(loss)</span>
                 <span class="k">if</span> <span class="n">best_loss</span> <span class="o">&lt;</span> <span class="n">loss</span><span class="p">:</span>
                     <span class="n">best_loss</span> <span class="o">=</span> <span class="n">loss</span>
                     <span class="n">best_s</span> <span class="o">=</span> <span class="n">sampled</span>
@@ -338,9 +356,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ori_adj</span><span class="p">)</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-</span> <span class="n">ori_adj</span><span class="p">)</span> <span class="o">-</span> <span class="n">ori_adj</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">tril_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">tril_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nnodes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">m</span><span class="p">[</span><span class="n">tril_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tril_indices</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_changes</span>
-        <span class="c1"># m += m.t()</span>
         <span class="n">m</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
         <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">complementary</span> <span class="o">*</span> <span class="n">m</span> <span class="o">+</span> <span class="n">ori_adj</span>
 

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.data package &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.data package &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,18 +26,18 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="deeprobust.graph.targeted_attack package" href="deeprobust.graph.targeted_attack.html" /> 
+    <link rel="prev" title="deeprobust.graph.defense package" href="deeprobust.graph.defense.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,7 +82,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -92,6 +107,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">deeprobust.graph.data package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.data.attacked_data">deeprobust.graph.data.attacked_data module</a></li>
@@ -186,7 +202,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load meta attacked data</span>
@@ -227,7 +243,7 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
@@ -250,18 +266,25 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
-<li><p><strong>name</strong> – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
-<li><p><strong>setting</strong> – there are two data splits settings. The ‘nettack’ setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e., different random seed would return different data splits)</p></li>
-<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
-<li><p><strong>require_mask</strong> – setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)</p></li>
+<li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
+‘pubmed’, ‘acm’, ‘blogcatalog’, ‘uai’, ‘flickr’]</p></li>
+<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. The ‘nettack’ setting follows nettack paper
+where they select the largest connected components of the graph and use 10%/10%/80%
+nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they
+use 20 samples in each class for traing, 500 nodes for validation, and 1000
+nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e.,
+different random seed would return different data splits)</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – random seed for splitting training/validation/test.</p></li>
+<li><p><strong>require_mask</strong> (<em>bool</em>) – setting require_mask True to get training, validation and test mask
+(self.train_mask, self.val_mask, self.test_mask)</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first create an instance of the Dataset class and then take out its attributes.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 </pre></div>
@@ -306,18 +329,25 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> – root directory where the dataset should be saved.</p></li>
-<li><p><strong>name</strong> – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’, ‘pubmed’]</p></li>
-<li><p><strong>setting</strong> – there are two data splits settings. The ‘nettack’ setting follows nettack paper where they select the largest connected components of the graph and use 10%/10%/80% nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they use 20 samples in each class for traing, 500 nodes for validation, and 1000 nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e., different random seed would return different data splits)</p></li>
-<li><p><strong>seed</strong> – random seed for splitting training/validation/test.</p></li>
-<li><p><strong>require_mask</strong> – setting require_mask True to get training, validation and test mask (self.train_mask, self.val_mask, self.test_mask)</p></li>
+<li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
+‘pubmed’, ‘acm’, ‘blogcatalog’, ‘uai’, ‘flickr’]</p></li>
+<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. The ‘nettack’ setting follows nettack paper
+where they select the largest connected components of the graph and use 10%/10%/80%
+nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they
+use 20 samples in each class for traing, 500 nodes for validation, and 1000
+nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e.,
+different random seed would return different data splits)</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – random seed for splitting training/validation/test.</p></li>
+<li><p><strong>require_mask</strong> (<em>bool</em>) – setting require_mask True to get training, validation and test mask
+(self.train_mask, self.val_mask, self.test_mask)</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <p>We can first create an instance of the Dataset class and then take out its attributes.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
 </pre></div>
@@ -365,7 +395,7 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PtbDataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
@@ -391,7 +421,7 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Load meta attacked data</span>
@@ -417,6 +447,139 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
 
 </dd></dl>
 
+<dl class="class">
+<dt id="deeprobust.graph.data.Pyg2Dpr">
+<em class="property">class </em><code class="sig-name descname">Pyg2Dpr</code><span class="sig-paren">(</span><em class="sig-param">pyg_data</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/pyg_dataset.html#Pyg2Dpr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Pyg2Dpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert pytorch geometric data (tensor, edge_index) to deeprobust
+data (sparse matrix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pyg_data</strong> – data instance of class from pytorch geometric dataset</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first create an instance of the Dataset class and convert it to
+pytorch geometric data format and then convert it back to Dataset class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Dpr2Pyg</span><span class="p">,</span> <span class="n">Pyg2Dpr</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dpr_data</span> <span class="o">=</span> <span class="n">Pyg2Dpr</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">adj</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.Dpr2Pyg">
+<em class="property">class </em><code class="sig-name descname">Dpr2Pyg</code><span class="sig-paren">(</span><em class="sig-param">dpr_data</em>, <em class="sig-param">transform=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/pyg_dataset.html#Dpr2Pyg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dpr2Pyg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert deeprobust data (sparse matrix) to pytorch geometric data (tensor, edge_index)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dpr_data</strong> – data instance of class from deeprobust.graph.data, e.g., deeprobust.graph.data.Dataset,
+deeprobust.graph.data.PtbDataset, deeprobust.graph.data.PrePtbDataset</p></li>
+<li><p><strong>transform</strong> – A function/transform that takes in an object and returns a transformed version.
+The data object will be transformed before every access. For example, you can
+use torch_geometric.transforms.NormalizeFeatures()</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first create an instance of the Dataset class and convert it to
+pytorch geometric data format.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Dpr2Pyg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.data.Dpr2Pyg.update_edge_index">
+<code class="sig-name descname">update_edge_index</code><span class="sig-paren">(</span><em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/pyg_dataset.html#Dpr2Pyg.update_edge_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dpr2Pyg.update_edge_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an inplace operation to substitute the original edge_index
+with adj.nonzero()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>adj</strong> (<em>sp.csr_matrix</em>) – update the original adjacency into adj (by change edge_index)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.AmazonPyg">
+<em class="property">class </em><code class="sig-name descname">AmazonPyg</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">transform=None</em>, <em class="sig-param">pre_transform=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/pyg_dataset.html#AmazonPyg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.AmazonPyg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Amazon-Computers and Amazon-Photo datasets loaded from pytorch geomtric;
+the way we split the dataset follows Towards Deeper Graph Neural Networks
+(<a class="reference external" href="https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py">https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py</a>).
+Specifically, 20 * num_classes labels for training, 30 * num_classes labels
+for validation, rest labels for testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘computers’, ‘photo’]</p></li>
+<li><p><strong>transform</strong> – A function/transform that takes in an torch_geometric.data.Data object
+and returns a transformed version. The data object will be transformed
+before every access. (default: None)</p></li>
+<li><p><strong>pre_transform</strong> – A function/transform that takes in an torch_geometric.data.Data object
+and returns a transformed version. The data object will be transformed
+before being saved to disk.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can directly load Amazon dataset from deeprobust in the format of pyg.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">AmazonPyg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">computers</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;computers&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">photo</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;photo&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.data.CoauthorPyg">
+<em class="property">class </em><code class="sig-name descname">CoauthorPyg</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">name</em>, <em class="sig-param">transform=None</em>, <em class="sig-param">pre_transform=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/pyg_dataset.html#CoauthorPyg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.CoauthorPyg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coauthor-CS and Coauthor-Physics datasets loaded from pytorch geomtric;
+the way we split the dataset follows Towards Deeper Graph Neural Networks
+(<a class="reference external" href="https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py">https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py</a>).
+Specifically, 20 * num_classes labels for training, 30 * num_classes labels
+for validation, rest labels for testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘cs’, ‘physics’]</p></li>
+<li><p><strong>transform</strong> – A function/transform that takes in an torch_geometric.data.Data object
+and returns a transformed version. The data object will be transformed
+before every access. (default: None)</p></li>
+<li><p><strong>pre_transform</strong> – A function/transform that takes in an torch_geometric.data.Data object
+and returns a transformed version. The data object will be transformed
+before being saved to disk.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can directly load Coauthor dataset from deeprobust in the format of pyg.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">CoauthorPyg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cs&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">physics</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;physics&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
@@ -429,7 +592,7 @@ The ‘cora’, ‘cora-ml’, ‘poblogs’ and ‘citeseer’ are downloaded f
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="deeprobust.graph.targeted_attack.html" class="btn btn-neutral float-left" title="deeprobust.graph.targeted_attack package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="deeprobust.graph.defense.html" class="btn btn-neutral float-left" title="deeprobust.graph.defense package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

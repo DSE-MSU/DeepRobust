@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.image.attack.pgd &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.image.attack.pgd &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,11 +26,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/underscore.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
 
@@ -81,7 +81,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -91,6 +106,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -201,6 +217,8 @@
                    <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">,</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">clip_max</span><span class="p">,</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">,</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span><span class="p">,</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span><span class="p">,</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">print_process</span><span class="p">)</span></div>
@@ -212,6 +230,8 @@
                      <span class="n">step_size</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
                      <span class="n">clip_max</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                      <span class="n">clip_min</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                     <span class="n">mean</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                     <span class="n">std</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
                      <span class="n">print_process</span> <span class="o">=</span> <span class="kc">False</span>
                      <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;parse_params.</span>
@@ -229,13 +249,15 @@
 <span class="sd">        clip_min :</span>
 <span class="sd">            minimum pixel value</span>
 <span class="sd">        print_process :</span>
-<span class="sd">            whether to print out the log during optimization process, True or False print out the log during optimization process, True or False. </span>
+<span class="sd">            whether to print out the log during optimization process, True or False print out the log during optimization process, True or False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="n">num_steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step_size</span> <span class="o">=</span> <span class="n">step_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clip_max</span> <span class="o">=</span> <span class="n">clip_max</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clip_min</span> <span class="o">=</span> <span class="n">clip_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">std</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">print_process</span> <span class="o">=</span> <span class="n">print_process</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
@@ -245,9 +267,13 @@
                   <span class="n">epsilon</span><span class="p">,</span>
                   <span class="n">clip_max</span><span class="p">,</span>
                   <span class="n">clip_min</span><span class="p">,</span>
+                  <span class="n">mean</span><span class="p">,</span>
+                  <span class="n">std</span><span class="p">,</span>
                   <span class="n">num_steps</span><span class="p">,</span>
                   <span class="n">step_size</span><span class="p">,</span>
-                  <span class="n">print_process</span><span class="p">):</span>
+                  <span class="n">print_process</span><span class="p">,</span>
+                  <span class="n">bound</span> <span class="o">=</span> <span class="s1">&#39;linf&#39;</span><span class="p">):</span>
+
     <span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
     <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">y</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="c1">#TODO: find a other way</span>
@@ -269,17 +295,34 @@
 
         <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
 
-        <span class="n">eta</span> <span class="o">=</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">X_pgd</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">bound</span> <span class="o">==</span> <span class="s1">&#39;linf&#39;</span><span class="p">:</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">step_size</span> <span class="o">*</span> <span class="n">X_pgd</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">sign</span><span class="p">()</span>
+            <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X_pgd</span> <span class="o">+</span> <span class="n">eta</span>
+            <span class="n">eta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">X</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span>
 
-        <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X_pgd</span> <span class="o">+</span> <span class="n">eta</span>
-        <span class="n">eta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="o">.</span><span class="n">data</span> <span class="o">-</span> <span class="n">X</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="n">epsilon</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">)</span>
+            <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">eta</span>
 
-        <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">data</span> <span class="o">+</span> <span class="n">eta</span>
-        <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="p">,</span> <span class="n">clip_min</span><span class="p">,</span> <span class="n">clip_max</span><span class="p">)</span>
-        <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X_pgd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-        <span class="n">X_pgd</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
-        <span class="n">X_pgd</span><span class="o">.</span><span class="n">retain_grad</span><span class="p">()</span>
+            <span class="c1">#X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std</span>
 
+            <span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:,:]</span> <span class="o">*</span> <span class="n">std</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">mean</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">clip_min</span><span class="p">,</span> <span class="n">clip_max</span><span class="p">)</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">std</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">1</span><span class="p">,:,:]</span> <span class="o">*</span> <span class="n">std</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">mean</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">clip_min</span><span class="p">,</span> <span class="n">clip_max</span><span class="p">)</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">std</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">X_pgd</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,:,:]</span> <span class="o">*</span> <span class="n">std</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">mean</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">clip_min</span><span class="p">,</span> <span class="n">clip_max</span><span class="p">)</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">std</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">X_pgd</span> <span class="o">=</span> <span class="n">X_pgd</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">X_pgd</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">()</span>
+            <span class="n">X_pgd</span><span class="o">.</span><span class="n">retain_grad</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">bound</span> <span class="o">==</span> <span class="s1">&#39;l2&#39;</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="o">+</span><span class="n">delta</span><span class="p">)</span>
+            <span class="n">incorrect</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">y</span>
+            <span class="n">correct</span> <span class="o">=</span> <span class="p">(</span><span class="o">~</span><span class="n">incorrect</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+            <span class="c1">#Finding the correct examples so as to attack only them</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()(</span><span class="n">model</span><span class="p">(</span><span class="n">X</span> <span class="o">+</span> <span class="n">delta</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">delta</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span>  <span class="n">correct</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="n">delta</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="o">/</span> <span class="n">norms</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+            <span class="n">delta</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span>  <span class="n">epsilon</span> <span class="o">/</span> <span class="n">norms</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="n">epsilon</span><span class="p">)</span>
+            <span class="n">delta</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span>   <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span> <span class="o">-</span><span class="n">X</span><span class="p">),</span> <span class="mi">1</span><span class="o">-</span><span class="n">X</span><span class="p">)</span> <span class="c1"># clip X+delta to [0,1]</span>
+            <span class="n">delta</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">X_pgd</span>
 

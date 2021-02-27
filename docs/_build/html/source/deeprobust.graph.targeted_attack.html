@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>deeprobust.graph.targeted_attack package &mdash; DeepRobust 1.0 documentation</title>
+  <title>deeprobust.graph.targeted_attack package &mdash; DeepRobust 0.1.1 documentation</title>
   
 
   
@@ -26,18 +26,18 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="deeprobust.graph.data package" href="deeprobust.graph.data.html" />
+    <link rel="next" title="deeprobust.graph.defense package" href="deeprobust.graph.defense.html" />
     <link rel="prev" title="deeprobust.graph.global_attack package" href="deeprobust.graph.global_attack.html" /> 
 </head>
 
@@ -83,7 +83,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Image Package</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/example.html">Image Attack and Defense</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
@@ -103,6 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.targeted_attack">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
 </ul>
 
@@ -284,7 +300,7 @@ Adversarial Attacks on Neural Networks for Graph Data, KDD’19</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">FGA</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -304,7 +320,7 @@ Adversarial Attacks on Neural Networks for Graph Data, KDD’19</p>
 </div>
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.fga.FGA.attack">
-<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.fga.FGA.attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.fga.FGA.attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate perturbations on the input graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -312,7 +328,7 @@ Adversarial Attacks on Neural Networks for Graph Data, KDD’19</p>
 <li><p><strong>ori_features</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
 <li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) node feature matrix</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
-<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>idx_train</strong> – training node indices</p></li>
 <li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
 <li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
 be edge removals/additions or feature removals/additions.</p></li>
@@ -327,9 +343,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 <div class="section" id="module-deeprobust.graph.targeted_attack.ig_attack">
 <span id="deeprobust-graph-targeted-attack-ig-attack-module"></span><h2>deeprobust.graph.targeted_attack.ig_attack module<a class="headerlink" href="#module-deeprobust.graph.targeted_attack.ig_attack" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
-<dt>Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective</dt><dd><p><a class="reference external" href="https://arxiv.org/pdf/1906.04214.pdf">https://arxiv.org/pdf/1906.04214.pdf</a></p>
-</dd>
-<dt>Tensorflow Implementation:</dt><dd><p><a class="reference external" href="https://github.com/KaidiXu/GCN_ADV_Train">https://github.com/KaidiXu/GCN_ADV_Train</a></p>
+<dt>Adversarial Examples on Graph Data: Deep Insights into Attack and Defense</dt><dd><p><a class="reference external" href="https://arxiv.org/pdf/1903.01610.pdf">https://arxiv.org/pdf/1903.01610.pdf</a></p>
 </dd>
 </dl>
 <dl class="class">
@@ -349,7 +363,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">IGAttack</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -378,7 +392,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 <li><p><strong>ori_features</strong> – Original (unperturbed) node feature matrix</p></li>
 <li><p><strong>ori_adj</strong> – Original (unperturbed) adjacency matrix</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
-<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>idx_train</strong> – training nodes indices</p></li>
 <li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
 <li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
 be edge removals/additions or feature removals/additions.</p></li>
@@ -390,13 +404,15 @@ be edge removals/additions or feature removals/additions.</p></li>
 
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge">
-<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate integrated gradient for edges</p>
+<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for edges. Although I think the the gradient should be
+with respect to adj instead of adj_norm, but the calculation is too time-consuming. So I
+finally decided to calculate the gradient of loss with respect to adj_norm</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature">
-<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.ig_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate integrated gradient for features</p>
 </dd></dl>
 
@@ -429,7 +445,7 @@ on sparse tensor, this part of code is heavily based on the author’s implement
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">Nettack</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -603,8 +619,8 @@ a single edge.</p>
 <dt>Author’s Implementation</dt><dd><p><a class="reference external" href="https://github.com/Hanjun-Dai/graph_adversarial_attack">https://github.com/Hanjun-Dai/graph_adversarial_attack</a></p>
 </dd>
 </dl>
-<p>This part of code is adopted from the author’s implementation but modified
-to be integrated into the repository.</p>
+<p>This part of code is adopted from the author’s implementation (Copyright (c) 2018 Dai, Hanjun and Li, Hui and Tian, Tian and Huang, Xin and Wang, Lin and Zhu, Jun and Song, Le)
+but modified to be integrated into the repository.</p>
 <dl class="class">
 <dt id="deeprobust.graph.targeted_attack.rl_s2v.RLS2V">
 <em class="property">class </em><code class="sig-name descname">RLS2V</code><span class="sig-paren">(</span><em class="sig-param">env</em>, <em class="sig-param">features</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_meta</em>, <em class="sig-param">idx_test</em>, <em class="sig-param">list_action_space</em>, <em class="sig-param">num_mod</em>, <em class="sig-param">reward_type</em>, <em class="sig-param">batch_size=10</em>, <em class="sig-param">num_wrong=0</em>, <em class="sig-param">bilin_q=1</em>, <em class="sig-param">embed_dim=64</em>, <em class="sig-param">gm='mean_field'</em>, <em class="sig-param">mlp_hidden=64</em>, <em class="sig-param">max_lv=1</em>, <em class="sig-param">save_dir='checkpoint_dqn'</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/rl_s2v.html#RLS2V"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.rl_s2v.RLS2V" title="Permalink to this definition">¶</a></dt>
@@ -664,7 +680,7 @@ add the edge u,v to the graph structure</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">RND</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
@@ -814,7 +830,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">FGA</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -834,7 +850,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 </div>
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.FGA.attack">
-<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.FGA.attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_features</em>, <em class="sig-param">ori_adj</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">target_node</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/fga.html#FGA.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.FGA.attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate perturbations on the input graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -842,7 +858,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 <li><p><strong>ori_features</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) adjacency matrix</p></li>
 <li><p><strong>ori_adj</strong> (<em>scipy.sparse.csr_matrix</em>) – Original (unperturbed) node feature matrix</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
-<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>idx_train</strong> – training node indices</p></li>
 <li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
 <li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
 be edge removals/additions or feature removals/additions.</p></li>
@@ -872,7 +888,7 @@ add the edge u,v to the graph structure</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">RND</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
@@ -934,7 +950,7 @@ be edge removals/additions or feature removals/additions.</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">Nettack</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -1084,7 +1100,7 @@ the weights W and the attributes X.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">GCN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.targeted_attack</span> <span class="kn">import</span> <span class="n">IGAttack</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
@@ -1113,7 +1129,7 @@ the weights W and the attributes X.</p>
 <li><p><strong>ori_features</strong> – Original (unperturbed) node feature matrix</p></li>
 <li><p><strong>ori_adj</strong> – Original (unperturbed) adjacency matrix</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
-<li><p><strong>idx_train</strong> – node training indices</p></li>
+<li><p><strong>idx_train</strong> – training nodes indices</p></li>
 <li><p><strong>target_node</strong> (<em>int</em>) – target node index to be attacked</p></li>
 <li><p><strong>n_perturbations</strong> (<em>int</em>) – Number of perturbations on the input graph. Perturbations could
 be edge removals/additions or feature removals/additions.</p></li>
@@ -1125,13 +1141,15 @@ be edge removals/additions or feature removals/additions.</p></li>
 
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.IGAttack.calc_importance_edge">
-<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate integrated gradient for edges</p>
+<code class="sig-name descname">calc_importance_edge</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate integrated gradient for edges. Although I think the the gradient should be
+with respect to adj instead of adj_norm, but the calculation is too time-consuming. So I
+finally decided to calculate the gradient of loss with respect to adj_norm</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature">
-<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">idx_train</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">calc_importance_feature</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">adj_norm</em>, <em class="sig-param">labels</em>, <em class="sig-param">steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/targeted_attack/ig_attack.html#IGAttack.calc_importance_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.targeted_attack.IGAttack.calc_importance_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate integrated gradient for features</p>
 </dd></dl>
 
@@ -1185,7 +1203,7 @@ be edge removals/additions or feature removals/additions.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="deeprobust.graph.data.html" class="btn btn-neutral float-right" title="deeprobust.graph.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="deeprobust.graph.defense.html" class="btn btn-neutral float-right" title="deeprobust.graph.defense package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="deeprobust.graph.global_attack.html" class="btn btn-neutral float-left" title="deeprobust.graph.global_attack package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

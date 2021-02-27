@@ -48,8 +48,6 @@ model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1], nclass=labe
 model = model.to(device)
 
 model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
-model.eval()
-
 # You can use the inner function of model to test
 model.test(idx_test)
 
