@@ -19,13 +19,74 @@ from deeprobust.image.attack.pgd import PGD
 from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.defense.base_defense import BaseDefense
 
+EPS = 1E-20
 
-class PGDtraining(BaseDefense):
+def diff_in_weights(model, proxy):
+    diff_dict = OrderedDict()
+    model_state_dict = model.state_dict()
+    proxy_state_dict = proxy.state_dict()
+    for (old_k, old_w), (new_k, new_w) in zip(model_state_dict.items(), proxy_state_dict.items()):
+        if len(old_w.size()) <= 1:
+            continue
+        if 'weight' in old_k:
+            diff_w = new_w - old_w
+            diff_dict[old_k] = old_w.norm() / (diff_w.norm() + EPS) * diff_w
+    return diff_dict
+
+
+def add_into_weights(model, diff, coeff=1.0):
+    names_in_diff = diff.keys()
+    with torch.no_grad():
+        for name, param in model.named_parameters():
+            if name in names_in_diff:
+                param.add_(coeff * diff[name])
+
+class pgd_AWP(object):
+    def __init__(self, model, proxy, proxy_optim, gamma):
+        super(pgd_AWP, self).__init__()
+        self.model = model
+        self.proxy = proxy
+        self.proxy_optim = proxy_optim
+        self.gamma = gamma
+
+    def calc_awp(self, adv_samples, clean_samples, labels, weight, weight1, temp, adv_connect, adv_upweight):
+        self.proxy.load_state_dict(self.model.state_dict())
+        self.proxy.train()
+
+        # compute adv loss
+        logits_clean, features_clean = self.proxy(clean_samples, feat = True)
+        #loss_clean = F.cross_entropy(logits_clean, labels)
+
+        # compute adv loss
+        logits_adv, features_adv = self.proxy(adv_samples, feat = True)
+        #loss_adv = F.cross_entropy(logits_adv, labels)
+
+        loss = F.cross_entropy(logits_adv, labels)
+
+        # final loss
+        loss = - 1 * loss
+
+        self.proxy_optim.zero_grad()
+        loss.backward()
+        self.proxy_optim.step()
+
+        # the adversary weight perturb
+        diff = diff_in_weights(self.model, self.proxy)
+        return diff
+
+    def perturb(self, diff):
+        add_into_weights(self.model, diff, coeff=1.0 * self.gamma)
+
+    def restore(self, diff):
+        add_into_weights(self.model, diff, coeff=-1.0 * self.gamma)
+
+
+
+class AWP_AT(BaseDefense):
     """
-    PGD adversarial training.
+    PGD adversarial training with adversarial weight perturbation.
 
     """
-
 
     def __init__(self, model, device):
         if not torch.cuda.is_available():
@@ -58,6 +119,7 @@ class PGDtraining(BaseDefense):
         save_model = True
         for epoch in range(1, self.epoch + 1):
             print('Training epoch: ', epoch, flush = True)
+
             self.train(self.device, train_loader, optimizer, epoch)
             self.test(self.model, self.device, test_loader)
 
@@ -77,7 +139,7 @@ class PGDtraining(BaseDefense):
     def parse_params(self,
                      epoch_num = 100,
                      save_dir = "./defense_models",
-                     save_name = "mnist_pgdtraining_0.3",
+                     save_name = "AWP_pgdtraining_0.3",
                      save_model = True,
                      epsilon = 8.0 / 255.0,
                      num_steps = 10,
@@ -140,6 +202,8 @@ class PGDtraining(BaseDefense):
         bs = train_loader.batch_size
         #scheduler = StepLR(optimizer, step_size = 10, gamma = 0.5)
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones = [70], gamma = 0.1)
+        awp_adversary = pgd_AWP(model = self.model, proxy = proxy, proxy_optim = proxy_optim, gamma=opt.awp_gamma)
+
         for batch_idx, (data, target) in enumerate(train_loader):
 
             optimizer.zero_grad()
@@ -147,6 +211,11 @@ class PGDtraining(BaseDefense):
             data, target = data.to(device), target.to(device)
 
             data_adv, output = self.adv_data(data, target, ep = self.epsilon, num_steps = self.num_steps, perturb_step_size = self.perturb_step_size)
+
+            awp = awp_adversary.calc_awp(adv_samples = adv_samples, clean_samples=           clean_samples, labels = labels, weight = opt.weight, weight1 = opt.weight1, temp = opt.temp,     adv_connect = opt.adv_connect, adv_upweight = opt.adv_upweight)
+            awp_adversary.perturb(awp)
+
+
             loss = self.calculate_loss(output, target)
 
             loss.backward()
