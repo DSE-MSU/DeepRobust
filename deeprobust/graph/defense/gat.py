@@ -196,7 +196,7 @@ class GAT(nn.Module):
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
-        return acc_test
+        return acc_test.item()
 
 
 if __name__ == "__main__":

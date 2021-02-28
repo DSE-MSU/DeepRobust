@@ -350,7 +350,7 @@ class SimPGCN(nn.Module):
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
-        return acc_test
+        return acc_test.item()
 
 
     def predict(self, features=None, adj=None):

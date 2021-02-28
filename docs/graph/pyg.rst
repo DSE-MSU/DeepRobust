@@ -25,6 +25,26 @@ For example, we can first create an instance of the Dataset class and convert it
     dpr_data = Pyg2Dpr(pyg_data) # convert pyg to dpr
     print(dpr_data.adj)
 
+For the attacked graph :class:`deeprobust.graph.PrePtbDataset`, it only has the attribute :obj:`adj`. 
+To convert it to PyTorch Geometric data format, we can first convert the clean graph to Pyg and 
+then update its :obj:`edge_index`:
+
+.. code-block:: python
+    
+    from deeprobust.graph.data import Dataset, PrePtbDataset, Dpr2Pyg
+    data = Dataset(root='/tmp/', name='cora') # load clean graph
+    pyg_data = Dpr2Pyg(data) # convert dpr to pyg
+    # load perturbed graph
+    perturbed_data = PrePtbDataset(root='/tmp/',
+            name='cora',
+            attack_method='meta',
+            ptb_rate=0.05)
+    perturbed_adj = perturbed_data.adj
+    pyg_data.update_edge_index(perturbed_adj) # inplace operation
+
+Now :obj:`pyg_data` becomes the perturbed data in the format of PyTorch Geometric. 
+We can then use it as the input for various Pytorch Geometric models!
+
 Load Pytorch Geometric Amazon and Coauthor Datasets
 -----------------------
 DeepRobust also provides access to the Amazon datasets and Coauthor datasets, i.e.,
@@ -68,9 +88,9 @@ data and then train Pyg models.
 
 .. code-block:: python
 
-    from deeprobust.graph.data import Dataset, Dpr2Pyg
+    from deeprobust.graph.data import Dataset, Dpr2Pyg, PrePtbDataset
     from deeprobust.graph.defense import GAT
-    data = Dataset(root='/tmp/', name='cora')
+    data = Dataset(root='/tmp/', name='cora', seed=15)
     adj, features, labels = data.adj, data.features, data.labels
     idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
     gat = GAT(nfeat=features.shape[1],
@@ -80,6 +100,17 @@ data and then train Pyg models.
     gat = gat.to('cpu')
     pyg_data = Dpr2Pyg(data) # convert deeprobust dataset to pyg dataset
     gat.fit(pyg_data, patience=100, verbose=True) # train with earlystopping
+    gat.test() # test performance on clean graph 
+
+    # load perturbed graph
+    perturbed_data = PrePtbDataset(root='/tmp/',
+            name='cora',
+            attack_method='meta',
+            ptb_rate=0.05)
+    perturbed_adj = perturbed_data.adj
+    pyg_data.update_edge_index(perturbed_adj) # inplace operation
+    gat.fit(pyg_data, patience=100, verbose=True) # train with earlystopping
+    gat.test() # test performance on perturbed graph 
 
 
 .. code-block:: python
@@ -96,6 +127,7 @@ data and then train Pyg models.
     cheby = cheby.to('cpu')
     pyg_data = Dpr2Pyg(data) # convert deeprobust dataset to pyg dataset
     cheby.fit(pyg_data, patience=10, verbose=True) # train with earlystopping
+    cheby.test()
 
 
 More Details 

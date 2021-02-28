@@ -51,10 +51,10 @@ Defense Methods:
            nclass=labels.max().item() + 1,
            dropout=0.5, device='cpu')
        gcn = gcn.to('cpu')
-       gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train on clean graph with earlystopping
+       gcn.fit(features, adj, labels, idx_train, idx_val) # train on clean graph with earlystopping
        gcn.test(idx_test)
          
-       gcn.fit(features, perturbed_adj, labels, idx_train, idx_val, patience=30) # train on poisoned graph
+       gcn.fit(features, perturbed_adj, labels, idx_train, idx_val) # train on poisoned graph
        gcn.test(idx_test)
 
 #. Train defense models (GCN-Jaccard, RGCN, ProGNN) poinsed graph

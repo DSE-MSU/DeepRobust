@@ -22,8 +22,8 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 cheby = ChebNet(nfeat=features.shape[1],
       nhid=16, num_hops=3,
       nclass=labels.max().item() + 1,
-      dropout=0.5, device='cpu')
-cheby = cheby.to('cpu')
+      dropout=0.5, device=device)
+cheby = cheby.to(device)
 
 # test on clean graph
 print('==================')
@@ -42,6 +42,6 @@ perturbed_data = PrePtbDataset(root='/tmp/',
         ptb_rate=args.ptb_rate)
 perturbed_adj = perturbed_data.adj
 pyg_data.update_edge_index(perturbed_adj) # inplace operation
-cheby.fit(pyg_data, patience=10, verbose=True) # train with earlystopping
+cheby.fit(pyg_data, verbose=True) # train with earlystopping
 cheby.test()
 

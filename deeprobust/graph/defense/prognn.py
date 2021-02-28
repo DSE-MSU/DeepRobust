@@ -251,6 +251,7 @@ class ProGNN:
         print("\tTest set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
+        return acc_test.item()
 
     def feature_smoothing(self, adj, X):
         adj = (adj.t() + adj)/2

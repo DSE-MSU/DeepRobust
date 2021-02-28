@@ -481,7 +481,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test set results:&quot;</span><span class="p">,</span>
               <span class="s2">&quot;loss= </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loss_test</span><span class="o">.</span><span class="n">item</span><span class="p">()),</span>
               <span class="s2">&quot;accuracy= </span><span class="si">{:.4f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">acc_test</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
-        <span class="k">return</span> <span class="n">acc_test</span></div>
+        <span class="k">return</span> <span class="n">acc_test</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="GCN.predict"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn.GCN.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">adj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

@@ -22,8 +22,8 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 gat = GAT(nfeat=features.shape[1],
       nhid=8, heads=8,
       nclass=labels.max().item() + 1,
-      dropout=0.5, device='cpu')
-gat = gat.to('cpu')
+      dropout=0.5, device=device)
+gat = gat.to(device)
 
 
 # test on clean graph

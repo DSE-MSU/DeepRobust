@@ -289,6 +289,7 @@ class RGCN(Module):
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
+        return acc_test.item()
 
     def _loss(self, input, labels):
         loss = F.nll_loss(input, labels)
