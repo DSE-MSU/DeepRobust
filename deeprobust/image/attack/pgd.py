@@ -129,10 +129,8 @@ def pgd_attack(model,
             X_pgd = X.data + eta
 
             #X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std
-
-            X_pgd[:,0,:,:] = (torch.clamp(X_pgd[:,0,:,:] * std[0] + mean[0], clip_min, clip_max) - mean[0]) / std[0]
-            X_pgd[:,1,:,:] = (torch.clamp(X_pgd[:,1,:,:] * std[1] + mean[1], clip_min, clip_max) - mean[1]) / std[1]
-            X_pgd[:,2,:,:] = (torch.clamp(X_pgd[:,2,:,:] * std[2] + mean[2], clip_min, clip_max) - mean[2]) / std[2]
+            for ind in range(X_pgd.shape[1]):
+                X_pgd[:,ind,:,:] = (torch.clamp(X_pgd[:,ind,:,:] * std[ind] + mean[ind], clip_min, clip_max) - mean[ind]) / std[ind]
 
             X_pgd = X_pgd.detach()
             X_pgd.requires_grad_()

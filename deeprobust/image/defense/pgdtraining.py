@@ -54,7 +54,7 @@ class PGDtraining(BaseDefense):
         device = torch.device(self.device)
 
         optimizer = optim.Adam(self.model.parameters(), self.lr)
-        lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[75, 100], gamma = 0.1)
+        scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[75, 100], gamma = 0.1)
         save_model = True
         for epoch in range(1, self.epoch + 1):
             print('Training epoch: ', epoch, flush = True)
