@@ -2,16 +2,19 @@
 [contributing-image]: https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat
 [contributing-url]: https://github.com/rusty1s/pytorch_geometric/blob/master/CONTRIBUTING.md
 
-
 <p align="center">
 <img center src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "450" alt="logo">
 </p>
 
 ---------------------
+<!--
+<a href="https://github.com/DSE-MSU/DeepRobust/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/DSE-MSU/DeepRobust"></a>  <a href="https://github.com/DSE-MSU/DeepRobust/network/members" ><img alt="GitHub forks" src="https://img.shields.io/github/forks/DSE-MSU/DeepRobust">
+</a> 
+-->
 
-<a href="https://github.com/DSE-MSU/DeepRobust/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/DSE-MSU/DeepRobust"></a>  <a href="https://github.com/DSE-MSU/DeepRobust/network/members" ><img alt="GitHub forks" src="https://img.shields.io/github/forks/DSE-MSU/DeepRobust"></a> <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/DSE-MSU/DeepRobust"> <a href="https://github.com/DSE-MSU/DeepRobust/issues"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/DSE-MSU/DeepRobust"></a> <img alt="GitHub" src="https://img.shields.io/github/license/DSE-MSU/DeepRobust">
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/DSE-MSU/DeepRobust"> <a href="https://github.com/DSE-MSU/DeepRobust/issues"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/DSE-MSU/DeepRobust"></a> <img alt="GitHub" src="https://img.shields.io/github/license/DSE-MSU/DeepRobust">
 [![Contributing][contributing-image]][contributing-url]
-
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Build%20your%20robust%20machine%20learning%20models%20with%20DeepRobust%20in%2060%20seconds&url=https://github.com/DSE-MSU/DeepRobust&via=dse_msu&hashtags=MachineLearning,DeepLearning,secruity,data,developers)
 
 
 <!-- <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/DSE-MSU/DeepRobust"> -->
