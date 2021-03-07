@@ -10,15 +10,7 @@ from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from deeprobust.graph import utils
 from copy import deepcopy
-
-try:
-    from torch_geometric.nn import ChebConv
-except ImportError as e:
-    print(e)
-    warnings.warn("Please install pytorch geometric if you " +
-            "would like to use the datasets from pytorch " +
-            "geometric. See details in https://pytorch-geom" +
-            "etric.readthedocs.io/en/latest/notes/installation.html")
+from torch_geometric.nn import ChebConv
 
 class ChebNet(nn.Module):
     """ 2 Layer ChebNet based on pytorch geometric.

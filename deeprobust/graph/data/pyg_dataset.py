@@ -6,16 +6,8 @@ from itertools import repeat
 import os.path as osp
 import warnings
 import sys
-
-try:
-    from torch_geometric.data import InMemoryDataset, Data
-    from torch_geometric.datasets import Coauthor, Amazon
-except ImportError as e:
-    print(e)
-    warnings.warn("Please install pytorch geometric if you " +
-            "would like to use the datasets from pytorch " +
-            "geometric. See details in https://pytorch-geom" +
-            "etric.readthedocs.io/en/latest/notes/installation.html")
+from torch_geometric.data import InMemoryDataset, Data
+from torch_geometric.datasets import Coauthor, Amazon
 
 class Dpr2Pyg(InMemoryDataset):
     """Convert deeprobust data (sparse matrix) to pytorch geometric data (tensor, edge_index)

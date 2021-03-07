@@ -10,15 +10,8 @@ from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
 from deeprobust.graph import utils
 from copy import deepcopy
+from torch_geometric.nn import GATConv
 
-try:
-    from torch_geometric.nn import GATConv
-except ImportError as e:
-    print(e)
-    warnings.warn("Please install pytorch geometric if you " +
-            "would like to use the datasets from pytorch " +
-            "geometric. See details in https://pytorch-geom" +
-            "etric.readthedocs.io/en/latest/notes/installation.html")
 
 class GAT(nn.Module):
     """ 2 Layer Graph Attention Network based on pytorch geometric.
