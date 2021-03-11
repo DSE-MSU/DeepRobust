@@ -15,41 +15,60 @@ from itertools import product
 
 
 class SimPGCN(nn.Module):
+    """SimP-GCN: Node similarity preserving graph convolutional networks.
+       https://arxiv.org/abs/2011.09643
+
+    Parameters
+    ----------
+    nnodes : int
+        number of nodes in the input grpah
+    nfeat : int
+        size of input feature dimension
+    nhid : int
+        number of hidden units
+    nclass : int
+        size of output dimension
+    lambda_ : float
+        coefficients for SSL loss in SimP-GCN
+    gamma : float
+        coefficients for adaptive learnable self-loops
+    bias_init : float
+        bias init for the score
+    dropout : float
+        dropout rate for GCN
+    lr : float
+        learning rate for GCN
+    weight_decay : float
+        weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
+    with_bias: bool
+        whether to include bias term in GCN weights.
+    device: str
+        'cpu' or 'cuda'.
+
+    Examples
+    --------
+	We can first load dataset and then train SimPGCN.
+    See the detailed hyper-parameter setting in https://github.com/ChandlerBang/SimP-GCN.
+
+    >>> from deeprobust.graph.data import PrePtbDataset, Dataset
+    >>> from deeprobust.graph.defense import SimPGCN
+    >>> # load clean graph data
+    >>> data = Dataset(root='/tmp/', name='cora', seed=15)
+    >>> adj, features, labels = data.adj, data.features, data.labels
+    >>> idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    >>> # load perturbed graph data
+    >>> perturbed_data = PrePtbDataset(root='/tmp/', name='cora')
+    >>> perturbed_adj = perturbed_data.adj
+    >>> model = SimPGCN(nnodes=features.shape[0], nfeat=features.shape[1],
+        nhid=16, nclass=labels.max()+1, device='cuda')
+    >>> model = model.to('cuda')
+    >>> model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
+    >>> model.test(idx_test)
+    """
 
     def __init__(self, nnodes, nfeat, nhid, nclass, dropout=0.5, lr=0.01,
             weight_decay=5e-4, lambda_=5, gamma=0.1, bias_init=0,
             with_bias=True, device=None):
-        """SimP-GCN: Node similarity preserving graph convolutional networks.
-           https://arxiv.org/abs/2011.09643
-
-        Parameters
-        ----------
-        nnodes : int
-            number of nodes in the input grpah
-        nfeat : int
-            size of input feature dimension
-        nhid : int
-            number of hidden units
-        nclass : int
-            size of output dimension
-        lambda_ : float
-            coefficients for SSL loss in SimP-GCN
-        gamma : float
-            coefficients for adaptive learnable self-loops
-        bias_init : float
-            bias init for the score
-        dropout : float
-            dropout rate for GCN
-        lr : float
-            learning rate for GCN
-        weight_decay : float
-            weight decay coefficient (l2 normalization) for GCN. When `with_relu` is True, `weight_decay` will be set to 0.
-        with_bias: bool
-            whether to include bias term in GCN weights.
-        device: str
-            'cpu' or 'cuda'.
-        """
-
         super(SimPGCN, self).__init__()
 
         assert device is not None, "Please specify 'device'!"

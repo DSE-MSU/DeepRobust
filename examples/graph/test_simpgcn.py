@@ -43,21 +43,6 @@ model = model.to(device)
 
 # using validation to pick model
 model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
-model.eval()
-# You can use the inner function of model to test
-model.test(idx_test)
-
-
-print('==================')
-print('=== load graph perturbed by DeepRobust 5% metattack (under seed 15) ===')
-perturbed_data = PtbDataset(root='/tmp/',
-                    name=args.dataset,
-                    attack_method='meta')
-perturbed_adj = perturbed_data.adj
-
-# using validation to pick model
-model.fit(features, perturbed_adj, labels, idx_train, idx_val, train_iters=200, verbose=True)
-model.eval()
 # You can use the inner function of model to test
 model.test(idx_test)
 

@@ -238,6 +238,7 @@
 
         <span class="nb">super</span><span class="p">(</span><span class="n">GCNSVD</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nfeat</span><span class="p">,</span> <span class="n">nhid</span><span class="p">,</span> <span class="n">nclass</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">weight_decay</span><span class="p">,</span> <span class="n">with_relu</span><span class="p">,</span> <span class="n">with_bias</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="GCNSVD.fit"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNSVD.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">train_iters</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;First perform rank-k approximation of adjacency matrix via</span>
@@ -268,6 +269,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">modified_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncatedSVD</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
         <span class="c1"># modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)</span>
         <span class="n">features</span><span class="p">,</span> <span class="n">modified_adj</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">modified_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
@@ -306,7 +308,39 @@
             <span class="n">diag_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rank_after = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">diag_S</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">])))</span>
 
-        <span class="k">return</span> <span class="n">U</span> <span class="o">@</span> <span class="n">diag_S</span> <span class="o">@</span> <span class="n">V</span></div></div>
+        <span class="k">return</span> <span class="n">U</span> <span class="o">@</span> <span class="n">diag_S</span> <span class="o">@</span> <span class="n">V</span></div>
+
+<div class="viewcode-block" id="GCNSVD.predict"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNSVD.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">adj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;By default, the inputs should be unnormalized adjacency</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features :</span>
+<span class="sd">            node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.</span>
+<span class="sd">        adj :</span>
+<span class="sd">            adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.FloatTensor</span>
+<span class="sd">            output (log probabilities) of GCNSVD</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">features</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">adj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">truncatedSVD</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+                <span class="n">features</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_sparse_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="GCNJaccard"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard">[docs]</a><span class="k">class</span> <span class="nc">GCNJaccard</span><span class="p">(</span><span class="n">GCN</span><span class="p">):</span>
@@ -372,9 +406,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        features :</span>
-<span class="sd">            node features</span>
+<span class="sd">            node features. The format can be numpy.array or scipy matrix</span>
 <span class="sd">        adj :</span>
-<span class="sd">            the adjacency matrix. The format could be torch.tensor or scipy matrix</span>
+<span class="sd">            the adjacency matrix.</span>
 <span class="sd">        labels :</span>
 <span class="sd">            node labels</span>
 <span class="sd">        idx_train :</span>
@@ -421,6 +455,38 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed </span><span class="si">%s</span><span class="s1"> edges in the original graph&#39;</span> <span class="o">%</span> <span class="n">removed_cnt</span><span class="p">)</span>
         <span class="n">modified_adj</span> <span class="o">=</span> <span class="n">adj_triu</span> <span class="o">+</span> <span class="n">adj_triu</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">modified_adj</span></div>
+
+<div class="viewcode-block" id="GCNJaccard.predict"><a class="viewcode-back" href="../../../../source/deeprobust.graph.defense.html#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">adj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;By default, the inputs should be unnormalized adjacency</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        features :</span>
+<span class="sd">            node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.</span>
+<span class="sd">        adj :</span>
+<span class="sd">            adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.FloatTensor</span>
+<span class="sd">            output (log probabilities) of GCNJaccard</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">features</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">adj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_dissimilar_edges</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+                <span class="n">features</span><span class="p">,</span> <span class="n">adj</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_tensor</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span>
+            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_sparse_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">normalize_adj_tensor</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj_norm</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_drop_dissimilar_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">adj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Drop dissimilar edges. (Slower version)</span>
@@ -570,13 +636,29 @@
     <span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dataset_str</span><span class="p">)</span>
     <span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
     <span class="c1"># train defense model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test GCNJaccard&quot;</span><span class="p">)</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">GCNJaccard</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
           <span class="n">nhid</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
           <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
           <span class="n">binary_feature</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-          <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+          <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
+    <span class="n">prediction_1</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+    <span class="n">prediction_2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">prediction_1</span> <span class="o">!=</span> <span class="n">prediction_2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test GCNSVD&quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GCNSVD</span><span class="p">(</span><span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+          <span class="n">nhid</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+          <span class="n">nclass</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+          <span class="n">dropout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
+    <span class="n">prediction_1</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+    <span class="n">prediction_2</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">prediction_1</span> <span class="o">-</span> <span class="n">prediction_2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-5</span>
+
 </pre></div>
 
            </div>

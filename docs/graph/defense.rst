@@ -23,6 +23,7 @@ Defense Methods:
 - :class:`deeprobust.graph.defense.GCNSVD`
 - :class:`deeprobust.graph.defense.ProGNN`
 - :class:`deeprobust.graph.defense.RGCN`
+- :class:`deeprobust.graph.defense.SimPGCN`
 - :class:`deeprobust.graph.defense.AdvTraining`
 
 #. Load pre-attacked graph data 

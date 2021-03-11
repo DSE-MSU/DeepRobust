@@ -398,8 +398,8 @@ validation loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>features</strong> – node features</p></li>
-<li><p><strong>adj</strong> – the adjacency matrix. The format could be torch.tensor or scipy matrix</p></li>
+<li><p><strong>features</strong> – node features. The format can be numpy.array or scipy matrix</p></li>
+<li><p><strong>adj</strong> – the adjacency matrix.</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
 <li><p><strong>idx_train</strong> – node training indices</p></li>
 <li><p><strong>idx_val</strong> – node validation indices. If not given (None), GCN training process will not adpot early stopping</p></li>
@@ -408,6 +408,26 @@ validation loss.</p>
 <li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.gcn_preprocess.GCNJaccard.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.gcn_preprocess.GCNJaccard.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – node features. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+<li><p><strong>adj</strong> – adjcency matrix. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output (log probabilities) of GCNJaccard</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.FloatTensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -475,6 +495,26 @@ the validation loss.</p>
 <li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.gcn_preprocess.GCNSVD.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNSVD.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.gcn_preprocess.GCNSVD.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – node features. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+<li><p><strong>adj</strong> – adjcency matrix. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output (log probabilities) of GCNSVD</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.FloatTensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -694,6 +734,19 @@ adjacency matrix and corresponding operations.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="deeprobust.graph.defense.r_gcn.RGCN.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/r_gcn.html#RGCN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.r_gcn.RGCN.predict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output (log probabilities) of RGCN</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>torch.FloatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="deeprobust.graph.defense.r_gcn.RGCN.test">
 <code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">idx_test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/r_gcn.html#RGCN.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.r_gcn.RGCN.test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the peformance on test set</p>
@@ -868,6 +921,26 @@ the validation loss.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="deeprobust.graph.defense.GCNSVD.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNSVD.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCNSVD.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – node features. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+<li><p><strong>adj</strong> – adjcency matrix. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output (log probabilities) of GCNSVD</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.FloatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="deeprobust.graph.defense.GCNSVD.truncatedSVD">
 <code class="sig-name descname">truncatedSVD</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">k=50</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNSVD.truncatedSVD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCNSVD.truncatedSVD" title="Permalink to this definition">¶</a></dt>
 <dd><p>Truncated SVD on input data.</p>
@@ -946,8 +1019,8 @@ validation loss.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>features</strong> – node features</p></li>
-<li><p><strong>adj</strong> – the adjacency matrix. The format could be torch.tensor or scipy matrix</p></li>
+<li><p><strong>features</strong> – node features. The format can be numpy.array or scipy matrix</p></li>
+<li><p><strong>adj</strong> – the adjacency matrix.</p></li>
 <li><p><strong>labels</strong> – node labels</p></li>
 <li><p><strong>idx_train</strong> – node training indices</p></li>
 <li><p><strong>idx_val</strong> – node validation indices. If not given (None), GCN training process will not adpot early stopping</p></li>
@@ -956,6 +1029,26 @@ validation loss.</p>
 <li><p><strong>initialize</strong> (<em>bool</em>) – whether to initialize parameters before training</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em>) – whether to show verbose logs</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.GCNJaccard.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gcn_preprocess.html#GCNJaccard.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GCNJaccard.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, the inputs should be unnormalized adjacency</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – node features. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+<li><p><strong>adj</strong> – adjcency matrix. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output (log probabilities) of GCNJaccard</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.FloatTensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1018,6 +1111,19 @@ validation loss.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.RGCN.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/r_gcn.html#RGCN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.RGCN.predict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output (log probabilities) of RGCN</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>torch.FloatTensor</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1154,6 +1260,19 @@ according to the validation loss.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="deeprobust.graph.defense.GAT.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.predict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output (log probabilities) of GAT</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>torch.FloatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="deeprobust.graph.defense.GAT.test">
 <code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/gat.html#GAT.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.GAT.test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate GAT performance on test set.</p>
@@ -1233,6 +1352,19 @@ according to the validation loss.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="deeprobust.graph.defense.ChebNet.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.predict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output (log probabilities) of ChebNet</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>torch.FloatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="deeprobust.graph.defense.ChebNet.test">
 <code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate ChebNet performance on test set.</p>
@@ -1247,6 +1379,95 @@ according to the validation loss.</p>
 <dt id="deeprobust.graph.defense.ChebNet.train_with_early_stopping">
 <code class="sig-name descname">train_with_early_stopping</code><span class="sig-paren">(</span><em class="sig-param">train_iters</em>, <em class="sig-param">patience</em>, <em class="sig-param">verbose</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/chebnet.html#ChebNet.train_with_early_stopping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.ChebNet.train_with_early_stopping" title="Permalink to this definition">¶</a></dt>
 <dd><p>early stopping based on the validation loss</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.defense.SimPGCN">
+<em class="property">class </em><code class="sig-name descname">SimPGCN</code><span class="sig-paren">(</span><em class="sig-param">nnodes</em>, <em class="sig-param">nfeat</em>, <em class="sig-param">nhid</em>, <em class="sig-param">nclass</em>, <em class="sig-param">dropout=0.5</em>, <em class="sig-param">lr=0.01</em>, <em class="sig-param">weight_decay=0.0005</em>, <em class="sig-param">lambda_=5</em>, <em class="sig-param">gamma=0.1</em>, <em class="sig-param">bias_init=0</em>, <em class="sig-param">with_bias=True</em>, <em class="sig-param">device=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/simpgcn.html#SimPGCN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.SimPGCN" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>SimP-GCN: Node similarity preserving graph convolutional networks.</dt><dd><p><a class="reference external" href="https://arxiv.org/abs/2011.09643">https://arxiv.org/abs/2011.09643</a></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nnodes</strong> (<em>int</em>) – number of nodes in the input grpah</p></li>
+<li><p><strong>nfeat</strong> (<em>int</em>) – size of input feature dimension</p></li>
+<li><p><strong>nhid</strong> (<em>int</em>) – number of hidden units</p></li>
+<li><p><strong>nclass</strong> (<em>int</em>) – size of output dimension</p></li>
+<li><p><strong>lambda_</strong> (<em>float</em>) – coefficients for SSL loss in SimP-GCN</p></li>
+<li><p><strong>gamma</strong> (<em>float</em>) – coefficients for adaptive learnable self-loops</p></li>
+<li><p><strong>bias_init</strong> (<em>float</em>) – bias init for the score</p></li>
+<li><p><strong>dropout</strong> (<em>float</em>) – dropout rate for GCN</p></li>
+<li><p><strong>lr</strong> (<em>float</em>) – learning rate for GCN</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em>) – weight decay coefficient (l2 normalization) for GCN. When <cite>with_relu</cite> is True, <cite>weight_decay</cite> will be set to 0.</p></li>
+<li><p><strong>with_bias</strong> (<em>bool</em>) – whether to include bias term in GCN weights.</p></li>
+<li><p><strong>device</strong> (<em>str</em>) – ‘cpu’ or ‘cuda’.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We can first load dataset and then train SimPGCN.</p>
+<p>See the detailed hyper-parameter setting in <a class="reference external" href="https://github.com/ChandlerBang/SimP-GCN">https://github.com/ChandlerBang/SimP-GCN</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">SimPGCN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load clean graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># load perturbed graph data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">SimPGCN</span><span class="p">(</span><span class="n">nnodes</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nfeat</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">    nhid=16, nclass=labels.max()+1, device=&#39;cuda&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">perturbed_adj</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">train_iters</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">idx_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.defense.SimPGCN.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/simpgcn.html#SimPGCN.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.SimPGCN.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize parameters of SimPGCN.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.SimPGCN.myforward">
+<code class="sig-name descname">myforward</code><span class="sig-paren">(</span><em class="sig-param">fea</em>, <em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/simpgcn.html#SimPGCN.myforward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.SimPGCN.myforward" title="Permalink to this definition">¶</a></dt>
+<dd><p>output embedding and log_softmax</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.SimPGCN.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">features=None</em>, <em class="sig-param">adj=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/simpgcn.html#SimPGCN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.SimPGCN.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, the inputs should be unnormalized data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – node features. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+<li><p><strong>adj</strong> – adjcency matrix. If <cite>features</cite> and <cite>adj</cite> are not given, this function will use previous stored <cite>features</cite> and <cite>adj</cite> from training to make predictions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>output (log probabilities) of GCN</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.FloatTensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.defense.SimPGCN.test">
+<code class="sig-name descname">test</code><span class="sig-paren">(</span><em class="sig-param">idx_test</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/simpgcn.html#SimPGCN.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.SimPGCN.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate GCN performance on test set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx_test</strong> – node testing indices</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
