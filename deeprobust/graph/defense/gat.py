@@ -191,6 +191,18 @@ class GAT(nn.Module):
               "accuracy= {:.4f}".format(acc_test.item()))
         return acc_test.item()
 
+    def predict(self):
+        """
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of GAT
+        """
+
+        self.eval()
+        return self.forward(self.data)
+
+
 
 if __name__ == "__main__":
     from deeprobust.graph.data import Dataset, Dpr2Pyg
@@ -206,4 +218,5 @@ if __name__ == "__main__":
     pyg_data = Dpr2Pyg(data)
     gat.fit(pyg_data, verbose=True) # train with earlystopping
     gat.test()
+    print(gat.predict())
 

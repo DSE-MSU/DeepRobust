@@ -64,6 +64,7 @@ class GCNSVD(GCN):
 
         super(GCNSVD, self).__init__(nfeat, nhid, nclass, dropout, lr, weight_decay, with_relu, with_bias, device=device)
         self.device = device
+        self.k = None
 
     def fit(self, features, adj, labels, idx_train, idx_val=None, k=50, train_iters=200, initialize=True, verbose=True, **kwargs):
         """First perform rank-k approximation of adjacency matrix via
@@ -94,6 +95,7 @@ class GCNSVD(GCN):
         """
 
         modified_adj = self.truncatedSVD(adj, k=k)
+        self.k = k
         # modified_adj_tensor = utils.sparse_mx_to_torch_sparse_tensor(self.modified_adj)
         features, modified_adj, labels = utils.to_tensor(features, modified_adj, labels, device=self.device)
 
@@ -133,6 +135,38 @@ class GCNSVD(GCN):
             print("rank_after = {}".format(len(diag_S.nonzero()[0])))
 
         return U @ diag_S @ V
+
+    def predict(self, features=None, adj=None):
+        """By default, the inputs should be unnormalized adjacency
+
+        Parameters
+        ----------
+        features :
+            node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+        adj :
+            adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+
+
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of GCNSVD
+        """
+
+        self.eval()
+        if features is None and adj is None:
+            return self.forward(self.features, self.adj_norm)
+        else:
+            adj = self.truncatedSVD(adj, k=self.k)
+            if type(adj) is not torch.Tensor:
+                features, adj = utils.to_tensor(features, adj, device=self.device)
+
+            self.features = features
+            if utils.is_sparse_tensor(adj):
+                self.adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+            else:
+                self.adj_norm = utils.normalize_adj_tensor(adj)
+            return self.forward(self.features, self.adj_norm)
 
 
 class GCNJaccard(GCN):
@@ -198,9 +232,9 @@ class GCNJaccard(GCN):
         Parameters
         ----------
         features :
-            node features
+            node features. The format can be numpy.array or scipy matrix
         adj :
-            the adjacency matrix. The format could be torch.tensor or scipy matrix
+            the adjacency matrix.
         labels :
             node labels
         idx_train :
@@ -247,6 +281,38 @@ class GCNJaccard(GCN):
         print('removed %s edges in the original graph' % removed_cnt)
         modified_adj = adj_triu + adj_triu.transpose()
         return modified_adj
+
+    def predict(self, features=None, adj=None):
+        """By default, the inputs should be unnormalized adjacency
+
+        Parameters
+        ----------
+        features :
+            node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+        adj :
+            adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
+
+
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of GCNJaccard
+        """
+
+        self.eval()
+        if features is None and adj is None:
+            return self.forward(self.features, self.adj_norm)
+        else:
+            adj = self.drop_dissimilar_edges(features, adj)
+            if type(adj) is not torch.Tensor:
+                features, adj = utils.to_tensor(features, adj, device=self.device)
+
+            self.features = features
+            if utils.is_sparse_tensor(adj):
+                self.adj_norm = utils.normalize_adj_tensor(adj, sparse=True)
+            else:
+                self.adj_norm = utils.normalize_adj_tensor(adj)
+            return self.forward(self.features, self.adj_norm)
 
     def _drop_dissimilar_edges(self, features, adj):
         """Drop dissimilar edges. (Slower version)
@@ -396,10 +462,26 @@ if __name__ == "__main__":
     perturbed_data = PrePtbDataset(root='/tmp/', name=dataset_str)
     perturbed_adj = perturbed_data.adj
     # train defense model
+    print("Test GCNJaccard")
     model = GCNJaccard(nfeat=features.shape[1],
           nhid=16,
           nclass=labels.max().item() + 1,
           binary_feature=False,
-          dropout=0.5, device='cpu').to('cpu')
+          dropout=0.5, device='cuda').to('cuda')
     model.fit(features, perturbed_adj, labels, idx_train, idx_val, threshold=0.1)
     model.test(idx_test)
+    prediction_1 = model.predict()
+    prediction_2 = model.predict(features, perturbed_adj)
+    assert (prediction_1 != prediction_2).sum() == 0
+
+    print("Test GCNSVD")
+    model = GCNSVD(nfeat=features.shape[1],
+          nhid=16,
+          nclass=labels.max().item() + 1,
+          dropout=0.5, device='cuda').to('cuda')
+    model.fit(features, perturbed_adj, labels, idx_train, idx_val, k=20)
+    model.test(idx_test)
+    prediction_1 = model.predict()
+    prediction_2 = model.predict(features, perturbed_adj)
+    assert (prediction_1 - prediction_2).mean() < 1e-5
+

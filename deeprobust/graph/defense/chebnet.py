@@ -184,6 +184,18 @@ class ChebNet(nn.Module):
               "accuracy= {:.4f}".format(acc_test.item()))
         return acc_test.item()
 
+    def predict(self):
+        """
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of ChebNet
+        """
+
+        self.eval()
+        return self.forward(self.data)
+
+
 
 if __name__ == "__main__":
     from deeprobust.graph.data import Dataset, Dpr2Pyg
@@ -199,4 +211,5 @@ if __name__ == "__main__":
     pyg_data = Dpr2Pyg(data)
     cheby.fit(pyg_data, verbose=True) # train with earlystopping
     cheby.test()
+    print(cheby.predict())
 

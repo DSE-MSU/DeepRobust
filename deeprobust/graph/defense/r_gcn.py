@@ -291,6 +291,17 @@ class RGCN(Module):
               "accuracy= {:.4f}".format(acc_test.item()))
         return acc_test.item()
 
+    def predict(self):
+        """
+        Returns
+        -------
+        torch.FloatTensor
+            output (log probabilities) of RGCN
+        """
+
+        self.eval()
+        return self.forward()
+
     def _loss(self, input, labels):
         loss = F.nll_loss(input, labels)
         miu1 = self.gc1.miu
@@ -315,4 +326,28 @@ class RGCN(Module):
         D_power[torch.isinf(D_power)] = 0.
         D_power = torch.diag(D_power)
         return D_power @ A @ D_power
+
+if __name__ == "__main__":
+
+    from deeprobust.graph.data import PrePtbDataset, Dataset
+    # load clean graph data
+    dataset_str = 'pubmed'
+    data = Dataset(root='/tmp/', name=dataset_str, seed=15)
+    adj, features, labels = data.adj, data.features, data.labels
+    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
+    # load perturbed graph data
+    perturbed_data = PrePtbDataset(root='/tmp/', name=dataset_str)
+    perturbed_adj = perturbed_data.adj
+
+    # train defense model
+    model = RGCN(nnodes=perturbed_adj.shape[0], nfeat=features.shape[1],
+                         nclass=labels.max()+1, nhid=32, device='cuda').to('cuda')
+    model.fit(features, perturbed_adj, labels, idx_train, idx_val,
+                      train_iters=200, verbose=True)
+    model.test(idx_test)
+
+    prediction_1 = model.predict()
+    print(prediction_1)
+    # prediction_2 = model.predict(features, perturbed_adj)
+    # assert (prediction_1 != prediction_2).sum() == 0
 

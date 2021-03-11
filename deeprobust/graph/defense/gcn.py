@@ -341,3 +341,5 @@ class GCN(nn.Module):
                 self.adj_norm = utils.normalize_adj_tensor(adj)
             return self.forward(self.features, self.adj_norm)
 
+
+
