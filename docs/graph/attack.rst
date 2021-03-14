@@ -11,7 +11,7 @@ in DeepRobust. Speficailly, they can be divied into two types:
 
 Global (Untargeted) Attack for Node Classification
 -----------------------
-Global (untargeted) attack aims to fool GNNs into give wrong predictions on all 
+Global (untargeted) attack aims to fool GNNs into giving wrong predictions on all 
 given nodes. Specifically, DeepRobust provides the following targeted
 attack algorithms:
 
@@ -22,10 +22,14 @@ attack algorithms:
 - :class:`deeprobust.graph.global_attack.PGDAttack`
 - :class:`deeprobust.graph.global_attack.NIPA`
 - :class:`deeprobust.graph.global_attack.Random`
+- :class:`deeprobust.graph.global_attack.NodeEmbeddingAttack`
+- :class:`deeprobust.graph.global_attack.OtherNodeEmbeddingAttack`
 
-All the above attacks take the adjacency matrix, node feature matrix and labels as input.
-Usually, the adjacency matrix is in the format of :obj:`scipy.sparse.csr_matrix` and feature
-matrix can either be :obj:`scipy.sparse.csr_matrix` or :obj:`numpy.array`. The attack algorithm
+All the above attacks except `NodeEmbeddingAttack` and `OtherNodeEmbeddingAttack` (see details 
+`here <https://deeprobust.readthedocs.io/en/latest/graph/node_embedding.html>`_ ) 
+take the adjacency matrix, node feature matrix and labels as input. Usually, the adjacency 
+matrix is in the format of :obj:`scipy.sparse.csr_matrix` and feature matrix can either be 
+:obj:`scipy.sparse.csr_matrix` or :obj:`numpy.array`. The attack algorithm
 will then transfer them into :obj:`torch.tensor` inside the class. It is also fine if you
 provide :obj:`torch.tensor` as input, since the algorithm can automatically deal with it. 
 Now let's take a look at an example:

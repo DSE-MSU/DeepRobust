@@ -81,8 +81,8 @@ Similarly, we can also load Coauthor dataset,
 Working on PyTorch Geometric Models
 -----------
 In this subsection, we provide examples for using GNNs based on
-PyTorch Geometric. Spefically, we use GAT :class:`deeprobust.graph.GAT` and 
-ChebNet :class:`deeprobust.graph.ChebNet` to further illustrate. 
+PyTorch Geometric. Spefically, we use GAT :class:`deeprobust.graph.defense.GAT` and 
+ChebNet :class:`deeprobust.graph.defense.ChebNet` to further illustrate (while :class:`deeprobust.graph.defense.SGC` is also available in this library).
 Basically, we can first convert the DeepRobust data to PyTorch Geometric 
 data and then train Pyg models.
 
@@ -133,5 +133,4 @@ data and then train Pyg models.
 More Details 
 -----------------------
 More details can be found in  
-`test_gat.py <https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph/test_gat.py>`_ 
-and `test_chebnet.py <https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph/test_chebnet.py>`_.
+`test_gat.py <https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph/test_gat.py>`_, `test_chebnet.py <https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph/test_chebnet.py>`_ and `test_sgc.py <https://github.com/DSE-MSU/DeepRobust/tree/master/examples/graph/test_sgc.py>`_.

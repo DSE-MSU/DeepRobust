@@ -37,7 +37,8 @@ extensions = ['sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autodoc', 's
               'sphinx.ext.autosummary', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode', 'sphinx.ext.githubpages' ]
 
 # extensions = ['sphinx.ext.napoleon']
-autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX', 'torch_geometric']
+autodoc_mock_imports = ['torch', 'torchvision', 'texttable', 'tensorboardX',
+                'torch_geometric', 'gensim', 'node2vec']
 
 # remove undoc members
 #autodoc_default_flags = ['members']

@@ -20,7 +20,6 @@ DeepRobust is a pytorch adversarial learning library, which contains most popula
 
    notes/installation
    
-
 .. toctree::
    :glob:
    :maxdepth: 1
@@ -30,6 +29,7 @@ DeepRobust is a pytorch adversarial learning library, which contains most popula
    graph/attack
    graph/defense
    graph/pyg
+   graph/node_embedding
 
 .. toctree::
    :glob:

@@ -28,10 +28,10 @@ deeprobust.graph.global\_attack.nipa module
 .. automodule:: deeprobust.graph.global_attack.nipa
    :members:
 
-deeprobust.graph.global\_attack.random module
----------------------------------------------
+deeprobust.graph.global\_attack.random_attack module
+----------------------------------------------------
 
-.. automodule:: deeprobust.graph.global_attack.random
+.. automodule:: deeprobust.graph.global_attack.random_attack
    :members:
 
 deeprobust.graph.global\_attack.topology\_attack module

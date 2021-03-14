@@ -16,6 +16,12 @@ Victim Models:
 - :class:`deeprobust.graph.defense.GCN`
 - :class:`deeprobust.graph.defense.GAT`
 - :class:`deeprobust.graph.defense.ChebNet`
+- :class:`deeprobust.graph.defense.SGC`
+
+Node Embedding Victim Models: (see more details `here <https://deeprobust.readthedocs.io/en/latest/graph/node_embedding.html>`_)
+
+- :class:`deeprobust.graph.defense.DeepWalk`
+- :class:`deeprobust.graph.defense.Node2Vec`
 
 Defense Methods:
 

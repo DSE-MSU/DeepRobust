@@ -93,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph/node_embedding.html">Node Embedding Attack and Defense</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Image Package</span></p>
 <ul>
@@ -112,7 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.dice">deeprobust.graph.global_attack.dice module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.mettack">deeprobust.graph.global_attack.mettack module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.nipa">deeprobust.graph.global_attack.nipa module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.random">deeprobust.graph.global_attack.random module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.random_attack">deeprobust.graph.global_attack.random_attack module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack.topology_attack">deeprobust.graph.global_attack.topology_attack module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-deeprobust.graph.global_attack">Module contents</a></li>
 </ul>
@@ -579,11 +580,11 @@ is False.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-deeprobust.graph.global_attack.random">
-<span id="deeprobust-graph-global-attack-random-module"></span><h2>deeprobust.graph.global_attack.random module<a class="headerlink" href="#module-deeprobust.graph.global_attack.random" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-deeprobust.graph.global_attack.random_attack">
+<span id="deeprobust-graph-global-attack-random-attack-module"></span><h2>deeprobust.graph.global_attack.random_attack module<a class="headerlink" href="#module-deeprobust.graph.global_attack.random_attack" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="deeprobust.graph.global_attack.random.Random">
-<em class="property">class </em><code class="sig-name descname">Random</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random">
+<em class="property">class </em><code class="sig-name descname">Random</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly adding edges to the input graph</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -607,8 +608,8 @@ is False.</p></li>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="deeprobust.graph.global_attack.random.Random.attack">
-<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random.attack" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random.attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate attacks on the input graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -628,14 +629,14 @@ is False.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="deeprobust.graph.global_attack.random.Random.inject_nodes">
-<code class="sig-name descname">inject_nodes</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_add</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.inject_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random.inject_nodes" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random.inject_nodes">
+<code class="sig-name descname">inject_nodes</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_add</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.inject_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random.inject_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each added node, randomly connect with other nodes.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="deeprobust.graph.global_attack.random.Random.perturb_adj">
-<code class="sig-name descname">perturb_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.perturb_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random.perturb_adj" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random.perturb_adj">
+<code class="sig-name descname">perturb_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.perturb_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random.perturb_adj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly add, remove or flip edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -655,14 +656,14 @@ is False.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="deeprobust.graph.global_attack.random.Random.perturb_features">
-<code class="sig-name descname">perturb_features</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.perturb_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random.perturb_features" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random.perturb_features">
+<code class="sig-name descname">perturb_features</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.perturb_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random.perturb_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly perturb features.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="deeprobust.graph.global_attack.random.Random.sample_forever">
-<code class="sig-name descname">sample_forever</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">exclude</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.sample_forever"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random.Random.sample_forever" title="Permalink to this definition">¶</a></dt>
+<dt id="deeprobust.graph.global_attack.random_attack.Random.sample_forever">
+<code class="sig-name descname">sample_forever</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">exclude</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.sample_forever"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.random_attack.Random.sample_forever" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly random sample edges from adjacency matrix, <cite>exclude</cite> is a set
 which contains the edges we do not want to sample and the ones already sampled</p>
 </dd></dl>
@@ -1052,7 +1053,7 @@ is False.</p></li>
 
 <dl class="class">
 <dt id="deeprobust.graph.global_attack.Random">
-<em class="property">class </em><code class="sig-name descname">Random</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Random</code><span class="sig-paren">(</span><em class="sig-param">model=None</em>, <em class="sig-param">nnodes=None</em>, <em class="sig-param">attack_structure=True</em>, <em class="sig-param">attack_features=False</em>, <em class="sig-param">device='cpu'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly adding edges to the input graph</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1077,7 +1078,7 @@ is False.</p></li>
 </div>
 <dl class="method">
 <dt id="deeprobust.graph.global_attack.Random.attack">
-<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">ori_adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate attacks on the input graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1098,13 +1099,13 @@ is False.</p></li>
 
 <dl class="method">
 <dt id="deeprobust.graph.global_attack.Random.inject_nodes">
-<code class="sig-name descname">inject_nodes</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_add</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.inject_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.inject_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inject_nodes</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_add</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.inject_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.inject_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each added node, randomly connect with other nodes.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="deeprobust.graph.global_attack.Random.perturb_adj">
-<code class="sig-name descname">perturb_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.perturb_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.perturb_adj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">perturb_adj</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">type='add'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.perturb_adj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.perturb_adj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly add, remove or flip edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1125,13 +1126,13 @@ is False.</p></li>
 
 <dl class="method">
 <dt id="deeprobust.graph.global_attack.Random.perturb_features">
-<code class="sig-name descname">perturb_features</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.perturb_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.perturb_features" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">perturb_features</code><span class="sig-paren">(</span><em class="sig-param">features</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.perturb_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.perturb_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly perturb features.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="deeprobust.graph.global_attack.Random.sample_forever">
-<code class="sig-name descname">sample_forever</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">exclude</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random.html#Random.sample_forever"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.sample_forever" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sample_forever</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">exclude</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/random_attack.html#Random.sample_forever"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.Random.sample_forever" title="Permalink to this definition">¶</a></dt>
 <dd><p>Randomly random sample edges from adjacency matrix, <cite>exclude</cite> is a set
 which contains the edges we do not want to sample and the ones already sampled</p>
 </dd></dl>
@@ -1305,6 +1306,265 @@ be edge removals/additions or feature removals/additions.</p></li>
 <dt id="deeprobust.graph.global_attack.NIPA.train">
 <code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param">num_episodes=10</em>, <em class="sig-param">lr=0.01</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/nipa.html#NIPA.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NIPA.train" title="Permalink to this definition">¶</a></dt>
 <dd><p>Train RL agent.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack">
+<em class="property">class </em><code class="sig-name descname">NodeEmbeddingAttack</code><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node embedding attack. Adversarial Attacks on Node Embeddings via Graph
+Poisoning. Aleksandar Bojchevski and Stephan Günnemann, ICML 2019
+<a class="reference external" href="http://proceedings.mlr.press/v97/bojchevski19a.html">http://proceedings.mlr.press/v97/bojchevski19a.html</a></p>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">NodeEmbeddingAttack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora_ml&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">NodeEmbeddingAttack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="n">min_span_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add_by_remove&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations=1000</em>, <em class="sig-param">dim=32</em>, <em class="sig-param">window_size=5</em>, <em class="sig-param">attack_type='remove'</em>, <em class="sig-param">min_span_tree=False</em>, <em class="sig-param">n_candidates=None</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects the top (n_perturbations) number of flips using our perturbation attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.spmatrix
+The graph represented as a sparse scipy matrix</p></li>
+<li><p><strong>n_perturbations</strong> – int
+Number of flips to select</p></li>
+<li><p><strong>dim</strong> – int
+Dimensionality of the embeddings.</p></li>
+<li><p><strong>window_size</strong> – int
+Co-occurence window size.</p></li>
+<li><p><strong>attack_type</strong> – str
+can be chosed from [“remove”, “add”, “add_by_remove”]</p></li>
+<li><p><strong>min_span_tree</strong> – bool
+Whether to disallow edges that lie on the minimum spanning tree;
+only valid when <cite>attack_type</cite> is “remove”</p></li>
+<li><p><strong>n_candidates</strong> – int
+Number of candiates for addition; only valid when <cite>attack_type</cite> is “add” or “add_by_remove”;</p></li>
+<li><p><strong>seed</strong> – int
+Random seed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack.flip_candidates">
+<code class="sig-name descname">flip_candidates</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">candidates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack.flip_candidates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack.flip_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip the edges in the candidate set to non-edges and vise-versa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.csr_matrix, shape [n_nodes, n_nodes]
+Adjacency matrix of the graph</p></li>
+<li><p><strong>candidates</strong> – np.ndarray, shape [?, 2]
+Candidate set of edge flips</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>sp.csr_matrix, shape [n_nodes, n_nodes]
+Adjacency matrix of the graph with the flipped edges/non-edges.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_addition">
+<code class="sig-name descname">generate_candidates_addition</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_candidates</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack.generate_candidates_addition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_addition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates candidate edge flips for addition (non-edge -&gt; edge).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.csr_matrix, shape [n_nodes, n_nodes]
+Adjacency matrix of the graph</p></li>
+<li><p><strong>n_candidates</strong> – int
+Number of candidates to generate.</p></li>
+<li><p><strong>seed</strong> – int
+Random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+Candidate set of edge flips</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_removal">
+<code class="sig-name descname">generate_candidates_removal</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack.generate_candidates_removal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_removal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates candidate edge flips for removal (edge -&gt; non-edge),
+disallowing one random edge per node to prevent singleton nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.csr_matrix, shape [n_nodes, n_nodes]
+Adjacency matrix of the graph</p></li>
+<li><p><strong>seed</strong> – int
+Random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+Candidate set of edge flips</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_removal_minimum_spanning_tree">
+<code class="sig-name descname">generate_candidates_removal_minimum_spanning_tree</code><span class="sig-paren">(</span><em class="sig-param">adj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#NodeEmbeddingAttack.generate_candidates_removal_minimum_spanning_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.NodeEmbeddingAttack.generate_candidates_removal_minimum_spanning_tree" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Generates candidate edge flips for removal (edge -&gt; non-edge),</dt><dd><p>disallowing edges that lie on the minimum spanning tree.</p>
+</dd>
+<dt>adj: sp.csr_matrix, shape [n_nodes, n_nodes]</dt><dd><p>Adjacency matrix of the graph</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>np.ndarray, shape [?, 2]
+Candidate set of edge flips</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="deeprobust.graph.global_attack.OtherNodeEmbeddingAttack">
+<em class="property">class </em><code class="sig-name descname">OtherNodeEmbeddingAttack</code><span class="sig-paren">(</span><em class="sig-param">type</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#OtherNodeEmbeddingAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.OtherNodeEmbeddingAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Baseline methods from the paper Adversarial Attacks on Node Embeddings
+via Graph Poisoning. Aleksandar Bojchevski and Stephan Günnemann, ICML 2019.
+<a class="reference external" href="http://proceedings.mlr.press/v97/bojchevski19a.html">http://proceedings.mlr.press/v97/bojchevski19a.html</a></p>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">OtherNodeEmbeddingAttack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora_ml&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;degree&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;eigencentrality&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.attack">
+<code class="sig-name descname">attack</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">n_perturbations=1000</em>, <em class="sig-param">attack_type='remove'</em>, <em class="sig-param">min_span_tree=False</em>, <em class="sig-param">n_candidates=None</em>, <em class="sig-param">seed=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#OtherNodeEmbeddingAttack.attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects the top (n_perturbations) number of flips using our perturbation attack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.spmatrix
+The graph represented as a sparse scipy matrix</p></li>
+<li><p><strong>n_perturbations</strong> – int
+Number of flips to select</p></li>
+<li><p><strong>dim</strong> – int
+Dimensionality of the embeddings.</p></li>
+<li><p><strong>attack_type</strong> – str
+can be chosed from [“remove”, “add”]</p></li>
+<li><p><strong>min_span_tree</strong> – bool
+Whether to disallow edges that lie on the minimum spanning tree;
+only valid when <cite>attack_type</cite> is “remove”</p></li>
+<li><p><strong>n_candidates</strong> – int
+Number of candiates for addition; only valid when <cite>attack_type</cite> is “add”;</p></li>
+<li><p><strong>seed</strong> – int
+Random seed;</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+The top edge flips from the candidate set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.degree_top_flips">
+<code class="sig-name descname">degree_top_flips</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">candidates</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">complement</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#OtherNodeEmbeddingAttack.degree_top_flips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.degree_top_flips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects the top (n_perturbations) number of flips using degree centrality score of the edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.spmatrix
+The graph represented as a sparse scipy matrix</p></li>
+<li><p><strong>candidates</strong> – np.ndarray, shape [?, 2]
+Candidate set of edge flips</p></li>
+<li><p><strong>n_perturbations</strong> – int
+Number of flips to select</p></li>
+<li><p><strong>complement</strong> – bool
+Whether to look at the complement graph</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+The top edge flips from the candidate set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.eigencentrality_top_flips">
+<code class="sig-name descname">eigencentrality_top_flips</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">candidates</em>, <em class="sig-param">n_perturbations</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#OtherNodeEmbeddingAttack.eigencentrality_top_flips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.eigencentrality_top_flips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects the top (n_perturbations) number of flips using eigencentrality score of the edges.
+Applicable only when removing edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> – sp.spmatrix
+The graph represented as a sparse scipy matrix</p></li>
+<li><p><strong>candidates</strong> – np.ndarray, shape [?, 2]
+Candidate set of edge flips</p></li>
+<li><p><strong>n_perturbations</strong> – int
+Number of flips to select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+The top edge flips from the candidate set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.random_top_flips">
+<code class="sig-name descname">random_top_flips</code><span class="sig-paren">(</span><em class="sig-param">candidates</em>, <em class="sig-param">n_perturbations</em>, <em class="sig-param">seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/global_attack/node_embedding_attack.html#OtherNodeEmbeddingAttack.random_top_flips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.global_attack.OtherNodeEmbeddingAttack.random_top_flips" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects (n_perturbations) number of flips at random.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>candidates</strong> – np.ndarray, shape [?, 2]
+Candidate set of edge flips</p></li>
+<li><p><strong>n_perturbations</strong> – int
+Number of flips to select</p></li>
+<li><p><strong>seed</strong> – int
+Random seed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray, shape [?, 2]
+The top edge flips from the candidate set</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
