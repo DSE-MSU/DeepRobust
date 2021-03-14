@@ -26,8 +26,8 @@
 **[Documentation](https://deeprobust.readthedocs.io/en/latest/)** | **[Paper](https://arxiv.org/abs/2005.06149)** | **[Samples](https://github.com/DSE-MSU/DeepRobust/tree/master/examples)**
 
 DeepRobust is a PyTorch adversarial library for attack and defense methods on images and graphs. 
-* If you are new to DeepRobust, we highly suggest read the [documentation page](https://deeprobust.readthedocs.io/en/latest/) or the following content in this README.  
-* If you have any questions or suggestions regarding this library, feel free to create a issue [here](https://github.com/DSE-MSU/DeepRobust/issues).
+* If you are new to DeepRobust, we highly suggest you read the [documentation page](https://deeprobust.readthedocs.io/en/latest/) or the following content in this README to learn how to use it.  
+* If you have any questions or suggestions regarding this library, feel free to create an issue [here](https://github.com/DSE-MSU/DeepRobust/issues). We will reply as soon as possible :)
 
 <p float="left">
   <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="430" />
@@ -258,9 +258,9 @@ Left:original, classified as 6; Right:adversary, classified as 4.
 Serveral trained models can be found here: https://drive.google.com/open?id=1uGLiuCyd8zCAQ8tPz9DDUQH6zm-C4tEL
 
 ## Acknowledgement
-Some of the algorithms are refer to paper authors' implementations. References can be found at the top of each file. 
+Some of the algorithms are referred to paper authors' implementations. References can be found at the top of each file. 
 
-Implementation of network structure are refer to weiaicunzai's github. Original code can be found here:
+Implementation of network structure are referred to weiaicunzai's github. Original code can be found here:
 [pytorch-cifar100](https://github.com/weiaicunzai/pytorch-cifar100)
 
 Thanks to their outstanding works!
