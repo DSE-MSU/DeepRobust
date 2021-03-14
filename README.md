@@ -3,7 +3,7 @@
 [contributing-url]: https://github.com/rusty1s/pytorch_geometric/blob/master/CONTRIBUTING.md
 
 <p align="center">
-<img center src="https://github.com/DSE-MSU/DeepRobust/blob/master/Deeprobust.png" width = "450" alt="logo">
+<img center src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/Deeprobust.png" width = "450" alt="logo">
 </p>
 
 ---------------------
@@ -30,7 +30,7 @@ DeepRobust is a PyTorch adversarial library for attack and defense methods on im
 * If you have any questions or suggestions regarding this library, feel free to create an issue [here](https://github.com/DSE-MSU/DeepRobust/issues). We will reply as soon as possible :)
 
 <p float="left">
-  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversarial.png" width="430" />
+  <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/adversarial.png" width="430" />
   <img src="https://github.com/DSE-MSU/DeepRobust/blob/master/adversary_examples/graph_attack_example.png" width="380" /> 
 </p>
 
