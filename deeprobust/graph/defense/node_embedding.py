@@ -15,7 +15,6 @@ from gensim.models import KeyedVectors
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import normalize
 from sklearn.metrics import f1_score, roc_auc_score, average_precision_score, accuracy_score
-from node2vec import Node2Vec as N2V
 
 class BaseEmbedding:
     """Base class for node embedding methods such as DeepWalk and Node2Vec.
@@ -138,13 +137,14 @@ class Node2Vec(BaseEmbedding):
         self.fit = self.node2vec
 
     def node2vec(self, adj, embedding_dim=64, walk_length=30, walks_per_node=10,
-                      workers=8, window_size=10, p=4, q=1, e=1):
-        # graph = nx.fast_gnp_random_graph(n=100, p=0.5)
-        graph = nx.from_scipy_sparse_matrix(adj)
-        node2vec = N2V(graph, dimensions=embedding_dim, walk_length=walk_length,
-                num_walks=walks_per_node, workers=workers, p=p, q=q)
-        self.model = node2vec.fit(window=window_size, min_count=1, batch_words=4)
-        self.embedding = self.model.wv.vectors[np.fromiter(map(int, self.model.wv.index2word), np.int32).argsort()]
+                      workers=8, window_size=10, num_neg_samples=1, p=4, q=1):
+        
+        walks = sample_n2v_random_walks(adj, walk_length, walks_per_node, p=p, q=q)
+        walks = [list(map(str, walk)) for walk in walks]
+        self.model = Word2Vec(walks, size=embedding_dim, window=window_size, min_count=0, sg=1, workers=workers,
+                         iter=1, negative=num_neg_samples, hs=0, compute_loss=True)
+        self.embedding = self.model.wv.vectors[np.fromiter(map(int, self.model.wv.index2word), np.int32).argsort()]       
+        
 
 
 class DeepWalk(BaseEmbedding):
@@ -336,7 +336,114 @@ def _random_walk(indptr, indices, walk_length, walks_per_node, seed):
 
     return np.array(walks)
 
+def sample_n2v_random_walks(adj, walk_length, walks_per_node, p, q, seed=None):
+    """Sample node2vec random walks of fixed length from each node in the graph in parallel.
+    Parameters
+    ----------
+    adj : sp.csr_matrix, shape [n_nodes, n_nodes]
+        Sparse adjacency matrix
+    walk_length : int
+        Random walk length
+    walks_per_node : int
+        Number of random walks per node
+    p: float
+        The probability to go back
+    q: float,
+        The probability to go explore undiscovered parts of the graphs
+    seed : int or None
+        Random seed        
+    Returns
+    -------
+    walks : np.ndarray, shape [num_walks * num_nodes, walk_length]
+        The sampled random walks
+    """
+    if seed is None:
+        seed = np.random.randint(0, 100000)
+    adj = sp.csr_matrix(adj)
+    random_walks = _n2v_random_walk(adj.indptr,
+                                    adj.indices,
+                                    walk_length,
+                                    walks_per_node,
+                                    p,
+                                    q,
+                                    seed)
+    return random_walks
 
+@numba.jit(nopython=True)
+def random_choice(arr, p):
+    """Similar to `numpy.random.choice` and it suppors p=option in numba.
+    refer to <https://github.com/numba/numba/issues/2539#issuecomment-507306369>
+
+    Parameters
+    ----------
+    arr : 1-D array-like
+    p : 1-D array-like
+        The probabilities associated with each entry in arr
+
+    Returns
+    -------
+    samples : ndarray
+        The generated random samples
+    """
+    return arr[np.searchsorted(np.cumsum(p), np.random.random(), side="right")]
+
+@numba.jit(nopython=True)
+def _n2v_random_walk(indptr,
+                    indices,
+                    walk_length,
+                    walks_per_node,
+                    p,
+                    q,
+                    seed):
+    """Sample r random walks of length l per node in parallel from the graph.
+    Parameters
+    ----------
+    indptr : array-like
+        Pointer for the edges of each node
+    indices : array-like
+        Edges for each node
+    walk_length : int
+        Random walk length
+    walks_per_node : int
+        Number of random walks per node
+    p: float
+        The probability to go back
+    q: float,
+        The probability to go explore undiscovered parts of the graphs        
+    seed : int
+        Random seed
+    Returns
+    -------
+    walks : list generator, shape [r, N*l]
+        The sampled random walks
+    """
+    np.random.seed(seed)
+    N = len(indptr) - 1
+    for _ in range(walks_per_node):
+        for n in range(N):
+            walk = [n]
+            current_node = n
+            previous_node = N
+            previous_node_neighbors = np.empty(0, dtype=np.int32)
+            for _ in range(walk_length - 1):
+                neighbors = indices[indptr[current_node]:indptr[current_node + 1]]
+                if neighbors.size == 0:
+                    break
+
+                probability = np.array([1 / q] * neighbors.size)
+                probability[previous_node == neighbors] = 1 / p
+
+                for i, nbr in enumerate(neighbors):
+                    if np.any(nbr == previous_node_neighbors):
+                        probability[i] = 1.
+
+                norm_probability = probability / np.sum(probability)
+                current_node = random_choice(neighbors, norm_probability)
+                walk.append(current_node)
+                previous_node_neighbors = neighbors
+                previous_node = current_node
+            yield walk
+                
 def sum_of_powers_of_transition_matrix(adj, pow):
     """Computes \sum_{r=1}^{pow) (D^{-1}A)^r.
 
@@ -398,7 +505,10 @@ if __name__ == "__main__":
     # train defense model
     print("Test Node2vec on clean graph")
     model = Node2Vec()
-    model.fit(modified_adj)
+    model.fit(adj)
     model.evaluate_node_classification(labels, idx_train, idx_test)
 
-
+    print("Test Node2vec on attacked graph")
+    model = Node2Vec()
+    model.fit(modified_adj)
+    model.evaluate_node_classification(labels, idx_train, idx_test)
