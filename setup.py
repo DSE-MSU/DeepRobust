@@ -29,7 +29,6 @@ setup(name = "deeprobust",
           'scikit-image>=0.0',
           'tensorboardX>=2.0',
           'tqdm>=4.42.1',
-          'node2vec>=0.3.2',
           'gensim>=3.8, <4.0'
       ],
       classifiers=[
