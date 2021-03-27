@@ -65,7 +65,7 @@ def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=F
     """
 
     if preprocess_adj:
-        adj_norm = normalize_adj(adj)
+        adj = normalize_adj(adj)
 
     if preprocess_feature:
         features = normalize_feature(features)
