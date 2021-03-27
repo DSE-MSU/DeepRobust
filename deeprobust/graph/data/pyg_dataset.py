@@ -121,7 +121,7 @@ class Pyg2Dpr(Dataset):
         n = pyg_data.num_nodes
         self.adj = sp.csr_matrix((np.ones(pyg_data.edge_index.shape[1]),
             (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
-        self.features = pyg_data.x
+        self.features = pyg_data.x.numpy()
         self.labels = pyg_data.y.numpy()
         self.idx_train = mask_to_index(pyg_data.train_mask, n)
         self.idx_val = mask_to_index(pyg_data.val_mask, n)
