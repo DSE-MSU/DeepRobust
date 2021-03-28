@@ -1588,6 +1588,27 @@ To use this model, you need to “pip install node2vec” first.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">evaluate_node_classification</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_test</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="method">
+<dt id="deeprobust.graph.defense.Node2Vec.node2vec">
+<code class="sig-name descname">node2vec</code><span class="sig-paren">(</span><em class="sig-param">adj</em>, <em class="sig-param">embedding_dim=64</em>, <em class="sig-param">walk_length=30</em>, <em class="sig-param">walks_per_node=10</em>, <em class="sig-param">workers=8</em>, <em class="sig-param">window_size=10</em>, <em class="sig-param">num_neg_samples=1</em>, <em class="sig-param">p=4</em>, <em class="sig-param">q=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/defense/node_embedding.html#Node2Vec.node2vec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.defense.Node2Vec.node2vec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Node2Vec embeddings for the given graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adj</strong> (<em>sp.csr_matrix</em><em>, </em><em>shape</em><em> [</em><em>n_nodes</em><em>, </em><em>n_nodes</em><em>]</em>) – Adjacency matrix of the graph</p></li>
+<li><p><strong>embedding_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – Dimension of the embedding</p></li>
+<li><p><strong>walks_per_node</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of walks sampled from each node</p></li>
+<li><p><strong>walk_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Length of each random walk</p></li>
+<li><p><strong>workers</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (see gensim.models.Word2Vec process)</p></li>
+<li><p><strong>window_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Window size (see gensim.models.Word2Vec)</p></li>
+<li><p><strong>num_neg_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of negative samples (see gensim.models.Word2Vec)</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – The hyperparameter p in node2vec</p></li>
+<li><p><strong>q</strong> (<em>float</em>) – The hyperparameter q in node2vec</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">

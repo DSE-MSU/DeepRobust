@@ -138,13 +138,37 @@ class Node2Vec(BaseEmbedding):
 
     def node2vec(self, adj, embedding_dim=64, walk_length=30, walks_per_node=10,
                       workers=8, window_size=10, num_neg_samples=1, p=4, q=1):
-        
+        """Compute Node2Vec embeddings for the given graph.
+
+        Parameters
+        ----------
+        adj : sp.csr_matrix, shape [n_nodes, n_nodes]
+            Adjacency matrix of the graph
+        embedding_dim : int, optional
+            Dimension of the embedding
+        walks_per_node : int, optional
+            Number of walks sampled from each node
+        walk_length : int, optional
+            Length of each random walk
+        workers : int, optional
+            Number of threads (see gensim.models.Word2Vec process)
+        window_size : int, optional
+            Window size (see gensim.models.Word2Vec)
+        num_neg_samples : int, optional
+            Number of negative samples (see gensim.models.Word2Vec)
+        p : float
+            The hyperparameter p in node2vec
+        q : float
+            The hyperparameter q in node2vec
+        """
+
+
         walks = sample_n2v_random_walks(adj, walk_length, walks_per_node, p=p, q=q)
         walks = [list(map(str, walk)) for walk in walks]
         self.model = Word2Vec(walks, size=embedding_dim, window=window_size, min_count=0, sg=1, workers=workers,
                          iter=1, negative=num_neg_samples, hs=0, compute_loss=True)
-        self.embedding = self.model.wv.vectors[np.fromiter(map(int, self.model.wv.index2word), np.int32).argsort()]       
-        
+        self.embedding = self.model.wv.vectors[np.fromiter(map(int, self.model.wv.index2word), np.int32).argsort()]
+
 
 
 class DeepWalk(BaseEmbedding):
@@ -351,7 +375,7 @@ def sample_n2v_random_walks(adj, walk_length, walks_per_node, p, q, seed=None):
     q: float,
         The probability to go explore undiscovered parts of the graphs
     seed : int or None
-        Random seed        
+        Random seed
     Returns
     -------
     walks : np.ndarray, shape [num_walks * num_nodes, walk_length]
@@ -409,7 +433,7 @@ def _n2v_random_walk(indptr,
     p: float
         The probability to go back
     q: float,
-        The probability to go explore undiscovered parts of the graphs        
+        The probability to go explore undiscovered parts of the graphs
     seed : int
         Random seed
     Returns
@@ -443,7 +467,7 @@ def _n2v_random_walk(indptr,
                 previous_node_neighbors = neighbors
                 previous_node = current_node
             yield walk
-                
+
 def sum_of_powers_of_transition_matrix(adj, pow):
     """Computes \sum_{r=1}^{pow) (D^{-1}A)^r.
 
