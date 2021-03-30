@@ -1,6 +1,6 @@
 """
 This module include the following optimizer:
-1. differential_evolution: 
+1. differential_evolution:
 The differential evolution global optimization algorithm
 https://github.com/scipy/scipy/blob/70e61dee181de23fdd8d893eaa9491100e2218d7/scipy/optimize/_differentialevolution.py
 
@@ -16,7 +16,6 @@ import numpy as np
 from scipy.optimize import OptimizeResult, minimize
 from scipy.optimize.optimize import _status_message
 from scipy._lib._util import check_random_state
-from scipy._lib.six import xrange, string_types
 import warnings
 
 
@@ -174,7 +173,7 @@ def differential_evolution(func, bounds, args=(), strategy='best1bin',
     values. This has the effect of widening the search radius, but slowing
     convergence.
     .. versionadded:: 0.15.0
-    
+
     References
     ----------
     .. [1] Storn, R and Price, K, Differential Evolution - a Simple and
@@ -399,7 +398,7 @@ class DifferentialEvolutionSolver(object):
                                  self.parameter_count)
 
         self._nfev = 0
-        if isinstance(init, string_types):
+        if isinstance(init, str):
             if init == 'latinhypercube':
                 self.init_population_lhs()
             elif init == 'random':
@@ -544,7 +543,7 @@ class DifferentialEvolutionSolver(object):
             self._calculate_population_energies()
 
         # do the optimisation.
-        for nit in xrange(1, self.maxiter + 1):
+        for nit in range(1, self.maxiter + 1):
             # evolve the population by a generation
             try:
                 next(self)
@@ -637,7 +636,7 @@ class DifferentialEvolutionSolver(object):
         ##############
         ##############
 
-        
+
 
         minval = np.argmin(self.population_energies)
 
@@ -830,7 +829,7 @@ class DifferentialEvolutionSolver(object):
         currenttobest1bin, currenttobest1exp
         """
         r0, r1 = samples[:2]
-        bprime = (self.population[candidate] + self.scale * 
+        bprime = (self.population[candidate] + self.scale *
                   (self.population[0] - self.population[candidate] +
                    self.population[r0] - self.population[r1]))
         return bprime
@@ -870,7 +869,7 @@ class DifferentialEvolutionSolver(object):
 
 class AdamOptimizer:
     """Basic Adam optimizer implementation that can minimize w.r.t.
-    a single variable. 
+    a single variable.
     Parameters
     ----------
     shape : tuple

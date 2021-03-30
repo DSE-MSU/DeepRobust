@@ -80,7 +80,7 @@ def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, 
 
 
     optimizer = optim.SGD(train_net.parameters(), lr= 0.1, momentum=0.5)
-    scheduler = lr_scheduler.StepLR(optimizer, step_size = 100, gamma = 0.1)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size = 100, gamma = 0.1)
     save_model = True
     for epoch in range(1, maxepoch + 1):     ## 5 batches
 
@@ -131,7 +131,7 @@ def feed_dataset(data, data_dict):
                  shuffle=True)
 
         test_loader = torch.utils.data.DataLoader(
-                datasets.MNIST('../data', train=False, download = True,
+                datasets.MNIST(data_dict, train=False, download = True,
                 transform=transforms.Compose([transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,))])),
                 batch_size=1000,
