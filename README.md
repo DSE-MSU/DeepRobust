@@ -54,6 +54,7 @@ If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
 # Changelog
+* [04/2021] [Graph Package] Add support for OGB datasets.  See more details in the [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/pyg.html#load-ogb-datasets).
 * [03/2021] [Graph Package] Added node embedding attack and victim models! See this [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/node_embedding.html).
 * [02/2021] **[Graph Package] DeepRobust now provides tools for converting the datasets between [Pytorch Geometric](https://pytorch-geometric.readthedocs.io/en/latest/) and DeepRobust. See more details in the [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/pyg.html)!** DeepRobust now also support GAT, Chebnet and SGC based on pyg; see details in [test_gat.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_gat.py),  [test_chebnet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_chebnet.py) and [test_sgc.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_sgc.py)
 * [12/2020] DeepRobust now can be installed via pip! Try `pip install deeprobust`!
