@@ -117,15 +117,23 @@ class Pyg2Dpr(Dataset):
     """
 
     def __init__(self, pyg_data, **kwargs):
+        is_ogb = hasattr(pyg_data, 'get_idx_split')
+        if is_ogb: # get splits for ogb datasets
+            splits = pyg_data.get_idx_split()
         pyg_data = pyg_data[0]
         n = pyg_data.num_nodes
         self.adj = sp.csr_matrix((np.ones(pyg_data.edge_index.shape[1]),
             (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
         self.features = pyg_data.x.numpy()
         self.labels = pyg_data.y.numpy()
-        self.idx_train = mask_to_index(pyg_data.train_mask, n)
-        self.idx_val = mask_to_index(pyg_data.val_mask, n)
-        self.idx_test = mask_to_index(pyg_data.test_mask, n)
+        if is_ogb: # set splits for ogb datasets
+            self.idx_train = splits['train'].numpy()
+            self.idx_val = splits['valid'].numpy()
+            self.idx_test = splits['test'].numpy()
+        else:
+            self.idx_train = mask_to_index(pyg_data.train_mask, n)
+            self.idx_val = mask_to_index(pyg_data.val_mask, n)
+            self.idx_test = mask_to_index(pyg_data.test_mask, n)
         self.name = 'Pyg2Dpr'
 
 class AmazonPyg(Amazon):
@@ -276,3 +284,9 @@ if __name__ == "__main__":
     physics = CoauthorPyg(root='/tmp', name='physics')
     print(physics)
     print(physics[0])
+
+    # from ogb.nodeproppred import PygNodePropPredDataset
+    # dataset = PygNodePropPredDataset(name = 'ogbn-arxiv')
+    # ogb_data = Pyg2Dpr(dataset)
+
+

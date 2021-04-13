@@ -45,6 +45,19 @@ then update its :obj:`edge_index`:
 Now :obj:`pyg_data` becomes the perturbed data in the format of PyTorch Geometric. 
 We can then use it as the input for various Pytorch Geometric models!
 
+Load OGB Datasets 
+-----------------------
+`Open Graph Benchmark (OGB) <https://ogb.stanford.edu/>`_ has provided various benchmark
+datasets. DeepRobsut now provides interface to convert OGB dataset format (Pyg data format) 
+to DeepRobust format.
+
+.. code-block:: python
+
+    from ogb.nodeproppred import PygNodePropPredDataset
+    pyg_data = PygNodePropPredDataset(name = 'ogbn-arxiv')
+    dpr_data = Pyg2Dpr(pyg_data) # convert pyg to dpr
+    
+
 Load Pytorch Geometric Amazon and Coauthor Datasets
 -----------------------
 DeepRobust also provides access to the Amazon datasets and Coauthor datasets, i.e.,

@@ -175,7 +175,7 @@
   <h1>Source code for deeprobust.image.optimizer</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This module include the following optimizer:</span>
-<span class="sd">1. differential_evolution: </span>
+<span class="sd">1. differential_evolution:</span>
 <span class="sd">The differential evolution global optimization algorithm</span>
 <span class="sd">https://github.com/scipy/scipy/blob/70e61dee181de23fdd8d893eaa9491100e2218d7/scipy/optimize/_differentialevolution.py</span>
 
@@ -191,7 +191,6 @@
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">OptimizeResult</span><span class="p">,</span> <span class="n">minimize</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize.optimize</span> <span class="kn">import</span> <span class="n">_status_message</span>
 <span class="kn">from</span> <span class="nn">scipy._lib._util</span> <span class="kn">import</span> <span class="n">check_random_state</span>
-<span class="kn">from</span> <span class="nn">scipy._lib.six</span> <span class="kn">import</span> <span class="n">xrange</span><span class="p">,</span> <span class="n">string_types</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 
@@ -349,7 +348,7 @@
 <span class="sd">    values. This has the effect of widening the search radius, but slowing</span>
 <span class="sd">    convergence.</span>
 <span class="sd">    .. versionadded:: 0.15.0</span>
-<span class="sd">    </span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Storn, R and Price, K, Differential Evolution - a Simple and</span>
@@ -574,7 +573,7 @@
                                  <span class="bp">self</span><span class="o">.</span><span class="n">parameter_count</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_nfev</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">init</span> <span class="o">==</span> <span class="s1">&#39;latinhypercube&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">init_population_lhs</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">init</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span><span class="p">:</span>
@@ -719,7 +718,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_population_energies</span><span class="p">()</span>
 
         <span class="c1"># do the optimisation.</span>
-        <span class="k">for</span> <span class="n">nit</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">nit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxiter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="c1"># evolve the population by a generation</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -812,7 +811,7 @@
         <span class="c1">##############</span>
         <span class="c1">##############</span>
 
-        
+
 
         <span class="n">minval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_energies</span><span class="p">)</span>
 
@@ -1005,7 +1004,7 @@
 <span class="sd">        currenttobest1bin, currenttobest1exp</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">bprime</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> 
+        <span class="n">bprime</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span>
                   <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span> <span class="o">+</span>
                    <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">r0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">r1</span><span class="p">]))</span>
         <span class="k">return</span> <span class="n">bprime</span>
@@ -1045,7 +1044,7 @@
 
 <div class="viewcode-block" id="AdamOptimizer"><a class="viewcode-back" href="../../../source/deeprobust.image.html#deeprobust.image.optimizer.AdamOptimizer">[docs]</a><span class="k">class</span> <span class="nc">AdamOptimizer</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Basic Adam optimizer implementation that can minimize w.r.t.</span>
-<span class="sd">    a single variable. </span>
+<span class="sd">    a single variable.</span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    shape : tuple</span>
