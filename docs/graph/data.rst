@@ -117,6 +117,7 @@ to DeepRobust format.
 .. code-block:: python
 
     from ogb.nodeproppred import PygNodePropPredDataset
+    from deeprobust.graph.data import Pyg2Dpr
     pyg_data = PygNodePropPredDataset(name = 'ogbn-arxiv')
     dpr_data = Pyg2Dpr(pyg_data) # convert pyg to dpr
     
