@@ -1,8 +1,13 @@
 Using PyTorch Geometric in DeepRobust
 ========
 DeepRobust now provides interface to convert the data between
-PyTorch Geometric and DeepRobust. Before we start, make sure 
-you have successfully installed `torch_geometric <https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_.
+PyTorch Geometric and DeepRobust. 
+
+.. note::
+    Before we start, make sure you have successfully installed `torch_geometric 
+    <https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html>`_. 
+    After you install torch_geometric, please reinstall DeepRobust to activate 
+    the following functions.
 
 .. contents::
     :local: 
