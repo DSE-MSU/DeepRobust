@@ -125,7 +125,7 @@ class Pyg2Dpr(Dataset):
         self.adj = sp.csr_matrix((np.ones(pyg_data.edge_index.shape[1]),
             (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
         self.features = pyg_data.x.numpy()
-        self.labels = pyg_data.y.numpy()
+        self.labels = pyg_data.y.numpy().reshape(-1) # ogb-arxiv needs to reshape
         if is_ogb: # set splits for ogb datasets
             self.idx_train = splits['train'].numpy()
             self.idx_val = splits['valid'].numpy()
