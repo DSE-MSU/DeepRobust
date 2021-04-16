@@ -122,6 +122,11 @@ def normalize_feature(mx):
     scipy.sprase.lil_matrix
         normalized matrix
     """
+    if type(mx) is not sp.lil.lil_matrix:
+        try:
+            mx = mx.tolil()
+        except AttributeError:
+            pass
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.
