@@ -285,11 +285,11 @@
         <span class="k">return</span> <span class="n">adj</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">features</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="normalize_feature"><a class="viewcode-back" href="../../../source/deeprobust.graph.html#deeprobust.graph.utils.normalize_feature">[docs]</a><span class="k">def</span> <span class="nf">normalize_feature</span><span class="p">(</span><span class="n">mx</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Row-normalize sparse matrix</span>
+    <span class="sd">&quot;&quot;&quot;Row-normalize sparse matrix or dense matrix</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mx : scipy.sparse.csr_matrix</span>
+<span class="sd">    mx : scipy.sparse.csr_matrix or numpy.array</span>
 <span class="sd">        matrix to be normalized</span>
 
 <span class="sd">    Returns</span>
@@ -298,7 +298,10 @@
 <span class="sd">        normalized matrix</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">sp</span><span class="o">.</span><span class="n">lil</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">:</span>
-        <span class="n">mx</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="n">mx</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
     <span class="n">rowsum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mx</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">r_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">rowsum</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">r_inv</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">r_inv</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.</span>

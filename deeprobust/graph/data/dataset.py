@@ -11,8 +11,9 @@ import zipfile
 
 class Dataset():
     """Dataset class contains four citation network datasets "cora", "cora-ml", "citeseer" and "pubmed",
-    and one blog dataset "Polblogs".
-    The 'cora', 'cora-ml', 'poblogs' and 'citeseer' are downloaded from https://github.com/danielzuegner/gnn-meta-attack/tree/master/data, and 'pubmed' is from https://github.com/tkipf/gcn/tree/master/gcn/data.
+    and one blog dataset "Polblogs". Datasets "ACM", "BlogCatalog", "Flickr", "UAI",
+    "Flickr" are also available. See more details in https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph#supported-datasets.
+    The 'cora', 'cora-ml', 'polblogs' and 'citeseer' are downloaded from https://github.com/danielzuegner/gnn-meta-attack/tree/master/data, and 'pubmed' is from https://github.com/tkipf/gcn/tree/master/gcn/data.
 
     Parameters
     ----------
