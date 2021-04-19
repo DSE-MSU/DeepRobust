@@ -6,7 +6,7 @@ with open("README.md", 'r') as fh:
     long_description = fh.read()
 
 setup(name = "deeprobust",
-      version = "0.2.0",
+      version = "0.2.1",
       author='MSU-DSE',
       maintainer='MSU-DSE',
       description = "A PyTorch library for adversarial robustness learning for image and graph data.",
@@ -28,7 +28,7 @@ setup(name = "deeprobust",
           'scikit_learn>=0.22.1',
           'scikit-image>=0.0',
           'tensorboardX>=2.0',
-          'tqdm>=4.42.1',
+          'tqdm>=3.0',
           'gensim>=3.8, <4.0'
       ],
       classifiers=[

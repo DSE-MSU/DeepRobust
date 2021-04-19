@@ -35,7 +35,7 @@ class Dpr2Pyg(InMemoryDataset):
     """
 
     def __init__(self, dpr_data, transform=None, **kwargs):
-        root = 'data/' # dummy root
+        root = 'data/' # dummy root; does not mean anything
         self.dpr_data = dpr_data
         super(Dpr2Pyg, self).__init__(root, transform)
         pyg_data = self.process()
@@ -95,6 +95,8 @@ class Dpr2Pyg(InMemoryDataset):
     def processed_file_names(self):
         return ['data.pt']
 
+    def _download(self):
+        pass
 
 class Pyg2Dpr(Dataset):
     """Convert pytorch geometric data (tensor, edge_index) to deeprobust
