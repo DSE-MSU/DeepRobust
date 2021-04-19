@@ -35,12 +35,15 @@ class Dpr2Pyg(InMemoryDataset):
     """
 
     def __init__(self, dpr_data, transform=None, **kwargs):
-        self.transform = transform
-        pyg_data = self.process(dpr_data)
+        root = 'data/' # dummy root
+        self.dpr_data = dpr_data
+        super(Dpr2Pyg, self).__init__(root, transform)
+        pyg_data = self.process()
         self.data, self.slices = self.collate([pyg_data])
         self.transform = transform
 
-    def process(self, dpr_data):
+    def process(self):
+        dpr_data = self.dpr_data
         edge_index = torch.LongTensor(dpr_data.adj.nonzero())
         # by default, the features in pyg data is dense
         if sp.issparse(dpr_data.features):
