@@ -110,11 +110,11 @@ def to_tensor(adj, features, labels=None, device='cpu'):
         return adj.to(device), features.to(device), labels.to(device)
 
 def normalize_feature(mx):
-    """Row-normalize sparse matrix
+    """Row-normalize sparse matrix or dense matrix
 
     Parameters
     ----------
-    mx : scipy.sparse.csr_matrix
+    mx : scipy.sparse.csr_matrix or numpy.array
         matrix to be normalized
 
     Returns
@@ -123,7 +123,10 @@ def normalize_feature(mx):
         normalized matrix
     """
     if type(mx) is not sp.lil.lil_matrix:
-        mx = mx.tolil()
+        try:
+            mx = mx.tolil()
+        except AttributeError:
+            pass
     rowsum = np.array(mx.sum(1))
     r_inv = np.power(rowsum, -1).flatten()
     r_inv[np.isinf(r_inv)] = 0.

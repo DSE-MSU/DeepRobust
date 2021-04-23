@@ -35,12 +35,15 @@ class Dpr2Pyg(InMemoryDataset):
     """
 
     def __init__(self, dpr_data, transform=None, **kwargs):
-        self.transform = transform
-        pyg_data = self.process(dpr_data)
+        root = 'data/' # dummy root; does not mean anything
+        self.dpr_data = dpr_data
+        super(Dpr2Pyg, self).__init__(root, transform)
+        pyg_data = self.process()
         self.data, self.slices = self.collate([pyg_data])
         self.transform = transform
 
-    def process(self, dpr_data):
+    def process(self):
+        dpr_data = self.dpr_data
         edge_index = torch.LongTensor(dpr_data.adj.nonzero())
         # by default, the features in pyg data is dense
         if sp.issparse(dpr_data.features):
@@ -92,6 +95,8 @@ class Dpr2Pyg(InMemoryDataset):
     def processed_file_names(self):
         return ['data.pt']
 
+    def _download(self):
+        pass
 
 class Pyg2Dpr(Dataset):
     """Convert pytorch geometric data (tensor, edge_index) to deeprobust
@@ -126,6 +131,8 @@ class Pyg2Dpr(Dataset):
             (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
         self.features = pyg_data.x.numpy()
         self.labels = pyg_data.y.numpy()
+        if len(self.labels.shape) == 2 and self.labels.shape[1] == 1:
+            self.labels = self.labels.reshape(-1) # ogb-arxiv needs to reshape
         if is_ogb: # set splits for ogb datasets
             self.idx_train = splits['train'].numpy()
             self.idx_val = splits['valid'].numpy()

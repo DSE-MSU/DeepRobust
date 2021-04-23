@@ -15,8 +15,9 @@ for type, attack_type in comb:
     print(model.type, attack_type)
     try:
         model.attack(adj, attack_type=attack_type, n_candidates=10000)
+        modified_adj = model.modified_adj
         defender = DeepWalk()
-        defender.fit(adj)
+        defender.fit(modified_adj)
         defender.evaluate_node_classification(labels, idx_train, idx_test)
     except KeyError:
         print('eigencentrality only supports removing edges')
