@@ -12,8 +12,11 @@ from deeprobust.image.config import attack_params
 
 #load model
 model = Net()
-model.load_state_dict(torch.load("deeprobust/image/save_models/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
+model.load_state_dict(torch.load("/mnt/home/liyaxin1/Documents/deeprobust_model/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
 model.eval()
+
+import ipdb
+ipdb.set_trace()
 
 xx = datasets.MNIST('deeprobust/image/data', download = True).data[8888]
 xx = xx.unsqueeze_(0).float()/255
@@ -23,14 +26,21 @@ xx = xx.unsqueeze_(0).float()
 yy = datasets.MNIST('deeprobust/image/data', download = False).targets[8888]
 yy = yy.float()
 
-
-attack = LBFGS(model, 8, device='cpu')
-AdvExArray, dis, loss, valueofc= attack.generate(xx, yy, **attack_params['LBFGS_MNIST'])
-AdvExArray = AdvExArray.unsqueeze_(0).float()
-
-#test the result
 predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
+
+attack_param = {
+    'epsilon': 1,
+    'maxiter': 10,
+    'clip_max': 1,
+    'clip_min': 0,
+    'class_num': 10
+    }
+
+
+attack = LBFGS(model, device='cpu')
+AdvExArray, dis, loss, valueofc= attack.generate(xx, yy, target_label = 2, **attack_param)
+AdvExArray = AdvExArray.unsqueeze_(0).float()
 
 #AdvExArray = torch.from_numpy(AdvExArray)
 predict1 = model(AdvExArray)

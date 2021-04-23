@@ -8,11 +8,11 @@ from deeprobust.image.attack.base_attack import BaseAttack
 
 class LBFGS(BaseAttack):
     """
-    LBFGS is the first adversarial generating algorithm.    
+    LBFGS is the first adversarial generating algorithm.
     """
 
 
-    def __init__(self, model, label, device = 'cuda' ):
+    def __init__(self, model, device = 'cuda' ):
         super(LBFGS, self).__init__(model, device)
 
     def generate(self, image, label, target_label, **kwargs):
@@ -94,17 +94,9 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
     n = len(x0)
     bounds = [(min_, max_)] * n
 
-    def distance(x,y):
-        # calculate the distance
-        x = torch.from_numpy(x).double()
-        y = torch.from_numpy(y).double()
-
-        dist_squ = torch.norm(x - y)
-        return dist_squ **2
-
     def loss(x, c):
         #calculate the target function
-        v1 = distance(x0,x)
+        v1 = (torch.norm(torch.from_numpy(x0) - torch.from_numpy(x))) **2
 
         x = torch.tensor(x.astype(dtype).reshape(shape))
         x = x.unsqueeze_(0).float().to(device)
@@ -115,19 +107,6 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         v = c * v1 + v2
         #print(v)
         return np.float64(v)
-
-    def pending_attack(target_model, adv_exp, target_label):
-        # pending if the attack success
-        adv_exp = adv_exp.reshape(shape).astype(dtype)
-        adv_exp = torch.from_numpy(adv_exp)
-        adv_exp = adv_exp.unsqueeze_(0).float().to(device)
-
-        predict1 = target_model(adv_exp)
-        label = predict1.argmax(dim=1, keepdim=True)
-        if label == target_label:
-            return True
-        else:
-            return False
 
     def lbfgs_b(c):
 
@@ -146,7 +125,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
                 maxiter = maxiter,
                 factr = 1e10,  #optimization accuracy
                 maxls = 5,
-                epsilon = approx_grad_eps)
+                epsilon = approx_grad_eps, iprint = 11)
         print('finish optimization')
 
         # LBFGS-B does not always exactly respect the boundaries
@@ -156,14 +135,23 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
 
             optimize_output = np.clip(optimize_output, min_, max_)
 
-        #optimize_output = optimize_output.reshape(shape).astype(dtype)
-        #test_input = torch.from_numpy(optimize_output)
-        #print(test_input)
-        #test_input = test_input.unsqueeze_(0).float()
-        is_adversarial = pending_attack(target_model = model, adv_exp = optimize_output, target_label = target_label)
+        #is_adversarial = pending_attack(target_model = model, adv_exp = optimize_output, target_label = target_label)
+        # pending if the attack success
+        optimize_output = optimize_output.reshape(shape).astype(dtype)
+        optimize_output = torch.from_numpy(optimize_output)
+        optimize_output = optimize_output.unsqueeze_(0).float().to(device)
+
+        predict1 = model(optimize_output)
+        label = predict1.argmax(dim=1, keepdim=True)
+        if label == target_label:
+            is_adversarial = True
+            print('can find adversarial example with current c.')
+        else:
+            is_adversarial = False
+            print('could not find adversarial example with current c.')
+
         return optimize_output, is_adversarial
 
-    #x_new, isadv = lbfgs_b(0)
 
 
     # finding initial c
@@ -175,10 +163,12 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         x_new, is_adversarial = lbfgs_b(c)
         if is_adversarial == False:
             break
-
+    print('initial c:', c)
     print('start binary search:')
-    if is_adversarial == True:  # pragma: no cover
-        print('Could not find an adversarial; maybe the model returns wrong gradients')
+
+    x_new, is_adversarial = lbfgs_b(0)
+    if is_adversarial == False:  # pragma: no cover
+        print('Could not find an adversarial;')
         return
 
     print('c_high:',c)
@@ -197,7 +187,8 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
             c_high = c_half
 
     x_new, is_adversarial = lbfgs_b(c_low)
-    dis = distance(x_new, x0)
+
+    dis = ( torch.norm(x_new.reshape(shape) - x0.reshape(shape)) ) **2
     mintargetfunc = loss(x_new, c_low)
 
     x_new = x_new.astype(dtype)
