@@ -6,13 +6,13 @@ import torch.optim as optim
 from torchvision import datasets,models,transforms
 from PIL import Image
 
-from deeprobust.image.attack.lbfgs import LBFGS
+from lbfgs import LBFGS
 from deeprobust.image.netmodels.CNN import Net
 from deeprobust.image.config import attack_params
 
 #load model
 model = Net()
-model.load_state_dict(torch.load("/mnt/home/liyaxin1/Documents/deeprobust_model/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
+model.load_state_dict(torch.load("/home/bizon/Desktop/liyaxin/deeprobust_trained_model/MNIST_CNN_epoch_20.pt", map_location = torch.device('cpu')))
 model.eval()
 
 import ipdb
@@ -30,24 +30,22 @@ predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
 
 attack_param = {
-    'epsilon': 1,
-    'maxiter': 10,
+    'epsilon': 2e-1,
+    'maxiter': 20,
     'clip_max': 1,
     'clip_min': 0,
     'class_num': 10
     }
 
-
 attack = LBFGS(model, device='cpu')
-AdvExArray, dis, loss, valueofc= attack.generate(xx, yy, target_label = 2, **attack_param)
-AdvExArray = AdvExArray.unsqueeze_(0).float()
+AdvExArray = attack.generate(xx, yy, target_label = 2, **attack_param)
 
 #AdvExArray = torch.from_numpy(AdvExArray)
 predict1 = model(AdvExArray)
 predict1= predict1.argmax(dim=1, keepdim=True)
 
 print(predict0)
-print(predict1, 'distance:',dis, 'target func:',loss, 'c:', valueofc)
+print(predict1)
 
 import matplotlib.pyplot as plt
 

@@ -31,7 +31,7 @@ class LBFGS(BaseAttack):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
         self.target_label = target_label
-        adv_img, self.dist, self.loss = optimize(self.model,
+        adv_img= optimize(self.model,
                                        self.image,
                                        self.label,
                                        self.target_label,
@@ -96,7 +96,7 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
 
     def loss(x, c):
         #calculate the target function
-        v1 = (torch.norm(torch.from_numpy(x0) - torch.from_numpy(x))) **2
+        v1 = (torch.norm(torch.from_numpy(x0) - x)) **2
 
         x = torch.tensor(x.astype(dtype).reshape(shape))
         x = x.unsqueeze_(0).float().to(device)
@@ -172,7 +172,6 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
         return
 
     print('c_high:',c)
-
     # binary search
     c_low = 0
     c_high = c
@@ -187,16 +186,18 @@ def optimize(model, image, label, target_label, bounds, epsilon, maxiter, class_
             c_high = c_half
 
     x_new, is_adversarial = lbfgs_b(c_low)
-
+    
     dis = ( torch.norm(x_new.reshape(shape) - x0.reshape(shape)) ) **2
-    mintargetfunc = loss(x_new, c_low)
+    
+    x_new = x_new.flatten().numpy()
+    mintargetfunc = loss(x_new.astype(np.float64), c_low)
 
     x_new = x_new.astype(dtype)
     x_new = x_new.reshape(shape)
 
     x_new = torch.from_numpy(x_new).unsqueeze_(0).float().to(device)
 
-    return x_new, dis, mintargetfunc
+    return x_new
 
 
 
