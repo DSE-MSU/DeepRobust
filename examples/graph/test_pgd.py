@@ -34,7 +34,7 @@ torch.manual_seed(args.seed)
 if device != 'cpu':
     torch.cuda.manual_seed(args.seed)
 
-data = Dataset(root='/tmp/', name=args.dataset, setting='nettack')
+data = Dataset(root='/tmp/', name=args.dataset, setting='gcn')
 adj, features, labels = data.adj, data.features, data.labels
 # features = normalize_feature(features)
 
@@ -57,18 +57,24 @@ model = PGDAttack(model=victim_model, nnodes=adj.shape[0], loss_type='CE', devic
 
 model = model.to(device)
 
-def test(adj):
+def test(adj, gcn=None):
     ''' test on GCN '''
 
-    # adj = normalize_adj_tensor(adj)
-    gcn = GCN(nfeat=features.shape[1],
-              nhid=args.hidden,
-              nclass=labels.max().item() + 1,
-              dropout=args.dropout, device=device)
-    gcn = gcn.to(device)
-    gcn.fit(features, adj, labels, idx_train) # train without model picking
-    # gcn.fit(features, adj, labels, idx_train, idx_val) # train with validation model picking
-    output = gcn.output.cpu()
+    if gcn is None:
+        # adj = normalize_adj_tensor(adj)
+        gcn = GCN(nfeat=features.shape[1],
+                  nhid=args.hidden,
+                  nclass=labels.max().item() + 1,
+                  dropout=args.dropout, device=device)
+        gcn = gcn.to(device)
+        gcn.fit(features, adj, labels, idx_train) # train without model picking
+        gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train with validation model picking
+        gcn.eval()
+        output = gcn.predict().cpu()
+    else:
+        gcn.eval()
+        output = gcn.predict().cpu()
+
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
     print("Test set results:",
@@ -79,11 +85,24 @@ def test(adj):
 
 
 def main():
+    target_gcn = GCN(nfeat=features.shape[1],
+              nhid=16,
+              nclass=labels.max().item() + 1,
+              dropout=0.5, device=device)
+
+    target_gcn = target_gcn.to(device)
+    target_gcn.fit(features, adj, labels, idx_train, idx_val, patience=30)
+
+    print('=== testing GCN on clean graph ===')
+    test(adj, target_gcn)
+
+    print('=== testing GCN on Evasion attack ===')
     model.attack(features, adj, labels, idx_train, perturbations, epochs=args.epochs)
-    print('=== testing GCN on original(clean) graph ===')
-    test(adj)
     modified_adj = model.modified_adj
+    test(modified_adj, target_gcn)
+
     # modified_features = model.modified_features
+    print('=== testing GCN on Poisoning attack ===')
     test(modified_adj)
 
     # # if you want to save the modified adj/features, uncomment the code below

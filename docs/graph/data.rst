@@ -77,7 +77,9 @@ and the perturbation rate can be chosen from [0.05, 0.1, 0.15, 0.2, 0.25].
 .. code-block:: python
    
    from deeprobust.graph.data import Dataset, PrePtbDataset
-   data = Dataset(root='/tmp/', name='cora', seed=15) # make sure random seed is set to 15, since the attacked graph are generated under seed 15
+   # You can either use setting='prognn' or seed=15 to get the prognn splits 
+   data = Dataset(root='/tmp/', name='cora', setting='prognn')    
+   data = Dataset(root='/tmp/', name='cora', seed=15) # since the attacked graph are generated under seed 15
    adj, features, labels = data.adj, data.features, data.labels
    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
    # Load meta attacked data
@@ -94,7 +96,8 @@ It can be chosen from [1.0, 2.0, 3.0, 4.0, 5.0].
 .. code-block:: python
 
    from deeprobust.graph.data import Dataset, PrePtbDataset
-   data = Dataset(root='/tmp/', name='cora', seed=15) # make sure random seed is set to 15, since the attacked graph are generated under seed 15
+   # data = Dataset(root='/tmp/', name='cora', seed=15) # since the attacked graph are generated under seed 15
+   data = Dataset(root='/tmp/', name='cora', setting='prognn')    
    adj, features, labels = data.adj, data.features, data.labels
    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
    # Load meta attacked data

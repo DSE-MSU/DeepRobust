@@ -15,17 +15,15 @@ parser.add_argument('--ptb_rate', type=float, default=0.05,  help='pertubation r
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
 print('cuda: %s' % args.cuda)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Here the random seed is to split the train/val/test data,
 # we need to set the random seed to be the same as that when you generate the perturbed graph
-# (make sure you use the same data splits as you generated attacks)
-data = Dataset(root='/tmp/', name=args.dataset, setting='nettack', seed=15)
-
+# data = Dataset(root='/tmp/', name=args.dataset, setting='nettack', seed=15)
+# Or we can just use setting='prognn' to get the splits
+data = Dataset(root='/tmp/', name=args.dataset, setting='prognn')
 adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-
 
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)

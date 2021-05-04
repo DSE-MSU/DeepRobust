@@ -15,7 +15,8 @@ args.cuda = torch.cuda.is_available()
 print('cuda: %s' % args.cuda)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-data = Dataset(root='/tmp/', name=args.dataset, setting='nettack', seed=15)
+# use data splist provided by prognn
+data = Dataset(root='/tmp/', name=args.dataset, setting='prognn')
 adj, features, labels = data.adj, data.features, data.labels
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 

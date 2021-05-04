@@ -8,6 +8,7 @@ import pickle as pkl
 import networkx as nx
 from deeprobust.graph.utils import get_train_val_test, get_train_val_test_gcn
 import zipfile
+import json
 
 class Dataset():
     """Dataset class contains four citation network datasets "cora", "cora-ml", "citeseer" and "pubmed",
@@ -53,7 +54,8 @@ class Dataset():
                 'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr'], \
                 'Currently only support cora, citeseer, cora_ml, ' + \
                 'polblogs, pubmed, acm, blogcatalog, flickr'
-        assert self.setting in ['gcn', 'nettack'], 'Settings should be gcn or nettack'
+        assert self.setting in ['gcn', 'nettack', 'prognn'], "Settings should be" + \
+                        " choosen from ['gcn', 'nettack', 'prognn']"
 
         self.seed = seed
         # self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
@@ -65,7 +67,13 @@ class Dataset():
 
         self.require_lcc = True if setting == 'nettack' else False
         self.adj, self.features, self.labels = self.load_data()
-        self.idx_train, self.idx_val, self.idx_test = self.get_train_val_test()
+
+        if setting == 'prognn':
+            assert name in ['cora', 'citeseer', 'pubmed', 'cora_ml'], "ProGNN splits only " + \
+                        "cora, citeseer, pubmed, cora_ml"
+            self.idx_train, self.idx_val, self.idx_test = self.get_prognn_splits()
+        else:
+            self.idx_train, self.idx_val, self.idx_test = self.get_train_val_test()
         if self.require_mask:
             self.get_mask()
 
@@ -76,6 +84,21 @@ class Dataset():
             return get_train_val_test(nnodes=self.adj.shape[0], val_size=0.1, test_size=0.8, stratify=self.labels, seed=self.seed)
         if self.setting == 'gcn':
             return get_train_val_test_gcn(self.labels, seed=self.seed)
+
+    def get_prognn_splits(self):
+        """Get target nodes incides, which is the nodes with degree > 10 in the test set."""
+        url = 'https://raw.githubusercontent.com/ChandlerBang/Pro-GNN/' + \
+                     'master/splits/{}_prognn_splits.json'.format(self.name)
+        json_file = osp.join(self.root,
+                '{}_prognn_splits.json'.format(self.name))
+
+        if not osp.exists(json_file):
+            self.download_file(url, json_file)
+        # with open(f'/mnt/home/jinwei2/Projects/nettack/{dataset}_nettacked_nodes.json', 'r') as f:
+        with open(json_file, 'r') as f:
+            idx = json.loads(f.read())
+        return np.array(idx['idx_train']), \
+               np.array(idx['idx_val']), np.array(idx['idx_test'])
 
     def load_data(self):
         print('Loading {} dataset...'.format(self.name))
@@ -90,6 +113,14 @@ class Dataset():
 
         adj, features, labels = self.get_adj()
         return adj, features, labels
+
+    def download_file(self, url, file):
+        print('Dowloading from {} to {}'.format(url, file))
+        try:
+            urllib.request.urlretrieve(url, file)
+        except:
+            raise Exception("Download failed! Make sure you have \
+                    stable Internet connection and enter the right name")
 
     def download_npz(self):
         """Download adjacen matrix npz file from self.url.
@@ -282,8 +313,14 @@ def parse_index_file(filename):
 
 if __name__ == '__main__':
     from deeprobust.graph.data import Dataset
+    for name in ['cora', 'citeseer', 'pubmed', 'cora_ml']:
+        data = Dataset(root='/tmp/', name=name, setting="prognn")
+        idx_train = data.idx_train
+        data2 = Dataset(root='/tmp/', name=name, setting="nettack", seed=15)
+        idx_train2 = data2.idx_train
+        assert (idx_train != idx_train2).sum() == 0
+
     data = Dataset(root='/tmp/', name='flickr')
     adj, features, labels = data.adj, data.features, data.labels
     idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-
 

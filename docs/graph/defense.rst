@@ -37,8 +37,10 @@ Defense Methods:
     .. code-block:: python
        
        from deeprobust.graph.data import Dataset, PrePtbDataset
-       data = Dataset(root='/tmp/', name='cora', seed=15) # make sure random seed is set to 15, 
-                                                          # since the attacked graph are generated under seed 15
+       # load the prognn splits by using setting='prognn'
+       # because the attacked graphs are generated under prognn splits 
+       data = Dataset(root='/tmp/', name='cora', setting='prognn') 
+                                                          
        adj, features, labels = data.adj, data.features, data.labels
        idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
        # Load meta attacked data
