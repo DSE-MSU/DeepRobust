@@ -65,7 +65,7 @@ class Dataset():
         self.data_filename = self.data_folder + '.npz'
         self.require_mask = require_mask
 
-        self.require_lcc = True if setting == 'nettack' else False
+        self.require_lcc = False if setting == 'gcn' else True
         self.adj, self.features, self.labels = self.load_data()
 
         if setting == 'prognn':
