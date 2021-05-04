@@ -120,7 +120,7 @@ class GAT(nn.Module):
             patience for early stopping, only valid when `idx_val` is given
         """
 
-        self.device = self.conv1.weight.device
+
         if initialize:
             self.initialize()
 
