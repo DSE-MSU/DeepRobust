@@ -132,12 +132,12 @@ class PrePtbDataset:
         print('Loading {} dataset perturbed by {} {}...'.format(self.name, self.ptb_rate, self.attack_method))
 
         if self.attack_method == 'meta':
-            warnings.warn("the pre-attacked graph is perturbed, using the data splits under seed 15 (default seed), so if you are going to verify the attacking performance, you should use the same data splits.")
+            warnings.warn("The pre-attacked graph is perturbed under the data splits provided by ProGNN. So if you are going to verify the attacking performance, you should use the same data splits  (setting='prognn').")
             adj = sp.load_npz(self.data_filename)
 
         if self.attack_method == 'nettack':
             # assert True, "Will update pre-attacked data by nettack soon"
-            warnings.warn("the pre-attacked graph is perturbed, using the data splits under seed 15 (default seed), so if you are going to verify the attacking performance, you should use the same seed (15).")
+            warnings.warn("The pre-attacked graph is perturbed under the data splits provided by ProGNN. So if you are going to verify the attacking performance, you should use the same data splits  (setting='prognn').")
             adj = sp.load_npz(self.data_filename)
             self.target_nodes = self.get_target_nodes()
         return adj
