@@ -138,9 +138,12 @@ class Pyg2Dpr(Dataset):
             self.idx_val = splits['valid'].numpy()
             self.idx_test = splits['test'].numpy()
         else:
-            self.idx_train = mask_to_index(pyg_data.train_mask, n)
-            self.idx_val = mask_to_index(pyg_data.val_mask, n)
-            self.idx_test = mask_to_index(pyg_data.test_mask, n)
+            try:
+                self.idx_train = mask_to_index(pyg_data.train_mask, n)
+                self.idx_val = mask_to_index(pyg_data.val_mask, n)
+                self.idx_test = mask_to_index(pyg_data.test_mask, n)
+            except AttributeError:
+                print('Warning: This pyg dataset is not associated with any data splits...')
         self.name = 'Pyg2Dpr'
 
 class AmazonPyg(Amazon):
