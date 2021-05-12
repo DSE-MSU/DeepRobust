@@ -18,4 +18,6 @@ Installation
         
         pip install deeprobust
 
-
+.. note::
+    If you meet any installation problem, feel free to open an issue
+    in the our github `page <https://github.com/DSE-MSU/DeepRobust/issues>`_
