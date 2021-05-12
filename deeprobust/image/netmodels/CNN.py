@@ -35,7 +35,7 @@ class Net(nn.Module):
                                padding = (2,2))
 
         ## define two linear layers
-        self.fc1 = nn.Linear(int(H/4)*int(W/4)* out_channel2, 1024)
+        self.fc1 = nn.Linear(8 * 8 * out_channel2, 1024)
         self.fc2 = nn.Linear(1024, 10)
 
     def forward(self, x):
@@ -53,7 +53,7 @@ class Net(nn.Module):
         x = F.max_pool2d(x, 2, 2)
         x = F.relu(self.conv2(x))
         x = F.max_pool2d(x, 2, 2)
-        x = x.view(-1, int(self.H/4) * int(self.W/4) * self.out_channel2)
+        x = x.view(-1, 8 * 8 * self.out_channel2)
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
