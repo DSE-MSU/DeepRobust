@@ -43,9 +43,9 @@ splits by yourself by using :obj:`deeprobust.graph.utils.get_train_val_test` or 
 It is worth noting that there is parameter :obj:`setting` that can be passed into this class. It can be chosen from `["nettack", "gcn", "prognn"]`: 
 
 - :obj:`setting="nettack"`: the data splits are 10%/10%/80% and using the largest connected component of the graph; 
-- :obj:`setting="gcn"`: use the full graph and the data splits will be: 20 nodes per class for training, 
-500 nodes for validation and 1000 nodes for testing (randomly choosen);
+- :obj:`setting="gcn"`: use the full graph and the data splits will be: 20 nodes per class for training, 500 nodes for validation and 1000 nodes for testing (randomly choosen);
 - :obj:`setting="prognn"`: use the largest connected component and the data splits are provided by `ProGNN <https://github.com/ChandlerBang/Pro-GNN>`_ (10%/10%/80%);
+
 
 .. note::
     The 'netack' and 'gcn' setting do not provide fixed split, i.e.,
