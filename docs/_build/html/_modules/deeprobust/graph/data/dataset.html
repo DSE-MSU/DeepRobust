@@ -183,6 +183,7 @@
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">from</span> <span class="nn">deeprobust.graph.utils</span> <span class="kn">import</span> <span class="n">get_train_val_test</span><span class="p">,</span> <span class="n">get_train_val_test_gcn</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.dataset.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Dataset class contains four citation network datasets &quot;cora&quot;, &quot;cora-ml&quot;, &quot;citeseer&quot; and &quot;pubmed&quot;,</span>
@@ -195,14 +196,15 @@
 <span class="sd">    root : string</span>
 <span class="sd">        root directory where the dataset should be saved.</span>
 <span class="sd">    name : string</span>
-<span class="sd">        dataset name, it can be choosen from [&#39;cora&#39;, &#39;citeseer&#39;, &#39;cora_ml&#39;, &#39;polblogs&#39;,</span>
+<span class="sd">        dataset name, it can be chosen from [&#39;cora&#39;, &#39;citeseer&#39;, &#39;cora_ml&#39;, &#39;polblogs&#39;,</span>
 <span class="sd">        &#39;pubmed&#39;, &#39;acm&#39;, &#39;blogcatalog&#39;, &#39;uai&#39;, &#39;flickr&#39;]</span>
 <span class="sd">    setting : string</span>
-<span class="sd">        there are two data splits settings. The &#39;nettack&#39; setting follows nettack paper</span>
-<span class="sd">        where they select the largest connected components of the graph and use 10%/10%/80%</span>
-<span class="sd">        nodes for training/validation/test . The &#39;gcn&#39; setting follows gcn paper where they</span>
-<span class="sd">        use 20 samples in each class for traing, 500 nodes for validation, and 1000</span>
-<span class="sd">        nodes for test. (Note here &#39;gcn&#39; setting is not a fixed split, i.e.,</span>
+<span class="sd">        there are two data splits settings. It can be chosen from [&#39;nettack&#39;, &#39;gcn&#39;, &#39;prognn&#39;]</span>
+<span class="sd">        The &#39;nettack&#39; setting follows nettack paper where they select the largest connected</span>
+<span class="sd">        components of the graph and use 10%/10%/80% nodes for training/validation/test .</span>
+<span class="sd">        The &#39;gcn&#39; setting follows gcn paper where they use the full graph and 20 samples</span>
+<span class="sd">        in each class for traing, 500 nodes for validation, and 1000</span>
+<span class="sd">        nodes for test. (Note here &#39;netack&#39; and &#39;gcn&#39; setting do not provide fixed split, i.e.,</span>
 <span class="sd">        different random seed would return different data splits)</span>
 <span class="sd">    seed : int</span>
 <span class="sd">        random seed for splitting training/validation/test.</span>
@@ -228,7 +230,8 @@
                 <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="s1">&#39;acm&#39;</span><span class="p">,</span> <span class="s1">&#39;blogcatalog&#39;</span><span class="p">,</span> <span class="s1">&#39;uai&#39;</span><span class="p">,</span> <span class="s1">&#39;flickr&#39;</span><span class="p">],</span> \
                 <span class="s1">&#39;Currently only support cora, citeseer, cora_ml, &#39;</span> <span class="o">+</span> \
                 <span class="s1">&#39;polblogs, pubmed, acm, blogcatalog, flickr&#39;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gcn&#39;</span><span class="p">,</span> <span class="s1">&#39;nettack&#39;</span><span class="p">],</span> <span class="s1">&#39;Settings should be gcn or nettack&#39;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;gcn&#39;</span><span class="p">,</span> <span class="s1">&#39;nettack&#39;</span><span class="p">,</span> <span class="s1">&#39;prognn&#39;</span><span class="p">],</span> <span class="s2">&quot;Settings should be&quot;</span> <span class="o">+</span> \
+                        <span class="s2">&quot; choosen from [&#39;gcn&#39;, &#39;nettack&#39;, &#39;prognn&#39;]&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
         <span class="c1"># self.url =  &#39;https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz&#39; % self.name</span>
@@ -238,9 +241,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_folder</span> <span class="o">+</span> <span class="s1">&#39;.npz&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">require_mask</span> <span class="o">=</span> <span class="n">require_mask</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">require_lcc</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;nettack&#39;</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">require_lcc</span> <span class="o">=</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span> <span class="k">else</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_train_val_test</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;prognn&#39;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span> <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="s1">&#39;cora_ml&#39;</span><span class="p">],</span> <span class="s2">&quot;ProGNN splits only &quot;</span> <span class="o">+</span> \
+                        <span class="s2">&quot;cora, citeseer, pubmed, cora_ml&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prognn_splits</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_train_val_test</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">require_mask</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">()</span>
 
@@ -251,6 +260,21 @@
             <span class="k">return</span> <span class="n">get_train_val_test</span><span class="p">(</span><span class="n">nnodes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span> <span class="o">==</span> <span class="s1">&#39;gcn&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">get_train_val_test_gcn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.get_prognn_splits"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.dataset.Dataset.get_prognn_splits">[docs]</a>    <span class="k">def</span> <span class="nf">get_prognn_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.&quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://raw.githubusercontent.com/ChandlerBang/Pro-GNN/&#39;</span> <span class="o">+</span> \
+                     <span class="s1">&#39;master/splits/</span><span class="si">{}</span><span class="s1">_prognn_splits.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">json_file</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_prognn_splits.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">osp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">json_file</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json_file</span><span class="p">)</span>
+        <span class="c1"># with open(f&#39;/mnt/home/jinwei2/Projects/nettack/{dataset}_nettacked_nodes.json&#39;, &#39;r&#39;) as f:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="s1">&#39;idx_train&#39;</span><span class="p">]),</span> \
+               <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="s1">&#39;idx_val&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="s1">&#39;idx_test&#39;</span><span class="p">])</span></div>
 
     <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">{}</span><span class="s1"> dataset...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
@@ -265,6 +289,14 @@
 
         <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_adj</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span>
+
+    <span class="k">def</span> <span class="nf">download_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dowloading from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Download failed! Make sure you have </span><span class="se">\</span>
+<span class="s2">                    stable Internet connection and enter the right name&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Dataset.download_npz"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.dataset.Dataset.download_npz">[docs]</a>    <span class="k">def</span> <span class="nf">download_npz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Download adjacen matrix npz file from self.url.</span>
@@ -457,10 +489,16 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="s1">&#39;citeseer&#39;</span><span class="p">,</span> <span class="s1">&#39;pubmed&#39;</span><span class="p">,</span> <span class="s1">&#39;cora_ml&#39;</span><span class="p">]:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">setting</span><span class="o">=</span><span class="s2">&quot;prognn&quot;</span><span class="p">)</span>
+        <span class="n">idx_train</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span>
+        <span class="n">data2</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">setting</span><span class="o">=</span><span class="s2">&quot;nettack&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">idx_train2</span> <span class="o">=</span> <span class="n">data2</span><span class="o">.</span><span class="n">idx_train</span>
+        <span class="k">assert</span> <span class="p">(</span><span class="n">idx_train</span> <span class="o">!=</span> <span class="n">idx_train2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+
     <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;flickr&#39;</span><span class="p">)</span>
     <span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
     <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
-
 
 </pre></div>
 

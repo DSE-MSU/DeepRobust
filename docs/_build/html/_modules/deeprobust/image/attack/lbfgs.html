@@ -183,11 +183,11 @@
 
 <div class="viewcode-block" id="LBFGS"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.lbfgs.LBFGS">[docs]</a><span class="k">class</span> <span class="nc">LBFGS</span><span class="p">(</span><span class="n">BaseAttack</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    LBFGS is the first adversarial generating algorithm.    </span>
+<span class="sd">    LBFGS is the first adversarial generating algorithm.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="s1">&#39;cuda&#39;</span> <span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LBFGS</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LBFGS.generate"><a class="viewcode-back" href="../../../../source/deeprobust.image.attack.html#deeprobust.image.attack.lbfgs.LBFGS.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">target_label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -206,7 +206,7 @@
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_type_device</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_params</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_label</span> <span class="o">=</span> <span class="n">target_label</span>
-        <span class="n">adv_img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">optimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">adv_img</span><span class="o">=</span> <span class="n">optimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">target_label</span><span class="p">,</span>
@@ -269,17 +269,9 @@
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
     <span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="n">min_</span><span class="p">,</span> <span class="n">max_</span><span class="p">)]</span> <span class="o">*</span> <span class="n">n</span>
 
-    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-        <span class="c1"># calculate the distance</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">double</span><span class="p">()</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">double</span><span class="p">()</span>
-
-        <span class="n">dist_squ</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dist_squ</span> <span class="o">**</span><span class="mi">2</span>
-
     <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="c1">#calculate the target function</span>
-        <span class="n">v1</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span> <span class="o">**</span><span class="mi">2</span>
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -290,19 +282,6 @@
         <span class="n">v</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
         <span class="c1">#print(v)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">pending_attack</span><span class="p">(</span><span class="n">target_model</span><span class="p">,</span> <span class="n">adv_exp</span><span class="p">,</span> <span class="n">target_label</span><span class="p">):</span>
-        <span class="c1"># pending if the attack success</span>
-        <span class="n">adv_exp</span> <span class="o">=</span> <span class="n">adv_exp</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">adv_exp</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">adv_exp</span><span class="p">)</span>
-        <span class="n">adv_exp</span> <span class="o">=</span> <span class="n">adv_exp</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-
-        <span class="n">predict1</span> <span class="o">=</span> <span class="n">target_model</span><span class="p">(</span><span class="n">adv_exp</span><span class="p">)</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="n">predict1</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">target_label</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">lbfgs_b</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
 
@@ -321,7 +300,7 @@
                 <span class="n">maxiter</span> <span class="o">=</span> <span class="n">maxiter</span><span class="p">,</span>
                 <span class="n">factr</span> <span class="o">=</span> <span class="mf">1e10</span><span class="p">,</span>  <span class="c1">#optimization accuracy</span>
                 <span class="n">maxls</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                <span class="n">epsilon</span> <span class="o">=</span> <span class="n">approx_grad_eps</span><span class="p">)</span>
+                <span class="n">epsilon</span> <span class="o">=</span> <span class="n">approx_grad_eps</span><span class="p">,</span> <span class="n">iprint</span> <span class="o">=</span> <span class="mi">11</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finish optimization&#39;</span><span class="p">)</span>
 
         <span class="c1"># LBFGS-B does not always exactly respect the boundaries</span>
@@ -331,14 +310,23 @@
 
             <span class="n">optimize_output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">optimize_output</span><span class="p">,</span> <span class="n">min_</span><span class="p">,</span> <span class="n">max_</span><span class="p">)</span>
 
-        <span class="c1">#optimize_output = optimize_output.reshape(shape).astype(dtype)</span>
-        <span class="c1">#test_input = torch.from_numpy(optimize_output)</span>
-        <span class="c1">#print(test_input)</span>
-        <span class="c1">#test_input = test_input.unsqueeze_(0).float()</span>
-        <span class="n">is_adversarial</span> <span class="o">=</span> <span class="n">pending_attack</span><span class="p">(</span><span class="n">target_model</span> <span class="o">=</span> <span class="n">model</span><span class="p">,</span> <span class="n">adv_exp</span> <span class="o">=</span> <span class="n">optimize_output</span><span class="p">,</span> <span class="n">target_label</span> <span class="o">=</span> <span class="n">target_label</span><span class="p">)</span>
+        <span class="c1">#is_adversarial = pending_attack(target_model = model, adv_exp = optimize_output, target_label = target_label)</span>
+        <span class="c1"># pending if the attack success</span>
+        <span class="n">optimize_output</span> <span class="o">=</span> <span class="n">optimize_output</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">optimize_output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">optimize_output</span><span class="p">)</span>
+        <span class="n">optimize_output</span> <span class="o">=</span> <span class="n">optimize_output</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">predict1</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">optimize_output</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">predict1</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="o">==</span> <span class="n">target_label</span><span class="p">:</span>
+            <span class="n">is_adversarial</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;can find adversarial example with current c.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_adversarial</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;could not find adversarial example with current c.&#39;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">optimize_output</span><span class="p">,</span> <span class="n">is_adversarial</span>
 
-    <span class="c1">#x_new, isadv = lbfgs_b(0)</span>
 
 
     <span class="c1"># finding initial c</span>
@@ -350,14 +338,15 @@
         <span class="n">x_new</span><span class="p">,</span> <span class="n">is_adversarial</span> <span class="o">=</span> <span class="n">lbfgs_b</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">is_adversarial</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">break</span>
-
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initial c:&#39;</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;start binary search:&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">is_adversarial</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could not find an adversarial; maybe the model returns wrong gradients&#39;</span><span class="p">)</span>
+
+    <span class="n">x_new</span><span class="p">,</span> <span class="n">is_adversarial</span> <span class="o">=</span> <span class="n">lbfgs_b</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_adversarial</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could not find an adversarial;&#39;</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;c_high:&#39;</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
-
     <span class="c1"># binary search</span>
     <span class="n">c_low</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">c_high</span> <span class="o">=</span> <span class="n">c</span>
@@ -372,15 +361,18 @@
             <span class="n">c_high</span> <span class="o">=</span> <span class="n">c_half</span>
 
     <span class="n">x_new</span><span class="p">,</span> <span class="n">is_adversarial</span> <span class="o">=</span> <span class="n">lbfgs_b</span><span class="p">(</span><span class="n">c_low</span><span class="p">)</span>
-    <span class="n">dis</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
-    <span class="n">mintargetfunc</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">c_low</span><span class="p">)</span>
+    
+    <span class="n">dis</span> <span class="o">=</span> <span class="p">(</span> <span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x_new</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">x0</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span> <span class="p">)</span> <span class="o">**</span><span class="mi">2</span>
+    
+    <span class="n">x_new</span> <span class="o">=</span> <span class="n">x_new</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">mintargetfunc</span> <span class="o">=</span> <span class="n">loss</span><span class="p">(</span><span class="n">x_new</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">c_low</span><span class="p">)</span>
 
     <span class="n">x_new</span> <span class="o">=</span> <span class="n">x_new</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">x_new</span> <span class="o">=</span> <span class="n">x_new</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="n">x_new</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x_new</span><span class="p">,</span> <span class="n">dis</span><span class="p">,</span> <span class="n">mintargetfunc</span>
+    <span class="k">return</span> <span class="n">x_new</span>
 
 
 

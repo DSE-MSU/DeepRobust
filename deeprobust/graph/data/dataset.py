@@ -21,14 +21,15 @@ class Dataset():
     root : string
         root directory where the dataset should be saved.
     name : string
-        dataset name, it can be choosen from ['cora', 'citeseer', 'cora_ml', 'polblogs',
+        dataset name, it can be chosen from ['cora', 'citeseer', 'cora_ml', 'polblogs',
         'pubmed', 'acm', 'blogcatalog', 'uai', 'flickr']
     setting : string
-        there are two data splits settings. The 'nettack' setting follows nettack paper
-        where they select the largest connected components of the graph and use 10%/10%/80%
-        nodes for training/validation/test . The 'gcn' setting follows gcn paper where they
-        use 20 samples in each class for traing, 500 nodes for validation, and 1000
-        nodes for test. (Note here 'gcn' setting is not a fixed split, i.e.,
+        there are two data splits settings. It can be chosen from ['nettack', 'gcn', 'prognn']
+        The 'nettack' setting follows nettack paper where they select the largest connected
+        components of the graph and use 10%/10%/80% nodes for training/validation/test .
+        The 'gcn' setting follows gcn paper where they use the full graph and 20 samples
+        in each class for traing, 500 nodes for validation, and 1000
+        nodes for test. (Note here 'netack' and 'gcn' setting do not provide fixed split, i.e.,
         different random seed would return different data splits)
     seed : int
         random seed for splitting training/validation/test.

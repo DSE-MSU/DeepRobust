@@ -269,13 +269,14 @@ The ‘cora’, ‘cora-ml’, ‘polblogs’ and ‘citeseer’ are downloaded 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be chosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
 ‘pubmed’, ‘acm’, ‘blogcatalog’, ‘uai’, ‘flickr’]</p></li>
-<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. The ‘nettack’ setting follows nettack paper
-where they select the largest connected components of the graph and use 10%/10%/80%
-nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they
-use 20 samples in each class for traing, 500 nodes for validation, and 1000
-nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e.,
+<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. It can be chosen from [‘nettack’, ‘gcn’, ‘prognn’]
+The ‘nettack’ setting follows nettack paper where they select the largest connected
+components of the graph and use 10%/10%/80% nodes for training/validation/test .
+The ‘gcn’ setting follows gcn paper where they use the full graph and 20 samples
+in each class for traing, 500 nodes for validation, and 1000
+nodes for test. (Note here ‘netack’ and ‘gcn’ setting do not provide fixed split, i.e.,
 different random seed would return different data splits)</p></li>
 <li><p><strong>seed</strong> (<em>int</em>) – random seed for splitting training/validation/test.</p></li>
 <li><p><strong>require_mask</strong> (<em>bool</em>) – setting require_mask True to get training, validation and test mask
@@ -295,6 +296,12 @@ different random seed would return different data splits)</p></li>
 <dt id="deeprobust.graph.data.dataset.Dataset.download_npz">
 <code class="sig-name descname">download_npz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.download_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset.download_npz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download adjacen matrix npz file from self.url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.dataset.Dataset.get_prognn_splits">
+<code class="sig-name descname">get_prognn_splits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.get_prognn_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.dataset.Dataset.get_prognn_splits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.</p>
 </dd></dl>
 
 <dl class="method">
@@ -333,13 +340,14 @@ The ‘cora’, ‘cora-ml’, ‘polblogs’ and ‘citeseer’ are downloaded 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>string</em>) – root directory where the dataset should be saved.</p></li>
-<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be choosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
+<li><p><strong>name</strong> (<em>string</em>) – dataset name, it can be chosen from [‘cora’, ‘citeseer’, ‘cora_ml’, ‘polblogs’,
 ‘pubmed’, ‘acm’, ‘blogcatalog’, ‘uai’, ‘flickr’]</p></li>
-<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. The ‘nettack’ setting follows nettack paper
-where they select the largest connected components of the graph and use 10%/10%/80%
-nodes for training/validation/test . The ‘gcn’ setting follows gcn paper where they
-use 20 samples in each class for traing, 500 nodes for validation, and 1000
-nodes for test. (Note here ‘gcn’ setting is not a fixed split, i.e.,
+<li><p><strong>setting</strong> (<em>string</em>) – there are two data splits settings. It can be chosen from [‘nettack’, ‘gcn’, ‘prognn’]
+The ‘nettack’ setting follows nettack paper where they select the largest connected
+components of the graph and use 10%/10%/80% nodes for training/validation/test .
+The ‘gcn’ setting follows gcn paper where they use the full graph and 20 samples
+in each class for traing, 500 nodes for validation, and 1000
+nodes for test. (Note here ‘netack’ and ‘gcn’ setting do not provide fixed split, i.e.,
 different random seed would return different data splits)</p></li>
 <li><p><strong>seed</strong> (<em>int</em>) – random seed for splitting training/validation/test.</p></li>
 <li><p><strong>require_mask</strong> (<em>bool</em>) – setting require_mask True to get training, validation and test mask
@@ -359,6 +367,12 @@ different random seed would return different data splits)</p></li>
 <dt id="deeprobust.graph.data.Dataset.download_npz">
 <code class="sig-name descname">download_npz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.download_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset.download_npz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download adjacen matrix npz file from self.url.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="deeprobust.graph.data.Dataset.get_prognn_splits">
+<code class="sig-name descname">get_prognn_splits</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/deeprobust/graph/data/dataset.html#Dataset.get_prognn_splits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#deeprobust.graph.data.Dataset.get_prognn_splits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get target nodes incides, which is the nodes with degree &gt; 10 in the test set.</p>
 </dd></dl>
 
 <dl class="method">
