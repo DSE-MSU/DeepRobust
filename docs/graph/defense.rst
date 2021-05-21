@@ -50,6 +50,17 @@ Defense Methods:
                            ptb_rate=0.05)
        perturbed_adj = perturbed_data.adj
 
+#. You can also choose to load graphs attacked by nettack. See details `here <https://deeprobust.readthedocs.io/en/latest/graph/data.html#attacked-graphs-for-node-classification>`_
+
+    .. code-block:: python
+
+       # Load nettack attacked data
+       perturbed_data = PrePtbDataset(root='/tmp/', name='cora',
+               attack_method='nettack',
+               ptb_rate=3.0) # here ptb_rate means number of perturbation per nodes
+       perturbed_adj = perturbed_data.adj
+       idx_test = perturbed_data.target_nodes    
+
 #. Train a victim model (GCN) on clearn/poinsed graph
 
     .. code-block:: python
@@ -88,7 +99,7 @@ Defense Methods:
        model.test(idx_test)
 
       
-For details in training ProGNN, please refer to `this page <https://github.com/ChandlerBang/Pro-GNN/train.py>`_. 
+For details in training ProGNN, please refer to `this page <https://github.com/ChandlerBang/Pro-GNN/blob/master/train.py>`_. 
 
 
 More Examples 

@@ -111,7 +111,7 @@ It can be chosen from [1.0, 2.0, 3.0, 4.0, 5.0].
    data = Dataset(root='/tmp/', name='cora', setting='prognn')    
    adj, features, labels = data.adj, data.features, data.labels
    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
-   # Load meta attacked data
+   # Load nettack attacked data
    perturbed_data = PrePtbDataset(root='/tmp/', name='cora',
 					   attack_method='nettack',
 					   ptb_rate=3.0) # here ptb_rate means number of perturbation per nodes
