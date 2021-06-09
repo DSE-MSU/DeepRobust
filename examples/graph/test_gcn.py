@@ -28,7 +28,7 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 # load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
 print('==================')
-print('=== load graph perturbed by Zugner metattack (under seed 15) ===')
+print('=== load graph perturbed by Zugner metattack (under prognn splits) ===')
 perturbed_data = PrePtbDataset(root='/tmp/',
         name=args.dataset,
         attack_method='meta',
@@ -52,7 +52,7 @@ model.eval()
 model.test(idx_test)
 
 print('==================')
-print('=== load graph perturbed by DeepRobust 5% metattack (under seed 15) ===')
+print('=== load graph perturbed by DeepRobust 5% metattack (under prognn splits) ===')
 perturbed_data = PtbDataset(root='/tmp/',
                     name=args.dataset,
                     attack_method='meta')

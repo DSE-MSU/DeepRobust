@@ -80,7 +80,7 @@ Users can also easily create their own datasets by creating a class with the fol
 
 Attacked Graphs for Node Classification
 -----------------------
-DeepRobust provides the attacked graphs perturbed by `metattack <https://openreview.net/pdf?id=Bylnx209YX>`_ and `nettack <https://arxiv.org/abs/1805.07984>`_. The graphs are attacked using authors' Tensorflow implementation, on random split using seed 15. The download link can be found in `ProGNN code <https://github.com/ChandlerBang/Pro-GNN>`_ and the performance of various GNNs can be found in `ProGNN paper <https://arxiv.org/abs/2005.10203>`_. They are instances of :class:`deeprobust.graph.data.PrePtbDataset` with only one attribute :obj:`adj`. Hence, :class:`deeprobust.graph.data.PrePtbDataset` is often used together with :class:`deeprobust.graph.data.Dataset` to obtain node features and labels. 
+DeepRobust provides the attacked graphs perturbed by `metattack <https://openreview.net/pdf?id=Bylnx209YX>`_ and `nettack <https://arxiv.org/abs/1805.07984>`_. The graphs are attacked using authors' Tensorflow implementation, on random split using seed 15. The download link can be found in `ProGNN code <https://github.com/ChandlerBang/Pro-GNN/tree/master/splits>`_ and the performance of various GNNs can be found in `ProGNN paper <https://arxiv.org/abs/2005.10203>`_. They are instances of :class:`deeprobust.graph.data.PrePtbDataset` with only one attribute :obj:`adj`. Hence, :class:`deeprobust.graph.data.PrePtbDataset` is often used together with :class:`deeprobust.graph.data.Dataset` to obtain node features and labels. 
 
 For metattack, DeepRobust provides attacked graphs for Cora, Citeseer, Polblogs and Pubmed, 
 and the perturbation rate can be chosen from [0.05, 0.1, 0.15, 0.2, 0.25].
@@ -89,8 +89,8 @@ and the perturbation rate can be chosen from [0.05, 0.1, 0.15, 0.2, 0.25].
    
    from deeprobust.graph.data import Dataset, PrePtbDataset
    # You can either use setting='prognn' or seed=15 to get the prognn splits 
+   # data = Dataset(root='/tmp/', name='cora', seed=15) # since the attacked graph are generated under seed 15
    data = Dataset(root='/tmp/', name='cora', setting='prognn')    
-   data = Dataset(root='/tmp/', name='cora', seed=15) # since the attacked graph are generated under seed 15
    adj, features, labels = data.adj, data.features, data.labels
    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
    # Load meta attacked data
@@ -107,7 +107,7 @@ It can be chosen from [1.0, 2.0, 3.0, 4.0, 5.0].
 .. code-block:: python
 
    from deeprobust.graph.data import Dataset, PrePtbDataset
-   # data = Dataset(root='/tmp/', name='cora', seed=15) # since the attacked graph are generated under seed 15
+   # data = Dataset(root='/tmp/', name='cora', seed=15) 
    data = Dataset(root='/tmp/', name='cora', setting='prognn')    
    adj, features, labels = data.adj, data.features, data.labels
    idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test

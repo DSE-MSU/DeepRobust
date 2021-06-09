@@ -24,7 +24,7 @@ idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
 
 print('==================')
-print('=== load graph perturbed by Zugner metattack (under seed 15) ===')
+print('=== load graph perturbed by Zugner metattack (under prognn splits) ===')
 # load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
 perturbed_data = PrePtbDataset(root='/tmp/',
         name=args.dataset,

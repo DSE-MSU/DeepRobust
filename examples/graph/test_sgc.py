@@ -36,7 +36,8 @@ sgc.test()
 
 # load pre-attacked graph by Zugner: https://github.com/danielzuegner/gnn-meta-attack
 print('==================')
-print('=== load graph perturbed by Zugner metattack (under seed 15) ===')
+print('=== load graph perturbed by Zugner metattack (under prognn splits) ===')
+
 perturbed_data = PrePtbDataset(root='/tmp/',
         name=args.dataset,
         attack_method='meta',
