@@ -43,8 +43,6 @@ class PGD(BaseAttack):
                    self.epsilon,
                    self.clip_max,
                    self.clip_min,
-                   self.mean,
-                   self.std,
                    self.num_steps,
                    self.step_size,
                    self.print_process)
@@ -56,8 +54,6 @@ class PGD(BaseAttack):
                      step_size = 0.01,
                      clip_max = 1.0,
                      clip_min = 0.0,
-                     mean = (0, 0, 0),
-                     std = (1.0, 1.0, 1,0),
                      print_process = False
                      ):
         """parse_params.
@@ -82,8 +78,6 @@ class PGD(BaseAttack):
         self.step_size = step_size
         self.clip_max = clip_max
         self.clip_min = clip_min
-        self.mean = mean
-        self.std = std
         self.print_process = print_process
         return True
 
@@ -93,8 +87,6 @@ def pgd_attack(model,
                   epsilon,
                   clip_max,
                   clip_min,
-                  mean,
-                  std,
                   num_steps,
                   step_size,
                   print_process,
@@ -128,9 +120,9 @@ def pgd_attack(model,
 
             X_pgd = X.data + eta
 
-            #X_pgd = (torch.clamp(X_pgd * std + mean, clip_min, clip_max) - mean) / std
-            for ind in range(X_pgd.shape[1]):
-                X_pgd[:,ind,:,:] = (torch.clamp(X_pgd[:,ind,:,:] * std[ind] + mean[ind], clip_min, clip_max) - mean[ind]) / std[ind]
+            X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
+            #for ind in range(X_pgd.shape[1]):
+            #    X_pgd[:,ind,:,:] = (torch.clamp(X_pgd[:,ind,:,:] * std[ind] + mean[ind], clip_min, clip_max) - mean[ind]) / std[ind]
 
             X_pgd = X_pgd.detach()
             X_pgd.requires_grad_()
