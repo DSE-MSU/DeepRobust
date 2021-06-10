@@ -70,8 +70,8 @@ class Dataset():
         self.adj, self.features, self.labels = self.load_data()
 
         if setting == 'prognn':
-            assert name in ['cora', 'citeseer', 'pubmed', 'cora_ml'], "ProGNN splits only " + \
-                        "cora, citeseer, pubmed, cora_ml"
+            assert name in ['cora', 'citeseer', 'pubmed', 'cora_ml', 'polblogs'], "ProGNN splits only " + \
+                        "cora, citeseer, pubmed, cora_ml, polblogs"
             self.idx_train, self.idx_val, self.idx_test = self.get_prognn_splits()
         else:
             self.idx_train, self.idx_val, self.idx_test = self.get_train_val_test()
