@@ -80,8 +80,9 @@ class ProxOperators():
     def prox_nuclear(self, data, alpha):
         """Proximal operator for nuclear norm (trace norm).
         """
+        device = data.device
         U, S, V = np.linalg.svd(data.cpu())
-        U, S, V = torch.FloatTensor(U).cuda(), torch.FloatTensor(S).cuda(), torch.FloatTensor(V).cuda()
+        U, S, V = torch.FloatTensor(U).to(device), torch.FloatTensor(S).to(device), torch.FloatTensor(V).to(device)
         self.nuclear_norm = S.sum()
         # print("nuclear norm: %.4f" % self.nuclear_norm)
 
@@ -89,10 +90,11 @@ class ProxOperators():
         return torch.matmul(torch.matmul(U, diag_S), V)
 
     def prox_nuclear_truncated_2(self, data, alpha, k=50):
+        device = data.device
         import tensorly as tl
         tl.set_backend('pytorch')
         U, S, V = tl.truncated_svd(data.cpu(), n_eigenvecs=k)
-        U, S, V = torch.FloatTensor(U).cuda(), torch.FloatTensor(S).cuda(), torch.FloatTensor(V).cuda()
+        U, S, V = torch.FloatTensor(U).to(device), torch.FloatTensor(S).to(device), torch.FloatTensor(V).to(device)
         self.nuclear_norm = S.sum()
         # print("nuclear norm: %.4f" % self.nuclear_norm)
 
@@ -103,7 +105,7 @@ class ProxOperators():
         # V = torch.matmul(U, V)
 
         # make diag_S sparse matrix
-        indices = torch.tensor((range(0, len(S)), range(0, len(S)))).cuda()
+        indices = torch.tensor((range(0, len(S)), range(0, len(S)))).to(device)
         values = S
         diag_S = torch.sparse.FloatTensor(indices, values, torch.Size((len(S), len(S))))
         V = torch.spmm(diag_S, V)
@@ -111,23 +113,25 @@ class ProxOperators():
         return V
 
     def prox_nuclear_truncated(self, data, alpha, k=50):
+        device = data.device
         indices = torch.nonzero(data).t()
         values = data[indices[0], indices[1]] # modify this based on dimensionality
         data_sparse = sp.csr_matrix((values.cpu().numpy(), indices.cpu().numpy()))
         U, S, V = sp.linalg.svds(data_sparse, k=k)
-        U, S, V = torch.FloatTensor(U).cuda(), torch.FloatTensor(S).cuda(), torch.FloatTensor(V).cuda()
+        U, S, V = torch.FloatTensor(U).to(device), torch.FloatTensor(S).to(device), torch.FloatTensor(V).to(device)
         self.nuclear_norm = S.sum()
         diag_S = torch.diag(torch.clamp(S-alpha, min=0))
         return torch.matmul(torch.matmul(U, diag_S), V)
 
     def prox_nuclear_cuda(self, data, alpha):
 
+        device = data.device
         U, S, V = torch.svd(data)
         # self.nuclear_norm = S.sum()
         # print(f"rank = {len(S.nonzero())}")
         self.nuclear_norm = S.sum()
         S = torch.clamp(S-alpha, min=0)
-        indices = torch.tensor([range(0, U.shape[0]),range(0, U.shape[0])]).cuda()
+        indices = torch.tensor([range(0, U.shape[0]),range(0, U.shape[0])]).to(device)
         values = S
         diag_S = torch.sparse.FloatTensor(indices, values, torch.Size(U.shape))
         # diag_S = torch.diag(torch.clamp(S-alpha, min=0))
