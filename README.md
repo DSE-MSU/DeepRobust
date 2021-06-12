@@ -54,7 +54,7 @@ If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
 
 # Changelog
-* [04/2021] DeepRobust 0.2.1 Released. Please try `pip install deeprobust==0.2.1`!
+* [06/2021] DeepRobust 0.2.2 Released. Please try `pip install deeprobust==0.2.2`!
 * [04/2021] [Image Package] Add support for ImageNet. See details in [test_ImageNet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/image/test_ImageNet.py)
 * [04/2021] [Graph Package] Add support for OGB datasets.  See more details in the [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/pyg.html).
 * [03/2021] [Graph Package] Added node embedding attack and victim models! See this [tutorial page](https://deeprobust.readthedocs.io/en/latest/graph/node_embedding.html).
