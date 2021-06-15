@@ -22,6 +22,7 @@ test_loader = torch.utils.data.DataLoader(
             batch_size=256,
             shuffle=True)
 
+
 """
 TRAIN DEFENSE MODEL
 """

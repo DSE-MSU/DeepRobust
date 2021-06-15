@@ -46,6 +46,7 @@ Generate adversarial examples
 F1 = FGSM(model, device = "cuda")       ### or cuda
 AdvExArray = F1.generate(xx, yy, **attack_params['FGSM_MNIST'])
 
+
 predict0 = model(xx)
 predict0= predict0.argmax(dim=1, keepdim=True)
 
