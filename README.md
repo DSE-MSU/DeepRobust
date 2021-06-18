@@ -52,6 +52,14 @@ For more details about attacks and defenses, you can read the following papers.
 
 If our work could help your research, please cite:
 [DeepRobust: A PyTorch Library for Adversarial Attacks and Defenses](https://arxiv.org/abs/2005.06149)
+```
+@article{li2020deeprobust,
+  title={Deeprobust: A pytorch library for adversarial attacks and defenses},
+  author={Li, Yaxin and Jin, Wei and Xu, Han and Tang, Jiliang},
+  journal={arXiv preprint arXiv:2005.06149},
+  year={2020}
+}
+```
 
 # Changelog
 * [05/2021] DeepRobust is published at AAAI 2021. Check [here](https://ojs.aaai.org/index.php/AAAI/article/view/18017)!
