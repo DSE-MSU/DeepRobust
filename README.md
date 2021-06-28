@@ -62,6 +62,7 @@ If our work could help your research, please cite:
 ```
 
 # Changelog
+* [06/2021] [Image Package] Add preprocessing method: APE-GAN.
 * [05/2021] DeepRobust is published at AAAI 2021. Check [here](https://ojs.aaai.org/index.php/AAAI/article/view/18017)!
 * [05/2021] DeepRobust 0.2.2 Released. Please try `pip install deeprobust==0.2.2`!
 * [04/2021] [Image Package] Add support for ImageNet. See details in [test_ImageNet.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/image/test_ImageNet.py)
