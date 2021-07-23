@@ -549,7 +549,7 @@ def get_degree_squence(adj):
     except:
         return ts.sum(adj, dim=1).to_dense()
 
-def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, d_min, threshold=0.004):
+def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, d_min, threshold=0.004, undirected=True):
     """
     Filter the input node pairs based on the likelihood ratio test proposed by Zügner et al. 2018, see
     https://dl.acm.org/citation.cfm?id=3220078. In essence, for each node pair return 1 if adding/removing the edge
@@ -595,7 +595,8 @@ def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, 
 
     allowed_mask = torch.zeros(modified_adjacency.shape)
     allowed_mask[filtered_edges.T] = 1
-    allowed_mask += allowed_mask.t()
+    if undirected:
+        allowed_mask += allowed_mask.t()
     return allowed_mask, current_ratio
 
 
