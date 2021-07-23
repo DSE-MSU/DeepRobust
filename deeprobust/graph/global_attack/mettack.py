@@ -119,7 +119,7 @@ class BaseMeta(BaseAttack):
         allowed_mask, current_ratio = utils.likelihood_ratio_filter(t_possible_edges,
                                                                     modified_adj,
                                                                     ori_adj, t_d_min,
-                                                                    ll_cutoff)
+                                                                    ll_cutoff, undirected=self.undirected)
         return allowed_mask, current_ratio
 
     def get_adj_score(self, adj_grad, modified_adj, ori_adj, ll_constraint, ll_cutoff):
