@@ -363,7 +363,8 @@ class Metattack(BaseMeta):
                 adj_meta_argmax = torch.argmax(adj_meta_score)
                 row_idx, col_idx = utils.unravel_index(adj_meta_argmax, ori_adj.shape)
                 self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
-                self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+                if self.undirected:
+                    self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
             else:
                 feature_meta_argmax = torch.argmax(feature_meta_score)
                 row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
@@ -558,7 +559,8 @@ class MetaApprox(BaseMeta):
                 adj_meta_argmax = torch.argmax(adj_meta_score)
                 row_idx, col_idx = utils.unravel_index(adj_meta_argmax, ori_adj.shape)
                 self.adj_changes.data[row_idx][col_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
-                self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
+                if self.undirected:
+                    self.adj_changes.data[col_idx][row_idx] += (-2 * modified_adj[row_idx][col_idx] + 1)
             else:
                 feature_meta_argmax = torch.argmax(feature_meta_score)
                 row_idx, col_idx = utils.unravel_index(feature_meta_argmax, ori_features.shape)
