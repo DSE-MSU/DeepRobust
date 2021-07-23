@@ -73,7 +73,8 @@ class BaseMeta(BaseAttack):
         adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
         # ind = np.diag_indices(self.adj_changes.shape[0]) # this line seems useless
         if self.undirected:
-            adj_changes_square = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
+            adj_changes_square = adj_changes_square + torch.transpose(adj_changes_square, 1, 0)
+        adj_changes_square = torch.clamp(adj_changes_square, -1, 1)
         modified_adj = adj_changes_square + ori_adj
         return modified_adj
 
@@ -111,7 +112,10 @@ class BaseMeta(BaseAttack):
         Note that different data type (float, double) can effect the final results.
         """
         t_d_min = torch.tensor(2.0).to(self.device)
-        t_possible_edges = np.array(np.triu(np.ones((self.nnodes, self.nnodes)), k=1).nonzero()).T
+        if self.undirected:
+            t_possible_edges = np.array(np.triu(np.ones((self.nnodes, self.nnodes)), k=1).nonzero()).T
+        else:
+            t_possible_edges = np.array((np.ones((self.nnodes, self.nnodes)) - np.eye(self.nnodes)).nonzero()).T
         allowed_mask, current_ratio = utils.likelihood_ratio_filter(t_possible_edges,
                                                                     modified_adj,
                                                                     ori_adj, t_d_min,
