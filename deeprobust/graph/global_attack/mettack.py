@@ -36,12 +36,14 @@ class BaseMeta(BaseAttack):
         whether to attack graph structure
     attack_features : bool
         whether to attack node features
+    undirected : bool
+        whether the graph is undirected
     device: str
         'cpu' or 'cuda'
 
     """
 
-    def __init__(self, model=None, nnodes=None, feature_shape=None, lambda_=0.5, attack_structure=True, attack_features=False, device='cpu'):
+    def __init__(self, model=None, nnodes=None, feature_shape=None, lambda_=0.5, attack_structure=True, attack_features=False, undirected=True, device='cpu'):
 
         super(BaseMeta, self).__init__(model, nnodes, attack_structure, attack_features, device)
         self.lambda_ = lambda_
@@ -52,6 +54,7 @@ class BaseMeta(BaseAttack):
         self.modified_features = None
 
         if attack_structure:
+            self.undirected = undirected
             assert nnodes is not None, 'Please give nnodes='
             self.adj_changes = Parameter(torch.FloatTensor(nnodes, nnodes))
             self.adj_changes.data.fill_(0)
@@ -68,9 +71,10 @@ class BaseMeta(BaseAttack):
 
     def get_modified_adj(self, ori_adj):
         adj_changes_square = self.adj_changes - torch.diag(torch.diag(self.adj_changes, 0))
-        ind = np.diag_indices(self.adj_changes.shape[0])
-        adj_changes_symm = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
-        modified_adj = adj_changes_symm + ori_adj
+        # ind = np.diag_indices(self.adj_changes.shape[0]) # this line seems useless
+        if self.undirected:
+            adj_changes_square = torch.clamp(adj_changes_square + torch.transpose(adj_changes_square, 1, 0), -1, 1)
+        modified_adj = adj_changes_square + ori_adj
         return modified_adj
 
     def get_modified_features(self, ori_features):
@@ -86,8 +90,9 @@ class BaseMeta(BaseAttack):
         degree_one = (degrees == 1)
         resh = degree_one.repeat(modified_adj.shape[0], 1).float()
         l_and = resh * modified_adj
-        logical_and_symmetric = l_and + l_and.t()
-        flat_mask = 1 - logical_and_symmetric
+        if self.undirected:
+            l_and = l_and + l_and.t()
+        flat_mask = 1 - l_and
         return flat_mask
 
     def self_training_label(self, labels, idx_train):
@@ -164,9 +169,9 @@ class Metattack(BaseMeta):
 
     """
 
-    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.1, momentum=0.9):
+    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, undirected=True, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.1, momentum=0.9):
 
-        super(Metattack, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, device)
+        super(Metattack, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, undirected, device)
         self.momentum = momentum
         self.lr = lr
         self.train_iters = train_iters
@@ -396,9 +401,9 @@ class MetaApprox(BaseMeta):
 
     """
 
-    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.01):
+    def __init__(self, model, nnodes, feature_shape=None, attack_structure=True, attack_features=False, undirected=True, device='cpu', with_bias=False, lambda_=0.5, train_iters=100, lr=0.01):
 
-        super(MetaApprox, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, device)
+        super(MetaApprox, self).__init__(model, nnodes, feature_shape, lambda_, attack_structure, attack_features, undirected, device)
 
         self.lr = lr
         self.train_iters = train_iters
