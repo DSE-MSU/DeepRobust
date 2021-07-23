@@ -596,7 +596,7 @@ def likelihood_ratio_filter(node_pairs, modified_adjacency, original_adjacency, 
     allowed_mask = torch.zeros(modified_adjacency.shape)
     allowed_mask[filtered_edges.T] = 1
     if undirected:
-	allowed_mask += allowed_mask.t()
+        allowed_mask += allowed_mask.t()
     return allowed_mask, current_ratio
 
 
