@@ -296,7 +296,7 @@ class EstimateAdj(nn.Module):
     def normalize(self):
 
         if self.symmetric:
-            adj = (self.estimated_adj + self.estimated_adj.t())
+            adj = (self.estimated_adj + self.estimated_adj.t())/2
         else:
             adj = self.estimated_adj
 
