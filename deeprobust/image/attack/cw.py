@@ -206,7 +206,7 @@ class CarliniWagner(BaseAttack):
         targetlabel_mask = (torch.from_numpy(onehot_like(np.zeros(self.classnum), target))).double()
         secondlargest_mask = (torch.from_numpy(np.ones(self.classnum)) - targetlabel_mask).to(self.device)
 
-        secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy())
+        secondlargest = np.argmax((logits.double() * secondlargest_mask).cpu().detach().numpy(), axis = 1)
 
         is_adv_loss = logits[0][secondlargest] - logits[0][target]
 
