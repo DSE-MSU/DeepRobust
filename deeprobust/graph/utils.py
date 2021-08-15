@@ -202,7 +202,7 @@ def add_self_loops(edge_index, edge_weight=None, fill_value=1, num_nodes=None):
 def normalize_adj_tensor(adj, sparse=False):
     """Normalize adjacency tensor matrix.
     """
-    device = torch.device("cuda" if adj.is_cuda else "cpu")
+    device = adj.device
     if sparse:
         # warnings.warn('If you find the training process is too slow, you can uncomment line 207 in deeprobust/graph/utils.py. Note that you need to install torch_sparse')
         # TODO if this is too slow, uncomment the following code,
@@ -258,7 +258,7 @@ def degree_normalize_adj_tensor(adj, sparse=True):
     """degree_normalize_adj_tensor.
     """
 
-    device = torch.device("cuda" if adj.is_cuda else "cpu")
+    device = adj.device
     if sparse:
         # return  degree_normalize_sparse_tensor(adj)
         adj = to_scipy(adj)
