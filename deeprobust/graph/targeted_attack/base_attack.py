@@ -2,6 +2,7 @@ from torch.nn.modules.module import Module
 import numpy as np
 import torch
 import scipy.sparse as sp
+import os.path as osp
 
 class BaseAttack(Module):
     """Abstract base class for target attack classes.
