@@ -87,11 +87,6 @@ class NATTACK(BaseAttack):
 
 def attack(model, loader, classnum, clip_max, clip_min, epsilon, population, max_iterations, learning_rate, sigma, target_or_not):
 
-    logging.basicConfig(format = '%(asctime)s - %(levelname)s: %(message)s')
-    logger = logging.getLogger('log_nattack')
-    logger.setLevel(logging.DEBUG)
-    logger.info('Start attack.')
-
     #initialization
     totalImages = 0
     succImages = 0
