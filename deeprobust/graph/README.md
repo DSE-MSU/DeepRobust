@@ -51,6 +51,7 @@ For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/
 | IG-Attack | Targeted Attack | Structure<br>Features| Both | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|[test_ig.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_ig.py) |
 | NIPA | Global Attack | Structure | Poisoning |  Node Classification | [Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach](https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf) | [test_nipa.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nipa.py) |
 | RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |[test_rnd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rnd.py) |
+| SGAttack | Targeted Attack | Structure | Poisoning | Node Classification | [Adversarial Attack on Large Scale Graph](https://arxiv.org/abs/2009.03488)| [test_sga.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_sga.py) |
 
 # Defense Methods
 |   Defense Methods   | Defense Type | Apply Domain | Paper | Code |
