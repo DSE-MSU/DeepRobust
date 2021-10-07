@@ -68,6 +68,7 @@ For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/
 | Adv-training | Adversarial Training | Node Classification |  |[test_adv_train_poisoning.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_adv_train_poisoning.py) |
 | Pro-GNN | Graph Purifying | Node Classification | [Graph Structure Learning for Robust Graph Neural Network](https://arxiv.org/abs/2005.10203)|[test_prognn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prognn.py) |
 | SimP-GCN | Adaptive Aggregation | Node Classification | [Node Similarity Preserving Graph Convolutional Networks](https://arxiv.org/abs/2011.09643)|[test_simpgcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_simpgcn.py) |
+| MedianGCN | Adaptive Aggregation | Node Classification | [Understanding Structural Vulnerability in Graph Convolutional Networks](https://arxiv.org/abs/2108.06280)|[test_median_gcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_median_gcn.py) |
 <!--| Adv-training | Adversarial Training | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
 -->
 <!--| Hidden-Adv-training | Adversarial Training | Node Classification<br>Graph Classification |[To be added]|
