@@ -62,7 +62,7 @@ If our work could help your research, please cite:
 ```
 
 # Changelog
-* [10/2021] add scalable attack. Thank [Jintang](https://github.com/EdisonLeeeee) for his contribution!
+* [10/2021] add scalable attack and MedianGCN. Thank [Jintang](https://github.com/EdisonLeeeee) for his contribution!
 * [06/2021] [Image Package] Add preprocessing method: APE-GAN.
 * [05/2021] DeepRobust is published at AAAI 2021. Check [here](https://ojs.aaai.org/index.php/AAAI/article/view/18017)!
 * [05/2021] DeepRobust 0.2.2 Released. Please try `pip install deeprobust==0.2.2`!
