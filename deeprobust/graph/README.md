@@ -51,6 +51,7 @@ For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/
 | IG-Attack | Targeted Attack | Structure<br>Features| Both | Node Classification | [Adversarial Examples on Graph Data: Deep Insights into Attack and Defense](https://arxiv.org/pdf/1903.01610.pdf)|[test_ig.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_ig.py) |
 | NIPA | Global Attack | Structure | Poisoning |  Node Classification | [Non-target-specific Node Injection Attacks on Graph Neural Networks: A Hierarchical Reinforcement Learning Approach](https://faculty.ist.psu.edu/vhonavar/Papers/www20.pdf) | [test_nipa.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_nipa.py) |
 | RND | Targeted Attack<br>Global Attack | Structure<br>Features<br>Adding Nodes | Both | Node Classification | |[test_rnd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_rnd.py) |
+| SGAttack | Targeted Attack | Structure | Poisoning | Node Classification | [Adversarial Attack on Large Scale Graph](https://arxiv.org/abs/2009.03488)| [test_sga.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_sga.py) |
 
 # Defense Methods
 |   Defense Methods   | Defense Type | Apply Domain | Paper | Code |
@@ -67,6 +68,7 @@ For more details, please take a look at [dataset.py](https://github.com/DSE-MSU/
 | Adv-training | Adversarial Training | Node Classification |  |[test_adv_train_poisoning.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_adv_train_poisoning.py) |
 | Pro-GNN | Graph Purifying | Node Classification | [Graph Structure Learning for Robust Graph Neural Network](https://arxiv.org/abs/2005.10203)|[test_prognn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prognn.py) |
 | SimP-GCN | Adaptive Aggregation | Node Classification | [Node Similarity Preserving Graph Convolutional Networks](https://arxiv.org/abs/2011.09643)|[test_simpgcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_simpgcn.py) |
+| MedianGCN | Adaptive Aggregation | Node Classification | [Understanding Structural Vulnerability in Graph Convolutional Networks](https://arxiv.org/abs/2108.06280)|[test_median_gcn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_median_gcn.py) |
 <!--| Adv-training | Adversarial Training | Node Classification | [Topology Attack and Defense for Graph Neural Networks: An Optimization Perspective](https://arxiv.org/pdf/1906.04214.pdf)|
 -->
 <!--| Hidden-Adv-training | Adversarial Training | Node Classification<br>Graph Classification |[To be added]|

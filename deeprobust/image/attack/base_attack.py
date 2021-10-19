@@ -61,7 +61,7 @@ class BaseAttack(object):
         if type(image).__name__ == 'Tensor':
             image = image.float()
             image = image.float().clone().detach().requires_grad_(True)
-        elif type(x).__name__ == 'ndarray':
+        elif type(image).__name__ == 'ndarray':
             image = image.astype('float')
             image = torch.tensor(image, requires_grad=True)
         else:

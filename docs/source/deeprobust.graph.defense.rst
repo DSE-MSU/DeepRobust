@@ -40,6 +40,12 @@ deeprobust.graph.defense.r\_gcn module
 .. automodule:: deeprobust.graph.defense.r_gcn
    :members:
 
+deeprobust.graph.defense.median_gcn module
+--------------------------------------
+
+.. automodule:: deeprobust.graph.defense.median_gcn
+   :members:
+
 
 Module contents
 ---------------

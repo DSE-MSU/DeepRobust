@@ -2,6 +2,7 @@ from torch.nn.modules.module import Module
 import numpy as np
 import torch
 import scipy.sparse as sp
+import os.path as osp
 
 class BaseAttack(Module):
     """Abstract base class for target attack classes.
@@ -91,10 +92,10 @@ class BaseAttack(Module):
         modified_adj = self.modified_adj
 
         if type(modified_adj) is torch.Tensor:
-            sparse_adj = utils.to_scipy(modified_adj)
-            sp.save_npz(osp.join(root, name), sparse_adj)
-        else:
-            sp.save_npz(osp.join(root, name), modified_adj)
+            modified_adj = utils.to_scipy(modified_adj)
+        if sp.issparse(modified_adj):
+            modified_adj = modified_adj.tocsr()
+        sp.save_npz(osp.join(root, name), modified_adj)
 
     def save_features(self, root=r'/tmp/', name='mod_features'):
         """Save attacked node feature matrix.
@@ -118,8 +119,8 @@ class BaseAttack(Module):
         modified_features = self.modified_features
 
         if type(modified_features) is torch.Tensor:
-            sparse_features = utils.to_scipy(modified_features)
-            sp.save_npz(osp.join(root, name), sparse_features)
-        else:
-            sp.save_npz(osp.join(root, name), modified_features)
+            modified_features = utils.to_scipy(modified_features)
+        if sp.issparse(modified_features):
+            modified_features = modified_features.tocsr()
+        sp.save_npz(osp.join(root, name), modified_features)
 
