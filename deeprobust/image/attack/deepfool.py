@@ -2,7 +2,7 @@ import numpy as np
 from torch.autograd import Variable
 import torch as torch
 import copy
-from torch.autograd.gradcheck import zero_gradients
+#from torch.autograd.gradcheck import zero_gradients
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
@@ -27,13 +27,13 @@ class DeepFool(BaseAttack):
             target label
         kwargs :
             user defined paremeters
-       
+
         Returns
         -------
         adv_img :
             adversarial examples
         """
- 
+
 
         #check type device
         assert self.check_type_device(image, label)
@@ -102,7 +102,7 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
         grad_orig = x.grad.data.cpu().numpy().copy()
 
         for k in range(1, num_classes):
-            zero_gradients(x)
+            x.zero_grad()
 
             fs[0, output[k]].backward(retain_graph=True)
             cur_grad = x.grad.data.cpu().numpy().copy()
