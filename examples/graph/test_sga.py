@@ -44,7 +44,8 @@ surrogate.test()
 target_node = 0
 assert target_node in idx_unlabeled
 
-model = SGAttack(surrogate, attack_structure=True, device=device)
+model = SGAttack(surrogate, attack_structure=True, attack_features=False, device=device)
+# model = SGAttack(surrogate, attack_structure=True, attack_features=True, device=device)
 model = model.to(device)
 
 
@@ -52,14 +53,16 @@ def main():
     degrees = adj.sum(0).A1
     # How many perturbations to perform. Default: Degree of the node
     n_perturbations = int(degrees[target_node])
-
     # direct attack
-    model.attack(features, adj, labels, target_node, n_perturbations)
+    model.attack(features, adj, labels, target_node, n_perturbations, direct=True)
     # # indirect attack/ influencer attack
     # model.attack(features, adj, labels, target_node, n_perturbations, direct=False, n_influencers=5)
     modified_adj = model.modified_adj
     modified_features = model.modified_features
+    print('=== Structure perturbations ===')
     print(model.structure_perturbations)
+    print('=== Feature perturbations ===')
+    print(model.feature_perturbations)
     print('=== testing GCN on original(clean) graph ===')
     test(adj, features, target_node)
     print('=== testing GCN on perturbed graph ===')
@@ -131,9 +134,9 @@ def multi_test_poison():
     print('=== [Poisoning] Attacking %s nodes respectively ===' % num)
     for target_node in tqdm(node_list):
         n_perturbations = int(degrees[target_node])
-        model = SGAttack(surrogate, attack_structure=True, device=device)
+        model = SGAttack(surrogate, attack_structure=True, attack_features=False, device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations, verbose=False)
+        model.attack(features, adj, labels, target_node, n_perturbations, direct=True, verbose=False)
         modified_adj = model.modified_adj
         modified_features = model.modified_features
         acc = single_test(modified_adj, modified_features, target_node)
@@ -184,9 +187,9 @@ def multi_test_evasion():
     print('=== [Evasion] Attacking %s nodes respectively ===' % num)
     for target_node in tqdm(node_list):
         n_perturbations = int(degrees[target_node])
-        model = SGAttack(surrogate, attack_structure=True, device=device)
+        model = SGAttack(surrogate, attack_structure=True, attack_features=False, device=device)
         model = model.to(device)
-        model.attack(features, adj, labels, target_node, n_perturbations, verbose=False)
+        model.attack(features, adj, labels, target_node, n_perturbations, direct=True, verbose=False)
         modified_adj = model.modified_adj
         modified_features = model.modified_features
 
