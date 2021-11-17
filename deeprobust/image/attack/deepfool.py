@@ -6,6 +6,15 @@ import copy
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
+def zero_gradients(x):
+    if isinstance(x, torch.Tensor):
+        if x.grad is not None:
+            x.grad.detach_()
+            x.grad.zero_()
+        elif isinstance(x, collections.abc.Iterable):
+            for elem in x:
+                zero_gradients(elem)
+
 class DeepFool(BaseAttack):
     """DeepFool attack.
     """
@@ -102,7 +111,7 @@ def deepfool(model, image, num_classes, overshoot, max_iter, device):
         grad_orig = x.grad.data.cpu().numpy().copy()
 
         for k in range(1, num_classes):
-            x.zero_grad()
+            zero_gradients(x)
 
             fs[0, output[k]].backward(retain_graph=True)
             cur_grad = x.grad.data.cpu().numpy().copy()
