@@ -45,7 +45,8 @@ class PGD(BaseAttack):
                    self.clip_min,
                    self.num_steps,
                    self.step_size,
-                   self.print_process)
+                   self.print_process,
+                   self.bound)
                    ##default parameter for mnist data set.
 
     def parse_params(self,
@@ -54,7 +55,8 @@ class PGD(BaseAttack):
                      step_size = 0.01,
                      clip_max = 1.0,
                      clip_min = 0.0,
-                     print_process = False
+                     print_process = False,
+                     bound = 'linf'
                      ):
         """parse_params.
 
@@ -79,6 +81,7 @@ class PGD(BaseAttack):
         self.clip_max = clip_max
         self.clip_min = clip_min
         self.print_process = print_process
+        self.bound = bound
         return True
 
 def pgd_attack(model,
@@ -102,7 +105,8 @@ def pgd_attack(model,
 
     X_pgd = torch.tensor(imageArray).to(device).float()
     X_pgd.requires_grad = True
-
+    eta = torch.zeros_like(X)
+    eta.requires_grad = True
     for i in range(num_steps):
 
         pred = model(X_pgd)
@@ -129,16 +133,18 @@ def pgd_attack(model,
             X_pgd.retain_grad()
 
         if bound == 'l2':
-            output = model(X+delta)
+            output = model(X + eta)
             incorrect = output.max(1)[1] != y
             correct = (~incorrect).unsqueeze(1).unsqueeze(1).unsqueeze(1).float()
             #Finding the correct examples so as to attack only them
-            loss = nn.CrossEntropyLoss()(model(X + delta), y)
+            loss = nn.CrossEntropyLoss()(model(X + eta), y)
             loss.backward()
-            delta.data +=  correct*alpha*delta.grad.detach() / norms(delta.grad.detach())
-            delta.data *=  epsilon / norms(delta.detach()).clamp(min=epsilon)
-            delta.data =   torch.min(torch.max(delta.detach(), -X), 1-X) # clip X+delta to [0,1]
-            delta.grad.zero_()
+
+            eta.data +=  correct * step_size * eta.grad.detach() / torch.norm(eta.grad.detach())
+            eta.data *=  epsilon / torch.norm(eta.detach()).clamp(min=epsilon)
+            eta.data =   torch.min(torch.max(eta.detach(), -X), 1-X) # clip X+delta to [0,1]
+            eta.grad.zero_()
+            X_pgd = X + eta
 
     return X_pgd
 
