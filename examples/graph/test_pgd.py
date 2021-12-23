@@ -93,6 +93,9 @@ def main():
     fake_labels = torch.argmax(fake_labels, 1).cpu()
     # Besides, we need to add the idx into the whole process
     idx_fake = np.concatenate([idx_train,idx_test])
+
+    idx_others = list(set(np.arange(len(labels))) - set(idx_train))
+    fake_labels = torch.cat([labels[idx_train], fake_labels[idx_others]])
     model.attack(features, adj, fake_labels, idx_fake, perturbations, epochs=args.epochs)
 
     print('=== testing GCN on Evasion attack ===')
