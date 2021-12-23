@@ -133,6 +133,7 @@ class PGDAttack(BaseAttack):
         K = 20
         best_loss = -1000
         victim_model = self.surrogate
+        victim_model.eval()
         with torch.no_grad():
             s = self.adj_changes.cpu().detach().numpy()
             for i in range(K):

@@ -36,7 +36,7 @@ if device != 'cpu':
 
 data = Dataset(root='/tmp/', name=args.dataset, setting='gcn')
 adj, features, labels = data.adj, data.features, data.labels
-# features = normalize_feature(features)
+features = normalize_feature(features)
 
 idx_train, idx_val, idx_test = data.idx_train, data.idx_val, data.idx_test
 
@@ -45,11 +45,12 @@ perturbations = int(args.ptb_rate * (adj.sum()//2))
 adj, features, labels = preprocess(adj, features, labels, preprocess_adj=False)
 
 # Setup Victim Model
-victim_model = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=16,
+victim_model = GCN(nfeat=features.shape[1], nclass=labels.max().item()+1, nhid=32,
         dropout=0.5, weight_decay=5e-4, device=device)
 
 victim_model = victim_model.to(device)
-victim_model.fit(features, adj, labels, idx_train)
+# victim_model.fit(features, adj, labels, idx_train)
+victim_model.fit(features, adj, labels, idx_train, idx_val, patience=30)
 
 # Setup Attack Model
 
@@ -63,17 +64,17 @@ def test(adj, gcn=None):
     if gcn is None:
         # adj = normalize_adj_tensor(adj)
         gcn = GCN(nfeat=features.shape[1],
-                  nhid=args.hidden,
+                  nhid=32,
                   nclass=labels.max().item() + 1,
                   dropout=args.dropout, device=device)
         gcn = gcn.to(device)
-        gcn.fit(features, adj, labels, idx_train) # train without model picking
-        gcn.fit(features, adj, labels, idx_train, idx_val, patience=30) # train with validation model picking
+        # gcn.fit(features, adj, labels, idx_train) # train without model picking
+        gcn.fit(features, adj, labels, idx_train, idx_val, patience=10) # train with validation model picking
         gcn.eval()
         output = gcn.predict().cpu()
     else:
         gcn.eval()
-        output = gcn.predict().cpu()
+        output = gcn.predict(features.to(device), adj.to(device)).cpu()
 
     loss_test = F.nll_loss(output[idx_test], labels[idx_test])
     acc_test = accuracy(output[idx_test], labels[idx_test])
@@ -86,7 +87,7 @@ def test(adj, gcn=None):
 
 def main():
     target_gcn = GCN(nfeat=features.shape[1],
-              nhid=16,
+              nhid=32,
               nclass=labels.max().item() + 1,
               dropout=0.5, device=device)
 
@@ -111,4 +112,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

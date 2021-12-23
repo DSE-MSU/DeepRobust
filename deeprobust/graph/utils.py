@@ -75,7 +75,10 @@ def preprocess(adj, features, labels, preprocess_adj=False, preprocess_feature=F
         adj = sparse_mx_to_torch_sparse_tensor(adj)
         features = sparse_mx_to_torch_sparse_tensor(features)
     else:
-        features = torch.FloatTensor(np.array(features.todense()))
+        if sp.issparse(features):
+            features = torch.FloatTensor(np.array(features.todense()))
+        else:
+            features = torch.FloatTensor(features)
         adj = torch.FloatTensor(adj.todense())
     return adj.to(device), features.to(device), labels.to(device)
 
