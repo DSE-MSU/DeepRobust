@@ -541,7 +541,7 @@ def get_splits_each_class(labels, train_size):
 
 
 def unravel_index(index, array_shape):
-    rows = index // array_shape[1]
+    rows = torch.div(index, array_shape[1], rounding_mode='trunc')
     cols = index % array_shape[1]
     return rows, cols
 
