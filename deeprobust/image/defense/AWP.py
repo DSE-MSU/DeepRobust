@@ -130,7 +130,7 @@ class AWP_AT(BaseDefense):
                 else:
                     print("make new directory and save model in " + str(self.save_dir))
                     os.mkdir('./' + str(self.save_dir))
-                    torch.save(self.model.state_dict(), os.path.join(self.save_dir,self.save_name + '_epoch' + str(epoch) + '.pth'))
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, self.save_name + '_epoch' + str(epoch) + '.pth'))
 
             scheduler.step()
 
