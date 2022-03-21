@@ -91,11 +91,11 @@ def train(model, data, device, maxepoch, data_path = './', save_per_epoch = 10, 
         if (save_model and (epoch % (save_per_epoch) == 0 or epoch == maxepoch)):
             if os.path.isdir('./trained_models/'):
                 print('Save model.')
-                torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+                torch.save(train_net.state_dict(), os.path.join('trained_models', data + "_" + model + "_epoch_" + str(epoch) + ".pt"))
             else:
                 os.mkdir('./trained_models/')
                 print('Make directory and save model.')
-                torch.save(train_net.state_dict(), './trained_models/'+ data + "_" + model + "_epoch_" + str(epoch) + ".pt")
+                torch.save(train_net.state_dict(), os.path.join('trained_models', data + "_" + model + "_epoch_" + str(epoch) + ".pt"))
         scheduler.step()
 
 def feed_dataset(data, data_dict):
