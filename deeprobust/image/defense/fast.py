@@ -47,12 +47,12 @@ class Fast(BaseDefense):
 
             if (self.save_model):
                 if os.path.isdir('./' + self.save_dir):
-                    torch.save(self.model.state_dict(), './' + self.save_dir + "/" + self.save_name)
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, self.save_name))
                     print("model saved in " + './' + self.save_dir)
                 else:
                     print("make new directory and save model in " + './' + self.save_dir)
                     os.mkdir('./' + self.save_dir)
-                    torch.save(self.model.state_dict(), './' + self.save_dir +"/" + self.save_name)
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, self.save_name))
 
         return self.model
 
