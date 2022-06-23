@@ -618,7 +618,7 @@ def compute_log_likelihood(n, alpha, S_d, d_min):
 
     """
 
-    return n * np.log(alpha) + n * alpha * np.log(d_min) + (alpha + 1) * S_d
+    return n * np.log(alpha) + n * alpha * np.log(d_min) - (alpha + 1) * S_d
 
 def filter_chisquare(ll_ratios, cutoff):
     return ll_ratios < cutoff
