@@ -9,6 +9,7 @@ import sys
 from torch_geometric.data import InMemoryDataset, Data
 from torch_geometric.datasets import Coauthor, Amazon
 
+
 class Dpr2Pyg(InMemoryDataset):
     """Convert deeprobust data (sparse matrix) to pytorch geometric data (tensor, edge_index)
 
@@ -35,7 +36,7 @@ class Dpr2Pyg(InMemoryDataset):
     """
 
     def __init__(self, dpr_data, transform=None, **kwargs):
-        root = 'data/' # dummy root; does not mean anything
+        root = 'data/'  # dummy root; does not mean anything
         self.dpr_data = dpr_data
         super(Dpr2Pyg, self).__init__(root, transform)
         pyg_data = self.process()
@@ -74,6 +75,8 @@ class Dpr2Pyg(InMemoryDataset):
         self.data, self.slices = self.collate([self.data])
 
     def get(self, idx):
+        if self.slices is None:
+            return self.data
         data = self.data.__class__()
 
         if hasattr(self.data, '__num_nodes__'):
@@ -83,7 +86,7 @@ class Dpr2Pyg(InMemoryDataset):
             item, slices = self.data[key], self.slices[key]
             s = list(repeat(slice(None), item.dim()))
             s[self.data.__cat_dim__(key, item)] = slice(slices[idx],
-                                                   slices[idx + 1])
+                                                        slices[idx + 1])
             data[key] = item[s]
         return data
 
@@ -97,6 +100,7 @@ class Dpr2Pyg(InMemoryDataset):
 
     def _download(self):
         pass
+
 
 class Pyg2Dpr(Dataset):
     """Convert pytorch geometric data (tensor, edge_index) to deeprobust
@@ -123,17 +127,17 @@ class Pyg2Dpr(Dataset):
 
     def __init__(self, pyg_data, **kwargs):
         is_ogb = hasattr(pyg_data, 'get_idx_split')
-        if is_ogb: # get splits for ogb datasets
+        if is_ogb:  # get splits for ogb datasets
             splits = pyg_data.get_idx_split()
         pyg_data = pyg_data[0]
         n = pyg_data.num_nodes
         self.adj = sp.csr_matrix((np.ones(pyg_data.edge_index.shape[1]),
-            (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
+                                  (pyg_data.edge_index[0], pyg_data.edge_index[1])), shape=(n, n))
         self.features = pyg_data.x.numpy()
         self.labels = pyg_data.y.numpy()
         if len(self.labels.shape) == 2 and self.labels.shape[1] == 1:
-            self.labels = self.labels.reshape(-1) # ogb-arxiv needs to reshape
-        if is_ogb: # set splits for ogb datasets
+            self.labels = self.labels.reshape(-1)  # ogb-arxiv needs to reshape
+        if is_ogb:  # set splits for ogb datasets
             self.idx_train = splits['train'].numpy()
             self.idx_val = splits['valid'].numpy()
             self.idx_test = splits['test'].numpy()
@@ -143,8 +147,10 @@ class Pyg2Dpr(Dataset):
                 self.idx_val = mask_to_index(pyg_data.val_mask, n)
                 self.idx_test = mask_to_index(pyg_data.test_mask, n)
             except AttributeError:
-                print('Warning: This pyg dataset is not associated with any data splits...')
+                print(
+                    'Warning: This pyg dataset is not associated with any data splits...')
         self.name = 'Pyg2Dpr'
+
 
 class AmazonPyg(Amazon):
     """Amazon-Computers and Amazon-Photo datasets loaded from pytorch geomtric;
@@ -261,9 +267,11 @@ def random_coauthor_amazon_splits(dataset, num_classes, lcc_mask):
     data.val_mask = index_to_mask(val_index, size=data.num_nodes)
     data.test_mask = index_to_mask(rest_index, size=data.num_nodes)
 
+
 def mask_to_index(index, size):
     all_idx = np.arange(size)
     return all_idx[index]
+
 
 def index_to_mask(index, size):
     mask = torch.zeros((size, ), dtype=torch.bool)
@@ -298,5 +306,3 @@ if __name__ == "__main__":
     # from ogb.nodeproppred import PygNodePropPredDataset
     # dataset = PygNodePropPredDataset(name = 'ogbn-arxiv')
     # ogb_data = Pyg2Dpr(dataset)
-
-
