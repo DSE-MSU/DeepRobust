@@ -41,6 +41,12 @@ deeprobust.graph.targeted\_attack.rnd module
    :members:
 
 
+deeprobust.graph.targeted\_attack.sga module
+--------------------------------------------
+
+.. automodule:: deeprobust.graph.targeted_attack.sga
+   :members:
+
 Module contents
 ---------------
 

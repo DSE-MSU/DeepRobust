@@ -36,7 +36,8 @@ DeepRobust is a pytorch adversarial learning library, which contains most popula
    :maxdepth: 1
    :caption: Image Package
 
-   image/example
+   image/attack
+   image/defense
 
 Package API
 ===========

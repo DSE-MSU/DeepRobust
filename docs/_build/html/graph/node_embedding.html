@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node Embedding Attack and Defense &mdash; DeepRobust 0.1.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to Image Attack with Examples" href="../image/attack.html" />
+    <link rel="prev" title="Using PyTorch Geometric in DeepRobust" href="pyg.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeepRobust
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Node Embedding Attack and Defense</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node-embedding-attack">Node Embedding Attack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-embedding-victim-models">Node Embedding Victim Models</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/attack.html">Introduction to Image Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image/defense.html">Introduction to Image Defense with Examples</a></li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Node Embedding Attack and Defense</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/graph/node_embedding.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="node-embedding-attack-and-defense">
+<h1>Node Embedding Attack and Defense<a class="headerlink" href="#node-embedding-attack-and-defense" title="Permalink to this headline">¶</a></h1>
+<p>In this section, we introduce the node embedding attack algorithms and
+corresponding victim models provided in DeepRobust.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#node-embedding-attack" id="id1">Node Embedding Attack</a></p></li>
+<li><p><a class="reference internal" href="#node-embedding-victim-models" id="id2">Node Embedding Victim Models</a></p></li>
+</ul>
+</div>
+<section id="node-embedding-attack">
+<h2><a class="toc-backref" href="#id1">Node Embedding Attack</a><a class="headerlink" href="#node-embedding-attack" title="Permalink to this headline">¶</a></h2>
+<p>Node embedding attack aims to fool node embedding models produce bad-quality embeddings.
+Specifically, DeepRobust provides the following node attack algorithms:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.global_attack.NodeEmbeddingAttack</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.global_attack.OtherNodeEmbeddingAttack</span></code></p></li>
+</ul>
+<p>They only take the adjacency matrix as input and the adjacency
+matrix is in the format of <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.sparse.csr_matrix</span></code>. You can specify the attack_type
+to either add edges or remove edges. Let’s take a look at an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">NodeEmbeddingAttack</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora_ml&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">NodeEmbeddingAttack</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="n">min_span_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add_by_remove&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">OtherNodeEmbeddingAttack</span></code> contains the baseline methods reported in the paper
+Adversarial Attacks on Node Embeddings via Graph Poisoning. Aleksandar Bojchevski and
+Stephan Günnemann, ICML 2019. We can specify the type (chosen from
+<cite>[“degree”, “eigencentrality”, “random”]</cite>) to generate corresponding attacks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">OtherNodeEmbeddingAttack</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora_ml&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;degree&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="c1">#</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;eigencentrality&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="c1">#</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">OtherNodeEmbeddingAttack</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;random&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">n_candidates</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">modified_adj</span>
+</pre></div>
+</div>
+</section>
+<section id="node-embedding-victim-models">
+<h2><a class="toc-backref" href="#id2">Node Embedding Victim Models</a><a class="headerlink" href="#node-embedding-victim-models" title="Permalink to this headline">¶</a></h2>
+<p>DeepRobust provides two node embedding victim models, DeepWalk and Node2Vec:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.defense.DeepWalk</span></code></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.defense.Node2Vec</span></code></p></li>
+</ul>
+<p>There are three major functions in the two classes: <code class="xref py py-obj docutils literal notranslate"><span class="pre">fit()</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_node_classification()</span></code>
+and <code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_link_prediction</span></code>. The function <code class="xref py py-obj docutils literal notranslate"><span class="pre">fit()</span></code> will train the node embdding models
+and store the embedding in <code class="xref py py-obj docutils literal notranslate"><span class="pre">self.embedding</span></code>. For example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.defense</span> <span class="kn">import</span> <span class="n">DeepWalk</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.global_attack</span> <span class="kn">import</span> <span class="n">NodeEmbeddingAttack</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">dataset_str</span> <span class="o">=</span> <span class="s1">&#39;cora_ml&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dataset_str</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test DeepWalk on clean graph&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DeepWalk</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;skipgram&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">adj</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After we trained the model, we can then test its performance on node classification and link prediction:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test DeepWalk on node classification...&quot;</span><span class="p">)</span>
+<span class="c1"># model.evaluate_node_classification(labels, idx_train, idx_test, lr_params={&quot;max_iter&quot;: 1000})</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate_node_classification</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test DeepWalk on link prediciton...&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate_link_prediction</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can then test its performance on the attacked graph:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># set up the attack model</span>
+<span class="n">attacker</span> <span class="o">=</span> <span class="n">NodeEmbeddingAttack</span><span class="p">()</span>
+<span class="n">attacker</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span><span class="n">adj</span><span class="p">,</span> <span class="n">attack_type</span><span class="o">=</span><span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="n">n_perturbations</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">modified_adj</span> <span class="o">=</span> <span class="n">attacker</span><span class="o">.</span><span class="n">modified_adj</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test DeepWalk on attacked graph&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">modified_adj</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">evaluate_node_classification</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyg.html" class="btn btn-neutral float-left" title="Using PyTorch Geometric in DeepRobust" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../image/attack.html" class="btn btn-neutral float-right" title="Introduction to Image Attack with Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

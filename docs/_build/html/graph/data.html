@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Dataset &mdash; DeepRobust 0.1.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Introduction to Graph Attack with Examples" href="attack.html" />
+    <link rel="prev" title="Installation" href="../notes/installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> DeepRobust
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes/installation.html">Installation</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Graph Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clean-unattacked-graphs-for-node-classification">Clean (Unattacked) Graphs for Node Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attacked-graphs-for-node-classification">Attacked Graphs for Node Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#converting-graph-data-between-deeprobust-and-pytorch-geometric">Converting Graph Data between DeepRobust and PyTorch Geometric</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-ogb-datasets">Load OGB Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-pytorch-geometric-amazon-and-coauthor-datasets">Load Pytorch Geometric Amazon and Coauthor Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="node_embedding.html">Node Embedding Attack and Defense</a></li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../image/attack.html">Introduction to Image Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../image/defense.html">Introduction to Image Defense with Examples</a></li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">DeepRobust</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Graph Dataset</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/graph/data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="graph-dataset">
+<h1>Graph Dataset<a class="headerlink" href="#graph-dataset" title="Permalink to this headline">¶</a></h1>
+<p>We briefly introduce the dataset format of DeepRobust through self-contained examples.
+In essence, DeepRobust-Graph provides the following main features:</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#clean-unattacked-graphs-for-node-classification" id="id1">Clean (Unattacked) Graphs for Node Classification</a></p></li>
+<li><p><a class="reference internal" href="#attacked-graphs-for-node-classification" id="id2">Attacked Graphs for Node Classification</a></p></li>
+<li><p><a class="reference internal" href="#converting-graph-data-between-deeprobust-and-pytorch-geometric" id="id3">Converting Graph Data between DeepRobust and PyTorch Geometric</a></p></li>
+<li><p><a class="reference internal" href="#load-ogb-datasets" id="id4">Load OGB Datasets</a></p></li>
+<li><p><a class="reference internal" href="#load-pytorch-geometric-amazon-and-coauthor-datasets" id="id5">Load Pytorch Geometric Amazon and Coauthor Datasets</a></p></li>
+</ul>
+</div>
+<section id="clean-unattacked-graphs-for-node-classification">
+<h2><a class="toc-backref" href="#id1">Clean (Unattacked) Graphs for Node Classification</a><a class="headerlink" href="#clean-unattacked-graphs-for-node-classification" title="Permalink to this headline">¶</a></h2>
+<p>Graphs are ubiquitous data structures describing pairwise relations between entities.
+A single clean graph in DeepRobust is described by an instance of <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.Dataset" title="deeprobust.graph.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.Dataset</span></code></a>, which holds the following attributes by default:</p>
+<ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.adj</span></code>: Graph adjacency matrix in scipy.sparse.csr_matrix format with shape <code class="xref py py-obj docutils literal notranslate"><span class="pre">[num_nodes,</span> <span class="pre">num_nodes]</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.features</span></code>: Node feature matrix with shape <code class="xref py py-obj docutils literal notranslate"><span class="pre">[num_nodes,</span> <span class="pre">num_node_features]</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.labels</span></code>: Target to train against (may have arbitrary shape), <em>e.g.</em>, node-level targets of shape <code class="xref py py-obj docutils literal notranslate"><span class="pre">[num_nodes,</span> <span class="pre">*]</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.train_idx</span></code>: Array of training node indices</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.val_idx</span></code>: Array of validation node indices</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data.test_idx</span></code>: Array of test node indices</p></li>
+</ul>
+<p>By default, the loaded <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.Dataset" title="deeprobust.graph.data.Dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deeprobust.graph.data.Dataset</span></code></a> will select the largest connect
+component of the graph, but users specify different settings by giving different parameters.</p>
+<p>Currently DeepRobust supports the following datasets:
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Cora</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Cora-ML</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Citeseer</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Pubmed</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Polblogs</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">ACM</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">BlogCatalog</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Flickr</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">UAI</span></code>.
+More details about the datasets can be found <a class="reference external" href="https://github.com/DSE-MSU/DeepRobust/tree/master/deeprobust/graph#supported-datasets">here</a>.</p>
+<p>By default, the data splits are generated by <a class="reference internal" href="../source/deeprobust.graph.html#deeprobust.graph.utils.get_train_val_test" title="deeprobust.graph.utils.get_train_val_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deeprobust.graph.utils.get_train_val_test</span></code></a>,
+which randomly split the data into 10%/10%/80% for training/validaiton/test. You can also generate
+splits by yourself by using <a class="reference internal" href="../source/deeprobust.graph.html#deeprobust.graph.utils.get_train_val_test" title="deeprobust.graph.utils.get_train_val_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deeprobust.graph.utils.get_train_val_test</span></code></a> or <a class="reference internal" href="../source/deeprobust.graph.html#deeprobust.graph.utils.get_train_val_test_gcn" title="deeprobust.graph.utils.get_train_val_test_gcn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deeprobust.graph.utils.get_train_val_test_gcn</span></code></a>.
+It is worth noting that there is parameter <code class="xref py py-obj docutils literal notranslate"><span class="pre">setting</span></code> that can be passed into this class. It can be chosen from <cite>[“nettack”, “gcn”, “prognn”]</cite>:</p>
+<ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setting=&quot;nettack&quot;</span></code>: the data splits are 10%/10%/80% and using the largest connected component of the graph;</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setting=&quot;gcn&quot;</span></code>: use the full graph and the data splits will be: 20 nodes per class for training, 500 nodes for validation and 1000 nodes for testing (randomly choosen);</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setting=&quot;prognn&quot;</span></code>: use the largest connected component and the data splits are provided by <a class="reference external" href="https://github.com/ChandlerBang/Pro-GNN">ProGNN</a> (10%/10%/80%);</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The ‘netack’ and ‘gcn’ setting do not provide fixed split, i.e.,
+different random seed would return different data splits.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you hope to use the full graph, please use the ‘gcn’ setting.</p>
+</div>
+<p>The following example shows how to load DeepRobust datasets</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="c1"># loading cora dataset</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="c1"># you can also split the data by yourself</span>
+<span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">get_train_val_test</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="c1"># loading acm dataset</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;acm&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>DeepRobust also provides access to Amazon and Coauthor datasets loaded from Pytorch Geometric:
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Amazon-Computers</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Amazon-Photo</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Coauthor-CS</span></code>,
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">Coauthor-Physics</span></code>.</p>
+<p>Users can also easily create their own datasets by creating a class with the following attributes: <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.adj</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.features</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.labels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.train_idx</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.val_idx</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">data.test_idx</span></code>.</p>
+</section>
+<section id="attacked-graphs-for-node-classification">
+<h2><a class="toc-backref" href="#id2">Attacked Graphs for Node Classification</a><a class="headerlink" href="#attacked-graphs-for-node-classification" title="Permalink to this headline">¶</a></h2>
+<p>DeepRobust provides the attacked graphs perturbed by <a class="reference external" href="https://openreview.net/pdf?id=Bylnx209YX">metattack</a> and <a class="reference external" href="https://arxiv.org/abs/1805.07984">nettack</a>. The graphs are attacked using authors’ Tensorflow implementation, on random split using seed 15. The download link can be found in <a class="reference external" href="https://github.com/ChandlerBang/Pro-GNN/tree/master/splits">ProGNN code</a> and the performance of various GNNs can be found in <a class="reference external" href="https://arxiv.org/abs/2005.10203">ProGNN paper</a>. They are instances of <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.PrePtbDataset" title="deeprobust.graph.data.PrePtbDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.PrePtbDataset</span></code></a> with only one attribute <code class="xref py py-obj docutils literal notranslate"><span class="pre">adj</span></code>. Hence, <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.PrePtbDataset" title="deeprobust.graph.data.PrePtbDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.PrePtbDataset</span></code></a> is often used together with <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.Dataset" title="deeprobust.graph.data.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.Dataset</span></code></a> to obtain node features and labels.</p>
+<p>For metattack, DeepRobust provides attacked graphs for Cora, Citeseer, Polblogs and Pubmed,
+and the perturbation rate can be chosen from [0.05, 0.1, 0.15, 0.2, 0.25].</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<span class="c1"># You can either use setting=&#39;prognn&#39; or seed=15 to get the prognn splits</span>
+<span class="c1"># data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;, seed=15) # since the attacked graph are generated under seed 15</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">setting</span><span class="o">=</span><span class="s1">&#39;prognn&#39;</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="c1"># Load meta attacked data</span>
+<span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span>
+                                        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span>
+                                        <span class="n">attack_method</span><span class="o">=</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span>
+                                        <span class="n">ptb_rate</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+</pre></div>
+</div>
+<p>For nettack, DeepRobust provides attacked graphs for Cora, Citeseer, Polblogs and Pubmed,
+and ptb_rate indicates the number of perturbations made on each node.
+It can be chosen from [1.0, 2.0, 3.0, 4.0, 5.0].</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PrePtbDataset</span>
+<span class="c1"># data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;, seed=15)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span> <span class="n">setting</span><span class="o">=</span><span class="s1">&#39;prognn&#39;</span><span class="p">)</span>
+<span class="n">adj</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">adj</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">features</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">labels</span>
+<span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">idx_test</span>
+<span class="c1"># Load nettack attacked data</span>
+<span class="n">perturbed_data</span> <span class="o">=</span> <span class="n">PrePtbDataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">,</span>
+                                        <span class="n">attack_method</span><span class="o">=</span><span class="s1">&#39;nettack&#39;</span><span class="p">,</span>
+                                        <span class="n">ptb_rate</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span> <span class="c1"># here ptb_rate means number of perturbation per nodes</span>
+<span class="n">perturbed_adj</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">adj</span>
+<span class="n">idx_test</span> <span class="o">=</span> <span class="n">perturbed_data</span><span class="o">.</span><span class="n">target_nodes</span>
+</pre></div>
+</div>
+</section>
+<section id="converting-graph-data-between-deeprobust-and-pytorch-geometric">
+<h2><a class="toc-backref" href="#id3">Converting Graph Data between DeepRobust and PyTorch Geometric</a><a class="headerlink" href="#converting-graph-data-between-deeprobust-and-pytorch-geometric" title="Permalink to this headline">¶</a></h2>
+<p>Given the popularity of PyTorch Geometric in the graph representation learning community,
+we also provide tools for converting data between DeepRobust and PyTorch Geometric. We can
+use <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.Dpr2Pyg" title="deeprobust.graph.data.Dpr2Pyg"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.Dpr2Pyg</span></code></a> to convert DeepRobust data to PyTorch Geometric
+and use <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.Pyg2Dpr" title="deeprobust.graph.data.Pyg2Dpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.Pyg2Dpr</span></code></a> to convert Pytorch Geometric data to DeepRobust.
+For example, we can first create an instance of the Dataset class and convert it to pytorch geometric data format.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">Dpr2Pyg</span><span class="p">,</span> <span class="n">Pyg2Dpr</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cora&#39;</span><span class="p">)</span> <span class="c1"># load clean graph</span>
+<span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># convert dpr to pyg</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">dpr_data</span> <span class="o">=</span> <span class="n">Pyg2Dpr</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span> <span class="c1"># convert pyg to dpr</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">adj</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="load-ogb-datasets">
+<h2><a class="toc-backref" href="#id4">Load OGB Datasets</a><a class="headerlink" href="#load-ogb-datasets" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://ogb.stanford.edu/">Open Graph Benchmark (OGB)</a> has provided various benchmark
+datasets. DeepRobsut now provides interface to convert OGB dataset format (Pyg data format)
+to DeepRobust format.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ogb.nodeproppred</span> <span class="kn">import</span> <span class="n">PygNodePropPredDataset</span>
+<span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">Pyg2Dpr</span>
+<span class="n">pyg_data</span> <span class="o">=</span> <span class="n">PygNodePropPredDataset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;ogbn-arxiv&#39;</span><span class="p">)</span>
+<span class="n">dpr_data</span> <span class="o">=</span> <span class="n">Pyg2Dpr</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span> <span class="c1"># convert pyg to dpr</span>
+</pre></div>
+</div>
+</section>
+<section id="load-pytorch-geometric-amazon-and-coauthor-datasets">
+<h2><a class="toc-backref" href="#id5">Load Pytorch Geometric Amazon and Coauthor Datasets</a><a class="headerlink" href="#load-pytorch-geometric-amazon-and-coauthor-datasets" title="Permalink to this headline">¶</a></h2>
+<p>DeepRobust also provides access to the Amazon datasets and Coauthor datasets, i.e.,
+<cite>Amazon-Computers</cite>, <cite>Amazon-Photo</cite>, <cite>Coauthor-CS</cite>, <cite>Coauthor-Physics</cite>, from Pytorch
+Geometric. Specifically, users can access them through
+<a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.AmazonPyg" title="deeprobust.graph.data.AmazonPyg"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.AmazonPyg</span></code></a> and <a class="reference internal" href="../source/deeprobust.graph.data.html#deeprobust.graph.data.CoauthorPyg" title="deeprobust.graph.data.CoauthorPyg"><code class="xref py py-class docutils literal notranslate"><span class="pre">deeprobust.graph.data.CoauthorPyg</span></code></a>.
+For example, we can directly load Amazon dataset from deeprobust in the format of pyg
+as follows,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">AmazonPyg</span>
+<span class="n">computers</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;computers&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">photo</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;photo&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Similarly, we can also load Coauthor dataset,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">CoauthorPyg</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cs&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">physics</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;physics&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../notes/installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="attack.html" class="btn btn-neutral float-right" title="Introduction to Graph Attack with Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deeprobust.graph.data.pyg_dataset &mdash; DeepRobust 0.1.1 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> DeepRobust
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes/installation.html">Installation</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/data.html">Graph Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/attack.html">Introduction to Graph Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/defense.html">Introduction to Graph Defense with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/pyg.html">Using PyTorch Geometric in DeepRobust</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../graph/node_embedding.html">Node Embedding Attack and Defense</a></li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/attack.html">Introduction to Image Attack with Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../image/defense.html">Introduction to Image Defense with Examples</a></li>
+</ul>
+<p><span class="caption-text">Image Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.attack.html">deeprobust.image.attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.defense.html">deeprobust.image.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.image.netmodels.html">deeprobust.image.netmodels package</a></li>
+</ul>
+<p><span class="caption-text">Graph Package</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.global_attack.html">deeprobust.graph.global_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.targeted_attack.html">deeprobust.graph.targeted_attack package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.defense.html">deeprobust.graph.defense package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/deeprobust.graph.data.html">deeprobust.graph.data package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">DeepRobust</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">deeprobust.graph.data.pyg_dataset</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deeprobust.graph.data.pyg_dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">repeat</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">osp</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">InMemoryDataset</span><span class="p">,</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.datasets</span> <span class="kn">import</span> <span class="n">Coauthor</span><span class="p">,</span> <span class="n">Amazon</span>
+
+
+<div class="viewcode-block" id="Dpr2Pyg"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.Dpr2Pyg">[docs]</a><span class="k">class</span> <span class="nc">Dpr2Pyg</span><span class="p">(</span><span class="n">InMemoryDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert deeprobust data (sparse matrix) to pytorch geometric data (tensor, edge_index)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dpr_data :</span>
+<span class="sd">        data instance of class from deeprobust.graph.data, e.g., deeprobust.graph.data.Dataset,</span>
+<span class="sd">        deeprobust.graph.data.PtbDataset, deeprobust.graph.data.PrePtbDataset</span>
+<span class="sd">    transform :</span>
+<span class="sd">        A function/transform that takes in an object and returns a transformed version.</span>
+<span class="sd">        The data object will be transformed before every access. For example, you can</span>
+<span class="sd">        use torch_geometric.transforms.NormalizeFeatures()</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We can first create an instance of the Dataset class and convert it to</span>
+<span class="sd">    pytorch geometric data format.</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset, Dpr2Pyg</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; pyg_data = Dpr2Pyg(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(pyg_data)</span>
+<span class="sd">    &gt;&gt;&gt; print(pyg_data[0])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dpr_data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;data/&#39;</span>  <span class="c1"># dummy root; does not mean anything</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dpr_data</span> <span class="o">=</span> <span class="n">dpr_data</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Dpr2Pyg</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+        <span class="n">pyg_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collate</span><span class="p">([</span><span class="n">pyg_data</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span>
+
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dpr_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dpr_data</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span>
+        <span class="c1"># by default, the features in pyg data is dense</span>
+        <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">features</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">features</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">dpr_data</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">idx_train</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="n">idx_test</span> <span class="o">=</span> <span class="n">dpr_data</span><span class="o">.</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">dpr_data</span><span class="o">.</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">dpr_data</span><span class="o">.</span><span class="n">idx_test</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="o">=</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">train_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">idx_train</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">val_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">idx_val</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">test_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">idx_test</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">train_mask</span> <span class="o">=</span> <span class="n">train_mask</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">val_mask</span> <span class="o">=</span> <span class="n">val_mask</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">test_mask</span> <span class="o">=</span> <span class="n">test_mask</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+<div class="viewcode-block" id="Dpr2Pyg.update_edge_index"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.Dpr2Pyg.update_edge_index">[docs]</a>    <span class="k">def</span> <span class="nf">update_edge_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">adj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; This is an inplace operation to substitute the original edge_index</span>
+<span class="sd">        with adj.nonzero()</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        adj: sp.csr_matrix</span>
+<span class="sd">            update the original adjacency into adj (by change edge_index)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">LongTensor</span><span class="p">(</span><span class="n">adj</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;__num_nodes__&#39;</span><span class="p">):</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">num_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">__num_nodes__</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+            <span class="n">item</span><span class="p">,</span> <span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">item</span><span class="o">.</span><span class="n">dim</span><span class="p">()))</span>
+            <span class="n">s</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">__cat_dim__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                                                        <span class="n">slices</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">raw_file_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;some_file_1&#39;</span><span class="p">,</span> <span class="s1">&#39;some_file_2&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">processed_file_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;data.pt&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Pyg2Dpr"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.Pyg2Dpr">[docs]</a><span class="k">class</span> <span class="nc">Pyg2Dpr</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert pytorch geometric data (tensor, edge_index) to deeprobust</span>
+<span class="sd">    data (sparse matrix)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pyg_data :</span>
+<span class="sd">        data instance of class from pytorch geometric dataset</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We can first create an instance of the Dataset class and convert it to</span>
+<span class="sd">    pytorch geometric data format and then convert it back to Dataset class.</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import Dataset, Dpr2Pyg, Pyg2Dpr</span>
+<span class="sd">    &gt;&gt;&gt; data = Dataset(root=&#39;/tmp/&#39;, name=&#39;cora&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; pyg_data = Dpr2Pyg(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(pyg_data)</span>
+<span class="sd">    &gt;&gt;&gt; print(pyg_data[0])</span>
+<span class="sd">    &gt;&gt;&gt; dpr_data = Pyg2Dpr(pyg_data)</span>
+<span class="sd">    &gt;&gt;&gt; print(dpr_data.adj)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pyg_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">is_ogb</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">,</span> <span class="s1">&#39;get_idx_split&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_ogb</span><span class="p">:</span>  <span class="c1"># get splits for ogb datasets</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="n">pyg_data</span><span class="o">.</span><span class="n">get_idx_split</span><span class="p">()</span>
+        <span class="n">pyg_data</span> <span class="o">=</span> <span class="n">pyg_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">pyg_data</span><span class="o">.</span><span class="n">num_nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adj</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">pyg_data</span><span class="o">.</span><span class="n">edge_index</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                                  <span class="p">(</span><span class="n">pyg_data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pyg_data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">pyg_data</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">pyg_data</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># ogb-arxiv needs to reshape</span>
+        <span class="k">if</span> <span class="n">is_ogb</span><span class="p">:</span>  <span class="c1"># set splits for ogb datasets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="s1">&#39;valid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_train</span> <span class="o">=</span> <span class="n">mask_to_index</span><span class="p">(</span><span class="n">pyg_data</span><span class="o">.</span><span class="n">train_mask</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_val</span> <span class="o">=</span> <span class="n">mask_to_index</span><span class="p">(</span><span class="n">pyg_data</span><span class="o">.</span><span class="n">val_mask</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_test</span> <span class="o">=</span> <span class="n">mask_to_index</span><span class="p">(</span><span class="n">pyg_data</span><span class="o">.</span><span class="n">test_mask</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s1">&#39;Warning: This pyg dataset is not associated with any data splits...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Pyg2Dpr&#39;</span></div>
+
+
+<div class="viewcode-block" id="AmazonPyg"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.AmazonPyg">[docs]</a><span class="k">class</span> <span class="nc">AmazonPyg</span><span class="p">(</span><span class="n">Amazon</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Amazon-Computers and Amazon-Photo datasets loaded from pytorch geomtric;</span>
+<span class="sd">    the way we split the dataset follows Towards Deeper Graph Neural Networks</span>
+<span class="sd">    (https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py).</span>
+<span class="sd">    Specifically, 20 * num_classes labels for training, 30 * num_classes labels</span>
+<span class="sd">    for validation, rest labels for testing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : string</span>
+<span class="sd">        root directory where the dataset should be saved.</span>
+<span class="sd">    name : string</span>
+<span class="sd">        dataset name, it can be choosen from [&#39;computers&#39;, &#39;photo&#39;]</span>
+<span class="sd">    transform :</span>
+<span class="sd">        A function/transform that takes in an torch_geometric.data.Data object</span>
+<span class="sd">        and returns a transformed version. The data object will be transformed</span>
+<span class="sd">        before every access. (default: None)</span>
+<span class="sd">    pre_transform :</span>
+<span class="sd">         A function/transform that takes in an torch_geometric.data.Data object</span>
+<span class="sd">         and returns a transformed version. The data object will be transformed</span>
+<span class="sd">         before being saved to disk.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We can directly load Amazon dataset from deeprobust in the format of pyg.</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import AmazonPyg</span>
+<span class="sd">    &gt;&gt;&gt; computers = AmazonPyg(root=&#39;/tmp&#39;, name=&#39;computers&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(computers)</span>
+<span class="sd">    &gt;&gt;&gt; print(computers[0])</span>
+<span class="sd">    &gt;&gt;&gt; photo = AmazonPyg(root=&#39;/tmp&#39;, name=&#39;photo&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(photo)</span>
+<span class="sd">    &gt;&gt;&gt; print(photo[0])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;pygdata&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AmazonPyg</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">pre_transform</span><span class="p">)</span>
+
+        <span class="n">random_coauthor_amazon_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">lcc_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="CoauthorPyg"><a class="viewcode-back" href="../../../../source/deeprobust.graph.data.html#deeprobust.graph.data.CoauthorPyg">[docs]</a><span class="k">class</span> <span class="nc">CoauthorPyg</span><span class="p">(</span><span class="n">Coauthor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Coauthor-CS and Coauthor-Physics datasets loaded from pytorch geomtric;</span>
+<span class="sd">    the way we split the dataset follows Towards Deeper Graph Neural Networks</span>
+<span class="sd">    (https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py).</span>
+<span class="sd">    Specifically, 20 * num_classes labels for training, 30 * num_classes labels</span>
+<span class="sd">    for validation, rest labels for testing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : string</span>
+<span class="sd">        root directory where the dataset should be saved.</span>
+<span class="sd">    name : string</span>
+<span class="sd">        dataset name, it can be choosen from [&#39;cs&#39;, &#39;physics&#39;]</span>
+<span class="sd">    transform :</span>
+<span class="sd">        A function/transform that takes in an torch_geometric.data.Data object</span>
+<span class="sd">        and returns a transformed version. The data object will be transformed</span>
+<span class="sd">        before every access. (default: None)</span>
+<span class="sd">    pre_transform :</span>
+<span class="sd">         A function/transform that takes in an torch_geometric.data.Data object</span>
+<span class="sd">         and returns a transformed version. The data object will be transformed</span>
+<span class="sd">         before being saved to disk.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    We can directly load Coauthor dataset from deeprobust in the format of pyg.</span>
+
+<span class="sd">    &gt;&gt;&gt; from deeprobust.graph.data import CoauthorPyg</span>
+<span class="sd">    &gt;&gt;&gt; cs = CoauthorPyg(root=&#39;/tmp&#39;, name=&#39;cs&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(cs)</span>
+<span class="sd">    &gt;&gt;&gt; print(cs[0])</span>
+<span class="sd">    &gt;&gt;&gt; physics = CoauthorPyg(root=&#39;/tmp&#39;, name=&#39;physics&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(physics)</span>
+<span class="sd">    &gt;&gt;&gt; print(physics[0])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">osp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;pygdata&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CoauthorPyg</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">pre_transform</span><span class="p">)</span>
+        <span class="n">random_coauthor_amazon_splits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">lcc_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">])</span></div>
+
+
+<span class="k">def</span> <span class="nf">random_coauthor_amazon_splits</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">,</span> <span class="n">lcc_mask</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;https://github.com/mengliu1998/DeeperGNN/blob/master/DeeperGNN/train_eval.py</span>
+<span class="sd">    Set random coauthor/co-purchase splits:</span>
+<span class="sd">    * 20 * num_classes labels for training</span>
+<span class="sd">    * 30 * num_classes labels for validation</span>
+<span class="sd">    rest labels for testing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">lcc_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_classes</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">lcc_mask</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))]</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_classes</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">y</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))]</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="n">train_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">i</span><span class="p">[:</span><span class="mi">20</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">val_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">50</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">rest_index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">50</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rest_index</span> <span class="o">=</span> <span class="n">rest_index</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">rest_index</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))]</span>
+
+    <span class="n">data</span><span class="o">.</span><span class="n">train_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">train_index</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">val_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">val_index</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">test_mask</span> <span class="o">=</span> <span class="n">index_to_mask</span><span class="p">(</span><span class="n">rest_index</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">num_nodes</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">mask_to_index</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">all_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_idx</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">index_to_mask</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+    <span class="n">mask</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">mask</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">deeprobust.graph.data</span> <span class="kn">import</span> <span class="n">PrePtbDataset</span><span class="p">,</span> <span class="n">Dataset</span>
+    <span class="c1"># load clean graph data</span>
+    <span class="n">dataset_str</span> <span class="o">=</span> <span class="s1">&#39;cora&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dataset_str</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">pyg_data</span> <span class="o">=</span> <span class="n">Dpr2Pyg</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">dpr_data</span> <span class="o">=</span> <span class="n">Pyg2Dpr</span><span class="p">(</span><span class="n">pyg_data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dpr_data</span><span class="p">)</span>
+
+    <span class="n">computers</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;computers&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">computers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">photo</span> <span class="o">=</span> <span class="n">AmazonPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;photo&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">photo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cs&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">physics</span> <span class="o">=</span> <span class="n">CoauthorPyg</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/tmp&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;physics&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">physics</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># from ogb.nodeproppred import PygNodePropPredDataset</span>
+    <span class="c1"># dataset = PygNodePropPredDataset(name = &#39;ogbn-arxiv&#39;)</span>
+    <span class="c1"># ogb_data = Pyg2Dpr(dataset)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
