@@ -7,18 +7,18 @@ import torch.nn.functional as F
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
-class PGD(BaseAttack):
+class MAIL(BaseAttack):
     """
-    PGD attack.
+    MAIL attack.
     """
-    
+
     def __init__(self, model, device='cuda'):
 
-        super(PGD, self).__init__(model, device)
+        super(MAIL, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
         """
-        Call this function to generate PGD adversarial examples.
+        Call this function to generate MAIL adversarial examples.
         Parameters
         ----------
         image :
@@ -35,12 +35,13 @@ class PGD(BaseAttack):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
 
-        return pgd_attack(self.model,
+        return mail_attack(self.model,
                    self.image,
                    self.label,
                    self.epsilon,
                    self.num_steps,
                    self.step_size,
+                   self.method,
                    self.clip_max,
                    self.clip_min,
                    self.print_process,
@@ -51,6 +52,7 @@ class PGD(BaseAttack):
                      epsilon=0.031,
                      num_steps=10,
                      step_size=0.007,
+                     method='trades',
                      clip_max=1.0,
                      clip_min=0.0,
                      print_process=False,
@@ -76,6 +78,7 @@ class PGD(BaseAttack):
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
+        self.method = method
         self.clip_max = clip_max
         self.clip_min = clip_min
         self.print_process = print_process
@@ -83,53 +86,62 @@ class PGD(BaseAttack):
         
         return True
 
-def pgd_attack(model,
-               x_natural,
-               y,
-               epsilon,
-               num_steps,
-               step_size,
-               clip_max,
-               clip_min,
-               print_process,
-               distance_measure,
-               device='cuda'):
+def mail_attack(model,
+              x_natural,
+              y,
+              epsilon,
+              num_steps,
+              step_size,
+              method,
+              clip_max,
+              clip_min,
+              print_process,
+              distance_measure
+              device='cuda'):
     
+    # define KL-loss
+    criterion_kl = nn.KLDivLoss(reduction='sum')
     model.eval()
     batch_size = len(x_natural)
-
+    
     # generate adversarial example
     x_adv = x_natural.detach() + 0.001 * torch.randn(x_natural.shape).to(device).detach()
 
     if distance_measure == 'l_inf':
-        for _ in range(num_steps):
+        for i in range(num_steps):
             if print_process:
-                print('generating at step ' + str(i + 1), flush=True)
-                
+                print('generating at step ' + str(i + 1))
+
             x_adv.requires_grad_()
             with torch.enable_grad():
-                loss_ce = F.cross_entropy(model(x_adv), y)
-            grad = torch.autograd.grad(loss_ce, [x_adv])[0]
+                if 'trades' not in method:
+                    loss = F.cross_entropy(model(x_adv), y)
+                else:
+                    loss = criterion_kl(F.log_softmax(model(x_adv), dim=1), F.softmax(model(x_natural), dim=1))
+            grad = torch.autograd.grad(loss, [x_adv])[0]
             x_adv = x_adv.detach() + step_size * torch.sign(grad.detach())
             x_adv = torch.min(torch.max(x_adv, x_natural - epsilon), x_natural + epsilon)
             x_adv = torch.clamp(x_adv, clip_min, clip_max)
-    elif distance_measure == 'l_2':
+    elif distance == 'l_2':
         delta = 0.001 * torch.randn(x_natural.shape).to(device).detach()
         delta = Variable(delta.data, requires_grad=True)
 
         # Setup optimizers
-        optimizer_delta = torch.optim.SGD([delta], lr=epsilon / num_steps * 2)
+        optimizer_delta = optim.SGD([delta], lr=epsilon / num_steps * 2)
 
         for i in range(num_steps):
             if print_process:
-                print('generating at step ' + str(i + 1), flush=True)
-
+                print('generating at step ' + str(i + 1))
+                
             adv = x_natural + delta
 
             # optimize
             optimizer_delta.zero_grad()
             with torch.enable_grad():
-                loss = (-1) * F.cross_entropy(model(adv), y)
+                if 'trades' not in method:
+                    loss = (-1) * F.cross_entropy(model(x_adv), y)
+                else:
+                    loss = (-1) * criterion_kl(F.log_softmax(model(adv), dim=1), F.softmax(model(x_natural), dim=1))
             loss.backward()
             # renorming gradient
             grad_norms = delta.grad.view(batch_size, -1).norm(p=2, dim=1)

@@ -7,18 +7,18 @@ import torch.nn.functional as F
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
-class PGD(BaseAttack):
+class ATHE(BaseAttack):
     """
-    PGD attack.
+    ATHE attack.
     """
-    
+
     def __init__(self, model, device='cuda'):
 
-        super(PGD, self).__init__(model, device)
+        super(ATHE, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
         """
-        Call this function to generate PGD adversarial examples.
+        Call this function to generate ATHE adversarial examples.
         Parameters
         ----------
         image :
@@ -35,12 +35,14 @@ class PGD(BaseAttack):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
 
-        return pgd_attack(self.model,
+        return athe_attack(self.model,
                    self.image,
                    self.label,
                    self.epsilon,
                    self.num_steps,
                    self.step_size,
+                   self.loss_func,
+                   self.s,
                    self.clip_max,
                    self.clip_min,
                    self.print_process,
@@ -51,6 +53,8 @@ class PGD(BaseAttack):
                      epsilon=0.031,
                      num_steps=10,
                      step_size=0.007,
+                     loss_func='trades',
+                     s=15.0,
                      clip_max=1.0,
                      clip_min=0.0,
                      print_process=False,
@@ -76,6 +80,8 @@ class PGD(BaseAttack):
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
+        self.loss_func=loss_func
+        self.s=s
         self.clip_max = clip_max
         self.clip_min = clip_min
         self.print_process = print_process
@@ -83,18 +89,28 @@ class PGD(BaseAttack):
         
         return True
 
-def pgd_attack(model,
-               x_natural,
-               y,
-               epsilon,
-               num_steps,
-               step_size,
-               clip_max,
-               clip_min,
-               print_process,
-               distance_measure,
-               device='cuda'):
+def athe_attack(model,
+                  x_natural,
+                  y,
+                  epsilon,
+                  num_steps,
+                  step_size,
+                  loss_func,
+                  s,
+                  clip_max,
+                  clip_min,
+                  print_process,
+                  distance_measure,
+                  device='cuda'):
     
+    # define loss
+    if loss_func == 'pgd':
+        criterion_loss = HELoss(s=s) 
+    elif loss_func == 'trades':
+        criterion_loss = nn.KLDivLoss(reduction='sum')
+    else:
+        raise RuntimeError('invalid loss function')
+
     model.eval()
     batch_size = len(x_natural)
 
@@ -102,50 +118,39 @@ def pgd_attack(model,
     x_adv = x_natural.detach() + 0.001 * torch.randn(x_natural.shape).to(device).detach()
 
     if distance_measure == 'l_inf':
-        for _ in range(num_steps):
+        for i in range(num_steps):
             if print_process:
-                print('generating at step ' + str(i + 1), flush=True)
-                
+                print('generating at step ' + str(i + 1))
+
             x_adv.requires_grad_()
             with torch.enable_grad():
-                loss_ce = F.cross_entropy(model(x_adv), y)
-            grad = torch.autograd.grad(loss_ce, [x_adv])[0]
+                if loss_func == 'pgd':
+                    loss = criterion_loss(model(x_adv), y)
+                elif loss_func == 'trades':
+                    loss = criterion_loss(F.log_softmax(s * model(x_adv), dim=1), F.softmax(s * model(x_natural), dim=1))
+                else:
+                    raise RuntimeError('invalid loss function')
+
+            grad = torch.autograd.grad(loss, [x_adv])[0]
             x_adv = x_adv.detach() + step_size * torch.sign(grad.detach())
             x_adv = torch.min(torch.max(x_adv, x_natural - epsilon), x_natural + epsilon)
             x_adv = torch.clamp(x_adv, clip_min, clip_max)
-    elif distance_measure == 'l_2':
-        delta = 0.001 * torch.randn(x_natural.shape).to(device).detach()
-        delta = Variable(delta.data, requires_grad=True)
-
-        # Setup optimizers
-        optimizer_delta = torch.optim.SGD([delta], lr=epsilon / num_steps * 2)
-
-        for i in range(num_steps):
-            if print_process:
-                print('generating at step ' + str(i + 1), flush=True)
-
-            adv = x_natural + delta
-
-            # optimize
-            optimizer_delta.zero_grad()
-            with torch.enable_grad():
-                loss = (-1) * F.cross_entropy(model(adv), y)
-            loss.backward()
-            # renorming gradient
-            grad_norms = delta.grad.view(batch_size, -1).norm(p=2, dim=1)
-            delta.grad.div_(grad_norms.view(-1, 1, 1, 1))
-            # avoid nan or inf if gradient is 0
-            if (grad_norms == 0).any():
-                delta.grad[grad_norms == 0] = torch.randn_like(delta.grad[grad_norms == 0])
-            optimizer_delta.step()
-
-            # projection
-            delta.data.add_(x_natural)
-            delta.data.clamp_(clip_min, clip_max).sub_(x_natural)
-            delta.data.renorm_(p=2, dim=0, maxnorm=epsilon)
-        x_adv = Variable(x_natural + delta, requires_grad=False)
     else:
         x_adv = torch.clamp(x_adv, clip_min, clip_max)
 
     return x_adv
+
+
+class HELoss(nn.Module):
+    def __init__(self, s=None):
+        super(HELoss, self).__init__()
+        self.s = s
+
+    def forward(self, logits, labels, cm=0):
+        numerator = self.s * (torch.diagonal(logits.transpose(0, 1)[labels]) - cm)
+        item = torch.cat([torch.cat((logits[i, :y], logits[i, y+1:])).unsqueeze(0) for i, y in enumerate(labels)], dim=0)
+        denominator = torch.exp(numerator) + torch.sum(torch.exp(self.s * item), dim=1)
+        loss = -torch.mean(numerator - torch.log(denominator))
+        
+        return loss
     
