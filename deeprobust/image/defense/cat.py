@@ -2,11 +2,10 @@
 This is an implementation of [1]
 References
 ---------
-.. [1] Zhang, H., Yu, Y., Jiao, J., Xing, E., El Ghaoui, L., & Jordan, M. (2019, May). 
-Theoretically Principled Trade-off between Robustness and Accuracy. 
-In International Conference on Machine Learning (pp. 7472-7482).
-This implementation is based on their code: https://github.com/yaodongyu/TRADES
-Copyright (c) 2019 Hongyang Zhang, Yaodong Yu
+.. [1] Cheng, M., Lei, Q., Chen, P. Y., Dhillon, I., & Hsieh, C. J. (2020). 
+Cat: Customized adversarial training for improved robustness. 
+arXiv preprint arXiv:2002.06789.
+This implementation is based on their code: https://github.com/hirokiadachi/Customized-Adversarial-Training
 """
 
 import os
@@ -20,17 +19,17 @@ from torchvision import datasets, transforms
 
 from deeprobust.image.defense.base_defense import BaseDefense
 from deeprobust.image.netmodels.CNN import Net
-from deeprobust.image.attack.trades import TRADES
+from deeprobust.image.attack.cat import CAT
 from deeprobust.image.attack.pgd import PGD
 
-class TRADES(BaseDefense):
+class CAT(BaseDefense):
     """
-    TRADES.
+    CAT.
     """
 
     def __init__(self, model, device='cuda'):
         if not torch.cuda.is_available():
-            print('CUDA not available, using cpu...', flush=True)
+            print('CUDA not available, using cpu...')
             self.device = 'cpu'
         else:
             self.device = device
@@ -57,9 +56,11 @@ class TRADES(BaseDefense):
         optimizer = optim.SGD(self.model.parameters(), lr=self.lr, momentum=self.momentum)
         scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[75, 100], gamma=0.1)
 
+        self.epsilons = torch.zeros(len(train_loader.dataset)).to(self.device)
+
         for epoch in range(1, self.epochs + 1):
             print('Training epoch: ', epoch, flush=True)
-            # TRADES training
+            # CAT training
             self.train(train_loader, optimizer, epoch)
 
             # evaluation on natural examples
@@ -71,24 +72,29 @@ class TRADES(BaseDefense):
                 if not os.path.exists(self.save_dir):
                     os.makedirs(self.save_dir)
                 if epoch % self.save_freq == 0:
-                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'trade_model-nn-epoch{}.pt'.format(epoch)))
-                    print('Model saved in ' + str(self.save_dir), flush=True)
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'cat_model-nn-epoch{}.pt'.format(epoch)))
+                    print('Model saved in ' + str(self.save_dir))
 
             scheduler.step()
     
     def parse_params(self,
-                     epochs=120,
-                     lr=0.1,
+                     epochs=100,
+                     lr=0.01,
                      momentum=0.9,
-                     epsilon=0.031,
-                     num_steps=10,
-                     step_size=0.007,
-                     beta=1.0,
+                     epsilon=0.3,
+                     num_steps=40,
+                     step_size=0.01,
+                     epsilon_max=0.03,
+                     c=10,
+                     eta=5e-3,
+                     kappa=10,
+                     num_classes=10,
+                     loss_type='xent',
                      seed=1,
                      log_interval=100,
-                     test_freq=10,
+                     test_freq=1,
                      save_model=True,
-                     save_dir='./defense_models/trades/',
+                     save_dir='./defense_models/cat/',
                      save_freq=10,
                      clip_max=1.0,
                      clip_min=0.0,
@@ -113,6 +119,10 @@ class TRADES(BaseDefense):
             - learning rate for adversary training process
         :param momentum : float 
             - parameter for optimizer in training process
+        :param num_classes : int 
+            - parameter for number of classes in training
+        :param loss_type : str 
+            - parameter for loss function choices=['xent', 'mix']
         """
         self.epochs = epochs
         self.lr = lr
@@ -120,7 +130,11 @@ class TRADES(BaseDefense):
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
-        self.beta = beta
+        self.epsilon_max = epsilon_max
+        self.c = c
+        self.eta = eta
+        self.num_classes = num_classes
+        self.loss_type == loss_type
         self.seed = seed 
         self.log_interval = log_interval
         self.test_freq = test_freq
@@ -142,8 +156,6 @@ class TRADES(BaseDefense):
         adv_test_loss = 0
         clean_correct = 0
         adv_correct = 0
-
-        test_adversary = PGD(self.model)
         
         for data, target in test_loader:
             data, target = data.to(self.device), target.to(self.device)
@@ -172,52 +184,77 @@ class TRADES(BaseDefense):
 
     def train(self, train_loader, optimizer, epoch):
         self.model.train()
-        for batch_idx, (data, target) in enumerate(train_loader):
+        for batch_idx, (data, target, indices) in enumerate(train_loader):
             
             optimizer.zero_grad()
 
             data, target = data.to(self.device), target.to(self.device)
+            smoothed_targets = label_smoothing(targets, self.epsilons[indices], self.c, self.num_classes, self.device)
+            self.epsilons[indices] += self.eta
 
             # generate adversarial examples
-            data_adv = self.adv_data(data, target)
+            data_adv = self.adv_data(data, smoothed_targets, target)
             # calculate training loss
-            loss = self.calculate_loss(data, data_adv, target, optimizer)
+            loss = self.calculate_loss(data, data_adv, targets, indices)
 
             loss.backward()
             optimizer.step()
 
             # print progress
             if batch_idx % self.log_interval == 0:
-                print('Train Epoch: {} [{}/{} ({:.2f}%)]\tLR: {:.4f}\tLoss: {:.4f}'.format(
-                epoch, (i+1) * len(data), len(train_loader.dataset),
-                100. * (i+1) / len(train_loader), optimizer.param_groups[-1]['lr'], loss.item()), flush=True)
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader), loss.item()))
 
-    def adv_data(self, data, target):
+    def adv_data(self, data, target, target_orig):
         """
         Generate input(adversarial) data for training.
         """
-        adversary = TRADES(self.model)
-        data_adv = adversary.generate(data, target, epsilon=self.epsilon, num_steps=self.num_steps, step_size=self.step_size, clip_max=self.clip_max,
+        adversary = CAT(self.model)
+        data_adv = adversary.generate(data, target, target_orig, epsilons=self.epsilons[indices], num_steps=self.num_steps, step_size=self.step_size, 
+                                      loss_type=self.loss_type, num_classes=self.num_classes, kappa=self.kappa, clip_max=self.clip_max,
                                       clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
 
         return data_adv
 
-    def calculate_loss(self, x_natural, x_adv, y, optimizer):
+    def calculate_loss(self, x_natural, x_adv, y, indices):
         """
-        Calculate TRADES loss.
+        Calculate CTA loss.
         """
         batch_size = len(x_natural)
-        criterion_kl = nn.KLDivLoss(reduction='sum')
         self.model.train()
 
         x_adv = Variable(torch.clamp(x_adv, self.clip_min, self.clip_max), requires_grad=False)
         # zero gradient
         optimizer.zero_grad()
-        # calculate nature loss
-        logits = self.model(x_natural)
-        loss_natural = F.cross_entropy(logits, y)
-        # calculate robust loss
-        loss_robust = (1.0 / batch_size) * criterion_kl(F.log_softmax(self.model(x_adv), dim=1), F.softmax(logits, dim=1))
-        loss = loss_natural + self.beta * loss_robust
+
+        adv_logits = self.model(x_adv)
+        t_or_f = torch.argmax(torch.softmax(adv_logits, dim=1), dim=1).eq(y)
+        false_indices = indices[torch.where(t_or_f==False)[0]]
+        self.epsilons[false_indices] -= self.eta
+        self.epsilons[indices] = torch.min(epsilons[indices], (torch.ones(batch_size) * self.epsilon_max).to(self.device))
+        
+        smoothed_targets = label_smoothing(y, self.epsilons[indices], self.c, self.num_classes, self.device)
+        if self.loss_type == 'xent':
+            probs = torch.softmax(adv_logits, dim=1)
+            loss = -torch.sum(smoothed_targets * torch.log(probs))/batch_size
+        elif self.loss_type == 'mix':
+            probs = torch.softmax(adv_logits, dim=1)
+            class_index = torch.arange(self.num_classes)[None,:].repeat(batch_size, 1).to(self.device)
+            false_probs = torch.topk(probs[class_index!=y[:,None]].view(batch_size, self.num_classes-1), k=1).values
+            gt_probs = probs[class_index==y[:,None]].unsqueeze(1)
+            cw_loss = torch.max((false_probs - gt_probs).view(-1), self.kappa*torch.ones(batch_size).to(self.device))
+            loss = torch.sum(torch.sum(-smoothed_targets * torch.log(probs), dim=1) + cw_loss)/batch_size
+        else:
+            raise RuntimeError('invalid loss function')
         
         return loss
+
+def label_smoothing(targets, epsilon, c, num_classes=10, device):
+    onehot = torch.eye(num_classes)[targets].to(device)
+    dirich = torch.from_numpy(np.random.dirichlet(np.ones(num_classes), targets.size(0))).to(device)
+    sr = (torch.ones(targets.size(0)).to(device) * (c*epsilon)).unsqueeze(1).repeat(1, num_classes)
+    ones = torch.ones_like(sr)
+    y_tilde = (ones - sr) * onehot + sr * dirich
+
+    return y_tilde

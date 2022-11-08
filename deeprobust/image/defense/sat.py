@@ -2,11 +2,10 @@
 This is an implementation of [1]
 References
 ---------
-.. [1] Zhang, H., Yu, Y., Jiao, J., Xing, E., El Ghaoui, L., & Jordan, M. (2019, May). 
-Theoretically Principled Trade-off between Robustness and Accuracy. 
-In International Conference on Machine Learning (pp. 7472-7482).
-This implementation is based on their code: https://github.com/yaodongyu/TRADES
-Copyright (c) 2019 Hongyang Zhang, Yaodong Yu
+.. [1] Vivek, B. S., & Babu, R. V. (2020). 
+Regularizers for single-step adversarial training. 
+arXiv preprint arXiv:2002.00614.
+This implementation is based on the code: https://github.com/val-iisc/SAT-Rx
 """
 
 import os
@@ -20,17 +19,17 @@ from torchvision import datasets, transforms
 
 from deeprobust.image.defense.base_defense import BaseDefense
 from deeprobust.image.netmodels.CNN import Net
-from deeprobust.image.attack.trades import TRADES
+from deeprobust.image.attack.sat import SAT
 from deeprobust.image.attack.pgd import PGD
 
-class TRADES(BaseDefense):
+class SAT(BaseDefense):
     """
-    TRADES.
+    SAT.
     """
 
     def __init__(self, model, device='cuda'):
         if not torch.cuda.is_available():
-            print('CUDA not available, using cpu...', flush=True)
+            print('CUDA not available, using cpu...')
             self.device = 'cpu'
         else:
             self.device = device
@@ -71,8 +70,8 @@ class TRADES(BaseDefense):
                 if not os.path.exists(self.save_dir):
                     os.makedirs(self.save_dir)
                 if epoch % self.save_freq == 0:
-                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'trade_model-nn-epoch{}.pt'.format(epoch)))
-                    print('Model saved in ' + str(self.save_dir), flush=True)
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'sat_model-nn-epoch{}.pt'.format(epoch)))
+                    print('Model saved in ' + str(self.save_dir))
 
             scheduler.step()
     
@@ -81,18 +80,21 @@ class TRADES(BaseDefense):
                      lr=0.1,
                      momentum=0.9,
                      epsilon=0.031,
-                     num_steps=10,
-                     step_size=0.007,
-                     beta=1.0,
+                     method='R1',
+                     Lambda=0.2,
+                     train_ifgsm_steps=3,
+                     epsilon_low=0.007,
+                     epsilon_high=0.03,
+                     rfgsm_alpha=0.007,
+                     tau=0.6,
                      seed=1,
                      log_interval=100,
                      test_freq=10,
                      save_model=True,
-                     save_dir='./defense_models/trades/',
+                     save_dir='./defense_models/sat/',
                      save_freq=10,
                      clip_max=1.0,
                      clip_min=0.0,
-                     distance_measure='l_inf',
                      print_process=False,
                      test_epsilon=0.031,
                      test_num_steps=20,
@@ -113,14 +115,20 @@ class TRADES(BaseDefense):
             - learning rate for adversary training process
         :param momentum : float 
             - parameter for optimizer in training process
+        :param method : str 
+            - parameter for regularization method used in training, choices=['R1', 'R2', 'R3']
         """
         self.epochs = epochs
         self.lr = lr
         self.momentum = momentum
         self.epsilon = epsilon
-        self.num_steps = num_steps
-        self.step_size = step_size
-        self.beta = beta
+        self.method = method
+        self.Lambda = Lambda
+        self.train_ifgsm_steps = train_ifgsm_steps
+        self.epsilon_low= epsilon_low
+        self.epsilon_high = epsilon_high
+        self.rfgsm_alpha = rfgsm_alpha
+        self.tau = tau
         self.seed = seed 
         self.log_interval = log_interval
         self.test_freq = test_freq
@@ -179,45 +187,138 @@ class TRADES(BaseDefense):
             data, target = data.to(self.device), target.to(self.device)
 
             # generate adversarial examples
-            data_adv = self.adv_data(data, target)
-            # calculate training loss
-            loss = self.calculate_loss(data, data_adv, target, optimizer)
+            if self.method == "R1":
+                data_adv = self.adv_data_1(data, target, len(data))
+                # calculate training loss
+                loss = self.calculate_loss_1(data_adv, target)
+            elif self.method == "R2":
+                data_adv = self.adv_data_2(data, target)
+                # calculate training loss
+                loss = self.calculate_loss_2(data, data_adv, target)
+            elif self.method == "R3":
+                data_adv = self.adv_data_3(data, target)
+                # calculate training loss
+                loss = self.calculate_loss_3(data, data_adv, target)
+            else:
+                raise RuntimeError('invalid regularization method')
 
             loss.backward()
             optimizer.step()
 
             # print progress
             if batch_idx % self.log_interval == 0:
-                print('Train Epoch: {} [{}/{} ({:.2f}%)]\tLR: {:.4f}\tLoss: {:.4f}'.format(
-                epoch, (i+1) * len(data), len(train_loader.dataset),
-                100. * (i+1) / len(train_loader), optimizer.param_groups[-1]['lr'], loss.item()), flush=True)
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader), loss.item()))
 
-    def adv_data(self, data, target):
+    def adv_data_1(self, data, target, batch_size):
         """
         Generate input(adversarial) data for training.
         """
-        adversary = TRADES(self.model)
-        data_adv = adversary.generate(data, target, epsilon=self.epsilon, num_steps=self.num_steps, step_size=self.step_size, clip_max=self.clip_max,
-                                      clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
+        adversary = SAT(self.model)
+        #FGSM samples for m samples in the mini-batch
+        data_adv_1 = adversary.generate(data, target, epsilon=self.epsilon, num_steps=1, method='R1', clip_max=self.clip_max, clip_min=self.clip_min, 
+                                        print_process=self.print_process, distance_measure=self.distance_measure)
+
+        #I-FGSM adversarial sample corresponding to last sample in the mini-batch
+        data_adv_2  = adversary.generate(data[batch_size-1:,:,:,:], target[batch_size-1:], epsilon=self.epsilon, num_steps=self.train_ifgsm_steps, 
+                                         method='R1', clip_max=self.clip_max, clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
+
+        data_adv = torch.cat((data_adv_1, data_adv_2), 0)
 
         return data_adv
 
-    def calculate_loss(self, x_natural, x_adv, y, optimizer):
+    def calculate_loss_1(self, x_adv, y):
         """
-        Calculate TRADES loss.
+        Calculate SAT loss.
         """
-        batch_size = len(x_natural)
-        criterion_kl = nn.KLDivLoss(reduction='sum')
         self.model.train()
 
         x_adv = Variable(torch.clamp(x_adv, self.clip_min, self.clip_max), requires_grad=False)
         # zero gradient
         optimizer.zero_grad()
         # calculate nature loss
-        logits = self.model(x_natural)
-        loss_natural = F.cross_entropy(logits, y)
-        # calculate robust loss
-        loss_robust = (1.0 / batch_size) * criterion_kl(F.log_softmax(self.model(x_adv), dim=1), F.softmax(logits, dim=1))
-        loss = loss_natural + self.beta * loss_robust
+        adv_logits = self.model(x_adv)
+        B = len(adv_logits)
+
+        CE_loss = F.cross_entropy(adv_logits[:B-1,:], y)
+
+        REG_loss = l2_square(adv_logits[B-2:B-1,:], adv_logits[B-1:,:])
+
+        loss = CE_loss + self.Lambda * REG_loss
         
         return loss
+
+    def adv_data_2(self, data, target):
+        """
+        Generate input(adversarial) data for training.
+        """
+        adversary = SAT(self.model)
+        data_adv = adversary.generate(data, target, epsilon=self.epsilon, method='R2', eps_iter=self.rfgsm_alpha, clip_max=self.clip_max,
+                                      clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
+
+        return data_adv
+
+    def calculate_loss_2(self, x_adv, y):
+        """
+        Calculate SAT loss.
+        """
+        batch_size = len(x_adv)
+        self.model.train()
+
+        x_adv = Variable(torch.clamp(x_adv, self.clip_min, self.clip_max), requires_grad=False)
+        # zero gradient
+        optimizer.zero_grad()
+        # calculate nature loss
+        adv_logits = self.model(x_adv)
+        B = len(adv_logits)
+
+        # Cross-entropy loss on FGSM samples only
+        CE_loss = F.cross_entropy(adv_logits[:int(B/2),:], y)
+
+        REG_loss = l2_square(adv_logits[:int(B/2),:], adv_logits[int(B/2):,:])
+
+        loss = CE_loss + self.Lambda * REG_loss
+        
+        return loss
+
+    def adv_data_3(self, data, target):
+        """
+        Generate input(adversarial) data for training.
+        """
+        adversary = SAT(self.model)
+        data_adv = adversary.generate(data, target, method='R3', epsilon_low=self.epsilon_low, epsilon_high=self.epsilon_high, alpha=self.rfgsm_alpha, 
+                                      clip_max=self.clip_max, clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
+
+        return data_adv
+
+    def calculate_loss_3(self, x_adv, y):
+        """
+        Calculate SAT loss.
+        """
+        batch_size = len(x_adv)
+        self.model.train()
+
+        x_adv = Variable(torch.clamp(x_adv, self.clip_min, self.clip_max), requires_grad=False)
+        # zero gradient
+        optimizer.zero_grad()
+        # calculate nature loss
+        adv_logits = self.model(x_adv)
+        B = len(adv_logits)
+
+        # Cross-entropy loss on FGSM samples only
+        loss_eps_low = F.cross_entropy(adv_logits[0:int(B/2),:], y)
+        loss_eps_high = F.cross_entropy(adv_logits[int(B/2):,:], y)
+
+        loss = loss_eps_high + self.Lambda * F.relu(loss_eps_low - self.tau * loss_eps_high)
+        
+        return loss
+
+# Return Euclidean distance (**2) between 2 vectors
+def l2_square(x, y):
+    diff = x - y
+    diff = diff * diff
+    diff = diff.sum(1)
+    diff = diff.mean(0)
+
+    return diff

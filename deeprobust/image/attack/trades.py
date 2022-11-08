@@ -7,18 +7,18 @@ import torch.nn.functional as F
 
 from deeprobust.image.attack.base_attack import BaseAttack
 
-class PGD(BaseAttack):
+class TRADES(BaseAttack):
     """
-    PGD attack.
+    TRADES attack.
     """
-    
+
     def __init__(self, model, device='cuda'):
 
-        super(PGD, self).__init__(model, device)
+        super(TRADES, self).__init__(model, device)
 
     def generate(self, image, label, **kwargs):
         """
-        Call this function to generate PGD adversarial examples.
+        Call this function to generate TRADES adversarial examples.
         Parameters
         ----------
         image :
@@ -35,7 +35,7 @@ class PGD(BaseAttack):
         assert self.check_type_device(image, label)
         assert self.parse_params(**kwargs)
 
-        return pgd_attack(self.model,
+        return trades_attack(self.model,
                    self.image,
                    self.label,
                    self.epsilon,
@@ -83,18 +83,20 @@ class PGD(BaseAttack):
         
         return True
 
-def pgd_attack(model,
-               x_natural,
-               y,
-               epsilon,
-               num_steps,
-               step_size,
-               clip_max,
-               clip_min,
-               print_process,
-               distance_measure,
-               device='cuda'):
+def trades_attack(model,
+                  x_natural,
+                  y,
+                  epsilon,
+                  num_steps,
+                  step_size,
+                  clip_max,
+                  clip_min,
+                  print_process,
+                  distance_measure,
+                  device='cuda'):
     
+    # define KL-loss
+    criterion_kl = nn.KLDivLoss(reduction='sum')
     model.eval()
     batch_size = len(x_natural)
 
@@ -102,14 +104,14 @@ def pgd_attack(model,
     x_adv = x_natural.detach() + 0.001 * torch.randn(x_natural.shape).to(device).detach()
 
     if distance_measure == 'l_inf':
-        for _ in range(num_steps):
+        for i in range(num_steps):
             if print_process:
                 print('generating at step ' + str(i + 1), flush=True)
-                
+
             x_adv.requires_grad_()
             with torch.enable_grad():
-                loss_ce = F.cross_entropy(model(x_adv), y)
-            grad = torch.autograd.grad(loss_ce, [x_adv])[0]
+                loss_kl = criterion_kl(F.log_softmax(model(x_adv), dim=1), F.softmax(model(x_natural), dim=1))
+            grad = torch.autograd.grad(loss_kl, [x_adv])[0]
             x_adv = x_adv.detach() + step_size * torch.sign(grad.detach())
             x_adv = torch.min(torch.max(x_adv, x_natural - epsilon), x_natural + epsilon)
             x_adv = torch.clamp(x_adv, clip_min, clip_max)
@@ -123,13 +125,13 @@ def pgd_attack(model,
         for i in range(num_steps):
             if print_process:
                 print('generating at step ' + str(i + 1), flush=True)
-
+                
             adv = x_natural + delta
 
             # optimize
             optimizer_delta.zero_grad()
             with torch.enable_grad():
-                loss = (-1) * F.cross_entropy(model(adv), y)
+                loss = (-1) * criterion_kl(F.log_softmax(model(adv), dim=1), F.softmax(model(x_natural), dim=1))
             loss.backward()
             # renorming gradient
             grad_norms = delta.grad.view(batch_size, -1).norm(p=2, dim=1)
