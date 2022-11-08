@@ -2,11 +2,10 @@
 This is an implementation of [1]
 References
 ---------
-.. [1] Zhang, H., Yu, Y., Jiao, J., Xing, E., El Ghaoui, L., & Jordan, M. (2019, May). 
-Theoretically Principled Trade-off between Robustness and Accuracy. 
-In International Conference on Machine Learning (pp. 7472-7482).
-This implementation is based on their code: https://github.com/yaodongyu/TRADES
-Copyright (c) 2019 Hongyang Zhang, Yaodong Yu
+.. [1] Zhang, J., Xu, X., Han, B., Niu, G., Cui, L., Sugiyama, M., & Kankanhalli, M. (2020, November). 
+Attacks which do not kill training make adversarial learning stronger. 
+In International conference on machine learning (pp. 11278-11287). PMLR.
+This implementation is based on their code: https://github.com/zjfheart/Friendly-Adversarial-Training
 """
 
 import os
@@ -20,17 +19,16 @@ from torchvision import datasets, transforms
 
 from deeprobust.image.defense.base_defense import BaseDefense
 from deeprobust.image.netmodels.CNN import Net
-from deeprobust.image.attack.trades import TRADES
+from deeprobust.image.attack.pgd import FAT
 from deeprobust.image.attack.pgd import PGD
 
-class TRADES(BaseDefense):
-    """
-    TRADES.
+class FAT(BaseDefense):
+    """FAT.
     """
 
     def __init__(self, model, device='cuda'):
         if not torch.cuda.is_available():
-            print('CUDA not available, using cpu...', flush=True)
+            print('CUDA not available, using cpu...')
             self.device = 'cpu'
         else:
             self.device = device
@@ -38,8 +36,7 @@ class TRADES(BaseDefense):
         self.model = model.to(self.device)
 
     def generate(self, train_loader, test_loader, **kwargs):
-        """Call this function to generate robust model.
-
+        """generate robust model.
         Parameters
         ----------
         train_loader :
@@ -49,6 +46,7 @@ class TRADES(BaseDefense):
         kwargs :
             kwargs
         """
+        
         self.parse_params(**kwargs)
         
         torch.manual_seed(self.seed)
@@ -59,8 +57,8 @@ class TRADES(BaseDefense):
 
         for epoch in range(1, self.epochs + 1):
             print('Training epoch: ', epoch, flush=True)
-            # TRADES training
-            self.train(train_loader, optimizer, epoch)
+            # FAT training
+            self.train(train_loader, optimizer, epoch, adjust_tau(epoch, self.dynamictau))
 
             # evaluation on natural examples
             if epoch % self.test_freq == 0:
@@ -71,8 +69,8 @@ class TRADES(BaseDefense):
                 if not os.path.exists(self.save_dir):
                     os.makedirs(self.save_dir)
                 if epoch % self.save_freq == 0:
-                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'trade_model-nn-epoch{}.pt'.format(epoch)))
-                    print('Model saved in ' + str(self.save_dir), flush=True)
+                    torch.save(self.model.state_dict(), os.path.join(self.save_dir, 'fat_model-nn-epoch{}.pt'.format(epoch)))
+                    print('Model saved in ' + str(self.save_dir))
 
             scheduler.step()
     
@@ -83,13 +81,19 @@ class TRADES(BaseDefense):
                      epsilon=0.031,
                      num_steps=10,
                      step_size=0.007,
-                     beta=1.0,
                      seed=1,
                      log_interval=100,
-                     test_freq=10,
+                     test_freq=1,
                      save_model=True,
-                     save_dir='./defense_models/trades/',
+                     save_dir='./defense_models/fat/',
                      save_freq=10,
+                     dynamictau=True,
+                     tau=0,
+                     omega=0.001,
+                     loss_func='pgd',
+                     rand_init=True,
+                     randominit_type='uniform_randominit',
+                     beta = 6.0,
                      clip_max=1.0,
                      clip_min=0.0,
                      distance_measure='l_inf',
@@ -97,8 +101,7 @@ class TRADES(BaseDefense):
                      test_epsilon=0.031,
                      test_num_steps=20,
                      test_step_size=0.007):
-        """Parameter parser.
-        ----------
+        """
         :param epoch : int 
             - pgd training epoch
         :param save_dir : str 
@@ -113,6 +116,12 @@ class TRADES(BaseDefense):
             - learning rate for adversary training process
         :param momentum : float 
             - parameter for optimizer in training process
+        :param dynamictau : bool 
+            - parameter for choosing whether to use dynamic tau
+        :param tau : int 
+            - step tau
+        :param loss_func : str
+        	- parameter for choosing loss function used in training, choices=['pgd', 'trades', 'mart']
         """
         self.epochs = epochs
         self.lr = lr
@@ -120,13 +129,19 @@ class TRADES(BaseDefense):
         self.epsilon = epsilon
         self.num_steps = num_steps
         self.step_size = step_size
-        self.beta = beta
         self.seed = seed 
         self.log_interval = log_interval
         self.test_freq = test_freq
         self.save_model = save_model
         self.save_dir = save_dir
         self.save_freq = save_freq
+        self.dynamictau = dynamictau
+        self.tau = tau
+        self.omega = omega
+        self.loss_func = loss_func
+        self.rand_init = rand_init
+        self.randominit_type=randominit_type
+        self.beta = beta
         self.clip_max = clip_max
         self.clip_min = clip_min
         self.distance_measure = distance_measure
@@ -170,8 +185,15 @@ class TRADES(BaseDefense):
         adv_test_loss, adv_correct, len(test_loader.dataset),
         100. * adv_correct / len(test_loader.dataset)), flush=True)
 
-    def train(self, train_loader, optimizer, epoch):
+    def train(self, train_loader, optimizer, epoch, tau):
         self.model.train()
+        
+        # loss function used for generating adversarial examples
+        if self.loss_func == 'trades':
+            self.loss_fn = 'kl'
+        else:
+            self.loss_fn = 'cent' 
+
         for batch_idx, (data, target) in enumerate(train_loader):
             
             optimizer.zero_grad()
@@ -179,45 +201,84 @@ class TRADES(BaseDefense):
             data, target = data.to(self.device), target.to(self.device)
 
             # generate adversarial examples
-            data_adv = self.adv_data(data, target)
+            data_adv, target_adv, data_natural = self.adv_data(data, target, tau)
             # calculate training loss
-            loss = self.calculate_loss(data, data_adv, target, optimizer)
+            loss = self.calculate_loss(data_natural, data_adv, target_adv)
 
             loss.backward()
             optimizer.step()
 
             # print progress
             if batch_idx % self.log_interval == 0:
-                print('Train Epoch: {} [{}/{} ({:.2f}%)]\tLR: {:.4f}\tLoss: {:.4f}'.format(
-                epoch, (i+1) * len(data), len(train_loader.dataset),
-                100. * (i+1) / len(train_loader), optimizer.param_groups[-1]['lr'], loss.item()), flush=True)
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader), loss.item()))
 
-    def adv_data(self, data, target):
+    def adv_data(self, data, target, tau):
         """
         Generate input(adversarial) data for training.
         """
-        adversary = TRADES(self.model)
-        data_adv = adversary.generate(data, target, epsilon=self.epsilon, num_steps=self.num_steps, step_size=self.step_size, clip_max=self.clip_max,
-                                      clip_min=self.clip_min, print_process=self.print_process, distance_measure=self.distance_measure)
 
-        return data_adv
+        adversary = FAT(self.model)
+        data_adv, target_adv, data_natural = adversary.generate(data, target, epsilon=self.epsilon, num_steps=self.num_steps, step_size=self.step_size, 
+                                                                loss_fn=self.loss_fn, tau=tau, omega=self.omega, rand_init=self.rand_init, 
+                                                                randominit_type=self.randominit_type, clip_max=self.clip_max, clip_min=self.clip_min, 
+                                                                print_process=self.print_process, distance_measure=self.distance_measure)
 
-    def calculate_loss(self, x_natural, x_adv, y, optimizer):
+        return data_adv, target_adv, data_natural
+
+    def calculate_loss(self, x_natural, x_adv, y):
         """
-        Calculate TRADES loss.
+        Calculate FAT loss.
         """
         batch_size = len(x_natural)
-        criterion_kl = nn.KLDivLoss(reduction='sum')
         self.model.train()
 
         x_adv = Variable(torch.clamp(x_adv, self.clip_min, self.clip_max), requires_grad=False)
         # zero gradient
         optimizer.zero_grad()
-        # calculate nature loss
-        logits = self.model(x_natural)
-        loss_natural = F.cross_entropy(logits, y)
-        # calculate robust loss
-        loss_robust = (1.0 / batch_size) * criterion_kl(F.log_softmax(self.model(x_adv), dim=1), F.softmax(logits, dim=1))
-        loss = loss_natural + self.beta * loss_robust
+        if self.loss_func == 'trades':
+            criterion_kl = nn.KLDivLoss(reduction='sum')
+    
+            # calculate nature loss
+            logits = self.model(x_natural)
+            loss_natural = F.cross_entropy(logits, y)
+            # calculate robust loss
+            loss_robust = (1.0 / batch_size) * criterion_kl(F.log_softmax(self.model(x_adv), dim=1),
+                                                            F.softmax(self.model(x_natural), dim=1))
+            loss = loss_natural + self.beta * loss_robust
+        elif self.loss_func == 'mart':
+            criterion_kl = nn.KLDivLoss(reduction='none')
+
+            logits = self.model(x_natural)
+            logits_adv = self.model(x_adv)
+
+            adv_probs = F.softmax(logits_adv, dim=1)
+            tmp1 = torch.argsort(adv_probs, dim=1)[:, -2:]
+            new_y = torch.where(tmp1[:, -1] == y, tmp1[:, -2], tmp1[:, -1])
+            loss_adv = F.cross_entropy(logits_adv, y) + F.nll_loss(torch.log(1.0001 - adv_probs + 1e-12), new_y)
+
+            nat_probs = F.softmax(logits, dim=1)
+            true_probs = torch.gather(nat_probs, 1, (y.unsqueeze(1)).long()).squeeze()
+            loss_robust = (1.0 / batch_size) * torch.sum(torch.sum(criterion_kl(torch.log(adv_probs + 1e-12), nat_probs), dim=1) 
+                                                         * (1.0000001 - true_probs))
+            loss = loss_adv + self.beta * loss_robust
+        elif self.loss_func == 'pgd':
+            logits_adv = self.model(x_adv)
+            loss = F.cross_entropy(logits_adv, y)
+        else:
+            raise RuntimeError('invalid loss function')
         
         return loss
+
+def adjust_tau(epoch, dynamictau):
+    tau = self.tau
+    if dynamictau:
+        if epoch < 50:
+            tau = 0
+        elif epoch < 90:
+            tau = 1
+        else:
+            tau = 2
+
+    return tau
