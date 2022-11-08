@@ -22,7 +22,7 @@ from copy import deepcopy
 import pickle as cp
 from deeprobust.graph.utils import *
 import scipy.sparse as sp
-from scipy.sparse.linalg.eigen.arpack import eigsh
+from scipy.sparse.linalg import eigsh
 from deeprobust.graph import utils
 
 class StaticGraph(object):
