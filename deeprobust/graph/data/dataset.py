@@ -9,6 +9,7 @@ import networkx as nx
 from deeprobust.graph.utils import get_train_val_test, get_train_val_test_gcn
 import zipfile
 import json
+import platform
 
 class Dataset():
     """Dataset class contains four citation network datasets "cora", "cora-ml", "citeseer" and "pubmed",
@@ -61,7 +62,12 @@ class Dataset():
         self.seed = seed
         # self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
         self.url =  'https://raw.githubusercontent.com/danielzuegner/gnn-meta-attack/master/data/%s.npz' % self.name
-        self.root = osp.expanduser(osp.normpath(root))
+	
+	if platform.system() == 'Windows':
+		root = root
+	else:
+        	self.root = osp.expanduser(osp.normpath(root))
+		
         self.data_folder = osp.join(root, self.name)
         self.data_filename = self.data_folder + '.npz'
         self.require_mask = require_mask
