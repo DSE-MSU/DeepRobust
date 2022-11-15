@@ -62,6 +62,7 @@ If our work could help your research, please cite:
 ```
 
 # Changelog
+* [11/2022] DeepRobust 0.2.6 Released. Please try `pip install deeprobust==0.2.6`! We have more updates coming. Please stay tuned!
 * [11/2021] A subpackage that includes popular black box attacks in image domain is relased. Find it here. [Link](https://github.com/I-am-Bot/Black-Box-Attacks)
 * [11/2021] DeepRobust 0.2.4 Released. Please try `pip install deeprobust==0.2.4`!
 * [10/2021] add scalable attack and MedianGCN. Thank [Jintang](https://github.com/EdisonLeeeee) for his contribution!
