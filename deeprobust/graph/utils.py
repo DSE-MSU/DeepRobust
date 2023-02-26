@@ -313,6 +313,16 @@ def loss_acc(output, labels, targets, avg_loss=True):
     # correct = correct.sum()
     # return loss, correct / len(labels)
 
+def get_perf(output, labels, mask, verbose=True):
+    """evalute performance for test masked data"""
+    loss = F.nll_loss(output[mask], labels[mask])
+    acc = accuracy(output[mask], labels[mask])
+    if verbose:
+        print("loss= {:.4f}".format(loss.item()),
+              "accuracy= {:.4f}".format(acc.item()))
+    return loss.item(), acc.item()
+
+
 def classification_margin(output, true_label):
     """Calculate classification margin for outputs.
     `probs_true_label - probs_best_second_class`
@@ -711,6 +721,56 @@ def visualize(your_var):
 def reshape_mx(mx, shape):
     indices = mx.nonzero()
     return sp.csr_matrix((mx.data, (indices[0], indices[1])), shape=shape)
+
+def add_mask(data, dataset):
+    """data: ogb-arxiv pyg data format"""
+    # for arxiv
+    split_idx = dataset.get_idx_split()
+    train_idx, valid_idx, test_idx = split_idx["train"], split_idx["valid"], split_idx["test"]
+    n = data.x.shape[0]
+    data.train_mask = index_to_mask(train_idx, n)
+    data.val_mask = index_to_mask(valid_idx, n)
+    data.test_mask = index_to_mask(test_idx, n)
+    data.y = data.y.squeeze()
+    # data.edge_index = to_undirected(data.edge_index, data.num_nodes)
+
+def index_to_mask(index, size):
+    mask = torch.zeros((size, ), dtype=torch.bool)
+    mask[index] = 1
+    return mask
+
+def add_feature_noise(data, noise_ratio, seed):
+    np.random.seed(seed)
+    n, d = data.x.shape
+    # noise = torch.normal(mean=torch.zeros(int(noise_ratio*n), d), std=1)
+    noise = torch.FloatTensor(np.random.normal(0, 1, size=(int(noise_ratio*n), d))).to(data.x.device)
+    indices = np.arange(n)
+    indices = np.random.permutation(indices)[: int(noise_ratio*n)]
+    delta_feat = torch.zeros_like(data.x)
+    delta_feat[indices] = noise - data.x[indices]
+    data.x[indices] = noise
+    mask = np.zeros(n)
+    mask[indices] = 1
+    mask = torch.tensor(mask).bool().to(data.x.device)
+    return delta_feat, mask
+
+def add_feature_noise_test(data, noise_ratio, seed):
+    np.random.seed(seed)
+    n, d = data.x.shape
+    indices = np.arange(n)
+    test_nodes = indices[data.test_mask.cpu()]
+    selected = np.random.permutation(test_nodes)[: int(noise_ratio*len(test_nodes))]
+    noise = torch.FloatTensor(np.random.normal(0, 1, size=(int(noise_ratio*len(test_nodes)), d)))
+    noise = noise.to(data.x.device)
+
+    delta_feat = torch.zeros_like(data.x)
+    delta_feat[selected] = noise - data.x[selected]
+    data.x[selected] = noise
+    # mask = np.zeros(len(test_nodes))
+    mask = np.zeros(n)
+    mask[selected] = 1
+    mask = torch.tensor(mask).bool().to(data.x.device)
+    return delta_feat, mask
 
 # def check_path(file_path):
 #     if not osp.exists(file_path):

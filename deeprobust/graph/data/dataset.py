@@ -62,12 +62,12 @@ class Dataset():
         self.seed = seed
         # self.url =  'https://raw.githubusercontent.com/danielzuegner/nettack/master/data/%s.npz' % self.name
         self.url =  'https://raw.githubusercontent.com/danielzuegner/gnn-meta-attack/master/data/%s.npz' % self.name
-	
-	if platform.system() == 'Windows':
-		root = root
-	else:
+
+        if platform.system() == 'Windows':
+            root = root
+        else:
         	self.root = osp.expanduser(osp.normpath(root))
-		
+
         self.data_folder = osp.join(root, self.name)
         self.data_filename = self.data_folder + '.npz'
         self.require_mask = require_mask
