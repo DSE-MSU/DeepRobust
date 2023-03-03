@@ -4,7 +4,8 @@ import math
 import torch
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
-from torch_geometric.nn import GATConv
+# from torch_geometric.nn import GATConv
+from .mygat_conv import GATConv
 from .base_model import BaseModel
 
 

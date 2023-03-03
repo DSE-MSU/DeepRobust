@@ -18,25 +18,30 @@ from torch_geometric.utils import to_scipy_sparse_matrix, from_scipy_sparse_matr
 
 class PRBCD:
 
-    def __init__(self, data, make_undirected=True,
+    def __init__(self, data, model=None,
+            make_undirected=True,
             eps=1e-7, search_space_size=10_000_000,
             max_final_samples=20,
             fine_tune_epochs=100,
             epochs=400, lr_adj=0.1,
             with_early_stopping=True,
             do_synchronize=True,
-            device='cuda'
+            device='cuda',
+            **kwargs
             ):
+        """
+        Parameters
+        ----------
+        data : pyg format data
+        model : the model to be attacked, should be models in deeprobust.graph.defense_pyg
+        """
         self.device = device
         self.data = data
-        self.model = self.pretrain_model()
-        output = self.model.predict()
-        labels = data.y.to(self.device)
-        self.get_perf(output, labels, data.test_mask)
 
-        for param in self.model.parameters():
-            param.requires_grad = False
+        if model is None:
+            model = self.pretrain_model()
 
+        self.model = model
         nnodes = data.x.shape[0]
         d = data.x.shape[1]
 
@@ -62,16 +67,17 @@ class PRBCD:
         self.with_early_stopping = with_early_stopping
         self.do_synchronize = do_synchronize
 
-    def pretrain_model(self):
+    def pretrain_model(self, model=None):
         data = self.data
         device = self.device
         feat, labels = data.x, data.y
         nclass = max(labels).item()+1
 
-        model = GCN(nfeat=feat.shape[1], nhid=256, dropout=0,
-                nlayers=3, with_bn=True, weight_decay=5e-4, nclass=nclass,
-                device=device).to(device)
-        print(model)
+        if model is None:
+            model = GCN(nfeat=feat.shape[1], nhid=256, dropout=0,
+                    nlayers=3, with_bn=True, weight_decay=5e-4, nclass=nclass,
+                    device=device).to(device)
+            print(model)
 
         model.fit(data, train_iters=1000, patience=200, verbose=True)
         model.eval()

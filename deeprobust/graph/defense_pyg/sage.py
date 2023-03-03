@@ -10,23 +10,26 @@ from .base_model import BaseModel
 
 
 class SAGE(BaseModel):
-    def __init__(self, in_channels, hidden_channels, out_channels, num_layers=2,
-                 dropout=0.5, lr=0.01, weight_decay=0, device='cpu', with_bn=True):
+
+    def __init__(self, nfeat, nhid, nclass, num_layers=2,
+                 dropout=0.5, lr=0.01, weight_decay=0, device='cpu', with_bn=False, **kwargs):
         super(SAGE, self).__init__()
 
         self.convs = nn.ModuleList()
         self.convs.append(
-            SAGEConv(in_channels, hidden_channels))
+            SAGEConv(nfeat, nhid))
 
         self.bns = nn.ModuleList()
-        self.bns.append(nn.BatchNorm1d(hidden_channels))
+        if 'nlayers' in kwargs:
+            num_layers = kwargs['nlayers']
+        self.bns.append(nn.BatchNorm1d(nhid))
         for _ in range(num_layers - 2):
             self.convs.append(
-                SAGEConv(hidden_channels, hidden_channels))
-            self.bns.append(nn.BatchNorm1d(hidden_channels))
+                SAGEConv(nhid, nhid))
+            self.bns.append(nn.BatchNorm1d(nhid))
 
         self.convs.append(
-            SAGEConv(hidden_channels, out_channels))
+            SAGEConv(nhid, nclass))
 
         self.weight_decay = weight_decay
         self.lr = lr

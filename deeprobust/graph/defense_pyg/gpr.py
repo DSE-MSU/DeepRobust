@@ -12,12 +12,12 @@ from .base_model import BaseModel
 class GPRGNN(BaseModel):
     """GPRGNN, from original repo https://github.com/jianhao2016/GPRGNN"""
 
-    def __init__(self, in_channels, hidden_channels, out_channels, Init='PPR', dprate=.5, dropout=.5,
+    def __init__(self, nfeat, nhid, nclass, Init='PPR', dprate=.5, dropout=.5,
             lr=0.01, weight_decay=0, device='cpu',
             K=10, alpha=.1, Gamma=None, ppnp='GPR_prop'):
         super(GPRGNN, self).__init__()
-        self.lin1 = nn.Linear(in_channels, hidden_channels)
-        self.lin2 = nn.Linear(hidden_channels, out_channels)
+        self.lin1 = nn.Linear(nfeat, nhid)
+        self.lin2 = nn.Linear(nhid, nclass)
 
         if ppnp == 'PPNP':
             self.prop1 = APPNP(K, alpha)
