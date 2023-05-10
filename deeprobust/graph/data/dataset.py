@@ -64,7 +64,7 @@ class Dataset():
         self.url =  'https://raw.githubusercontent.com/danielzuegner/gnn-meta-attack/master/data/%s.npz' % self.name
 
         if platform.system() == 'Windows':
-            root = root
+            self.root = root
         else:
         	self.root = osp.expanduser(osp.normpath(root))
 
