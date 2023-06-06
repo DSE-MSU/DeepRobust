@@ -14,7 +14,7 @@ parser.add_argument('--device', default='cuda', type=str, help='which device use
 parser.add_argument('--base_model_name', type=str, default='gpt2-medium', help='model to generate texts for detection')
 
 parser.add_argument('--openai_model', type=str, default=None)
-parser.add_argument('--openai_key', type=str, default='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')
+parser.add_argument('--openai_key', type=str, default='')
 parser.add_argument('--cache_dir', type=str, default='./cache_dir', help='path of the folder to save cache')
 parser.add_argument('--output_to_log', default='', help='whether saving logs into a file')
 
@@ -87,6 +87,7 @@ def main():
             with open(os.path.join(data_path, 'raw_data.json')) as f:
                 final_data = json.load(f)
 
+            assert len(final_data['original']) >= args.n_samples, "Current dataset does not have enough data, please regenerate a satisfied dataset"
             base_model = None
         else:
             cur_dataset = data_preprocess(args.dataset, args.cache_dir) 
@@ -186,7 +187,7 @@ def main():
             cur_models = model_collector(base_model=base_model, base_tokenizer=base_tokenizer, classification_model=classification_model, classification_tokenizer=classification_tokenizer, device=device, openai_model=args.openai_model)
             cur_models.load_classfication_model()
 
-            detect_method = GPT2_detector(pretrained_model)
+            detect_method = GPT2_detector(pretrained_model, args.n_samples)
             detect_method.main_func(final_data, cur_models, results_path, args.batch_size)
 
 

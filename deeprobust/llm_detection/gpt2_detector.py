@@ -18,8 +18,8 @@ class GPT2_detector:
 
 def run_detect_experiment(data, model_collector, batch_size, n_samples=500):
     results = []
-    original_text = data["original"]
-    sampled_text = data["sampled"]
+    original_text = data["original"][:n_samples]
+    sampled_text = data["sampled"][:n_samples]
 
     # get predictions for original text
     with torch.no_grad():
@@ -30,7 +30,7 @@ def run_detect_experiment(data, model_collector, batch_size, n_samples=500):
             pred_probs = model_collector.classification_model(input_ids=tokenized_batch_real['input_ids'], attention_mask=tokenized_batch_real['attention_mask'])
             pred_probs = torch.softmax(pred_probs[0], dim=-1)
             #fake, real = probs.detach().cpu().flatten().numpy().tolist()
-            real_preds.extend(pred_probs[:,1].cpu().numpy().tolist())
+            real_preds.extend(pred_probs[:,0].cpu().numpy().tolist())
         
         # get predictions for sampled text
         fake_preds = []

@@ -94,8 +94,8 @@ def get_perturbation_results(data, model_collector, pct_words_masked, mask_top_p
     model_collector.load_mask_model()
 
     results = []
-    original_text = data["original"]
-    sampled_text = data["sampled"]
+    original_text = data["original"][:n_samples]
+    sampled_text = data["sampled"][:n_samples]
 
     perturb_fn = functools.partial(perturb_texts, model_collector=model_collector, mask_top_p=mask_top_p, span_length=span_length, pct=pct_words_masked, chunk_size=chunk_size, mask_filling_model_name=mask_filling_model_name)
 
