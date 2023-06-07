@@ -11,10 +11,9 @@ class GPT2_detector:
         self.n_samples = n_samples
 
     def main_func(self, data, model_collector, results_path, batch_size):
-        if self.pretrained_model:
-            output = run_detect_experiment(data, model_collector, batch_size, self.n_samples)
-            with open(os.path.join(results_path, 'results.json'), 'w') as f:
-                json.dump(output, f)
+        output = run_detect_experiment(data, model_collector, batch_size, self.n_samples)
+        with open(os.path.join(results_path, 'results.json'), 'w') as f:
+            json.dump(output, f)
 
 def run_detect_experiment(data, model_collector, batch_size, n_samples=500):
     results = []
@@ -69,22 +68,4 @@ def run_detect_experiment(data, model_collector, batch_size, n_samples=500):
         'loss': 1 - pr_auc,
     }
     
-
-def batch_predict(model, tokenized_texts):
-    with torch.no_grad():
-        try:
-            pred_probs = model(input_ids=tokenized_texts['input_ids'], attention_mask=tokenized_texts['attention_mask'])
-            pred_probs = torch.softmax(pred_probs[0], dim=-1)
-            return pred_probs
-        except:
-            pred_probs = []
-            max_length = tokenized_texts['input_ids'].size()[-1]
-
-            for i in range(len(tokenized_texts['input_ids'])):
-                pred_prob = model(input_ids=tokenized_texts['input_ids'][i].reshape(1, max_length), attention_mask=tokenized_texts['attention_mask'][i].reshape(1, max_length))
-                pred_prob = torch.softmax(pred_prob[0], dim=-1)
-                pred_probs.append(pred_prob)
-
-            return torch.squeeze(torch.stack(pred_probs), 1)
-
 

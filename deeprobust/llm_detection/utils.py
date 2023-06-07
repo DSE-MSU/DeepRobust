@@ -1,8 +1,11 @@
 import numpy as np
 import random
 import os
+import json
+import sys
 import re
 import subprocess
+import requests
 import torch
 import transformers
 from datasets import load_dataset
@@ -12,8 +15,8 @@ from sklearn.metrics import roc_curve, precision_recall_curve, auc
 
 
 class model_collector:
-    def __init__(self, base_model=None, base_tokenizer=None, mask_model=None, mask_tokenizer=None, classification_model=None, classification_tokenizer=None, device='cuda', openai_model=None, 
-                 do_top_k=False, top_k=40, do_top_p=False, top_p=0.96):
+    def __init__(self, base_model=None, base_tokenizer=None, mask_model=None, mask_tokenizer=None, classification_model=None, classification_tokenizer=None, 
+                 device='cuda', openai_model=None, openai_key=None, do_top_k=False, top_k=40, do_top_p=False, top_p=0.96):
         self.base_model = base_model
         self.base_tokenizer = base_tokenizer
         self.mask_model = mask_model
@@ -22,6 +25,7 @@ class model_collector:
         self.classification_tokenizer = classification_tokenizer
         self.device = device
         self.openai_model = openai_model
+        self.openai_key = openai_key
         self.do_top_k = do_top_k
         self.top_k = top_k
         self.do_top_p = do_top_p
@@ -116,14 +120,68 @@ class data_preprocess:
         random.shuffle(self.data)
 
 
-    def generate_data_customized(self, key_name, load_hf_dataset=True):
+    def generate_data_customized(self, key_name, synthetic_dataset_name, load_hf_dataset=True):
         if load_hf_dataset:
             self.data = load_dataset(dataset_name, split='train', cache_dir=self.cache_dir)[key_name]
         else:
-            with open(f'./data/{dataset_name}', 'r') as f:
-                self.data = f.readlines()
+            if self.dataset_name == 'gpt-2-output':
+                original_text, sampled_text = get_gpt2_output_dataset(synthetic_dataset_name, self.cache_dir)
 
-        random.shuffle(self.data)
+            original_text = list(dict.fromkeys(original_text)) 
+            sampled_text = list(dict.fromkeys(sampled_text)) 
+
+            original_text = [x.strip() for x in original_text]
+            sampled_text = [x.strip() for x in sampled_text]
+
+            original_text = [' '.join(x.split()) for x in original_text]
+            sampled_text = [' '.join(x.split()) for x in sampled_text]
+            
+            long_original_text = [x for x in original_text if len(x.split()) > 250]
+            long_sampled_text = [x for x in sampled_text if len(x.split()) > 250]
+
+            if len(long_original_text) > 0:
+                original_text = long_original_text
+            if len(long_sampled_text) > 0:
+                sampled_text = long_sampled_text
+
+            random.shuffle(original_text)
+            random.shuffle(sampled_text)
+            self.final_data = {"original":original_text, "sampled":sampled_text}
+
+            # with open(f'./data/{dataset_name}', 'r') as f:
+            #     self.data = f.readlines()
+
+
+def load_texts(data_file):
+    with open(data_file) as f:
+        data = [json.loads(line)['text'] for line in f]
+
+    return data
+
+
+def get_gpt2_output_dataset(synthetic_dataset_name, cache_dir):
+    assert synthetic_dataset_name in ['small-117M', 'small-117M-k40', 'medium-345M', 'medium-345M-k40', 'large-762M',' large-762M-k40', 'xl-1542M', 'xl-1542M-k40'], "Please give a correct gpt2 output dataset name"
+
+    ds_list = ['webtext']
+    ds_list.append(synthetic_dataset_name)
+
+    for ds in ds_list:
+        for split in ['text']:
+        #for split in ['train', 'valid', 'test']:
+            filename = ds + "." + split + '.jsonl'
+            r = requests.get("https://openaipublic.azureedge.net/gpt-2/output-dataset/v1/" + filename, stream=True)
+
+            with open(os.path.join(cache_dir, filename), 'wb') as f:
+                file_size = int(r.headers["content-length"])
+                chunk_size = 1000
+                # 1k for chunk_size, since Ethernet packet size is around 1500 bytes
+                for chunk in r.iter_content(chunk_size=chunk_size):
+                    f.write(chunk)
+
+    original_text = load_texts(os.path.join(cache_dir, ds_list[0] + "." + split + '.jsonl'))
+    sampled_text = loads(os.path.join(cache_dir, ds_list[-1] + "." + split + '.jsonl'))
+
+    return original_text, sampled_text
 
 
 def load_base_model_and_tokenizer(base_model_name, openai_model, dataset_name, cache_dir):
@@ -154,7 +212,7 @@ def generate_samples(raw_data, dataset, model_collector, dataset_name):
     data = {
         "original": [],
         "sampled": [],
-    }
+    }        
 
     for batch in range(len(raw_data) // dataset.batch_size):
         print(f'Generating samples for batch {batch} of {len(raw_data) // dataset.batch_size}', flush=True)
@@ -245,9 +303,9 @@ def sample_from_model(dataset, texts, model_collector, separator):
     # encode each text as a list of token ids
     if dataset.dataset_name == 'pubmed':
         texts = [t[:t.index(separator)] for t in texts]
-        all_encoded = model_collector.base_tokenizer(texts, return_tensors="pt", padding=True).to(model_collector.base_model.device)
+        all_encoded = model_collector.base_tokenizer(texts, return_tensors="pt", padding=True).to(model_collector.device)
     else:
-        all_encoded = model_collector.base_tokenizer(texts, return_tensors="pt", padding=True).to(model_collector.base_model.device)
+        all_encoded = model_collector.base_tokenizer(texts, return_tensors="pt", padding=True).to(model_collector.device)
         all_encoded = {key: value[:, :dataset.prompt_tokens] for key, value in all_encoded.items()}
 
     if model_collector.openai_model:
@@ -281,14 +339,17 @@ def sample_from_model(dataset, texts, model_collector, separator):
     return decoded
 
 
-def _openai_sample(dataset, model_collector, p):
+def _openai_sample(p, dataset, model_collector):
+    import openai
+    openai.api_key = model_collector.openai_key
+
     if dataset.dataset_name != 'pubmed':  # keep Answer: prefix for pubmed
         p = drop_last_word(p)
 
     # sample from the openai model
     kwargs = { "engine": model_collector.openai_model, "max_tokens": 200 }
-    if dataset.do_top_p:
-        kwargs['top_p'] = dataset.top_p
+    if model_collector.do_top_p:
+        kwargs['top_p'] = model_collector.top_p
     
     r = openai.Completion.create(prompt=f"{p}", **kwargs)
     return p + r['choices'][0].text
@@ -379,7 +440,8 @@ def apply_extracted_fills(masked_texts, extracted_fills):
 # Get the log likelihood of each text under the base_model
 def get_ll(text, model_collector):
     if model_collector.openai_model:    
-        import openai    
+        import openai 
+        openai.api_key = model_collector.openai_key  
         kwargs = { "engine": model_collector.openai_model, "temperature": 0, "max_tokens": 0, "echo": True, "logprobs": 0}
         r = openai.Completion.create(prompt=f"<|endoftext|>{text}", **kwargs)
         result = r['choices'][0]
