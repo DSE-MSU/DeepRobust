@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/home/mfl5681/DeepRobust_self")
-
 import numpy as np
 import argparse
 import copy
@@ -12,14 +9,10 @@ from ogb.nodeproppred import PygNodePropPredDataset
 from torch_geometric.datasets import Planetoid
 
 import deeprobust.graph.utils as utils
-from deeprobust_self.graph.targeted_attack import UGBA
+from deeprobust.graph.targeted_attack import UGBA
 from deeprobust.graph.defense_pyg import GCN, SAGE, GAT
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--ptb_rate', type=float, default=0.1, help='perturbation rate.')
-
-parser.add_argument('--debug', action='store_true',
-        default=True, help='debug mode')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='Disables CUDA training.')
 parser.add_argument('--seed', type=int, default=10, help='Random seed.')
@@ -51,25 +44,11 @@ parser.add_argument('--vs_ratio', type=float, default=0,
                     help="ratio of poisoning nodes relative to the full graph")
 parser.add_argument('--vs_number', type=int, default=0,
                     help="number of poisoning nodes relative to the full graph")
-# defense setting
-parser.add_argument('--target_loss_weight', type=float, default=1,
-                    help="Weight of optimize outter trigger generator")
-parser.add_argument('--homo_loss_weight', type=float, default=100,
-                    help="Weight of optimize similarity loss")
-parser.add_argument('--homo_boost_thrd', type=float, default=0.8,
-                    help="Threshold of increase similarity")
+
 # attack setting
-parser.add_argument('--dis_weight', type=float, default=1,
-                    help="Weight of cluster distance")
 parser.add_argument('--selection_method', type=str, default='none',
-                    choices=['loss','conf','cluster','none','cluster_degree'],
+                    choices=['cluster','none'],
                     help='Method to select idx_attach for training trojan model (none means randomly select)')
-parser.add_argument('--test_model', type=str, default='GCN',
-                    choices=['GCN','GAT','GraphSage','GIN'],
-                    help='Model used to attack')
-parser.add_argument('--evaluate_mode', type=str, default='1by1',
-                    choices=['overall','1by1'],
-                    help='Model used to attack')
 args = parser.parse_args()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -100,7 +79,7 @@ def subgraph(subset, edge_index, edge_attr = None, relabel_nodes: bool = False):
         edge_attr = edge_attr[edge_mask] if edge_attr is not None else None
         return edge_index, edge_attr, edge_mask
 
-def get_split(args,data, device):
+def get_split(data, device):
     rs = np.random.RandomState(10)
     perm = rs.permutation(data.num_nodes)
     train_number = int(0.2*len(perm))
@@ -127,31 +106,23 @@ def get_split(args,data, device):
 
     return data, idx_train, idx_val, idx_clean_test, idx_atk
 
-# dataset = PygNodePropPredDataset(name='ogbn-arxiv')
-# dataset.transform = T.NormalizeFeatures()
-# data = dataset[0]
-# if(args.dataset == 'ogbn-arxiv'):
-#     nNode = data.x.shape[0]
-#     setattr(data,'train_mask',torch.zeros(nNode, dtype=torch.bool).to(device))
-#     # dataset[0].train_mask = torch.zeros(nEdge, dtype=torch.bool).to(device)
-#     data.val_mask = torch.zeros(nNode, dtype=torch.bool).to(device)
-#     data.test_mask = torch.zeros(nNode, dtype=torch.bool).to(device)
-#     data.y = data.y.squeeze(1)
 dataset = Planetoid('./', 'cora')
 dataset.transform = T.NormalizeFeatures()
 data = dataset[0]
 
-
-data, idx_train, idx_val, idx_clean_test, idx_atk = get_split(args,data,device)
+data, idx_train, idx_val, idx_clean_test, idx_atk = get_split(data,device)
+# decide clean test nodes
+data.test_mask = utils.index_to_mask(idx_clean_test,size=data.x.shape[0])
 data = data.to(device)
 # idx_train = data.train_mask.nonzero().flatten()
 # idx_val = data.val_mask.nonzero().flatten()
 # idx_test = data.test_mask.nonzero().flatten()
 data.edge_index = to_undirected(data.edge_index, num_nodes = data.num_nodes)
 train_edge_index, _, edge_mask = subgraph(torch.bitwise_not(data.test_mask),data.edge_index,relabel_nodes=False)
-        # filter out the unlabeled nodes except from training nodes and testing nodes, nonzero() is to get index, flatten is to get 1-d tensor
+# filter out the unlabeled nodes except from training nodes and testing nodes, nonzero() is to get index, flatten is to get 1-d tensor
 unlabeled_idx = (torch.bitwise_not(data.test_mask)&torch.bitwise_not(data.train_mask)).nonzero().flatten()
 mask_edge_index = data.edge_index[:,torch.bitwise_not(edge_mask)]
+
 
 test_model = GCN(nfeat=data.x.shape[1],
                     nhid=args.hidden,
@@ -159,14 +130,15 @@ test_model = GCN(nfeat=data.x.shape[1],
                     nlayers=2, lr=0.01,
                     dropout=0.5, device=device).to(device)
 test_model.fit(data, train_iters=args.epochs, verbose = True)
+'''get clean accuracy before attack'''
 test_model.test()
 
 '''Perform backdoor attack'''
 agent = UGBA(data, vs_number = 10, device = 'cuda', trigger_size = 3,
-             homo_loss_weight = 50, homo_boost_thrd = 0.5, train_epochs = 200, 
+             homo_loss_weight = 0, homo_boost_thrd = 0.5, train_epochs = 200, 
              trojan_epochs = 400, dis_weight = -1.0)
 # train trigger generator
-trigger_generator, idx_attach = agent.train_trigger_generator(idx_train, train_edge_index, edge_weights = None, selection_method = 'none')
+trigger_generator, idx_attach = agent.train_trigger_generator(idx_train, train_edge_index, edge_weights = None, selection_method = 'cluster')
 # update poisoned training graph
 poison_data = agent.get_poisoned_graph()
 # train backdoored GNN
@@ -176,16 +148,20 @@ test_model = GCN(nfeat=data.x.shape[1],
                     nlayers=2, lr=0.01,
                     dropout=0.5, device=device).to(device)
 
-test_model.fit(poison_data, train_iters=args.epochs, verbose = True)
-acc_test = test_model.test()
 # evaluation: inject trigger to target nodes
 induct_data = copy.deepcopy(poison_data)
+test_model.fit(induct_data, train_iters=args.epochs, verbose = True)
+
 induct_edge_index = torch.cat([poison_data.edge_index,mask_edge_index],dim=1)
 induct_edge_weights = torch.cat([poison_data.edge_weights,torch.ones([mask_edge_index.shape[1]],dtype=torch.float,device=device)])
 induct_data.edge_index, induct_data.edge_weights = induct_edge_index, induct_edge_weights
+acc_test = test_model.test()
 
-x, edge_index, edge_weights, y = agent.attack(idx_atk[0], data.x, data.y, data.edge_index, None)
-
+'''
+Attach generated trigger with a single target node: UGBA.attack(target_node, features, labels, edge_index, edge_attr)
+Example: 
+    x, edge_index, edge_weights, y = agent.attack(idx_atk[0], data.x, data.y, data.edge_index, None)
+'''
 
 overall_induct_edge_index, overall_induct_edge_weights = induct_edge_index.clone(),induct_edge_weights.clone()
 from torch_geometric.utils  import k_hop_subgraph
@@ -197,8 +173,8 @@ for i, idx in enumerate(idx_atk):
     relabeled_node_idx = sub_mapping
     sub_induct_edge_weights = torch.ones([sub_induct_edge_index.shape[1]]).to(device)
     with torch.no_grad():
-        # inject trigger on attack test nodes (idx_atk)'''
-        induct_x, induct_edge_index, induct_edge_weights, induct_y = agent.trigger_generator.inject_trigger(relabeled_node_idx,poison_data.x[sub_induct_nodeset],sub_induct_edge_index,sub_induct_edge_weights, poison_data.y[sub_induct_nodeset], device)
+        # inject trigger on attack test nodes (idx_atk)''' 
+        induct_x, induct_edge_index, induct_edge_weights, induct_y = agent.inject_trigger(idx_attach = relabeled_node_idx,x = poison_data.x[sub_induct_nodeset],y = poison_data.y[sub_induct_nodeset],edge_index = sub_induct_edge_index,edge_weights = sub_induct_edge_weights)
         induct_x, induct_edge_index, induct_edge_weights = induct_x.clone().detach(), induct_edge_index.clone().detach(),induct_edge_weights.clone().detach()
         # attack evaluation
         output = test_model(induct_x,induct_edge_index,induct_edge_weights)
