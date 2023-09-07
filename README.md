@@ -66,7 +66,7 @@ If our work could help your research, please cite:
 * [02/2023] DeepRobust 0.2.8 Released. Please try `pip install deeprobust==0.2.8`! We have added a scalable attack [PRBCD, NeurIPS'21](https://arxiv.org/abs/2110.14038) to graph package. We can now use PRBCD to attack large-scale graphs such as ogb-arxiv (see example in [test_prbcd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prbcd.py))! 
 * [02/2023] Add a robust model [AirGNN, NeurIPS'21](https://proceedings.neurips.cc/paper/2021/file/50abc3e730e36b387ca8e02c26dc0a22-Paper.pdf) to graph package. Try `python examples/graph/test_airgnn.py`! See details in [test_airgnn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_airgnn.py)
 * [11/2022] DeepRobust 0.2.6 Released. Please try `pip install deeprobust==0.2.6`! We have more updates coming. Please stay tuned!
-* [11/2021] A subpackage that includes popular black box attacks in image domain is relased. Find it here. [Link](https://github.com/I-am-Bot/Black-Box-Attacks)
+* [11/2021] A subpackage that includes popular black box attacks in image domain is released. Find it here. [Link](https://github.com/I-am-Bot/Black-Box-Attacks)
 * [11/2021] DeepRobust 0.2.4 Released. Please try `pip install deeprobust==0.2.4`!
 * [10/2021] add scalable attack and MedianGCN. Thank [Jintang](https://github.com/EdisonLeeeee) for his contribution!
 * [06/2021] [Image Package] Add preprocessing method: APE-GAN.
