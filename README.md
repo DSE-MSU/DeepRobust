@@ -62,6 +62,7 @@ If our work could help your research, please cite:
 ```
 
 # Changelog
+* [11/2023] DeepRobust 0.2.9 Released. Please try `pip install deeprobust==0.2.9`. We have fixed the OOM issue of metattack on new pytorch versions.
 * [06/2023] We have added a backdoor attack [UGBA, WWW'23](https://arxiv.org/abs/2303.01263) to graph package. We can now use UGBA to conduct unnoticeable backdoor attack on large-scale graphs such as ogb-arxiv (see example in [test_ugba.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_ugba.py))! 
 * [02/2023] DeepRobust 0.2.8 Released. Please try `pip install deeprobust==0.2.8`! We have added a scalable attack [PRBCD, NeurIPS'21](https://arxiv.org/abs/2110.14038) to graph package. We can now use PRBCD to attack large-scale graphs such as ogb-arxiv (see example in [test_prbcd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prbcd.py))! 
 * [02/2023] Add a robust model [AirGNN, NeurIPS'21](https://proceedings.neurips.cc/paper/2021/file/50abc3e730e36b387ca8e02c26dc0a22-Paper.pdf) to graph package. Try `python examples/graph/test_airgnn.py`! See details in [test_airgnn.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_airgnn.py)
