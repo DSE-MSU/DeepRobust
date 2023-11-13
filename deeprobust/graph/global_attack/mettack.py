@@ -125,9 +125,9 @@ class BaseMeta(BaseAttack):
     def get_adj_score(self, adj_grad, modified_adj, ori_adj, ll_constraint, ll_cutoff):
         adj_meta_grad = adj_grad * (-2 * modified_adj + 1)
         # Make sure that the minimum entry is 0.
-        adj_meta_grad -= adj_meta_grad.min()
+        adj_meta_grad = adj_meta_grad - adj_meta_grad.min()
         # Filter self-loops
-        adj_meta_grad -= torch.diag(torch.diag(adj_meta_grad, 0))
+        adj_meta_grad = adj_meta_grad - torch.diag(torch.diag(adj_meta_grad, 0))
         # # Set entries to 0 that could lead to singleton nodes.
         singleton_mask = self.filter_potential_singletons(modified_adj)
         adj_meta_grad = adj_meta_grad *  singleton_mask
