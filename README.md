@@ -62,6 +62,7 @@ If our work could help your research, please cite:
 ```
 
 # Changelog
+* [11/2023] Try <span style="color:red"> `git clone https://github.com/DSE-MSU/DeepRobust.git; cd DeepRobust; python setup_empty.py install` </span> to directly install DeepRobust without installing dependency packages.
 * [11/2023] DeepRobust 0.2.9 Released. Please try `pip install deeprobust==0.2.9`. We have fixed the OOM issue of metattack on new pytorch versions.
 * [06/2023] We have added a backdoor attack [UGBA, WWW'23](https://arxiv.org/abs/2303.01263) to graph package. We can now use UGBA to conduct unnoticeable backdoor attack on large-scale graphs such as ogb-arxiv (see example in [test_ugba.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_ugba.py))! 
 * [02/2023] DeepRobust 0.2.8 Released. Please try `pip install deeprobust==0.2.8`! We have added a scalable attack [PRBCD, NeurIPS'21](https://arxiv.org/abs/2110.14038) to graph package. We can now use PRBCD to attack large-scale graphs such as ogb-arxiv (see example in [test_prbcd.py](https://github.com/DSE-MSU/DeepRobust/blob/master/examples/graph/test_prbcd.py))! 
@@ -99,6 +100,8 @@ git clone https://github.com/DSE-MSU/DeepRobust.git
 cd DeepRobust
 python setup.py install
 ```
+If you find the dependencies are hard to install, please try the following:
+```python setup_empty.py install``` (only install deeprobust without installing other packages) 
 
 # Test Examples
 
