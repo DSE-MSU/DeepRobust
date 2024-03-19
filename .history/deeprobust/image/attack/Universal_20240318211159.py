@@ -114,7 +114,7 @@ def universal_adversarial_perturbation(dataloader, model, device, xi=10, delta=0
     v.requires_grad_()
 
     fooling_rate = 0.0
-    num_images =  num_classes
+    num_images =  len(data_list)
     itr = 0
 
     while fooling_rate < 1-delta and itr < max_iter_uni:
