@@ -4,7 +4,6 @@ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
 
 """
 from deeprobust.image.attack import deepfool
-import collections
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
@@ -13,6 +12,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 import torch.utils.data as data_utils
+from torch.autograd.gradcheck import zero_gradients
 import math
 from PIL import Image
 import torchvision.models as models
@@ -20,15 +20,6 @@ import sys
 import random
 import time
 from tqdm import tqdm
-
-def zero_gradients(x):
-    if isinstance(x, torch.Tensor):
-        if x.grad is not None:
-            x.grad.detach_()
-            x.grad.zero_()
-    elif isinstance(x, collections.abc.Iterable):
-        for elem in x:
-            zero_gradients(elem)
 
 def get_model(model,device):
     if model == 'vgg16':

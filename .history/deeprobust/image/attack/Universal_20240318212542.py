@@ -4,7 +4,6 @@ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
 
 """
 from deeprobust.image.attack import deepfool
-import collections
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
@@ -29,7 +28,7 @@ def zero_gradients(x):
     elif isinstance(x, collections.abc.Iterable):
         for elem in x:
             zero_gradients(elem)
-
+            
 def get_model(model,device):
     if model == 'vgg16':
         net = models.vgg16(pretrained=True)
