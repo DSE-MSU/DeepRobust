@@ -4,7 +4,6 @@ Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
 
 """
 from deeprobust.image.attack import deepfool
-import collections
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
@@ -29,7 +28,7 @@ def zero_gradients(x):
     elif isinstance(x, collections.abc.Iterable):
         for elem in x:
             zero_gradients(elem)
-
+            
 def get_model(model,device):
     if model == 'vgg16':
         net = models.vgg16(pretrained=True)
@@ -123,7 +122,7 @@ def universal_adversarial_perturbation(dataloader, model, device, xi=10, delta=0
     v.requires_grad_()
 
     fooling_rate = 0.0
-    num_images = len(dataloader)
+    num_images =  num_classes
     itr = 0
 
     while fooling_rate < 1-delta and itr < max_iter_uni:
