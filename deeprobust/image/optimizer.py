@@ -14,7 +14,14 @@ https://github.com/DebangLi/one-pixel-attack-pytorch/blob/master/differential_ev
 from __future__ import division, print_function, absolute_import
 import numpy as np
 from scipy.optimize import OptimizeResult, minimize
-from scipy.optimize.optimize import _status_message
+
+import scipy
+scipy_version = tuple(map(int, scipy.__version__.split(".")[:2]))
+if scipy_version < (1, 8):
+    from scipy.optimize.optimize import _status_message
+else:
+    from scipy.optimize._optimize import _status_message
+  
 from scipy._lib._util import check_random_state
 import warnings
 
