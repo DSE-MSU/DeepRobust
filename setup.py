@@ -6,7 +6,7 @@ with open("README.md", 'r') as fh:
     long_description = fh.read()
 
 setup(name = "deeprobust",
-      version = "0.2.7",
+      version = "0.2.11",
       author='MSU-DSE',
       maintainer='MSU-DSE',
       description = "A PyTorch library for adversarial robustness learning for image and graph data.",
