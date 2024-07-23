@@ -29,7 +29,7 @@ setup(name = "deeprobust",
           'scikit-image>=0.0',
           'tensorboardX>=2.0',
           'tqdm>=3.0',
-          'gensim>=3.8, <4.0'
+          'gensim>=4.3.0'
       ],
       classifiers=[
         "Intended Audience :: Developers",
