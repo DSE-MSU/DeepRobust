@@ -97,7 +97,7 @@ def pgd_attack(model,
 
     out = model(X)
     err = (out.data.max(1)[1] != y.data).float().sum()
-    #TODO: find a other way
+                      
     device = X.device
     imageArray = X.detach().cpu().numpy()
     X_random = np.random.uniform(-epsilon, epsilon, X.shape)
@@ -107,6 +107,7 @@ def pgd_attack(model,
     X_pgd.requires_grad = True
     eta = torch.zeros_like(X)
     eta.requires_grad = True
+                      
     for i in range(num_steps):
 
         pred = model(X_pgd)
@@ -125,26 +126,27 @@ def pgd_attack(model,
             X_pgd = X.data + eta
 
             X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
-            #for ind in range(X_pgd.shape[1]):
-            #    X_pgd[:,ind,:,:] = (torch.clamp(X_pgd[:,ind,:,:] * std[ind] + mean[ind], clip_min, clip_max) - mean[ind]) / std[ind]
 
             X_pgd = X_pgd.detach()
             X_pgd.requires_grad_()
             X_pgd.retain_grad()
 
         if bound == 'l2':
-            output = model(X + eta)
-            incorrect = output.max(1)[1] != y
-            correct = (~incorrect).unsqueeze(1).unsqueeze(1).unsqueeze(1).float()
-            #Finding the correct examples so as to attack only them
-            loss = nn.CrossEntropyLoss()(model(X + eta), y)
-            loss.backward()
+            grad_flat = X_pgd.view(grad.shape[0], -1)
+            grad_norm = grad_flat.norm(p=2, dim=1).view(-1, 1, 1, 1)
+            grad_unit = grad / (grad_norm + 1e-10)
 
-            eta.data +=  correct * step_size * eta.grad.detach() / torch.norm(eta.grad.detach())
-            eta.data *=  epsilon / torch.norm(eta.detach()).clamp(min=epsilon)
-            eta.data =   torch.min(torch.max(eta.detach(), -X), 1-X) # clip X+delta to [0,1]
-            eta.grad.zero_()
-            X_pgd = X + eta
+            X_adv += step_size * grad_unit
+
+            eta = X_adv - X
+            eta_flat = eta.view(delta.shape[0], -1)
+            eta_norm = eta_flat.norm(p=2, dim=1, keepdim=True)
+            exceed_mask = (eta_norm > epsilon).float()
+            scale = (epsilon / (eta_norm + 1e-10)).view(-1, 1, 1, 1)
+            eta = eta * scale * exceed_mask + delta * (1 - exceed_mask)
+            X_adv = X + eta
+
+            X_adv = torch.clamp(X_adv, clip_min, clip_max)
 
     return X_pgd
 
