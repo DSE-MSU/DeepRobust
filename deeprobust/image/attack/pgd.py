@@ -136,17 +136,17 @@ def pgd_attack(model,
             grad_norm = grad_flat.norm(p=2, dim=1).view(-1, 1, 1, 1)
             grad_unit = grad / (grad_norm + 1e-10)
 
-            X_adv += step_size * grad_unit
+            X_pgd += step_size * grad_unit
 
-            eta = X_adv - X
+            eta = X_pgd - X
             eta_flat = eta.view(delta.shape[0], -1)
             eta_norm = eta_flat.norm(p=2, dim=1, keepdim=True)
             exceed_mask = (eta_norm > epsilon).float()
             scale = (epsilon / (eta_norm + 1e-10)).view(-1, 1, 1, 1)
             eta = eta * scale * exceed_mask + delta * (1 - exceed_mask)
-            X_adv = X + eta
+            X_pgd = X + eta
 
-            X_adv = torch.clamp(X_adv, clip_min, clip_max)
+            X_pgd = torch.clamp(X_pgd, clip_min, clip_max)
 
     return X_pgd
 
